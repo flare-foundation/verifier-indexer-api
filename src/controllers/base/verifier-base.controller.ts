@@ -1,33 +1,27 @@
-///////////////////////////////////////////////////////////////
-// THIS IS GENERATED CODE. DO NOT CHANGE THIS FILE MANUALLY .//
-///////////////////////////////////////////////////////////////
-
-import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
+import { Body, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
+import { ARBase, ARESBase } from 'src/external-libs/interfaces';
+import { BaseVerifierService } from 'src/services/common/verifier-base.service';
 import {
-  AddressValidity_RequestNoMic,
-  AttestationResponseDTO_AddressValidity_Response,
-} from '../../dtos/attestation-types/AddressValidity.dto';
-import {
+  AttestationResponse,
+  AttestationResponseVerificationEncoded,
   EncodedRequest,
   EncodedRequestResponse,
   MicResponse,
 } from '../../dtos/generic/generic.dto';
-import { DOGEAddressValidityVerifierService } from '../../services/doge/doge-address-validity-verifier.service';
 
 @ApiTags('AddressValidity')
-@Controller('AddressValidity')
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
-export class DOGEAddressValidityVerifierController {
-  constructor(
-    private readonly verifierService: DOGEAddressValidityVerifierService,
-  ) {}
+export abstract class BaseVerifierController<
+  Req extends ARBase,
+  Res extends ARESBase,
+> {
+  protected readonly verifierService: BaseVerifierService<Req, Res>;
 
   /**
-   *
    * Tries to verify encoded attestation request without checking message integrity code, and if successful it returns response.
    * @param verifierBody
    * @returns
@@ -36,8 +30,23 @@ export class DOGEAddressValidityVerifierController {
   @Post()
   async verify(
     @Body() body: EncodedRequest,
-  ): Promise<AttestationResponseDTO_AddressValidity_Response> {
+  ): Promise<AttestationResponse<Res>> {
     return this.verifierService.verifyEncodedRequest(body.abiEncodedRequest!);
+  }
+
+  /**
+   * Tries to verify encoded attestation request without checking message integrity code, and if successful it returns response in abi encoded form.
+   * @param body
+   * @returns abi encoded AttestationResponse
+   */
+  @HttpCode(200)
+  @Post('verifyFDC')
+  async verifyFDC(
+    @Body() body: EncodedRequest,
+  ): Promise<AttestationResponseVerificationEncoded> {
+    return this.verifierService.verifyEncodedRequestFDC(
+      body.abiEncodedRequest!,
+    );
   }
 
   /**
@@ -46,10 +55,8 @@ export class DOGEAddressValidityVerifierController {
    * @returns
    */
   @HttpCode(200)
-  @Post('prepareResponse')
-  async prepareResponse(
-    @Body() body: AddressValidity_RequestNoMic,
-  ): Promise<AttestationResponseDTO_AddressValidity_Response> {
+  @Post('prepareResponse') // TODO: actually Request where mic is optional
+  async prepareResponse(@Body() body: Req): Promise<AttestationResponse<Res>> {
     return this.verifierService.prepareResponse(body);
   }
 
@@ -58,8 +65,8 @@ export class DOGEAddressValidityVerifierController {
    * @param body
    */
   @HttpCode(200)
-  @Post('mic')
-  async mic(@Body() body: AddressValidity_RequestNoMic): Promise<MicResponse> {
+  @Post('mic') // TODO: actually Request where mic is optional
+  async mic(@Body() body: Req): Promise<MicResponse> {
     return this.verifierService.mic(body);
   }
 
@@ -69,10 +76,8 @@ export class DOGEAddressValidityVerifierController {
    * @param body
    */
   @HttpCode(200)
-  @Post('prepareRequest')
-  async prepareRequest(
-    @Body() body: AddressValidity_RequestNoMic,
-  ): Promise<EncodedRequestResponse> {
+  @Post('prepareRequest') // TODO: actually Request where mic is optional
+  async prepareRequest(@Body() body: Req): Promise<EncodedRequestResponse> {
     return this.verifierService.prepareRequest(body);
   }
 }

@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiKeyStrategy } from 'src/auth/apikey.strategy';
 import { DogeExternalIndexerEngineService } from 'src/services/doge/doge-indexer.service';
 import configuration, { IConfig } from '../config/configuration';
-import { DOGEAddressValidityVerifierController } from '../controllers/doge/doge-address-validity-verifier.controller';
+import { DOGEAddressValidityVerifierController } from '../controllers/address-validity-verifier.controller';
 import { DOGEBalanceDecreasingTransactionVerifierController } from '../controllers/doge/doge-balance-decreasing-transaction-verifier.controller';
 import { DOGEConfirmedBlockHeightExistsVerifierController } from '../controllers/doge/doge-confirmed-block-height-exists-verifier.controller';
 import { DOGEIndexerController } from '../controllers/doge/doge-indexer.controller';

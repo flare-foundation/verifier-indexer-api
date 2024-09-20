@@ -22,7 +22,7 @@ const dogeBase58 = basex(DOGE_BASE_58_DICT);
  */
 export function verifyAddressDOGE(
   address: string,
-  testnet = process.env.TESTNET == 'true',
+  testnet: boolean = false,
 ): VerificationResponse<AddressValidity_ResponseBody> {
   let validPrefix: string[];
   let validPrefixDecodedDec: number[];

@@ -11,7 +11,7 @@ import {
   TipSyncState,
 } from 'src/entity/doge/doge-entity-definitions';
 
-type VerifierTypeOptions = 'doge' | 'btc' | 'xrp';
+export type VerifierTypeOptions = 'doge' | 'btc' | 'xrp';
 
 export interface IConfig {
   // server port (PORT)
@@ -26,6 +26,8 @@ export interface IConfig {
   mccCreate: MccCreate;
 
   typeOrmModuleOptions: TypeOrmModuleOptions;
+
+  isTestnet: boolean;
 }
 
 interface DatabaseConfig {
@@ -72,6 +74,7 @@ export interface VerifierServerConfig {
 export default () => {
   const api_keys = process.env.API_KEYS?.split(',') || [''];
   const verifier_type = extractVerifierType();
+  const isTestnet = process.env.TESTNET == 'true';
 
   const db = {
     database: process.env.DB_DATABASE || 'database',
@@ -109,6 +112,7 @@ export default () => {
       migrationsRun: false,
       logging: false,
     },
+    isTestnet,
   };
   return config;
 };

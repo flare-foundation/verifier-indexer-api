@@ -160,6 +160,19 @@ export class AttestationDefinitionStore {
     return ethers.concat([abiEncodePrefix, abiEncodeBody]);
   }
 
+  encodeResponse(response: ARESBase): string {
+    const attestationType = decodeAttestationName(response.attestationType);
+    const definition =
+      this.getDefinitionForDecodedAttestationType(attestationType);
+    if (!definition) {
+      throw new Error(
+        `Unsupported attestation type id: '${response.attestationType}'`,
+      );
+    }
+    const abiEncode = this.coder.encode([definition.responseAbi], [response]);
+    return abiEncode;
+  }
+
   /**
    * Parses attestation request.
    * @param bytes

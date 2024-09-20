@@ -233,7 +233,7 @@ export function bech32Decode(addr: string) {
  */
 export function verifyAddressBTC(
   address: string,
-  testnet = process.env.TESTNET == 'true',
+  testnet: boolean = false,
 ): VerificationResponse<AddressValidity_ResponseBody> {
   if (testnet) {
     const type = typeBTCtestnet(address);
