@@ -2,7 +2,7 @@ import { ChainType, MCC, MccCreate, UtxoMccCreate } from '@flarenetwork/mcc';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IConfig, VerifierServerConfig } from 'src/config/configuration';
-import { DogeIndexedQueryManager } from 'src/indexed-query-manager/DogeIndexQueryManager';
+import { UtxoIndexedQueryManager } from 'src/indexed-query-manager/UtxoIndexQueryManager';
 import { IIndexedQueryManager } from 'src/indexed-query-manager/IIndexedQueryManager';
 import { IndexedQueryManagerOptions } from 'src/indexed-query-manager/indexed-query-manager-types';
 import { verifyConfirmedBlockHeightExists } from 'src/verification/generic-chain-verifications';
@@ -14,14 +14,12 @@ import {
   ConfirmedBlockHeightExists_Response,
 } from '../../dtos/attestation-types/ConfirmedBlockHeightExists.dto';
 import {
+  AttestationResponse,
+  AttestationResponseStatus,
   EncodedRequestResponse,
   MicResponse,
 } from '../../dtos/generic/generic.dto';
 import { AttestationDefinitionStore } from '../../external-libs/AttestationDefinitionStore';
-import {
-  AttestationResponse,
-  AttestationResponseStatus,
-} from '../../external-libs/AttestationResponse';
 import { ExampleData } from '../../external-libs/interfaces';
 import {
   MIC_SALT,
@@ -65,7 +63,7 @@ export class DOGEConfirmedBlockHeightExistsVerifierService {
       },
     };
 
-    this.indexedQueryManager = new DogeIndexedQueryManager(options);
+    this.indexedQueryManager = new UtxoIndexedQueryManager(options);
   }
 
   //-$$$<end-constructor> End of custom code section. Do not change this comment.

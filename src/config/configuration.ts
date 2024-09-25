@@ -1,17 +1,16 @@
-import { MccCreate } from '@flarenetwork/mcc';
+import { ChainType, MccCreate } from '@flarenetwork/mcc';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-
 import {
-  DBDogeIndexerBlock,
-  DBDogeTransaction,
+  DBUtxoIndexerBlock,
+  DBUtxoTransaction,
   DBTransactionInput,
   DBTransactionInputCoinbase,
   DBTransactionOutput,
-  PruneSyncState,
   TipSyncState,
-} from 'src/entity/doge/doge-entity-definitions';
+  PruneSyncState,
+} from 'src/entity/utxo/utxo-entity-definitions';
 
-export type VerifierTypeOptions = 'doge' | 'btc' | 'xrp';
+// export type VerifierTypeOptions = 'doge' | 'btc' | 'xrp';
 
 export interface IConfig {
   // server port (PORT)
@@ -58,7 +57,7 @@ interface DatabaseConfig {
 }
 
 export interface VerifierServerConfig {
-  verifierType: VerifierTypeOptions;
+  verifierType: ChainType;
 
   /**
    * The page size for indexer API queries when listing outputs
@@ -88,7 +87,7 @@ export default () => {
 
   const verifierConfig: VerifierServerConfig = {
     verifierType: verifier_type,
-    numberOfConfirmations: parseInt(process.env.NUMBER_OF_CONFIRMATIONS || '6'),
+    numberOfConfirmations: parseInt(process.env.NUMBER_OF_CONFIRMATIONS || '6'), // TODO: This should be read from db state
     indexerServerPageLimit: parseInt(
       process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
     ),
@@ -117,33 +116,38 @@ export default () => {
   return config;
 };
 
-export function extractVerifierType(): VerifierTypeOptions {
+export function extractVerifierType(): ChainType {
   const verifierType = process.env.VERIFIER_TYPE?.toLowerCase();
-  if (
-    verifierType === 'doge' ||
-    verifierType === 'btc' ||
-    verifierType === 'xrp'
-  ) {
-    return verifierType as 'doge' | 'btc' | 'xrp';
-  } else {
-    throw new Error(
-      `Wrong verifier type: '${process.env.VERIFIER_TYPE}' provide a valid verifier type: 'doge' | 'btc' | 'xrp'`,
-    );
+  switch (verifierType) {
+    case 'doge':
+      return ChainType.DOGE;
+    case 'btc':
+      return ChainType.BTC;
+    case 'xrp':
+      return ChainType.XRP;
+    default:
+      throw new Error(
+        `Wrong verifier type: '${process.env.VERIFIER_TYPE}' provide a valid verifier type: 'doge' | 'btc' | 'xrp'`,
+      );
   }
 }
 
-function getDatabaseEntities(verifierType: VerifierTypeOptions) {
-  if (verifierType === 'doge') {
-    return [
-      DBDogeIndexerBlock,
-      DBDogeTransaction,
-      DBTransactionInput,
-      DBTransactionInputCoinbase,
-      DBTransactionOutput,
-      TipSyncState,
-      PruneSyncState,
-    ];
-  } else {
-    throw new Error(`Unsupported verifier type: ${verifierType}`);
+function getDatabaseEntities(verifierType: ChainType) {
+  switch (verifierType) {
+    case ChainType.BTC:
+    case ChainType.DOGE:
+      return [
+        DBUtxoIndexerBlock,
+        DBUtxoTransaction,
+        DBTransactionInput,
+        DBTransactionInputCoinbase,
+        DBTransactionOutput,
+        TipSyncState,
+        PruneSyncState,
+      ];
+    case ChainType.XRP:
+      return [];
+    default:
+      throw new Error(`Unsupported verifier type: ${verifierType}`);
   }
 }

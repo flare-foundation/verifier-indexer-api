@@ -3,11 +3,15 @@ import {
   AddressValidity_Request,
   AddressValidity_Response,
 } from 'src/dtos/attestation-types/AddressValidity.dto';
-import { DOGEAddressValidityVerifierService } from 'src/services/doge/doge-address-validity-verifier.service';
 import { BaseVerifierController } from './base/verifier-base.controller';
-import { BTCAddressValidityVerifierService } from 'src/services/btc/btc-address-validity-verifier.service';
-import { XRPAddressValidityVerifierService } from 'src/services/xrp/xrp-address-validity-verifier.service';
+import {
+  DOGEAddressValidityVerifierService,
+  BTCAddressValidityVerifierService,
+  XRPAddressValidityVerifierService,
+} from 'src/services/address-validity-verifier.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('AddressValidity')
 @Controller('AddressValidity')
 export class DOGEAddressValidityVerifierController extends BaseVerifierController<
   AddressValidity_Request,
@@ -20,6 +24,7 @@ export class DOGEAddressValidityVerifierController extends BaseVerifierControlle
   }
 }
 
+@ApiTags('AddressValidity')
 @Controller('AddressValidity')
 export class BTCAddressValidityVerifierController extends BaseVerifierController<
   AddressValidity_Request,
@@ -32,6 +37,7 @@ export class BTCAddressValidityVerifierController extends BaseVerifierController
   }
 }
 
+@ApiTags('AddressValidity')
 @Controller('AddressValidity')
 export class XRPAddressValidityVerifierController extends BaseVerifierController<
   AddressValidity_Request,

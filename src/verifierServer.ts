@@ -5,16 +5,17 @@ import helmet from 'helmet';
 // import { VerifierBtcServerModule } from './verifier-btc-server.module';
 import { extractVerifierType } from './config/configuration';
 import { VerifierDogeServerModule } from './verifier-modules/verifier-doge-server.module';
+import { ChainType } from '@flarenetwork/mcc';
 // import { VerifierXrpServerModule } from './verifier-xrp-server.module';
 
 function moduleForDataSource(): any {
   const verifier_type = extractVerifierType();
   switch (verifier_type) {
-    case 'doge':
+    case ChainType.DOGE:
       return VerifierDogeServerModule;
-    case 'btc':
+    case ChainType.BTC:
     // return VerifierBtcServerModule;
-    case 'xrp':
+    case ChainType.XRP:
     // return VerifierXrpServerModule;
     default:
       throw new Error(`Wrong verifier type: '${process.env.VERIFIER_TYPE}'`);

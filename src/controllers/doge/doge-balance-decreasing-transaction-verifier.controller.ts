@@ -15,7 +15,7 @@ import {
   EncodedRequestResponse,
   MicResponse,
 } from '../../dtos/generic/generic.dto';
-import { DOGEBalanceDecreasingTransactionVerifierService } from '../../services/doge/doge-balance-decreasing-transaction-verifier.service';
+import { DOGEBalanceDecreasingTransactionVerifierService } from 'src/services/balance-decreasing-transaction-verifier.service';
 
 @ApiTags('BalanceDecreasingTransaction')
 @Controller('BalanceDecreasingTransaction')
@@ -50,7 +50,7 @@ export class DOGEBalanceDecreasingTransactionVerifierController {
   async prepareResponse(
     @Body() body: BalanceDecreasingTransaction_RequestNoMic,
   ): Promise<AttestationResponseDTO_BalanceDecreasingTransaction_Response> {
-    return this.verifierService.prepareResponse(body);
+    return this.verifierService.prepareResponse(body as any);
   }
 
   /**
@@ -62,7 +62,7 @@ export class DOGEBalanceDecreasingTransactionVerifierController {
   async mic(
     @Body() body: BalanceDecreasingTransaction_RequestNoMic,
   ): Promise<MicResponse> {
-    return this.verifierService.mic(body);
+    return this.verifierService.mic(body as any);
   }
 
   /**
@@ -75,6 +75,6 @@ export class DOGEBalanceDecreasingTransactionVerifierController {
   async prepareRequest(
     @Body() body: BalanceDecreasingTransaction_RequestNoMic,
   ): Promise<EncodedRequestResponse> {
-    return this.verifierService.prepareRequest(body);
+    return this.verifierService.prepareRequest(body as any);
   }
 }

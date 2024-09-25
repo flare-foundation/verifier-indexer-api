@@ -20,10 +20,10 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-// External Postgres Database Entities (DOGE) (read only)
+// External Postgres Database Entities (Utxo (BTC and DOGE)) (read only)
 
-@Entity('doge_indexer_dogeblock')
-export class DBDogeIndexerBlock {
+@Entity('utxo_indexer_utxoblock')
+export class DBUtxoIndexerBlock {
   @PrimaryColumn({ type: 'char' })
   blockHash!: string;
 
@@ -65,9 +65,10 @@ export class DBDogeIndexerBlock {
   }
 }
 
-export type IDEDogeIndexerBlock = new () => DBDogeIndexerBlock;
-@Entity('doge_indexer_dogetransaction')
-export class DBDogeTransaction {
+export type IDEUtxoIndexerBlock = new () => DBUtxoIndexerBlock;
+
+@Entity('utxo_indexer_utxotransaction')
+export class DBUtxoTransaction {
   @PrimaryColumn({ type: 'char' })
   transactionId: string;
 
@@ -181,7 +182,7 @@ export class DBDogeTransaction {
       getResponse() {
         return response;
       },
-      chainType: ChainType.DOGE,
+      chainType: ChainType.DOGE, // TODO: ad a chainType variable
       transactionId: this.transactionId,
       blockNumber: this.blockNumber,
       timestamp: this.timestamp,
@@ -194,7 +195,7 @@ export class DBDogeTransaction {
   toApiDBTransaction(returnResponse: boolean = false): ApiDBTransaction {
     const baseRes = {
       id: 0,
-      chainType: ChainType.DOGE,
+      chainType: ChainType.DOGE, // TODO: ad a chainType variable
       transactionId: this.transactionId,
       blockNumber: this.blockNumber,
       timestamp: this.timestamp,
@@ -213,7 +214,7 @@ export class DBDogeTransaction {
   }
 }
 
-export type IDBDogeTransaction = new () => DBDogeTransaction;
+export type IDBUtxoTransaction = new () => DBUtxoTransaction;
 
 export abstract class AbstractTransactionOutput {
   @Column()
@@ -238,32 +239,32 @@ export abstract class AbstractTransactionOutput {
   scriptKeyAddress: string;
 }
 
-@Entity('doge_indexer_transactionoutput')
+@Entity('utxo_indexer_transactionoutput')
 export class DBTransactionOutput extends AbstractTransactionOutput {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
 
   @ManyToOne(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (type) => DBDogeTransaction,
+    (type) => DBUtxoTransaction,
     (transaction) => transaction.transactionoutput_set,
   )
   @JoinColumn({ name: 'transaction_link_id' })
-  transaction_link_id: DBDogeTransaction;
+  transaction_link_id: DBUtxoTransaction;
 }
 
-@Entity('doge_indexer_transactioninputcoinbase')
+@Entity('utxo_indexer_transactioninputcoinbase')
 export class DBTransactionInputCoinbase {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
 
   @ManyToOne(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (type) => DBDogeTransaction,
+    (type) => DBUtxoTransaction,
     (transaction) => transaction.transactionoutput_set,
   )
   @JoinColumn({ name: 'transaction_link_id' })
-  transaction_link_id: DBDogeTransaction;
+  transaction_link_id: DBUtxoTransaction;
 
   @Column()
   vinN: number;
@@ -275,18 +276,18 @@ export class DBTransactionInputCoinbase {
   vinSequence: number;
 }
 
-@Entity('doge_indexer_transactioninput')
+@Entity('utxo_indexer_transactioninput')
 export class DBTransactionInput extends AbstractTransactionOutput {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
 
   @ManyToOne(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (type) => DBDogeTransaction,
+    (type) => DBUtxoTransaction,
     (transaction) => transaction.transactionoutput_set,
   )
   @JoinColumn({ name: 'transaction_link_id' })
-  transaction_link_id: DBDogeTransaction;
+  transaction_link_id: DBUtxoTransaction;
 
   @Column()
   vinN: number;
@@ -307,7 +308,7 @@ export class DBTransactionInput extends AbstractTransactionOutput {
   vinScriptSigHex: string;
 }
 
-@Entity('doge_indexer_tipsyncstate')
+@Entity('utxo_indexer_tipsyncstate')
 export class TipSyncState {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
@@ -323,11 +324,13 @@ export class TipSyncState {
 
   @Column()
   timestamp: number;
+
+  // TODO: add sync state variables such as confirmation height, etc.
 }
 
 export type ITipSyncState = new () => TipSyncState;
 
-@Entity('doge_indexer_prunesyncstate')
+@Entity('utxo_indexer_prunesyncstate')
 export class PruneSyncState {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
@@ -338,6 +341,5 @@ export class PruneSyncState {
   @Column()
   timestamp: number;
 }
-// External Postgres Database Entities (DOGE) (read only)
 
 export type IPruneSyncState = new () => PruneSyncState;

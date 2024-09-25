@@ -6,29 +6,30 @@ import { EntityManager, SelectQueryBuilder } from 'typeorm';
 import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock';
 import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
 import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
+
+import { ConfigService } from '@nestjs/config';
+import { IConfig, VerifierServerConfig } from 'src/config/configuration';
 import {
-  DBDogeIndexerBlock,
-  DBDogeTransaction,
-  IDBDogeTransaction,
-  IDEDogeIndexerBlock,
+  DBUtxoIndexerBlock,
+  DBUtxoTransaction,
+  IDBUtxoTransaction,
+  IDEUtxoIndexerBlock,
   IPruneSyncState,
   ITipSyncState,
   PruneSyncState,
   TipSyncState,
-} from 'src/entity/doge/doge-entity-definitions';
+} from 'src/entity/utxo/utxo-entity-definitions';
 import {
   IIndexerEngineService,
   IIndexerState,
   getTransactionsWithinBlockRangeProps,
 } from '../common/base-indexer-engine-service';
-import { ConfigService } from '@nestjs/config';
-import { IConfig, VerifierServerConfig } from 'src/config/configuration';
 
 @Injectable()
 export class DogeExternalIndexerEngineService extends IIndexerEngineService {
   // External doge specific tables
-  private transactionTable: IDBDogeTransaction;
-  private blockTable: IDEDogeIndexerBlock;
+  private transactionTable: IDBUtxoTransaction;
+  private blockTable: IDEUtxoIndexerBlock;
   private tipState: ITipSyncState;
   private pruneState: IPruneSyncState;
 
@@ -39,8 +40,8 @@ export class DogeExternalIndexerEngineService extends IIndexerEngineService {
     private manager: EntityManager,
   ) {
     super();
-    this.transactionTable = DBDogeTransaction;
-    this.blockTable = DBDogeIndexerBlock;
+    this.transactionTable = DBUtxoTransaction;
+    this.blockTable = DBUtxoIndexerBlock;
     this.tipState = TipSyncState;
     this.pruneState = PruneSyncState;
     const verifierConfig =
@@ -48,7 +49,7 @@ export class DogeExternalIndexerEngineService extends IIndexerEngineService {
     this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;
   }
 
-  private joinTransactionQuery(query: SelectQueryBuilder<DBDogeTransaction>) {
+  private joinTransactionQuery(query: SelectQueryBuilder<DBUtxoTransaction>) {
     return query
       .leftJoinAndSelect(
         'transaction.transactionoutput_set',

@@ -1,5 +1,5 @@
 import { Body, HttpCode, Post, UseGuards } from '@nestjs/common';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity } from '@nestjs/swagger';
 
 import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
 import { ARBase, ARESBase } from 'src/external-libs/interfaces';
@@ -12,7 +12,6 @@ import {
   MicResponse,
 } from '../../dtos/generic/generic.dto';
 
-@ApiTags('AddressValidity')
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
 export abstract class BaseVerifierController<

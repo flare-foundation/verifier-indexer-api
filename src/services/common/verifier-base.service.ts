@@ -1,9 +1,20 @@
-import { ZERO_BYTES_32 } from '@flarenetwork/mcc';
+import {
+  ChainType,
+  MCC,
+  MccClient,
+  MccCreate,
+  UtxoMccCreate,
+  ZERO_BYTES_32,
+} from '@flarenetwork/mcc';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IConfig, VerifierTypeOptions } from 'src/config/configuration';
+import { IConfig, VerifierServerConfig } from 'src/config/configuration';
 
 import { ARBase, ARESBase } from 'src/external-libs/interfaces';
+import { IIndexedQueryManager } from 'src/indexed-query-manager/IIndexedQueryManager';
+import { IndexedQueryManagerOptions } from 'src/indexed-query-manager/indexed-query-manager-types';
+import { UtxoIndexedQueryManager } from 'src/indexed-query-manager/UtxoIndexQueryManager';
+import { EntityManager } from 'typeorm';
 import {
   AddressValidity_Request,
   AddressValidity_Response,
@@ -19,8 +30,13 @@ import { AttestationDefinitionStore } from '../../external-libs/AttestationDefin
 import { MIC_SALT, encodeAttestationName } from '../../external-libs/utils';
 
 export interface IVerificationServiceConfig {
-  source: VerifierTypeOptions;
+  source: ChainType;
   attestationName: string; // TODO: add union type for attestation names
+}
+
+export interface IVerificationServiceWithIndexerConfig
+  extends IVerificationServiceConfig {
+  mccClient: typeof MCC.DOGE | typeof MCC.BTC | typeof MCC.XRP;
 }
 
 export abstract class BaseVerifierService<
@@ -29,7 +45,7 @@ export abstract class BaseVerifierService<
 > {
   store: AttestationDefinitionStore;
 
-  source: VerifierTypeOptions;
+  source: SourceNames;
   attestationName: string;
   isTestnet: boolean;
 
@@ -38,7 +54,7 @@ export abstract class BaseVerifierService<
     config: IVerificationServiceConfig,
   ) {
     this.store = new AttestationDefinitionStore('src/config/type-definitions');
-    this.source = config.source;
+    this.source = getSourceName(config.source);
     this.attestationName = config.attestationName;
     this.isTestnet = this.configService.getOrThrow<boolean>('isTestnet');
   }
@@ -60,9 +76,9 @@ export abstract class BaseVerifierService<
           status: HttpStatus.BAD_REQUEST,
           error: `Attestation type and source id combination not supported: (${
             request.attestationType
-          }, ${
-            request.sourceId
-          }). This source supports attestation type '${this.attestationName}' (${encodeAttestationName(this.attestationName)}) and source id '${
+          }, ${request.sourceId}). This source supports attestation type '${
+            this.attestationName
+          }' (${encodeAttestationName(this.attestationName)}) and source id '${
             (this.isTestnet ? 'test' : '') + this.source
           }' (${encodeAttestationName(
             (this.isTestnet ? 'test' : '') + this.source,
@@ -156,6 +172,38 @@ export abstract class BaseVerifierService<
   }
 }
 
+export abstract class BaseVerifierServiceWithIndexer<
+  Req extends ARBase,
+  Res extends ARESBase,
+> extends BaseVerifierService<Req, Res> {
+  client: MccClient;
+  indexedQueryManager: IIndexedQueryManager;
+
+  constructor(
+    protected configService: ConfigService<IConfig>,
+    protected manager: EntityManager,
+    options: IVerificationServiceWithIndexerConfig,
+  ) {
+    super(configService, {
+      source: options.source,
+      attestationName: options.attestationName,
+    });
+    const mccCreate = this.configService.get<MccCreate>('mccCreate');
+    const verifierConfig =
+      this.configService.get<VerifierServerConfig>('verifierConfig');
+    const numberOfConfirmations = verifierConfig.numberOfConfirmations;
+    this.client = new options.mccClient(mccCreate as UtxoMccCreate);
+    const IqmOptions: IndexedQueryManagerOptions = {
+      chainType: options.source,
+      entityManager: this.manager,
+      numberOfConfirmations: () => {
+        return numberOfConfirmations;
+      },
+    };
+    this.indexedQueryManager = new UtxoIndexedQueryManager(IqmOptions);
+  }
+}
+
 export function fromNoMic<T extends Omit<ARBase, 'messageIntegrityCode'>>(
   request: T,
 ) {
@@ -164,4 +212,19 @@ export function fromNoMic<T extends Omit<ARBase, 'messageIntegrityCode'>>(
     ...request, // if messageIntegrityCode is provided, it will be shadowed
   };
   return fixedRequest;
+}
+
+type SourceNames = 'doge' | 'btc' | 'xrp';
+
+function getSourceName(source: ChainType): SourceNames {
+  switch (source) {
+    case ChainType.DOGE:
+      return 'doge';
+    case ChainType.BTC:
+      return 'btc';
+    case ChainType.XRP:
+      return 'xrp';
+    default:
+      throw new Error(`Unsupported source chain, ${source}`);
+  }
 }

@@ -1,11 +1,11 @@
 import {
-  IDBDogeTransaction,
-  IDEDogeIndexerBlock,
+  IDBUtxoTransaction,
+  IDEUtxoIndexerBlock,
   ITipSyncState,
-  DBDogeTransaction,
-  DBDogeIndexerBlock,
+  DBUtxoTransaction,
+  DBUtxoIndexerBlock,
   TipSyncState,
-} from 'src/entity/doge/doge-entity-definitions';
+} from 'src/entity/utxo/utxo-entity-definitions';
 import { IIndexedQueryManager } from './IIndexedQueryManager';
 import {
   BlockHeightSample,
@@ -29,16 +29,16 @@ import { unPrefix0x, ZERO_BYTES_32 } from '@flarenetwork/mcc';
 /**
  * A class used to carry out queries on the indexer database such that the upper and lower bounds are synchronized.
  */
-export class DogeIndexedQueryManager extends IIndexedQueryManager {
+export class UtxoIndexedQueryManager extends IIndexedQueryManager {
   // Block table entity
-  private transactionTable: IDBDogeTransaction;
-  private blockTable: IDEDogeIndexerBlock;
+  private transactionTable: IDBUtxoTransaction;
+  private blockTable: IDEUtxoIndexerBlock;
   private tipState: ITipSyncState;
 
   constructor(options: IndexedQueryManagerOptions) {
     super(options);
-    this.transactionTable = DBDogeTransaction;
-    this.blockTable = DBDogeIndexerBlock;
+    this.transactionTable = DBUtxoTransaction;
+    this.blockTable = DBUtxoIndexerBlock;
     this.tipState = TipSyncState;
   }
 
