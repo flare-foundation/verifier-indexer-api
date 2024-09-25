@@ -6,17 +6,17 @@ import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import { DOGEPaymentVerifierController } from 'src/controllers/payment-verifier.controller';
 import { DOGEBalanceDecreasingTransactionVerifierService } from 'src/services/balance-decreasing-transaction-verifier.service';
-import { DogeExternalIndexerEngineService } from 'src/services/doge/doge-indexer.service';
 import configuration, { IConfig } from '../config/configuration';
 import { DOGEAddressValidityVerifierController } from '../controllers/address-validity-verifier.controller';
-import { DOGEBalanceDecreasingTransactionVerifierController } from '../controllers/doge/doge-balance-decreasing-transaction-verifier.controller';
-import { DOGEConfirmedBlockHeightExistsVerifierController } from '../controllers/doge/doge-confirmed-block-height-exists-verifier.controller';
-import { DOGEIndexerController } from '../controllers/doge/doge-indexer.controller';
-import { DOGEReferencedPaymentNonexistenceVerifierController } from '../controllers/doge/doge-referenced-payment-nonexistence-verifier.controller';
+import { DOGEIndexerController } from '../controllers/indexer-controllers/utxo-indexer.controller';
 import { DOGEAddressValidityVerifierService } from '../services/address-validity-verifier.service';
-import { DOGEConfirmedBlockHeightExistsVerifierService } from '../services/doge/doge-confirmed-block-height-exists-verifier.service';
-import { DOGEReferencedPaymentNonexistenceVerifierService } from '../services/doge/doge-referenced-payment-nonexistence-verifier.service';
 import { DOGEPaymentVerifierService } from 'src/services/payment-verifier.service';
+import { DOGEConfirmedBlockHeightExistsVerifierService } from 'src/services/confirmed-block-height-exists-verifier.service';
+import { DOGEReferencedPaymentNonexistenceVerifierService } from 'src/services/referenced-payment-nonexistence-verifier.service';
+import { UtxoExternalIndexerEngineService } from 'src/services/indexer-services/utxo-indexer.service';
+import { DOGEBalanceDecreasingTransactionVerifierController } from 'src/controllers/balance-decreasing-transaction-verifier.controller';
+import { DOGEConfirmedBlockHeightExistsVerifierController } from 'src/controllers/confirmed-block-height-exists-verifier.controller';
+import { DOGEReferencedPaymentNonexistenceVerifierController } from 'src/controllers/referenced-payment-nonexistence-verifier.controller';
 
 @Module({
   imports: [
@@ -41,28 +41,9 @@ import { DOGEPaymentVerifierService } from 'src/services/payment-verifier.servic
     DOGEReferencedPaymentNonexistenceVerifierController,
   ],
   providers: [
-    // {
-    //   provide: 'VERIFIER_CONFIG',
-    //   useFactory: async () => {
-    //     const config = new ExternalDBVerifierConfigurationService();
-    //     await config.initialize();
-    //     return config;
-    //   },
-    // },
-    // {
-    //   provide: 'VERIFIER_PROCESSOR',
-    //   useFactory: async (
-    //     config: ExternalDBVerifierConfigurationService,
-    //     manager: EntityManager,
-    //   ) => new DOGEProcessorService(config, manager),
-    //   inject: [
-    //     { token: 'VERIFIER_CONFIG', optional: false },
-    //     { token: getEntityManagerToken('indexerDatabase'), optional: false },
-    //   ],
-    // },
-    DogeExternalIndexerEngineService,
     ApiKeyStrategy,
     AuthService,
+    UtxoExternalIndexerEngineService,
     DOGEAddressValidityVerifierService,
     DOGEBalanceDecreasingTransactionVerifierService,
     DOGEConfirmedBlockHeightExistsVerifierService,

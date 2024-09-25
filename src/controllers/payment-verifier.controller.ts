@@ -23,7 +23,7 @@ export class DOGEPaymentVerifierController extends BaseVerifierController<
 }
 
 @ApiTags('Payment')
-@Controller('AddressValidity')
+@Controller('Payment')
 export class BTCPaymentVerifierController extends BaseVerifierController<
   Payment_Request,
   Payment_Response
@@ -34,7 +34,7 @@ export class BTCPaymentVerifierController extends BaseVerifierController<
 }
 
 @ApiTags('Payment')
-@Controller('AddressValidity')
+@Controller('Payment')
 export class XRPPaymentVerifierController extends BaseVerifierController<
   Payment_Request,
   Payment_Response

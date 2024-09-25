@@ -26,8 +26,8 @@ import {
 } from '../common/base-indexer-engine-service';
 
 @Injectable()
-export class DogeExternalIndexerEngineService extends IIndexerEngineService {
-  // External doge specific tables
+export class UtxoExternalIndexerEngineService extends IIndexerEngineService {
+  // External utxo indexers specific tables
   private transactionTable: IDBUtxoTransaction;
   private blockTable: IDEUtxoIndexerBlock;
   private tipState: ITipSyncState;

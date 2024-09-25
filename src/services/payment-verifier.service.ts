@@ -26,7 +26,7 @@ interface BasePaymentVerifierServiceOptions {
   mccClient: typeof MCC.DOGE | typeof MCC.BTC | typeof MCC.XRP;
 }
 
-export abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer<
+abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer<
   Payment_Request,
   Payment_Response
 > {

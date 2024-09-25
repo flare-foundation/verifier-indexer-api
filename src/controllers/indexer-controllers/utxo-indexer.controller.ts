@@ -9,7 +9,6 @@ import {
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
 import { IIndexerState } from 'src/services/common/base-indexer-engine-service';
-import { DogeExternalIndexerEngineService } from 'src/services/doge/doge-indexer.service';
 import {
   ApiResponseWrapper,
   handleApiResponse,
@@ -18,13 +17,14 @@ import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction';
 import { BlockRange } from '../../dtos/indexer/BlockRange.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
+import { UtxoExternalIndexerEngineService } from 'src/services/indexer-services/utxo-indexer.service';
 
 @ApiTags('Indexer')
 @Controller('api/indexer')
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
 export class DOGEIndexerController {
-  constructor(private indexerEngine: DogeExternalIndexerEngineService) {}
+  constructor(private indexerEngine: UtxoExternalIndexerEngineService) {}
 
   /**
    * Gets the state entries from the indexer database.
