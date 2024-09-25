@@ -23,7 +23,7 @@ import { UtxoExternalIndexerEngineService } from 'src/services/indexer-services/
 @Controller('api/indexer')
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
-export class DOGEIndexerController {
+export class UtxoIndexerController {
   constructor(private indexerEngine: UtxoExternalIndexerEngineService) {}
 
   /**

@@ -4,17 +4,18 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 // import { VerifierBtcServerModule } from './verifier-btc-server.module';
 import { extractVerifierType } from './config/configuration';
-import { VerifierDogeServerModule } from './verifier-modules/verifier-doge-server.module';
+import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
 import { ChainType } from '@flarenetwork/mcc';
+import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
 // import { VerifierXrpServerModule } from './verifier-xrp-server.module';
 
 function moduleForDataSource(): any {
   const verifier_type = extractVerifierType();
   switch (verifier_type) {
     case ChainType.DOGE:
-      return VerifierDogeServerModule;
+      return DogeVerifierServerModule;
     case ChainType.BTC:
-    // return VerifierBtcServerModule;
+      return BtcVerifierServerModule;
     case ChainType.XRP:
     // return VerifierXrpServerModule;
     default:
