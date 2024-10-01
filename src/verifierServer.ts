@@ -7,6 +7,7 @@ import { extractVerifierType } from './config/configuration';
 import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
 import { ChainType } from '@flarenetwork/mcc';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
+import { XRPVerifierServerModule } from './verifier-modules/xrp-verifier-server.module';
 // import { VerifierXrpServerModule } from './verifier-xrp-server.module';
 
 function moduleForDataSource(): any {
@@ -17,7 +18,7 @@ function moduleForDataSource(): any {
     case ChainType.BTC:
       return BtcVerifierServerModule;
     case ChainType.XRP:
-    // return VerifierXrpServerModule;
+      return XRPVerifierServerModule;
     default:
       throw new Error(`Wrong verifier type: '${process.env.VERIFIER_TYPE}'`);
   }
