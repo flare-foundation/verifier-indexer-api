@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiKeyStrategy } from 'src/auth/apikey.strategy';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
-import { UtxoExternalIndexerEngineService } from 'src/services/indexer-services/utxo-indexer.service';
 import configuration, { IConfig } from '../config/configuration';
 import { BTCAddressValidityVerifierController } from 'src/controllers/address-validity-verifier.controller';
 import { BTCBalanceDecreasingTransactionVerifierController } from 'src/controllers/balance-decreasing-transaction-verifier.controller';
@@ -16,7 +15,8 @@ import { BTCBalanceDecreasingTransactionVerifierService } from 'src/services/bal
 import { BTCConfirmedBlockHeightExistsVerifierService } from 'src/services/confirmed-block-height-exists-verifier.service';
 import { BTCPaymentVerifierService } from 'src/services/payment-verifier.service';
 import { BTCReferencedPaymentNonexistenceVerifierService } from 'src/services/referenced-payment-nonexistence-verifier.service';
-import { UtxoIndexerController } from 'src/controllers/indexer-controllers/utxo-indexer.controller';
+import { BtcExternalIndexerEngineService } from 'src/services/indexer-services/utxo-indexer.service';
+import { BTCIndexerController } from 'src/controllers/indexer.controller';
 
 @Module({
   imports: [
@@ -33,7 +33,7 @@ import { UtxoIndexerController } from 'src/controllers/indexer-controllers/utxo-
     AuthModule,
   ],
   controllers: [
-    UtxoIndexerController,
+    BTCIndexerController,
     BTCAddressValidityVerifierController,
     BTCBalanceDecreasingTransactionVerifierController,
     BTCConfirmedBlockHeightExistsVerifierController,
@@ -43,7 +43,7 @@ import { UtxoIndexerController } from 'src/controllers/indexer-controllers/utxo-
   providers: [
     ApiKeyStrategy,
     AuthService,
-    UtxoExternalIndexerEngineService,
+    BtcExternalIndexerEngineService,
     BTCAddressValidityVerifierService,
     BTCBalanceDecreasingTransactionVerifierService,
     BTCConfirmedBlockHeightExistsVerifierService,

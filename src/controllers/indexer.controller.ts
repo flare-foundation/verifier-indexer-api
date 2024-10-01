@@ -8,23 +8,28 @@ import {
 } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
-import { IIndexerState } from 'src/services/common/base-indexer-engine-service';
+import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock';
+import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
+import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
+import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
+import {
+  IIndexerEngineService,
+  IIndexerState,
+} from 'src/services/common/base-indexer-engine-service';
+import {
+  BtcExternalIndexerEngineService,
+  DogeExternalIndexerEngineService,
+} from 'src/services/indexer-services/utxo-indexer.service';
+import { XrpExternalIndexerEngineService } from 'src/services/indexer-services/xrp-indexer.service';
 import {
   ApiResponseWrapper,
   handleApiResponse,
 } from 'src/utils/api-models/ApiResponse';
-import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock';
-import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction';
-import { BlockRange } from '../../dtos/indexer/BlockRange.dto';
-import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
-import { UtxoExternalIndexerEngineService } from 'src/services/indexer-services/utxo-indexer.service';
 
-@ApiTags('Indexer')
-@Controller('api/indexer')
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
-export class UtxoIndexerController {
-  constructor(private indexerEngine: UtxoExternalIndexerEngineService) {}
+abstract class BaseIndexerController {
+  protected abstract indexerEngine: IIndexerEngineService;
 
   /**
    * Gets the state entries from the indexer database.
@@ -120,12 +125,36 @@ export class UtxoIndexerController {
    * @returns
    */
 
-  @Get('transactions')
+  @Get('transaction')
   public async transactionsWithinBlockRange(
     @Query() query: QueryTransaction,
   ): Promise<ApiResponseWrapper<ApiDBTransaction[]>> {
     return handleApiResponse(
       this.indexerEngine.getTransactionsWithinBlockRange(query),
     );
+  }
+}
+
+@ApiTags('Indexer')
+@Controller('api/indexer')
+export class BTCIndexerController extends BaseIndexerController {
+  constructor(protected indexerEngine: BtcExternalIndexerEngineService) {
+    super();
+  }
+}
+
+@ApiTags('Indexer')
+@Controller('api/indexer')
+export class DOGEIndexerController extends BaseIndexerController {
+  constructor(protected indexerEngine: DogeExternalIndexerEngineService) {
+    super();
+  }
+}
+
+@ApiTags('Indexer')
+@Controller('api/indexer')
+export class XrpIndexerController extends BaseIndexerController {
+  constructor(protected indexerEngine: XrpExternalIndexerEngineService) {
+    super();
   }
 }

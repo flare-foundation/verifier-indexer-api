@@ -16,15 +16,18 @@ import {
 } from 'src/dtos/attestation-types/BalanceDecreasingTransaction.dto';
 import { AttestationResponse } from 'src/dtos/generic/generic.dto';
 import { serializeBigInts } from 'src/external-libs/utils';
+import {
+  BtcIndexerQueryManager,
+  DogeIndexerQueryManager,
+} from 'src/indexed-query-manager/UtxoIndexQueryManager';
 import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
 import { verifyBalanceDecreasingTransaction } from 'src/verification/generic-chain-verifications';
 import { EntityManager } from 'typeorm';
-import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
-
-interface BalanceDecreasingServiceOptions {
-  source: ChainType;
-  mccClient: typeof MCC.DOGE | typeof MCC.BTC | typeof MCC.XRP;
-}
+import {
+  BaseVerifierServiceWithIndexer,
+  ITypeSpecificVerificationServiceConfig,
+} from './common/verifier-base.service';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 
 abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerifierServiceWithIndexer<
   BalanceDecreasingTransaction_Request,
@@ -33,7 +36,7 @@ abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerif
   constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
-    options: BalanceDecreasingServiceOptions,
+    options: ITypeSpecificVerificationServiceConfig,
   ) {
     super(configService, manager, {
       ...options,
@@ -67,6 +70,7 @@ export class DOGEBalanceDecreasingTransactionVerifierService extends BaseBalance
     super(configService, manager, {
       source: ChainType.DOGE,
       mccClient: MCC.DOGE,
+      indexerQueryManager: DogeIndexerQueryManager,
     });
   }
 
@@ -86,6 +90,7 @@ export class BTCBalanceDecreasingTransactionVerifierService extends BaseBalanceD
     super(configService, manager, {
       source: ChainType.BTC,
       mccClient: MCC.BTC,
+      indexerQueryManager: BtcIndexerQueryManager,
     });
   }
 
@@ -105,6 +110,7 @@ export class XRPBalanceDecreasingTransactionVerifierService extends BaseBalanceD
     super(configService, manager, {
       source: ChainType.XRP,
       mccClient: MCC.XRP,
+      indexerQueryManager: XrpIndexerQueryManager,
     });
   }
 

@@ -10,37 +10,37 @@ import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
 import { ConfigService } from '@nestjs/config';
 import { IConfig, VerifierServerConfig } from 'src/config/configuration';
 import {
+  DBBtcTransaction,
+  DBDogeTransaction,
   DBUtxoIndexerBlock,
-  DBUtxoTransaction,
-  IDBUtxoTransaction,
-  IDEUtxoIndexerBlock,
+  IDBUtxoIndexerBlock,
   IPruneSyncState,
   ITipSyncState,
   PruneSyncState,
   TipSyncState,
-} from 'src/entity/utxo/utxo-entity-definitions';
+} from 'src/entity/utxo-entity-definitions';
 import {
   IIndexerEngineService,
   IIndexerState,
   getTransactionsWithinBlockRangeProps,
 } from '../common/base-indexer-engine-service';
 
-@Injectable()
-export class UtxoExternalIndexerEngineService extends IIndexerEngineService {
+abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
-  private transactionTable: IDBUtxoTransaction;
-  private blockTable: IDEUtxoIndexerBlock;
+  protected abstract transactionTable:
+    | typeof DBBtcTransaction
+    | typeof DBDogeTransaction;
+  private blockTable: IDBUtxoIndexerBlock;
   private tipState: ITipSyncState;
   private pruneState: IPruneSyncState;
 
   private indexerServerPageLimit: number;
 
   constructor(
-    private configService: ConfigService<IConfig>,
-    private manager: EntityManager,
+    protected configService: ConfigService<IConfig>,
+    protected manager: EntityManager,
   ) {
     super();
-    this.transactionTable = DBUtxoTransaction;
     this.blockTable = DBUtxoIndexerBlock;
     this.tipState = TipSyncState;
     this.pruneState = PruneSyncState;
@@ -49,7 +49,9 @@ export class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;
   }
 
-  private joinTransactionQuery(query: SelectQueryBuilder<DBUtxoTransaction>) {
+  private joinTransactionQuery(
+    query: SelectQueryBuilder<DBDogeTransaction | DBBtcTransaction>,
+  ) {
     return query
       .leftJoinAndSelect(
         'transaction.transactionoutput_set',
@@ -247,5 +249,29 @@ export class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     return results.map((res) => {
       return res.toApiDBTransaction(returnResponse);
     });
+  }
+}
+
+@Injectable()
+export class BtcExternalIndexerEngineService extends UtxoExternalIndexerEngineService {
+  protected transactionTable = DBBtcTransaction;
+  constructor(
+    protected configService: ConfigService<IConfig>,
+    protected manager: EntityManager,
+  ) {
+    super(configService, manager);
+    this.transactionTable = DBBtcTransaction;
+  }
+}
+
+@Injectable()
+export class DogeExternalIndexerEngineService extends UtxoExternalIndexerEngineService {
+  protected transactionTable = DBDogeTransaction;
+  constructor(
+    protected configService: ConfigService<IConfig>,
+    protected manager: EntityManager,
+  ) {
+    super(configService, manager);
+    this.transactionTable = DBDogeTransaction;
   }
 }

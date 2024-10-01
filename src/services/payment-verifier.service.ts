@@ -19,12 +19,15 @@ import { serializeBigInts } from 'src/external-libs/utils';
 import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
 import { verifyPayment } from 'src/verification/generic-chain-verifications';
 import { EntityManager } from 'typeorm';
-import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
-
-interface BasePaymentVerifierServiceOptions {
-  source: ChainType;
-  mccClient: typeof MCC.DOGE | typeof MCC.BTC | typeof MCC.XRP;
-}
+import {
+  BaseVerifierServiceWithIndexer,
+  ITypeSpecificVerificationServiceConfig,
+} from './common/verifier-base.service';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
+import {
+  DogeIndexerQueryManager,
+  BtcIndexerQueryManager,
+} from 'src/indexed-query-manager/UtxoIndexQueryManager';
 
 abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer<
   Payment_Request,
@@ -33,7 +36,7 @@ abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer
   constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
-    options: BasePaymentVerifierServiceOptions,
+    options: ITypeSpecificVerificationServiceConfig,
   ) {
     super(configService, manager, {
       ...options,
@@ -67,6 +70,7 @@ export class DOGEPaymentVerifierService extends BasePaymentVerifierService {
     super(configService, manager, {
       source: ChainType.DOGE,
       mccClient: MCC.DOGE,
+      indexerQueryManager: DogeIndexerQueryManager,
     });
   }
 
@@ -86,6 +90,7 @@ export class BTCPaymentVerifierService extends BasePaymentVerifierService {
     super(configService, manager, {
       source: ChainType.BTC,
       mccClient: MCC.BTC,
+      indexerQueryManager: BtcIndexerQueryManager,
     });
   }
 
@@ -105,6 +110,7 @@ export class XRPPaymentVerifierService extends BasePaymentVerifierService {
     super(configService, manager, {
       source: ChainType.XRP,
       mccClient: MCC.XRP,
+      indexerQueryManager: XrpIndexerQueryManager,
     });
   }
 

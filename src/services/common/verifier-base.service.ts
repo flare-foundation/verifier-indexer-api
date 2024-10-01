@@ -13,7 +13,6 @@ import { IConfig, VerifierServerConfig } from 'src/config/configuration';
 import { ARBase, ARESBase } from 'src/external-libs/interfaces';
 import { IIndexedQueryManager } from 'src/indexed-query-manager/IIndexedQueryManager';
 import { IndexedQueryManagerOptions } from 'src/indexed-query-manager/indexed-query-manager-types';
-import { UtxoIndexedQueryManager } from 'src/indexed-query-manager/UtxoIndexQueryManager';
 import { EntityManager } from 'typeorm';
 import {
   AddressValidity_Request,
@@ -28,16 +27,28 @@ import {
 } from '../../dtos/generic/generic.dto';
 import { AttestationDefinitionStore } from '../../external-libs/AttestationDefinitionStore';
 import { MIC_SALT, encodeAttestationName } from '../../external-libs/utils';
+import {
+  BtcIndexerQueryManager,
+  DogeIndexerQueryManager,
+} from 'src/indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 
-export interface IVerificationServiceConfig {
+interface IVerificationServiceConfig {
   source: ChainType;
   attestationName: string; // TODO: add union type for attestation names
 }
 
-export interface IVerificationServiceWithIndexerConfig
+interface IVerificationServiceWithIndexerConfig
   extends IVerificationServiceConfig {
   mccClient: typeof MCC.DOGE | typeof MCC.BTC | typeof MCC.XRP;
+  indexerQueryManager:
+    | typeof DogeIndexerQueryManager
+    | typeof BtcIndexerQueryManager
+    | typeof XrpIndexerQueryManager;
 }
+
+export interface ITypeSpecificVerificationServiceConfig
+  extends Omit<IVerificationServiceWithIndexerConfig, 'attestationName'> {}
 
 export abstract class BaseVerifierService<
   Req extends ARBase,
@@ -200,7 +211,7 @@ export abstract class BaseVerifierServiceWithIndexer<
         return numberOfConfirmations;
       },
     };
-    this.indexedQueryManager = new UtxoIndexedQueryManager(IqmOptions);
+    this.indexedQueryManager = new options.indexerQueryManager(IqmOptions);
   }
 }
 

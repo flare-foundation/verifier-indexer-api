@@ -19,12 +19,15 @@ import { serializeBigInts } from 'src/external-libs/utils';
 import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
 import { verifyReferencedPaymentNonExistence } from 'src/verification/generic-chain-verifications';
 import { EntityManager } from 'typeorm';
-import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
-
-interface ReferencedPaymentNonexistenceServiceOptions {
-  source: ChainType;
-  mccClient: typeof MCC.DOGE | typeof MCC.BTC | typeof MCC.XRP;
-}
+import {
+  BaseVerifierServiceWithIndexer,
+  ITypeSpecificVerificationServiceConfig,
+} from './common/verifier-base.service';
+import {
+  DogeIndexerQueryManager,
+  BtcIndexerQueryManager,
+} from 'src/indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 
 abstract class BaseReferencedPaymentNonexistenceVerifierService extends BaseVerifierServiceWithIndexer<
   ReferencedPaymentNonexistence_Request,
@@ -33,7 +36,7 @@ abstract class BaseReferencedPaymentNonexistenceVerifierService extends BaseVeri
   constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
-    options: ReferencedPaymentNonexistenceServiceOptions,
+    options: ITypeSpecificVerificationServiceConfig,
   ) {
     super(configService, manager, {
       ...options,
@@ -66,6 +69,7 @@ export class DOGEReferencedPaymentNonexistenceVerifierService extends BaseRefere
     super(configService, manager, {
       source: ChainType.DOGE,
       mccClient: MCC.DOGE,
+      indexerQueryManager: DogeIndexerQueryManager,
     });
   }
 
@@ -85,6 +89,7 @@ export class BTCReferencedPaymentNonexistenceVerifierService extends BaseReferen
     super(configService, manager, {
       source: ChainType.BTC,
       mccClient: MCC.BTC,
+      indexerQueryManager: BtcIndexerQueryManager,
     });
   }
 
@@ -104,6 +109,7 @@ export class XRPReferencedPaymentNonexistenceVerifierService extends BaseReferen
     super(configService, manager, {
       source: ChainType.XRP,
       mccClient: MCC.XRP,
+      indexerQueryManager: XrpIndexerQueryManager,
     });
   }
 

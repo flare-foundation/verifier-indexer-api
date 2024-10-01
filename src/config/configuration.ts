@@ -8,7 +8,12 @@ import {
   DBTransactionOutput,
   TipSyncState,
   PruneSyncState,
-} from 'src/entity/utxo/utxo-entity-definitions';
+} from 'src/entity/utxo-entity-definitions';
+import {
+  DBXrpIndexerBlock,
+  DBXrpState,
+  DBXrpTransaction,
+} from 'src/entity/xrp-entity-definitions';
 
 // export type VerifierTypeOptions = 'doge' | 'btc' | 'xrp';
 
@@ -146,7 +151,7 @@ function getDatabaseEntities(verifierType: ChainType) {
         PruneSyncState,
       ];
     case ChainType.XRP:
-      return [];
+      return [DBXrpIndexerBlock, DBXrpTransaction, DBXrpState];
     default:
       throw new Error(`Unsupported verifier type: ${verifierType}`);
   }

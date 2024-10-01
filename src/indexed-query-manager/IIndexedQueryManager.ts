@@ -9,12 +9,10 @@ import {
   ConfirmedTransactionQueryRequest,
   ConfirmedTransactionQueryResponse,
   IndexedQueryManagerOptions,
-  RandomTransactionOptions,
   ReferencedTransactionsQueryRequest,
   ReferencedTransactionsQueryResponse,
   TransactionQueryParams,
   TransactionQueryResult,
-  TransactionResult,
 } from './indexed-query-manager-types';
 
 ////////////////////////////////////////////////////////
@@ -223,23 +221,23 @@ export abstract class IIndexedQueryManager {
     blockNumber: number,
   ): Promise<BlockResult | undefined>;
 
-  /**
-   * Fetches random transactions selection from the indexer database in a batch, generated according to options.
-   * @param batchSize
-   * @param options
-   */
-  public abstract fetchRandomTransactions(
-    batchSize,
-    options: RandomTransactionOptions,
-  ): Promise<TransactionResult[]>;
+  // /**
+  //  * Fetches random transactions selection from the indexer database in a batch, generated according to options.
+  //  * @param batchSize
+  //  * @param options
+  //  */
+  // public abstract fetchRandomTransactions(
+  //   batchSize,
+  //   options: RandomTransactionOptions,
+  // ): Promise<TransactionResult[]>;
 
-  /**
-   * Random block selection from the indexer database in a batch.
-   * @param batchSize
-   * @param startTime selection is done for blocks after this timestamp
-   */
-  public abstract fetchRandomConfirmedBlocks(
-    batchSize,
-    startTime?: number,
-  ): Promise<BlockResult[]>;
+  // /**
+  //  * Random block selection from the indexer database in a batch.
+  //  * @param batchSize
+  //  * @param startTime selection is done for blocks after this timestamp
+  //  */
+  // public abstract fetchRandomConfirmedBlocks(
+  //   batchSize,
+  //   startTime?: number,
+  // ): Promise<BlockResult[]>;
 }

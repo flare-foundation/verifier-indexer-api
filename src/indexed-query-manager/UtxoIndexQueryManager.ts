@@ -1,11 +1,12 @@
 import {
-  IDBUtxoTransaction,
-  IDEUtxoIndexerBlock,
-  ITipSyncState,
-  DBUtxoTransaction,
+  DBBtcTransaction,
+  DBDogeTransaction,
   DBUtxoIndexerBlock,
+  IDBUtxoIndexerBlock,
+  IDBUtxoTransaction,
+  ITipSyncState,
   TipSyncState,
-} from 'src/entity/utxo/utxo-entity-definitions';
+} from 'src/entity/utxo-entity-definitions';
 import { IIndexedQueryManager } from './IIndexedQueryManager';
 import {
   BlockHeightSample,
@@ -13,12 +14,9 @@ import {
   BlockQueryResult,
   BlockResult,
   IndexedQueryManagerOptions,
-  RandomTransactionOptions,
   TransactionQueryParams,
   TransactionQueryResult,
-  TransactionResult,
 } from './indexed-query-manager-types';
-import { unPrefix0x, ZERO_BYTES_32 } from '@flarenetwork/mcc';
 
 ////////////////////////////////////////////////////////
 // IndexedQueryManger - a class used to carry out
@@ -29,15 +27,14 @@ import { unPrefix0x, ZERO_BYTES_32 } from '@flarenetwork/mcc';
 /**
  * A class used to carry out queries on the indexer database such that the upper and lower bounds are synchronized.
  */
-export class UtxoIndexedQueryManager extends IIndexedQueryManager {
+abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
   // Block table entity
-  private transactionTable: IDBUtxoTransaction;
-  private blockTable: IDEUtxoIndexerBlock;
+  protected abstract transactionTable: IDBUtxoTransaction;
+  private blockTable: IDBUtxoIndexerBlock;
   private tipState: ITipSyncState;
 
   constructor(options: IndexedQueryManagerOptions) {
     super(options);
-    this.transactionTable = DBUtxoTransaction;
     this.blockTable = DBUtxoIndexerBlock;
     this.tipState = TipSyncState;
   }
@@ -57,22 +54,6 @@ export class UtxoIndexedQueryManager extends IIndexedQueryManager {
     }
     return res;
   }
-
-  // /**
-  //  * Identifier name for the last confirmed block (`N`) in the database State table
-  //  * @returns identifier name for value `N`
-  //  */
-  // private getChainN() {
-  //   return `${MCC.getChainTypeName(this.settings.chainType)}_N`;
-  // }
-
-  // /**
-  //  * Identifier name for the block height (`T`) in the database State table
-  //  * @returns identifier name for value `T`
-  //  */
-  // private getChainT() {
-  //   return `${MCC.getChainTypeName(this.settings.chainType)}_T`;
-  // }
 
   public async getLastConfirmedBlockNumber(): Promise<number> {
     try {
@@ -188,9 +169,9 @@ export class UtxoIndexedQueryManager extends IIndexedQueryManager {
       });
     }
     if (params.hash) {
-      query.andWhere('block.blockHash = :hash', { hash: params.hash });
+      query = query.andWhere('block.blockHash = :hash', { hash: params.hash });
     } else if (params.blockNumber) {
-      query.andWhere('block.blockNumber = :blockNumber', {
+      query = query.andWhere('block.blockNumber = :blockNumber', {
         blockNumber: params.blockNumber,
       });
     }
@@ -255,89 +236,105 @@ export class UtxoIndexedQueryManager extends IIndexedQueryManager {
     return res ? res.toBlockResult() : undefined;
   }
 
-  public async fetchRandomTransactions(
-    batchSize = 100,
-    options: RandomTransactionOptions,
-  ): Promise<TransactionResult[]> {
-    const txCount = await this.entityManager
-      .createQueryBuilder(this.transactionTable, 'transaction')
-      .getCount();
+  // public async fetchRandomTransactions(
+  //   batchSize = 100,
+  //   options: RandomTransactionOptions,
+  // ): Promise<TransactionResult[]> {
+  //   const txCount = await this.entityManager
+  //     .createQueryBuilder(this.transactionTable, 'transaction')
+  //     .getCount();
 
-    if (txCount === 0) {
-      return [];
-    }
+  //   if (txCount === 0) {
+  //     return [];
+  //   }
 
-    const randN = Math.floor(Math.random() * txCount);
+  //   const randN = Math.floor(Math.random() * txCount);
 
-    let query = this.entityManager.createQueryBuilder(
-      this.transactionTable,
-      'transaction',
-    );
+  //   let query = this.entityManager.createQueryBuilder(
+  //     this.transactionTable,
+  //     'transaction',
+  //   );
 
-    const ZERO_PAYMENT_REFERENCE = unPrefix0x(ZERO_BYTES_32);
+  //   const ZERO_PAYMENT_REFERENCE = unPrefix0x(ZERO_BYTES_32);
 
-    if (options.mustHavePaymentReference) {
-      query = query.andWhere(
-        `transaction.paymentReference != '${ZERO_PAYMENT_REFERENCE}'`,
-      );
-    }
-    if (options.mustNotHavePaymentReference) {
-      query = query.andWhere(
-        `transaction.paymentReference = '${ZERO_PAYMENT_REFERENCE}'`,
-      );
-    }
-    if (options.mustBeNativePayment) {
-      query = query.andWhere('transaction.isNativePayment = true');
-    }
-    if (options.mustNotBeNativePayment) {
-      query = query.andWhere('transaction.isNativePayment = false');
-    }
-    if (options.startTime) {
-      query = query.andWhere('transaction.timestamp >= :startTime', {
-        startTime: options.startTime,
-      });
-    }
+  //   if (options.mustHavePaymentReference) {
+  //     query = query.andWhere(
+  //       `transaction.paymentReference != '${ZERO_PAYMENT_REFERENCE}'`,
+  //     );
+  //   }
+  //   if (options.mustNotHavePaymentReference) {
+  //     query = query.andWhere(
+  //       `transaction.paymentReference = '${ZERO_PAYMENT_REFERENCE}'`,
+  //     );
+  //   }
+  //   if (options.mustBeNativePayment) {
+  //     query = query.andWhere('transaction.isNativePayment = true');
+  //   }
+  //   if (options.mustNotBeNativePayment) {
+  //     query = query.andWhere('transaction.isNativePayment = false');
+  //   }
+  //   if (options.startTime) {
+  //     query = query.andWhere('transaction.timestamp >= :startTime', {
+  //       startTime: options.startTime,
+  //     });
+  //   }
 
-    query = query.limit(batchSize).offset(Math.min(randN, txCount - batchSize));
+  //   query = query.limit(batchSize).offset(Math.min(randN, txCount - batchSize));
 
-    query = query.leftJoinAndSelect(
-      'transaction.transactionoutput_set',
-      'transactionOutput',
-    );
-    query = query.leftJoinAndSelect(
-      'transaction.transactioninputcoinbase_set',
-      'transactionInputCoinbase',
-    );
-    query = query.leftJoinAndSelect(
-      'transaction.transactioninput_set',
-      'transactionInput',
-    );
+  //   query = query.leftJoinAndSelect(
+  //     'transaction.transactionoutput_set',
+  //     'transactionOutput',
+  //   );
+  //   query = query.leftJoinAndSelect(
+  //     'transaction.transactioninputcoinbase_set',
+  //     'transactionInputCoinbase',
+  //   );
+  //   query = query.leftJoinAndSelect(
+  //     'transaction.transactioninput_set',
+  //     'transactionInput',
+  //   );
 
-    const transactions = await query.getMany();
-    return transactions.map((trans) => trans.toTransactionResult());
+  //   const transactions = await query.getMany();
+  //   return transactions.map((trans) => trans.toTransactionResult());
+  // }
+
+  // public async fetchRandomConfirmedBlocks(
+  //   batchSize = 100,
+  //   startTime?: number,
+  // ): Promise<BlockResult[]> {
+  //   let query = this.entityManager
+  //     .createQueryBuilder(this.blockTable, 'block')
+  //     .where('block.confirmed = :confirmed', { confirmed: true });
+  //   if (startTime) {
+  //     query = query.andWhere('block.timestamp >= :startTime', { startTime });
+  //   }
+  //   if (
+  //     process.env.NODE_ENV === 'development' &&
+  //     this.entityManager.connection.options.type == 'better-sqlite3'
+  //   ) {
+  //     query = query.orderBy('RANDOM()').limit(batchSize);
+  //   } else {
+  //     query = query.orderBy('RANDOM()').limit(batchSize);
+  //   }
+
+  //   const blocks = await query.getMany();
+
+  //   return blocks.map((block) => block.toBlockResult());
+  // }
+}
+
+export class BtcIndexerQueryManager extends UtxoIndexedQueryManager {
+  protected transactionTable: IDBUtxoTransaction;
+  constructor(options: IndexedQueryManagerOptions) {
+    super(options);
+    this.transactionTable = DBBtcTransaction;
   }
+}
 
-  public async fetchRandomConfirmedBlocks(
-    batchSize = 100,
-    startTime?: number,
-  ): Promise<BlockResult[]> {
-    let query = this.entityManager
-      .createQueryBuilder(this.blockTable, 'block')
-      .where('block.confirmed = :confirmed', { confirmed: true });
-    if (startTime) {
-      query = query.andWhere('block.timestamp >= :startTime', { startTime });
-    }
-    if (
-      process.env.NODE_ENV === 'development' &&
-      this.entityManager.connection.options.type == 'better-sqlite3'
-    ) {
-      query = query.orderBy('RANDOM()').limit(batchSize);
-    } else {
-      query = query.orderBy('RANDOM()').limit(batchSize);
-    }
-
-    const blocks = await query.getMany();
-
-    return blocks.map((block) => block.toBlockResult());
+export class DogeIndexerQueryManager extends UtxoIndexedQueryManager {
+  protected transactionTable: IDBUtxoTransaction;
+  constructor(options: IndexedQueryManagerOptions) {
+    super(options);
+    this.transactionTable = DBDogeTransaction;
   }
 }

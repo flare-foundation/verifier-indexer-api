@@ -12,12 +12,15 @@ import { serializeBigInts } from 'src/external-libs/utils';
 import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
 import { verifyConfirmedBlockHeightExists } from 'src/verification/generic-chain-verifications';
 import { EntityManager } from 'typeorm';
-import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
-
-interface ConfirmedBlockHeightExistsServiceOptions {
-  source: ChainType;
-  mccClient: typeof MCC.DOGE | typeof MCC.BTC | typeof MCC.XRP;
-}
+import {
+  BaseVerifierServiceWithIndexer,
+  ITypeSpecificVerificationServiceConfig,
+} from './common/verifier-base.service';
+import {
+  DogeIndexerQueryManager,
+  BtcIndexerQueryManager,
+} from 'src/indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 
 abstract class BaseConfirmedBlockHeightExistsVerifierService extends BaseVerifierServiceWithIndexer<
   ConfirmedBlockHeightExists_Request,
@@ -26,7 +29,7 @@ abstract class BaseConfirmedBlockHeightExistsVerifierService extends BaseVerifie
   constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
-    options: ConfirmedBlockHeightExistsServiceOptions,
+    options: ITypeSpecificVerificationServiceConfig,
   ) {
     super(configService, manager, {
       ...options,
@@ -57,6 +60,7 @@ export class DOGEConfirmedBlockHeightExistsVerifierService extends BaseConfirmed
     super(configService, manager, {
       source: ChainType.DOGE,
       mccClient: MCC.DOGE,
+      indexerQueryManager: DogeIndexerQueryManager,
     });
   }
 }
@@ -70,6 +74,7 @@ export class BTCConfirmedBlockHeightExistsVerifierService extends BaseConfirmedB
     super(configService, manager, {
       source: ChainType.BTC,
       mccClient: MCC.BTC,
+      indexerQueryManager: BtcIndexerQueryManager,
     });
   }
 }
@@ -83,6 +88,7 @@ export class XRPConfirmedBlockHeightExistsVerifierService extends BaseConfirmedB
     super(configService, manager, {
       source: ChainType.XRP,
       mccClient: MCC.XRP,
+      indexerQueryManager: XrpIndexerQueryManager,
     });
   }
 }

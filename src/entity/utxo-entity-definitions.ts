@@ -25,7 +25,7 @@ import {
 @Entity('utxo_indexer_utxoblock')
 export class DBUtxoIndexerBlock {
   @PrimaryColumn({ type: 'char' })
-  blockHash!: string;
+  blockHash: string;
 
   @Column()
   blockNumber: number;
@@ -65,10 +65,12 @@ export class DBUtxoIndexerBlock {
   }
 }
 
-export type IDEUtxoIndexerBlock = new () => DBUtxoIndexerBlock;
+export type IDBUtxoIndexerBlock = new () => DBUtxoIndexerBlock;
 
 @Entity('utxo_indexer_utxotransaction')
-export class DBUtxoTransaction {
+export abstract class DBUtxoTransaction {
+  abstract chainType: ChainType; // TODO: ad a chainType variable
+
   @PrimaryColumn({ type: 'char' })
   transactionId: string;
 
@@ -182,7 +184,7 @@ export class DBUtxoTransaction {
       getResponse() {
         return response;
       },
-      chainType: ChainType.DOGE, // TODO: ad a chainType variable
+      chainType: this.chainType,
       transactionId: this.transactionId,
       blockNumber: this.blockNumber,
       timestamp: this.timestamp,
@@ -195,7 +197,7 @@ export class DBUtxoTransaction {
   toApiDBTransaction(returnResponse: boolean = false): ApiDBTransaction {
     const baseRes = {
       id: 0,
-      chainType: ChainType.DOGE, // TODO: ad a chainType variable
+      chainType: this.chainType,
       transactionId: this.transactionId,
       blockNumber: this.blockNumber,
       timestamp: this.timestamp,
@@ -212,6 +214,14 @@ export class DBUtxoTransaction {
     }
     return baseRes;
   }
+}
+
+export class DBBtcTransaction extends DBUtxoTransaction {
+  chainType = ChainType.BTC;
+}
+
+export class DBDogeTransaction extends DBUtxoTransaction {
+  chainType = ChainType.DOGE;
 }
 
 export type IDBUtxoTransaction = new () => DBUtxoTransaction;
