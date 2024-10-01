@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 import { IConfig, VerifierServerConfig } from 'src/config/configuration';
 import {
   DBXrpIndexerBlock,
@@ -19,6 +20,7 @@ import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
 import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
 import { unPrefix0x } from '@flarenetwork/mcc';
 
+@Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
   private transactionTable: IDBXrpTransaction;

@@ -35,9 +35,9 @@ export async function runVerifierServer() {
   app.enableCors();
 
   const verifierType = process.env.VERIFIER_TYPE?.toUpperCase();
-  const basePath = process.env.VERIFIER_SERVER_BASE_PATH ?? '';
+  const basePath = process.env.APP_BASE_PATH ?? '';
 
-  app.setGlobalPrefix(process.env.APP_BASE_PATH ?? '');
+  app.setGlobalPrefix(basePath);
   const config = new DocumentBuilder()
     .setTitle(
       `Verifier and indexer server (${
@@ -51,8 +51,6 @@ export async function runVerifierServer() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`${basePath}/api-doc`, app, document);
-
-  app.setGlobalPrefix(basePath);
 
   // TODO: type safe config module
   const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3120;
