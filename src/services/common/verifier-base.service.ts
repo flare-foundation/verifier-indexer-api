@@ -8,11 +8,21 @@ import {
 } from '@flarenetwork/mcc';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IConfig, VerifierServerConfig } from 'src/config/configuration';
+import {
+  AttestationTypeOptions,
+  IConfig,
+  SourceNames,
+  VerifierServerConfig,
+} from 'src/config/configuration';
 
 import { ARBase, ARESBase } from 'src/external-libs/interfaces';
 import { IIndexedQueryManager } from 'src/indexed-query-manager/IIndexedQueryManager';
 import { IndexedQueryManagerOptions } from 'src/indexed-query-manager/indexed-query-manager-types';
+import {
+  BtcIndexerQueryManager,
+  DogeIndexerQueryManager,
+} from 'src/indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 import { EntityManager } from 'typeorm';
 import {
   AddressValidity_Request,
@@ -27,15 +37,10 @@ import {
 } from '../../dtos/generic/generic.dto';
 import { AttestationDefinitionStore } from '../../external-libs/AttestationDefinitionStore';
 import { MIC_SALT, encodeAttestationName } from '../../external-libs/utils';
-import {
-  BtcIndexerQueryManager,
-  DogeIndexerQueryManager,
-} from 'src/indexed-query-manager/UtxoIndexQueryManager';
-import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 
 interface IVerificationServiceConfig {
   source: ChainType;
-  attestationName: string; // TODO: add union type for attestation names
+  attestationName: AttestationTypeOptions;
 }
 
 interface IVerificationServiceWithIndexerConfig
@@ -225,16 +230,14 @@ export function fromNoMic<T extends Omit<ARBase, 'messageIntegrityCode'>>(
   return fixedRequest;
 }
 
-type SourceNames = 'doge' | 'btc' | 'xrp';
-
 function getSourceName(source: ChainType): SourceNames {
   switch (source) {
     case ChainType.DOGE:
-      return 'doge';
+      return 'DOGE';
     case ChainType.BTC:
-      return 'btc';
+      return 'BTC';
     case ChainType.XRP:
-      return 'xrp';
+      return 'XRP';
     default:
       throw new Error(`Unsupported source chain, ${source}`);
   }

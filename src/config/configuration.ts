@@ -156,3 +156,11 @@ function getDatabaseEntities(verifierType: ChainType) {
       throw new Error(`Unsupported verifier type: ${verifierType}`);
   }
 }
+
+export type SourceNames = 'DOGE' | 'BTC' | 'XRP';
+export type AttestationTypeOptions =
+  | 'AddressValidity'
+  | 'BalanceDecreasingTransaction'
+  | 'ConfirmedBlockHeightExists'
+  | 'Payment'
+  | 'ReferencedPaymentNonexistence';
