@@ -71,24 +71,24 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
     );
 
     if (params.startBlockNumber) {
-      query = query.andWhere('transaction.blockNumber >= :startBlock', {
+      query = query.andWhere('transaction.block_number >= :startBlock', {
         startBlock: params.startBlockNumber,
       });
     }
 
     if (params.endBlockNumber) {
-      query = query.andWhere('transaction.blockNumber <= :endBlock', {
+      query = query.andWhere('transaction.block_number <= :endBlock', {
         endBlock: params.endBlockNumber,
       });
     }
 
     if (params.paymentReference) {
-      query = query.andWhere('transaction.paymentReference=:ref', {
+      query = query.andWhere('transaction.payment_reference=:ref', {
         ref: params.paymentReference.toLowerCase(),
       });
     }
     if (params.transactionId) {
-      query = query.andWhere('transaction.transactionId = :txId', {
+      query = query.andWhere('transaction.hash = :txId', {
         txId: params.transactionId.toLowerCase(),
       });
     }

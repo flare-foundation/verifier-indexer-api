@@ -281,6 +281,7 @@ export async function verifyBalanceDecreasingTransaction<
   });
 
   const status = verifyWorkflowForTransaction(confirmedTransactionResult);
+  console.dir(status);
   if (status !== VerificationStatus.NEEDS_MORE_CHECKS) {
     return { status };
   }
