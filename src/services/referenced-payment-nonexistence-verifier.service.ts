@@ -16,6 +16,11 @@ import {
 } from 'src/dtos/attestation-types/ReferencedPaymentNonexistence.dto';
 import { AttestationResponse } from 'src/dtos/generic/generic.dto';
 import { serializeBigInts } from 'src/external-libs/utils';
+import {
+  BtcIndexerQueryManager,
+  DogeIndexerQueryManager,
+} from 'src/indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
 import { verifyReferencedPaymentNonExistence } from 'src/verification/generic-chain-verifications';
 import { EntityManager } from 'typeorm';
@@ -23,11 +28,6 @@ import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,
 } from './common/verifier-base.service';
-import {
-  DogeIndexerQueryManager,
-  BtcIndexerQueryManager,
-} from 'src/indexed-query-manager/UtxoIndexQueryManager';
-import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 
 abstract class BaseReferencedPaymentNonexistenceVerifierService extends BaseVerifierServiceWithIndexer<
   ReferencedPaymentNonexistence_Request,

@@ -161,7 +161,7 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
     const query = this.entityManager
       .createQueryBuilder(this.blockTable, 'block')
       .andWhere('block.timestamp < :timestamp', { timestamp: timestamp })
-      .orderBy('block.blockNumber', 'DESC')
+      .orderBy('block.block_number', 'DESC')
       .limit(1);
 
     const res = await query.getOne();

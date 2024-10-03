@@ -40,7 +40,7 @@ abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerif
   ) {
     super(configService, manager, {
       ...options,
-      attestationName: 'Payment',
+      attestationName: 'BalanceDecreasingTransaction',
     });
   }
 

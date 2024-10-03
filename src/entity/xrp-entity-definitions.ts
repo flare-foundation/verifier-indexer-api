@@ -51,7 +51,7 @@ export type IDBXrpIndexerBlock = new () => DBXrpIndexerBlock;
 @Entity('transactions')
 export class DBXrpTransaction {
   @PrimaryColumn({ type: 'char' })
-  transaction_id: string;
+  hash: string;
 
   @Column()
   block_number: number;
@@ -79,7 +79,7 @@ export class DBXrpTransaction {
         return response;
       },
       chainType: ChainType.XRP, // TODO: ad a chainType variable
-      transactionId: this.transaction_id,
+      transactionId: this.hash,
       blockNumber: this.block_number,
       timestamp: this.timestamp,
       paymentReference: this.payment_reference,
@@ -92,7 +92,7 @@ export class DBXrpTransaction {
     const baseRes = {
       id: 0,
       chainType: ChainType.DOGE, // TODO: ad a chainType variable
-      transactionId: this.transaction_id,
+      transactionId: this.hash,
       blockNumber: this.block_number,
       timestamp: this.timestamp,
       paymentReference: this.payment_reference,
