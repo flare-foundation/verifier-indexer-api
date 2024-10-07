@@ -1,4 +1,4 @@
-import { unPrefix0x } from '@flarenetwork/mcc';
+import { ChainType, unPrefix0x } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 
 import { EntityManager, SelectQueryBuilder } from 'typeorm';
@@ -10,10 +10,10 @@ import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
 import { ConfigService } from '@nestjs/config';
 import { IConfig, VerifierServerConfig } from 'src/config/configuration';
 import {
-  DBBtcTransaction,
-  DBDogeTransaction,
   DBUtxoIndexerBlock,
+  DBUtxoTransaction,
   IDBUtxoIndexerBlock,
+  IDBUtxoTransaction,
   IPruneSyncState,
   ITipSyncState,
   PruneSyncState,
@@ -27,14 +27,14 @@ import {
 
 abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
-  protected abstract transactionTable:
-    | typeof DBBtcTransaction
-    | typeof DBDogeTransaction;
+  private transactionTable: IDBUtxoTransaction;
   private blockTable: IDBUtxoIndexerBlock;
   private tipState: ITipSyncState;
   private pruneState: IPruneSyncState;
 
   private indexerServerPageLimit: number;
+
+  protected abstract chainType: ChainType;
 
   constructor(
     protected configService: ConfigService<IConfig>,
@@ -42,6 +42,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   ) {
     super();
     this.blockTable = DBUtxoIndexerBlock;
+    this.transactionTable = DBUtxoTransaction;
     this.tipState = TipSyncState;
     this.pruneState = PruneSyncState;
     const verifierConfig =
@@ -49,9 +50,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;
   }
 
-  private joinTransactionQuery(
-    query: SelectQueryBuilder<DBDogeTransaction | DBBtcTransaction>,
-  ) {
+  private joinTransactionQuery(query: SelectQueryBuilder<DBUtxoTransaction>) {
     return query
       .leftJoinAndSelect(
         'transaction.transactionoutput_set',
@@ -128,7 +127,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     if (res === null) {
       return null;
     }
-    return res.toApiDBTransaction(true);
+    return res.toApiDBTransaction(this.chainType, true);
   }
 
   /**
@@ -247,31 +246,31 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     }
     const results = await query.getMany();
     return results.map((res) => {
-      return res.toApiDBTransaction(returnResponse);
+      return res.toApiDBTransaction(this.chainType, returnResponse);
     });
   }
 }
 
 @Injectable()
 export class BtcExternalIndexerEngineService extends UtxoExternalIndexerEngineService {
-  protected transactionTable = DBBtcTransaction;
+  protected chainType;
   constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
     super(configService, manager);
-    this.transactionTable = DBBtcTransaction;
+    this.chainType = ChainType.BTC;
   }
 }
 
 @Injectable()
 export class DogeExternalIndexerEngineService extends UtxoExternalIndexerEngineService {
-  protected transactionTable = DBDogeTransaction;
+  protected chainType;
   constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
     super(configService, manager);
-    this.transactionTable = DBDogeTransaction;
+    this.chainType = ChainType.DOGE;
   }
 }

@@ -1,7 +1,6 @@
 import {
-  DBBtcTransaction,
-  DBDogeTransaction,
   DBUtxoIndexerBlock,
+  DBUtxoTransaction,
   IDBUtxoIndexerBlock,
   IDBUtxoTransaction,
   ITipSyncState,
@@ -17,6 +16,7 @@ import {
   TransactionQueryParams,
   TransactionQueryResult,
 } from './indexed-query-manager-types';
+import { ChainType } from '@flarenetwork/mcc';
 
 ////////////////////////////////////////////////////////
 // IndexedQueryManger - a class used to carry out
@@ -29,14 +29,17 @@ import {
  */
 abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
   // Block table entity
-  protected abstract transactionTable: IDBUtxoTransaction;
+  private transactionTable: IDBUtxoTransaction;
   private blockTable: IDBUtxoIndexerBlock;
   private tipState: ITipSyncState;
+
+  protected abstract chainType: ChainType;
 
   constructor(options: IndexedQueryManagerOptions) {
     super(options);
     this.blockTable = DBUtxoIndexerBlock;
     this.tipState = TipSyncState;
+    this.transactionTable = DBUtxoTransaction;
   }
 
   public numberOfConfirmations(): number {
@@ -128,7 +131,7 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
 
     const res = await query.getMany();
 
-    const result = res.map((val) => val.toTransactionResult());
+    const result = res.map((val) => val.toTransactionResult(params.chainType));
 
     let lowerQueryWindowBlock: BlockResult;
     let upperQueryWindowBlock: BlockResult;
@@ -235,106 +238,20 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
 
     return res ? res.toBlockResult() : undefined;
   }
-
-  // public async fetchRandomTransactions(
-  //   batchSize = 100,
-  //   options: RandomTransactionOptions,
-  // ): Promise<TransactionResult[]> {
-  //   const txCount = await this.entityManager
-  //     .createQueryBuilder(this.transactionTable, 'transaction')
-  //     .getCount();
-
-  //   if (txCount === 0) {
-  //     return [];
-  //   }
-
-  //   const randN = Math.floor(Math.random() * txCount);
-
-  //   let query = this.entityManager.createQueryBuilder(
-  //     this.transactionTable,
-  //     'transaction',
-  //   );
-
-  //   const ZERO_PAYMENT_REFERENCE = unPrefix0x(ZERO_BYTES_32);
-
-  //   if (options.mustHavePaymentReference) {
-  //     query = query.andWhere(
-  //       `transaction.paymentReference != '${ZERO_PAYMENT_REFERENCE}'`,
-  //     );
-  //   }
-  //   if (options.mustNotHavePaymentReference) {
-  //     query = query.andWhere(
-  //       `transaction.paymentReference = '${ZERO_PAYMENT_REFERENCE}'`,
-  //     );
-  //   }
-  //   if (options.mustBeNativePayment) {
-  //     query = query.andWhere('transaction.isNativePayment = true');
-  //   }
-  //   if (options.mustNotBeNativePayment) {
-  //     query = query.andWhere('transaction.isNativePayment = false');
-  //   }
-  //   if (options.startTime) {
-  //     query = query.andWhere('transaction.timestamp >= :startTime', {
-  //       startTime: options.startTime,
-  //     });
-  //   }
-
-  //   query = query.limit(batchSize).offset(Math.min(randN, txCount - batchSize));
-
-  //   query = query.leftJoinAndSelect(
-  //     'transaction.transactionoutput_set',
-  //     'transactionOutput',
-  //   );
-  //   query = query.leftJoinAndSelect(
-  //     'transaction.transactioninputcoinbase_set',
-  //     'transactionInputCoinbase',
-  //   );
-  //   query = query.leftJoinAndSelect(
-  //     'transaction.transactioninput_set',
-  //     'transactionInput',
-  //   );
-
-  //   const transactions = await query.getMany();
-  //   return transactions.map((trans) => trans.toTransactionResult());
-  // }
-
-  // public async fetchRandomConfirmedBlocks(
-  //   batchSize = 100,
-  //   startTime?: number,
-  // ): Promise<BlockResult[]> {
-  //   let query = this.entityManager
-  //     .createQueryBuilder(this.blockTable, 'block')
-  //     .where('block.confirmed = :confirmed', { confirmed: true });
-  //   if (startTime) {
-  //     query = query.andWhere('block.timestamp >= :startTime', { startTime });
-  //   }
-  //   if (
-  //     process.env.NODE_ENV === 'development' &&
-  //     this.entityManager.connection.options.type == 'better-sqlite3'
-  //   ) {
-  //     query = query.orderBy('RANDOM()').limit(batchSize);
-  //   } else {
-  //     query = query.orderBy('RANDOM()').limit(batchSize);
-  //   }
-
-  //   const blocks = await query.getMany();
-
-  //   return blocks.map((block) => block.toBlockResult());
-  // }
 }
 
 export class BtcIndexerQueryManager extends UtxoIndexedQueryManager {
-  protected transactionTable: IDBUtxoTransaction;
+  protected chainType;
   constructor(options: IndexedQueryManagerOptions) {
     super(options);
-    this.transactionTable = DBBtcTransaction;
+    this.chainType = ChainType.BTC;
   }
 }
 
 export class DogeIndexerQueryManager extends UtxoIndexedQueryManager {
-  protected transactionTable: IDBUtxoTransaction;
+  protected chainType;
   constructor(options: IndexedQueryManagerOptions) {
     super(options);
-    this.transactionTable = DBDogeTransaction;
+    this.chainType = ChainType.DOGE;
   }
 }

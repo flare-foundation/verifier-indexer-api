@@ -1,13 +1,13 @@
 import { ChainType, MccCreate } from '@flarenetwork/mcc';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import {
-  DBUtxoIndexerBlock,
-  DBUtxoTransaction,
   DBTransactionInput,
   DBTransactionInputCoinbase,
   DBTransactionOutput,
-  TipSyncState,
+  DBUtxoIndexerBlock,
+  DBUtxoTransaction,
   PruneSyncState,
+  TipSyncState,
 } from 'src/entity/utxo-entity-definitions';
 import {
   DBXrpIndexerBlock,
@@ -48,7 +48,7 @@ interface DatabaseConfig {
   /**
    * Database server port number.
    */
-  port: number; // 3306;
+  port: number; // 3306
 
   /**
    * Database user name.

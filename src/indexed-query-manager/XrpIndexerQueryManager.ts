@@ -179,7 +179,7 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
       .andWhere('block.block_number > :blockNumber', {
         blockNumber: blockNumber,
       })
-      .orderBy('block.blockNumber', 'ASC')
+      .orderBy('block.block_number', 'ASC')
       .limit(1);
 
     const res = await query.getOne();

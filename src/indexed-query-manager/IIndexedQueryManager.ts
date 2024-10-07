@@ -180,7 +180,8 @@ export abstract class IIndexedQueryManager {
       startBlockNumber: params.minimalBlockNumber,
       endBlockNumber: firstOverflowBlock.blockNumber - 1,
       paymentReference: params.paymentReference,
-    } as TransactionQueryParams);
+      chainType: this.settings.chainType,
+    });
 
     // Too small query window
     if (!transactionsQueryResult.startBlock) {
