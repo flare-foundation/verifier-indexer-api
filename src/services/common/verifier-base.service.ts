@@ -25,10 +25,6 @@ import {
 import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 import { EntityManager } from 'typeorm';
 import {
-  AddressValidity_Request,
-  AddressValidity_Response,
-} from '../../dtos/attestation-types/AddressValidity.dto';
-import {
   AttestationResponse,
   AttestationResponseEncoded,
   AttestationResponseStatus,
@@ -106,7 +102,7 @@ export abstract class BaseVerifierService<
 
     const fixedRequest = {
       messageIntegrityCode: ZERO_BYTES_32,
-      ...request, // if messageIntegrityCode is provided, it will be shadowed
+      ...request, // if messageIntegrityCode is provided, it will shadow zero messageIntegrityCode
     };
 
     return this.verifyRequest(fixedRequest);
@@ -156,11 +152,10 @@ export abstract class BaseVerifierService<
     if (!response) return new MicResponse({ status: result.status });
     return new MicResponse({
       status: AttestationResponseStatus.VALID,
-      messageIntegrityCode:
-        this.store.attestationResponseHash<AddressValidity_Response>(
-          response,
-          MIC_SALT,
-        ),
+      messageIntegrityCode: this.store.attestationResponseHash<Res>(
+        response,
+        MIC_SALT,
+      ),
     });
   }
 
@@ -174,12 +169,11 @@ export abstract class BaseVerifierService<
     if (!response) return new EncodedRequestResponse({ status: result.status });
     const newRequest = {
       ...request,
-      messageIntegrityCode:
-        this.store.attestationResponseHash<AddressValidity_Response>(
-          response,
-          MIC_SALT,
-        )!,
-    } as AddressValidity_Request;
+      messageIntegrityCode: this.store.attestationResponseHash<Res>(
+        response,
+        MIC_SALT,
+      )!,
+    } as Req;
 
     return new EncodedRequestResponse({
       status: AttestationResponseStatus.VALID,
