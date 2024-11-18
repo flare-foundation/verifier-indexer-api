@@ -66,7 +66,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
   ): Promise<ApiDBTransaction | null> {
     const query = this.manager
       .createQueryBuilder(this.transactionTable, 'transaction')
-      .andWhere('transaction.transaction_id = :txHash', { txHash });
+      .andWhere('transaction.hash = :txHash', { txHash });
     const res = await query.getOne();
     if (res) {
       return res.toApiDBTransaction();
@@ -158,7 +158,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     }
     query = query
       .orderBy('transaction.block_number', 'ASC')
-      .addOrderBy('transaction.transaction_id', 'ASC')
+      .addOrderBy('transaction.hash', 'ASC')
       .limit(theLimit)
       .offset(theOffset);
     const results = await query.getMany();
