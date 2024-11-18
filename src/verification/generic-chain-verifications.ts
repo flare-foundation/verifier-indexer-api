@@ -137,6 +137,7 @@ export function responsePayment<T extends TransactionBase<any>>(
       blockNumber: dbTransaction.blockNumber.toString(),
       blockTimestamp: dbTransaction.timestamp.toString(),
       sourceAddressHash: paymentSummary.response.sourceAddressHash,
+      sourceAddressesRoot: paymentSummary.response.sourceAddressesRoot,
       receivingAddressHash: paymentSummary.response.receivingAddressHash,
       intendedReceivingAddressHash:
         paymentSummary.response.intendedReceivingAddressHash,

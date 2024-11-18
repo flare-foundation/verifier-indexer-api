@@ -18,7 +18,7 @@ export abstract class BaseVerifierController<
   Req extends ARBase,
   Res extends ARESBase,
 > {
-  protected readonly verifierService: BaseVerifierService<Req, Res>;
+  protected abstract readonly verifierService: BaseVerifierService<Req, Res>;
 
   /**
    * Tries to verify encoded attestation request without checking message integrity code, and if successful it returns response.
@@ -30,7 +30,7 @@ export abstract class BaseVerifierController<
   async verify(
     @Body() body: EncodedRequest,
   ): Promise<AttestationResponse<Res>> {
-    return this.verifierService.verifyEncodedRequest(body.abiEncodedRequest!);
+    return this.verifierService.verifyEncodedRequest(body.abiEncodedRequest);
   }
 
   /**
@@ -44,7 +44,7 @@ export abstract class BaseVerifierController<
     @Body() body: EncodedRequest,
   ): Promise<AttestationResponseVerificationEncoded> {
     return this.verifierService.verifyEncodedRequestFDC(
-      body.abiEncodedRequest!,
+      body.abiEncodedRequest,
     );
   }
 

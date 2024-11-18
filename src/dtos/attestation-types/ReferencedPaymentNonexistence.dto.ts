@@ -1,6 +1,7 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsDefined,
   IsNotEmptyObject,
   IsObject,
@@ -130,6 +131,28 @@ export class ReferencedPaymentNonexistence_RequestBody {
       '0x0000000000000000000000000000000000000000000000000000000000000000',
   })
   standardPaymentReference: string;
+
+  /**
+   * If true, the source address root is checked (only full match).
+   */
+  @IsBoolean()
+  @ApiProperty({
+    description: `If true, the source address root is checked (only full match).`,
+    example:
+      'true',
+  })
+  checkSourceAddresses: boolean;
+
+  /**
+   * The root of the Merkle tree of the source addresses.
+   */
+  @Validate(IsHash32)
+  @ApiProperty({
+    description: `The root of the Merkle tree of the source addresses.`,
+    example:
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
+  })
+  sourceAddressesRoot: string;
 }
 export class ReferencedPaymentNonexistence_Request {
   constructor(params: Required<ReferencedPaymentNonexistence_Request>) {

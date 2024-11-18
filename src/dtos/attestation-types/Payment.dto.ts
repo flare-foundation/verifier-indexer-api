@@ -65,6 +65,17 @@ export class Payment_ResponseBody {
   sourceAddressHash: string;
 
   /**
+   * The root of the Merkle tree of the source addresses.
+   */
+    @Validate(IsHash32)
+    @ApiProperty({
+      description: `The root of the Merkle tree of the source addresses.`,
+      example:
+        '0x0000000000000000000000000000000000000000000000000000000000000000',
+    })
+    sourceAddressesRoot: string;
+
+  /**
    * Standard address hash of the receiving address. The zero 32-byte string if there is no receivingAddress (if `status` is not success).
    */
   @Validate(IsHash32)

@@ -58,7 +58,7 @@ export abstract class BaseVerifierService<
   store: AttestationDefinitionStore;
 
   source: SourceNames;
-  attestationName: string;
+  attestationName: AttestationTypeOptions;
   isTestnet: boolean;
 
   constructor(
