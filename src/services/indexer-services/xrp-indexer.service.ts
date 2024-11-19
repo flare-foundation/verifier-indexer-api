@@ -42,8 +42,21 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;
   }
 
-  public getStateSetting(): Promise<IIndexerState | null> {
-    throw new Error('Method not implemented.');
+  public async getStateSetting(): Promise<IIndexerState | null> {
+    const query = this.manager
+      .createQueryBuilder(this.tipState, 'states')
+    const res = await query.getOne();
+    const response: IIndexerState = {
+      indexedBlockRange: {
+        first: res.first_indexed_block_number,
+        last: res.last_indexed_block_number,
+      },
+      tipHeight: res.last_chain_block_number,
+      lastTipUpdateTimestamp: res.last_chain_block_timestamp, // TODO: (Luka) update
+      lastTailUpdateTimestamp: res.first_indexed_block_timestamp, // TODO: (Luka) update
+      state: ""
+    }
+    return response;
   }
 
   public async getBlockRange(): Promise<BlockRange | null> {

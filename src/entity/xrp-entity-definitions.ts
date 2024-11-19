@@ -78,7 +78,7 @@ export class DBXrpTransaction {
       getResponse() {
         return response;
       },
-      chainType: ChainType.XRP, // TODO: ad a chainType variable
+      chainType: ChainType.XRP,
       transactionId: this.hash,
       blockNumber: this.block_number,
       timestamp: this.timestamp,
@@ -91,7 +91,7 @@ export class DBXrpTransaction {
   toApiDBTransaction(returnResponse: boolean = false): ApiDBTransaction {
     const baseRes = {
       id: 0,
-      chainType: ChainType.DOGE, // TODO: ad a chainType variable
+      chainType: ChainType.XRP, 
       transactionId: this.hash,
       blockNumber: this.block_number,
       timestamp: this.timestamp,
@@ -118,16 +118,25 @@ export class DBXrpState {
   id: string;
 
   @Column()
-  name: string;
+  last_chain_block_number: number;
 
   @Column()
-  index: number;
+  last_chain_block_timestamp: number;
 
   @Column()
-  block_timestamp: number;
+  last_indexed_block_number: number;
 
   @Column()
-  updated: number;
+  last_indexed_block_timestamp: number;
+
+  @Column()
+  first_indexed_block_number: number;
+
+  @Column()
+  first_indexed_block_timestamp: number;
+
+  @Column({ type: 'timestamptz' }) 
+  updated: Date;
 }
 
 export type IDBXrpState = new () => DBXrpState;

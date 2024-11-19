@@ -42,23 +42,22 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
     return this.settings.numberOfConfirmations();
   }
 
-  private async _getStateObject(stateType: XrpStateTypes): Promise<DBXrpState> {
+  private async _getStateObject(): Promise<DBXrpState> {
     const query = this.entityManager
       .createQueryBuilder(this.tipState, 'state')
-      .andWhere('state.name = :stateType', { stateType });
     return query.getOne();
   }
 
   public async getLastConfirmedBlockNumber(): Promise<number> {
-    const stateEntry = await this._getStateObject('last_database_block');
-    return stateEntry.index;
+    const stateEntry = await this._getStateObject();
+    return stateEntry.last_indexed_block_number;
   }
 
   public async getLatestBlockTimestamp(): Promise<BlockHeightSample | null> {
-    const stateEntry = await this._getStateObject('last_database_block');
+    const stateEntry = await this._getStateObject();
     return {
-      height: stateEntry.index,
-      timestamp: stateEntry.block_timestamp,
+      height: stateEntry.last_chain_block_number,
+      timestamp: stateEntry.last_chain_block_timestamp,
     };
   }
 
