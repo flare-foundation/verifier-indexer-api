@@ -131,7 +131,7 @@ export function responsePayment<T extends TransactionBase<any>>(
     attestationType: request.attestationType,
     sourceId: request.sourceId,
     votingRound: '0',
-    lowestUsedTimestamp: dbTransaction.timestamp.toString(),
+    lowestUsedTimestamp: fullTxData.unixTimestamp.toString(),
     requestBody: serializeBigInts(request.requestBody),
     responseBody: new Payment_ResponseBody({
       blockNumber: dbTransaction.blockNumber.toString(),
@@ -240,7 +240,7 @@ export async function responseBalanceDecreasingTransaction<
     attestationType: request.attestationType,
     sourceId: request.sourceId,
     votingRound: '0',
-    lowestUsedTimestamp: dbTransaction.timestamp.toString(),
+    lowestUsedTimestamp: fullTxData.unixTimestamp.toString(),
     requestBody: serializeBigInts(request.requestBody),
     responseBody: new BalanceDecreasingTransaction_ResponseBody({
       blockNumber: dbTransaction.blockNumber.toString(),
