@@ -65,6 +65,7 @@ export class AddressValidity_ResponseBody {
   })
   standardAddressHash: string;
 }
+
 export class AddressValidity_RequestBody {
   constructor(params: Required<AddressValidity_RequestBody>) {
     Object.assign(this, params);
@@ -79,6 +80,7 @@ export class AddressValidity_RequestBody {
   })
   addressStr: string;
 }
+
 export class AddressValidity_Request {
   constructor(params: Required<AddressValidity_Request>) {
     Object.assign(this, params);
@@ -130,6 +132,7 @@ export class AddressValidity_Request {
   })
   requestBody: AddressValidity_RequestBody;
 }
+
 export class AddressValidity_Response {
   constructor(params: Required<AddressValidity_Response>) {
     Object.assign(this, params);

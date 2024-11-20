@@ -74,6 +74,7 @@ export class ConfirmedBlockHeightExists_ResponseBody {
   })
   lowestQueryWindowBlockTimestamp: string;
 }
+
 export class ConfirmedBlockHeightExists_RequestBody {
   constructor(params: Required<ConfirmedBlockHeightExists_RequestBody>) {
     Object.assign(this, params);
@@ -99,6 +100,7 @@ export class ConfirmedBlockHeightExists_RequestBody {
   })
   queryWindow: string;
 }
+
 export class ConfirmedBlockHeightExists_Request {
   constructor(params: Required<ConfirmedBlockHeightExists_Request>) {
     Object.assign(this, params);
@@ -150,6 +152,7 @@ export class ConfirmedBlockHeightExists_Request {
   })
   requestBody: ConfirmedBlockHeightExists_RequestBody;
 }
+
 export class ConfirmedBlockHeightExists_Response {
   constructor(params: Required<ConfirmedBlockHeightExists_Response>) {
     Object.assign(this, params);
@@ -221,6 +224,7 @@ export class ConfirmedBlockHeightExists_Response {
   })
   responseBody: ConfirmedBlockHeightExists_ResponseBody;
 }
+
 export class ConfirmedBlockHeightExists_Proof {
   constructor(params: Required<ConfirmedBlockHeightExists_Proof>) {
     Object.assign(this, params);

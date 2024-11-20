@@ -168,6 +168,7 @@ export class Payment_ResponseBody {
   })
   status: string;
 }
+
 export class Payment_RequestBody {
   constructor(params: Required<Payment_RequestBody>) {
     Object.assign(this, params);
@@ -204,6 +205,7 @@ export class Payment_RequestBody {
   })
   utxo: string;
 }
+
 export class Payment_Request {
   constructor(params: Required<Payment_Request>) {
     Object.assign(this, params);
@@ -255,6 +257,7 @@ export class Payment_Request {
   })
   requestBody: Payment_RequestBody;
 }
+
 export class Payment_Response {
   constructor(params: Required<Payment_Response>) {
     Object.assign(this, params);
@@ -326,6 +329,7 @@ export class Payment_Response {
   })
   responseBody: Payment_ResponseBody;
 }
+
 export class Payment_Proof {
   constructor(params: Required<Payment_Proof>) {
     Object.assign(this, params);
