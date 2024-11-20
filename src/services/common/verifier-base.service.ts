@@ -1,11 +1,4 @@
-import {
-  ChainType,
-  MCC,
-  MccClient,
-  MccCreate,
-  UtxoMccCreate,
-  ZERO_BYTES_32,
-} from '@flarenetwork/mcc';
+import { ChainType, ZERO_BYTES_32 } from '@flarenetwork/mcc';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -41,7 +34,6 @@ interface IVerificationServiceConfig {
 
 interface IVerificationServiceWithIndexerConfig
   extends IVerificationServiceConfig {
-  mccClient: typeof MCC.DOGE | typeof MCC.BTC | typeof MCC.XRP;
   indexerQueryManager:
     | typeof DogeIndexerQueryManager
     | typeof BtcIndexerQueryManager
@@ -186,7 +178,6 @@ export abstract class BaseVerifierServiceWithIndexer<
   Req extends ARBase,
   Res extends ARESBase,
 > extends BaseVerifierService<Req, Res> {
-  client: MccClient;
   indexedQueryManager: IIndexedQueryManager;
 
   constructor(
@@ -198,11 +189,9 @@ export abstract class BaseVerifierServiceWithIndexer<
       source: options.source,
       attestationName: options.attestationName,
     });
-    const mccCreate = this.configService.get<MccCreate>('mccCreate');
     const verifierConfig =
       this.configService.get<VerifierServerConfig>('verifierConfig');
     const numberOfConfirmations = verifierConfig.numberOfConfirmations;
-    this.client = new options.mccClient(mccCreate as UtxoMccCreate);
     const IqmOptions: IndexedQueryManagerOptions = {
       chainType: options.source,
       entityManager: this.manager,

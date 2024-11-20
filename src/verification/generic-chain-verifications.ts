@@ -1,7 +1,6 @@
 import {
   BalanceDecreasingSummaryResponse,
   BalanceDecreasingSummaryStatus,
-  MccClient,
   PaymentNonexistenceSummaryStatus,
   PaymentSummaryResponse,
   PaymentSummaryStatus,
@@ -11,12 +10,6 @@ import {
   ZERO_BYTES_32,
 } from '@flarenetwork/mcc';
 import { ethers } from 'ethers';
-import { IIndexedQueryManager } from '../indexed-query-manager/IIndexedQueryManager';
-import {
-  BlockResult,
-  TransactionResult,
-} from '../indexed-query-manager/indexed-query-manager-types';
-import { VerificationStatus } from './attestation-types/attestation-types';
 import {
   BalanceDecreasingTransaction_Request,
   BalanceDecreasingTransaction_Response,
@@ -37,6 +30,12 @@ import {
   ReferencedPaymentNonexistence_Response,
   ReferencedPaymentNonexistence_ResponseBody,
 } from '../dtos/attestation-types/ReferencedPaymentNonexistence.dto';
+import { IIndexedQueryManager } from '../indexed-query-manager/IIndexedQueryManager';
+import {
+  BlockResult,
+  TransactionResult,
+} from '../indexed-query-manager/indexed-query-manager-types';
+import { VerificationStatus } from './attestation-types/attestation-types';
 import {
   VerificationResponse,
   verifyWorkflowForBlock,
@@ -73,8 +72,6 @@ export function responsePayment<T extends TransactionBase<any>>(
   dbTransaction: TransactionResult,
   TransactionClass: new (...args: any[]) => T,
   request: Payment_Request,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  client: MccClient | undefined,
 ) {
   let parsedData: any;
   try {
@@ -172,7 +169,6 @@ export async function verifyPayment<T extends TransactionBase<any>>(
   TransactionClass: new (...args: any[]) => T,
   request: Payment_Request,
   iqm: IIndexedQueryManager,
-  client?: MccClient,
 ): Promise<VerificationResponse<Payment_Response>> {
   // Check for transaction
   const confirmedTransactionResult = await iqm.getConfirmedTransaction({
@@ -185,7 +181,7 @@ export async function verifyPayment<T extends TransactionBase<any>>(
   }
 
   const dbTransaction = confirmedTransactionResult.transaction;
-  return responsePayment(dbTransaction, TransactionClass, request, client);
+  return responsePayment(dbTransaction, TransactionClass, request);
 }
 
 /**
@@ -202,8 +198,6 @@ export async function responseBalanceDecreasingTransaction<
   dbTransaction: TransactionResult,
   TransactionClass: new (...args: any[]) => T,
   request: BalanceDecreasingTransaction_Request,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  client: MccClient | undefined,
 ) {
   let parsedData: any;
   try {
@@ -274,7 +268,6 @@ export async function verifyBalanceDecreasingTransaction<
   TransactionClass: new (...args: any[]) => T,
   request: BalanceDecreasingTransaction_Request,
   iqm: IIndexedQueryManager,
-  client?: MccClient,
 ): Promise<VerificationResponse<BalanceDecreasingTransaction_Response>> {
   // Check for transaction
   const confirmedTransactionResult = await iqm.getConfirmedTransaction({
@@ -295,7 +288,6 @@ export async function verifyBalanceDecreasingTransaction<
     dbTransaction,
     TransactionClass,
     request,
-    client,
   );
 }
 

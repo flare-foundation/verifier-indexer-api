@@ -2,7 +2,6 @@ import {
   BtcTransaction,
   ChainType,
   DogeTransaction,
-  MCC,
   TransactionBase,
   XrpTransaction,
 } from '@flarenetwork/mcc';
@@ -16,6 +15,11 @@ import {
 } from 'src/dtos/attestation-types/Payment.dto';
 import { AttestationResponse } from 'src/dtos/generic/generic.dto';
 import { serializeBigInts } from 'src/external-libs/utils';
+import {
+  BtcIndexerQueryManager,
+  DogeIndexerQueryManager,
+} from 'src/indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
 import { verifyPayment } from 'src/verification/generic-chain-verifications';
 import { EntityManager } from 'typeorm';
@@ -23,11 +27,6 @@ import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,
 } from './common/verifier-base.service';
-import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
-import {
-  DogeIndexerQueryManager,
-  BtcIndexerQueryManager,
-} from 'src/indexed-query-manager/UtxoIndexQueryManager';
 
 abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer<
   Payment_Request,
@@ -52,7 +51,6 @@ abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer
       TransactionClass,
       fixedRequest,
       this.indexedQueryManager,
-      this.client,
     );
     return serializeBigInts({
       status: getAttestationStatus(result.status),
@@ -69,7 +67,6 @@ export class DOGEPaymentVerifierService extends BasePaymentVerifierService {
   ) {
     super(configService, manager, {
       source: ChainType.DOGE,
-      mccClient: MCC.DOGE,
       indexerQueryManager: DogeIndexerQueryManager,
     });
   }
@@ -89,7 +86,6 @@ export class BTCPaymentVerifierService extends BasePaymentVerifierService {
   ) {
     super(configService, manager, {
       source: ChainType.BTC,
-      mccClient: MCC.BTC,
       indexerQueryManager: BtcIndexerQueryManager,
     });
   }
@@ -109,7 +105,6 @@ export class XRPPaymentVerifierService extends BasePaymentVerifierService {
   ) {
     super(configService, manager, {
       source: ChainType.XRP,
-      mccClient: MCC.XRP,
       indexerQueryManager: XrpIndexerQueryManager,
     });
   }

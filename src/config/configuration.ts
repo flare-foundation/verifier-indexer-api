@@ -27,8 +27,6 @@ export interface IConfig {
 
   verifierConfig: VerifierServerConfig;
 
-  mccCreate: MccCreate;
-
   typeOrmModuleOptions: TypeOrmModuleOptions;
 
   isTestnet: boolean;
@@ -103,11 +101,6 @@ export default () => {
     api_keys,
     verifierConfig,
     db: db,
-    mccCreate: {
-      url: process.env.UNDERLYING_NODE_URL || 'url',
-      username: process.env.UNDERLYING_NODE_USER || 'user',
-      password: process.env.UNDERLYING_NODE_PASS || 'pass',
-    },
     typeOrmModuleOptions: {
       ...db,
       type: 'postgres', // TODO: If we ever use something other than postgres, we need to change this

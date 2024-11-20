@@ -2,7 +2,6 @@ import {
   BtcTransaction,
   ChainType,
   DogeTransaction,
-  MCC,
   TransactionBase,
   XrpTransaction,
 } from '@flarenetwork/mcc';
@@ -68,7 +67,6 @@ export class DOGEReferencedPaymentNonexistenceVerifierService extends BaseRefere
   ) {
     super(configService, manager, {
       source: ChainType.DOGE,
-      mccClient: MCC.DOGE,
       indexerQueryManager: DogeIndexerQueryManager,
     });
   }
@@ -88,7 +86,6 @@ export class BTCReferencedPaymentNonexistenceVerifierService extends BaseReferen
   ) {
     super(configService, manager, {
       source: ChainType.BTC,
-      mccClient: MCC.BTC,
       indexerQueryManager: BtcIndexerQueryManager,
     });
   }
@@ -108,7 +105,6 @@ export class XRPReferencedPaymentNonexistenceVerifierService extends BaseReferen
   ) {
     super(configService, manager, {
       source: ChainType.XRP,
-      mccClient: MCC.XRP,
       indexerQueryManager: XrpIndexerQueryManager,
     });
   }

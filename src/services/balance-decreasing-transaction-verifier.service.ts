@@ -2,7 +2,6 @@ import {
   BtcTransaction,
   ChainType,
   DogeTransaction,
-  MCC,
   TransactionBase,
   XrpTransaction,
 } from '@flarenetwork/mcc';
@@ -20,6 +19,7 @@ import {
   BtcIndexerQueryManager,
   DogeIndexerQueryManager,
 } from 'src/indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
 import { verifyBalanceDecreasingTransaction } from 'src/verification/generic-chain-verifications';
 import { EntityManager } from 'typeorm';
@@ -27,7 +27,6 @@ import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,
 } from './common/verifier-base.service';
-import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 
 abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerifierServiceWithIndexer<
   BalanceDecreasingTransaction_Request,
@@ -52,7 +51,6 @@ abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerif
       TransactionClass,
       fixedRequest,
       this.indexedQueryManager,
-      this.client,
     );
     return serializeBigInts({
       status: getAttestationStatus(result.status),
@@ -69,7 +67,6 @@ export class DOGEBalanceDecreasingTransactionVerifierService extends BaseBalance
   ) {
     super(configService, manager, {
       source: ChainType.DOGE,
-      mccClient: MCC.DOGE,
       indexerQueryManager: DogeIndexerQueryManager,
     });
   }
@@ -89,7 +86,6 @@ export class BTCBalanceDecreasingTransactionVerifierService extends BaseBalanceD
   ) {
     super(configService, manager, {
       source: ChainType.BTC,
-      mccClient: MCC.BTC,
       indexerQueryManager: BtcIndexerQueryManager,
     });
   }
@@ -109,7 +105,6 @@ export class XRPBalanceDecreasingTransactionVerifierService extends BaseBalanceD
   ) {
     super(configService, manager, {
       source: ChainType.XRP,
-      mccClient: MCC.XRP,
       indexerQueryManager: XrpIndexerQueryManager,
     });
   }

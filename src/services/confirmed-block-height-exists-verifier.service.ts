@@ -1,4 +1,4 @@
-import { ChainType, MCC } from '@flarenetwork/mcc';
+import { ChainType } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IConfig } from 'src/config/configuration';
@@ -9,6 +9,11 @@ import {
 } from 'src/dtos/attestation-types/ConfirmedBlockHeightExists.dto';
 import { AttestationResponse } from 'src/dtos/generic/generic.dto';
 import { serializeBigInts } from 'src/external-libs/utils';
+import {
+  BtcIndexerQueryManager,
+  DogeIndexerQueryManager,
+} from 'src/indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
 import { verifyConfirmedBlockHeightExists } from 'src/verification/generic-chain-verifications';
 import { EntityManager } from 'typeorm';
@@ -16,11 +21,6 @@ import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,
 } from './common/verifier-base.service';
-import {
-  DogeIndexerQueryManager,
-  BtcIndexerQueryManager,
-} from 'src/indexed-query-manager/UtxoIndexQueryManager';
-import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 
 abstract class BaseConfirmedBlockHeightExistsVerifierService extends BaseVerifierServiceWithIndexer<
   ConfirmedBlockHeightExists_Request,
@@ -59,7 +59,6 @@ export class DOGEConfirmedBlockHeightExistsVerifierService extends BaseConfirmed
   ) {
     super(configService, manager, {
       source: ChainType.DOGE,
-      mccClient: MCC.DOGE,
       indexerQueryManager: DogeIndexerQueryManager,
     });
   }
@@ -73,7 +72,6 @@ export class BTCConfirmedBlockHeightExistsVerifierService extends BaseConfirmedB
   ) {
     super(configService, manager, {
       source: ChainType.BTC,
-      mccClient: MCC.BTC,
       indexerQueryManager: BtcIndexerQueryManager,
     });
   }
@@ -87,7 +85,6 @@ export class XRPConfirmedBlockHeightExistsVerifierService extends BaseConfirmedB
   ) {
     super(configService, manager, {
       source: ChainType.XRP,
-      mccClient: MCC.XRP,
       indexerQueryManager: XrpIndexerQueryManager,
     });
   }
