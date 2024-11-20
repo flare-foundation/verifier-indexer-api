@@ -1,22 +1,27 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class PaginatedList<T> {
   /**
    * Count of all items satisfying 'paginatable' request.
    */
-  count?: number;
+  @ApiProperty()
+  count: number;
   /**
    * Response items.
    */
-  items?: T[];
+  items: T[];
   /**
    * Limit got from request
    */
-  limit?: number;
+  @ApiProperty()
+  limit: number;
   /**
    * Offset got from request
    */
-  offset?: number;
+  @ApiProperty()
+  offset: number;
 
-  constructor(items: T[], count?: number, limit?: number, offset?: number) {
+  constructor(items: T[], count: number, limit: number, offset: number) {
     this.items = items;
     this.count = count;
     this.limit = limit;

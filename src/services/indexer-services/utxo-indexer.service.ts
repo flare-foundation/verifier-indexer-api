@@ -22,6 +22,7 @@ import {
   TipSyncState,
 } from 'src/entity/utxo-entity-definitions';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
+import { PaginatedList } from 'src/utils/api-models/PaginatedList';
 
 abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
@@ -120,35 +121,42 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     return res.toApiDBBlock();
   }
 
-  /**
-   * Gets a confirmed block from the indexer database in the given block number range and pagination props.
-   */
-  public async listBlock({
-    from,
-    to,
-    limit,
-    offset,
-  }: QueryBlock): Promise<ApiDBBlock[]> {
-    let theLimit = limit ?? this.indexerServerPageLimit;
-    theLimit = Math.min(theLimit, this.indexerServerPageLimit);
-    const theOffset = offset ?? 0;
+  // /**
+  //  * Gets a confirmed block from the indexer database in the given block number range and pagination props.
+  //  */
+  // public async listBlock({ from, to }: QueryBlock): Promise<ApiDBBlock[]> {
+  //   let theLimit = this.indexerServerPageLimit;
+  //   let query = this.manager.createQueryBuilder(this.blockTable, 'block').orderBy('block.blockNumber', 'ASC');
+  //   if 
+  //   if (from === undefined && to === undefined) {
+  //     continue;
+  //   }
+  //   const finalTo = to === undefined ? undefined : Math.min(to, from);
+  //   let theLimit = limit ?? this.indexerServerPageLimit;
+  //   theLimit = Math.min(theLimit, this.indexerServerPageLimit);
+  //   const theOffset = offset ?? 0;
 
-    let query = this.manager.createQueryBuilder(this.blockTable, 'block');
-    if (from !== undefined) {
-      query = query.andWhere('block.blockNumber >= :from', { from });
-    }
-    if (to !== undefined) {
-      query = query.andWhere('block.blockNumber <= :to', { to });
-    }
-    query = query
-      .orderBy('block.blockNumber', 'ASC')
-      .limit(theLimit)
-      .offset(theOffset);
-    const results = await query.getMany();
-    return results.map((res) => {
-      return res.toApiDBBlock();
-    });
-  }
+    
+  //   if (from !== undefined) {
+  //     query = query.andWhere('block.blockNumber >= :from', { from });
+  //     if (to !== undefined) {
+  //       // We have both from and to
+  //       query = query.andWhere('block.blockNumber <= :to', { to });
+  //     } else {
+  //       query = query.take(theLimit)
+  //     }
+  //   } else if (to !== undefined) {
+  //     query = query.andWhere('block.blockNumber <= :to', { to });
+  //   }
+  //   query = query
+  //     .orderBy('block.blockNumber', 'ASC')
+  //     .limit(theLimit)
+  //     .offset(theOffset);
+  //   const results = await query.getMany();
+  //   return results.map((res) => {
+  //     return res.toApiDBBlock();
+  //   });
+  // }
 
   /**
    * Gets a block header data from the indexer database for a given block hash.
@@ -176,7 +184,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     limit,
     offset,
     returnResponse,
-  }: QueryTransaction): Promise<ApiDBTransaction[]> {
+  }: QueryTransaction): Promise<PaginatedList<ApiDBTransaction>> {
     if (paymentReference) {
       if (!/^0x[0-9a-f]{64}$/i.test(paymentReference)) {
         throw new Error('Invalid payment reference');
@@ -210,10 +218,13 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     if (returnResponse) {
       query = this.joinTransactionQuery(query);
     }
+    const count = await query.getCount();
     const results = await query.getMany();
-    return results.map((res) => {
+    const items = results.map((res) => {
       return res.toApiDBTransaction(this.chainType, returnResponse);
     });
+
+    return new PaginatedList(items, count, theLimit, theOffset);
   }
 
   /**

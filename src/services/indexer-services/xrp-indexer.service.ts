@@ -17,6 +17,7 @@ import {
 } from 'src/entity/xrp-entity-definitions';
 import { EntityManager } from 'typeorm';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
+import { PaginatedList } from 'src/utils/api-models/PaginatedList';
 
 @Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {
@@ -78,32 +79,30 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     }
   }
 
-  public async listBlock({
-    from,
-    to,
-    limit,
-    offset,
-  }: QueryBlock): Promise<ApiDBBlock[]> {
-    let theLimit = limit ?? this.indexerServerPageLimit;
-    theLimit = Math.min(theLimit, this.indexerServerPageLimit);
-    const theOffset = offset ?? 0;
+  // public async listBlock({
+  //   from,
+  //   to
+  // }: QueryBlock): Promise<ApiDBBlock[]> {
+  //   let theLimit = limit ?? this.indexerServerPageLimit;
+  //   theLimit = Math.min(theLimit, this.indexerServerPageLimit);
+  //   const theOffset = offset ?? 0;
 
-    let query = this.manager.createQueryBuilder(this.blockTable, 'block');
-    if (from !== undefined) {
-      query = query.andWhere('block.block_number >= :from', { from });
-    }
-    if (to !== undefined) {
-      query = query.andWhere('block.block_number <= :to', { to });
-    }
-    query = query
-      .orderBy('block.block_number', 'ASC')
-      .limit(theLimit)
-      .offset(theOffset);
-    const results = await query.getMany();
-    return results.map((res) => {
-      return res.toApiDBBlock();
-    });
-  }
+  //   let query = this.manager.createQueryBuilder(this.blockTable, 'block');
+  //   if (from !== undefined) {
+  //     query = query.andWhere('block.block_number >= :from', { from });
+  //   }
+  //   if (to !== undefined) {
+  //     query = query.andWhere('block.block_number <= :to', { to });
+  //   }
+  //   query = query
+  //     .orderBy('block.block_number', 'ASC')
+  //     .limit(theLimit)
+  //     .offset(theOffset);
+  //   const results = await query.getMany();
+  //   return results.map((res) => {
+  //     return res.toApiDBBlock();
+  //   });
+  // }
 
   public async getBlock(blockHash: string): Promise<ApiDBBlock | null> {
     const query = this.manager
@@ -122,7 +121,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     limit,
     offset,
     returnResponse,
-  }: QueryTransaction): Promise<ApiDBTransaction[]> {
+  }: QueryTransaction): Promise<PaginatedList<ApiDBTransaction>> {
     if (paymentReference) {
       if (!/^0x[0-9a-f]{64}$/i.test(paymentReference)) {
         throw new Error('Invalid payment reference');
@@ -153,10 +152,14 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
       .addOrderBy('transaction.hash', 'ASC')
       .limit(theLimit)
       .offset(theOffset);
+
+    const count = await query.getCount();
     const results = await query.getMany();
-    return results.map((res) => {
+    const items = results.map((res) => {
       return res.toApiDBTransaction(returnResponse);
     });
+
+    return new PaginatedList(items, count, theLimit, theOffset);
   }
 
   public async getTransaction(

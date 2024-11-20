@@ -20,20 +20,4 @@ export class QueryBlock {
     @Type(() => Number)
     @IsOptional()
     to?: number;
-  
-    /**
-     * Query limit. Capped by server config settings
-     */
-    @IsInt()
-    @Type(() => Number)
-    @IsOptional()
-    limit?: number;
-  
-    /**
-     * Query offset
-     */
-    @IsInt()
-    @Type(() => Number)
-    @IsOptional()
-    offset?: number;
   }

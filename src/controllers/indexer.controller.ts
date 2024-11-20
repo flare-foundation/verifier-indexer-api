@@ -24,7 +24,8 @@ import {
   ApiResponseWrapper,
   handleApiResponse,
 } from 'src/utils/api-models/ApiResponse';
-import { ApiResponseWrapperDec } from 'src/utils/open-api-utils';
+import { PaginatedList } from 'src/utils/api-models/PaginatedList';
+import { ApiResponseWrapperDec, ApiResponseWrapperPaginated } from 'src/utils/open-api-utils';
 
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
@@ -86,20 +87,18 @@ abstract class BaseIndexerController {
     return handleApiResponse(this.indexerEngine.confirmedBlockAt(blockNumber));
   }
 
-  /**
-   * Paginated query for blocks subject to conditions from query parameters.
-   * @param from Minimal block number of query range
-   * @param to Maximal block number of the query range
-   * @param limit Query limit. Capped by server config settings
-   * @param offset Query offset
-   */
-  @Get('block')
-  @ApiResponseWrapperDec(ApiDBBlock, true)
-  public async blockList(
-    @Query() query: QueryBlock,
-  ): Promise<ApiResponseWrapper<ApiDBBlock[]>> {
-    return handleApiResponse(this.indexerEngine.listBlock(query));
-  }
+  // /**
+  //  * Paginated query for blocks subject to conditions from query parameters.
+  //  * @param from Minimal block number of query range
+  //  * @param to Maximal block number of the query range
+  //  */
+  // @Get('block')
+  // @ApiResponseWrapperPaginated(ApiDBBlock)
+  // public async blockList(
+  //   @Query() query: QueryBlock,
+  // ): Promise<ApiResponseWrapper<PaginatedList<ApiDBBlock>>> {
+  //   return handleApiResponse(this.indexerEngine.listBlock(query));
+  // }
 
   /**
    * Gets a block with given hash from the indexer database.
@@ -127,10 +126,10 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('transaction')
-  @ApiResponseWrapperDec(ApiDBTransaction, true)
+  @ApiResponseWrapperPaginated(ApiDBTransaction)
   public async transactionsList(
     @Query() query: QueryTransaction,
-  ): Promise<ApiResponseWrapper<ApiDBTransaction[]>> {
+  ): Promise<ApiResponseWrapper<PaginatedList<ApiDBTransaction>>> {
     return handleApiResponse(this.indexerEngine.listTransaction(query));
   }
 

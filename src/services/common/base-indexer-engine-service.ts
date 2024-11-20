@@ -4,6 +4,7 @@ import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
 import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
 import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
+import { PaginatedList } from 'src/utils/api-models/PaginatedList';
 
 export abstract class IIndexerEngineService {
   public abstract getStateSetting(): Promise<ApiDBState | null>;
@@ -41,13 +42,13 @@ export abstract class IIndexerEngineService {
     blockNumber: number,
   ): Promise<ApiDBBlock | null>;
 
-  public abstract listBlock(props: QueryBlock): Promise<ApiDBBlock[]>;
+  // public abstract listBlock(props: QueryBlock): Promise<PaginatedList<ApiDBBlock>>;
 
   public abstract getBlock(blockHash: string): Promise<ApiDBBlock | null>;
 
   public abstract listTransaction(
     props: QueryTransaction,
-  ): Promise<ApiDBTransaction[]>;
+  ): Promise<PaginatedList<ApiDBTransaction>>;
 
   public abstract getTransaction(
     txHash: string,
