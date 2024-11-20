@@ -42,9 +42,9 @@ export abstract class IIndexerEngineService {
     blockNumber: number,
   ): Promise<ApiDBBlock | null>;
 
-  // public abstract listBlock(props: QueryBlock): Promise<PaginatedList<ApiDBBlock>>;
+  public abstract listBlock(props: QueryBlock): Promise<PaginatedList<ApiDBBlock>>;
 
-  public abstract getBlock(blockHash: string): Promise<ApiDBBlock | null>;
+  public abstract getBlock(blockHash: string): Promise<ApiDBBlock>;
 
   public abstract listTransaction(
     props: QueryTransaction,

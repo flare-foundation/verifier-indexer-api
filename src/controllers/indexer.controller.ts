@@ -87,18 +87,18 @@ abstract class BaseIndexerController {
     return handleApiResponse(this.indexerEngine.confirmedBlockAt(blockNumber));
   }
 
-  // /**
-  //  * Paginated query for blocks subject to conditions from query parameters.
-  //  * @param from Minimal block number of query range
-  //  * @param to Maximal block number of the query range
-  //  */
-  // @Get('block')
-  // @ApiResponseWrapperPaginated(ApiDBBlock)
-  // public async blockList(
-  //   @Query() query: QueryBlock,
-  // ): Promise<ApiResponseWrapper<PaginatedList<ApiDBBlock>>> {
-  //   return handleApiResponse(this.indexerEngine.listBlock(query));
-  // }
+  /**
+   * Paginated query for blocks subject to conditions from query parameters.
+   * @param from Minimal block number of query range
+   * @param to Maximal block number of the query range
+   */
+  @Get('block')
+  @ApiResponseWrapperPaginated(ApiDBBlock)
+  public async blockList(
+    @Query() query: QueryBlock,
+  ): Promise<ApiResponseWrapper<PaginatedList<ApiDBBlock>>> {
+    return handleApiResponse(this.indexerEngine.listBlock(query));
+  }
 
   /**
    * Gets a block with given hash from the indexer database.

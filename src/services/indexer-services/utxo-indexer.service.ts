@@ -121,42 +121,41 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     return res.toApiDBBlock();
   }
 
-  // /**
-  //  * Gets a confirmed block from the indexer database in the given block number range and pagination props.
-  //  */
-  // public async listBlock({ from, to }: QueryBlock): Promise<ApiDBBlock[]> {
-  //   let theLimit = this.indexerServerPageLimit;
-  //   let query = this.manager.createQueryBuilder(this.blockTable, 'block').orderBy('block.blockNumber', 'ASC');
-  //   if 
-  //   if (from === undefined && to === undefined) {
-  //     continue;
-  //   }
-  //   const finalTo = to === undefined ? undefined : Math.min(to, from);
-  //   let theLimit = limit ?? this.indexerServerPageLimit;
-  //   theLimit = Math.min(theLimit, this.indexerServerPageLimit);
-  //   const theOffset = offset ?? 0;
+  /**
+   * Gets a confirmed block from the indexer database in the given block number range and pagination props.
+   */
+  public async listBlock({ from, to }: QueryBlock): Promise<PaginatedList<ApiDBBlock>> {
+    let theLimit = this.indexerServerPageLimit;
+    let query = this.manager.createQueryBuilder(this.blockTable, 'block').orderBy('block.blockNumber', 'ASC');
+    const count = await query.getCount();
+    theLimit = Math.min(theLimit, count);
 
-    
-  //   if (from !== undefined) {
-  //     query = query.andWhere('block.blockNumber >= :from', { from });
-  //     if (to !== undefined) {
-  //       // We have both from and to
-  //       query = query.andWhere('block.blockNumber <= :to', { to });
-  //     } else {
-  //       query = query.take(theLimit)
-  //     }
-  //   } else if (to !== undefined) {
-  //     query = query.andWhere('block.blockNumber <= :to', { to });
-  //   }
-  //   query = query
-  //     .orderBy('block.blockNumber', 'ASC')
-  //     .limit(theLimit)
-  //     .offset(theOffset);
-  //   const results = await query.getMany();
-  //   return results.map((res) => {
-  //     return res.toApiDBBlock();
-  //   });
-  // }
+    if (from !== undefined && to !== undefined && from > to) {
+      throw new Error('Invalid range, from must be less or equal than to');
+    }
+
+    if (from !== undefined) {
+      query = query.andWhere('block.blockNumber >= :from', { from });
+    } 
+    if (to !== undefined) {
+      if(from === undefined) {
+        query = query.andWhere('block.blockNumber <= :to', { to }).take(theLimit);
+      } else {
+        const tempTo =  Math.min(to, from + theLimit - 1)
+        theLimit = tempTo - from + 1;
+        query = query.andWhere('block.blockNumber <= :tempTo', { tempTo });
+      }
+    }
+    if (from === undefined && to === undefined) {
+      query = query.take(theLimit);
+    }
+    const results = await query.getMany();
+    const items = results.map((res) => {
+      return res.toApiDBBlock();
+    });
+
+    return new PaginatedList(items, count, theLimit, 0);
+  }
 
   /**
    * Gets a block header data from the indexer database for a given block hash.
@@ -168,10 +167,11 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
       .createQueryBuilder(this.blockTable, 'block')
       .andWhere('block.blockHash = :blockHash', { blockHash });
     const res = await query.getOne();
-    if (res === null) {
-      return null;
+    if (res) {
+      return res.toApiDBBlock();
     }
-    return res.toApiDBBlock();
+    throw new Error('Block not found');
+    
   }
 
   /**

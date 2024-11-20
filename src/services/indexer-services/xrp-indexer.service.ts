@@ -79,32 +79,43 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     }
   }
 
-  // public async listBlock({
-  //   from,
-  //   to
-  // }: QueryBlock): Promise<ApiDBBlock[]> {
-  //   let theLimit = limit ?? this.indexerServerPageLimit;
-  //   theLimit = Math.min(theLimit, this.indexerServerPageLimit);
-  //   const theOffset = offset ?? 0;
+  public async listBlock({
+    from,
+    to
+  }: QueryBlock): Promise<PaginatedList<ApiDBBlock>> {
+    let theLimit = this.indexerServerPageLimit;
+    let query = this.manager.createQueryBuilder(this.blockTable, 'block').orderBy('block.block_number', 'ASC');
+    const count = await query.getCount();
+    theLimit = Math.min(theLimit, count);
 
-  //   let query = this.manager.createQueryBuilder(this.blockTable, 'block');
-  //   if (from !== undefined) {
-  //     query = query.andWhere('block.block_number >= :from', { from });
-  //   }
-  //   if (to !== undefined) {
-  //     query = query.andWhere('block.block_number <= :to', { to });
-  //   }
-  //   query = query
-  //     .orderBy('block.block_number', 'ASC')
-  //     .limit(theLimit)
-  //     .offset(theOffset);
-  //   const results = await query.getMany();
-  //   return results.map((res) => {
-  //     return res.toApiDBBlock();
-  //   });
-  // }
+    if (from !== undefined && to !== undefined && from > to) {
+      throw new Error('Invalid range, from must be less or equal than to');
+    }
 
-  public async getBlock(blockHash: string): Promise<ApiDBBlock | null> {
+    if (from !== undefined) {
+      query = query.andWhere('block.block_number >= :from', { from });
+    } 
+    if (to !== undefined) {
+      if(from === undefined) {
+        query = query.andWhere('block.block_number <= :to', { to }).take(theLimit);
+      } else {
+        const tempTo =  Math.min(to, from + theLimit - 1)
+        theLimit = tempTo - from + 1;
+        query = query.andWhere('block.block_number <= :tempTo', { tempTo });
+      }
+    }
+    if (from === undefined && to === undefined) {
+      query = query.take(theLimit);
+    }
+    const results = await query.getMany();
+    const items = results.map((res) => {
+      return res.toApiDBBlock();
+    });
+
+    return new PaginatedList(items, count, theLimit, 0);
+  }
+
+  public async getBlock(blockHash: string): Promise<ApiDBBlock> {
     const query = this.manager
       .createQueryBuilder(this.blockTable, 'block')
       .andWhere('block.hash = :blockHash', { blockHash });
@@ -112,6 +123,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     if (res) {
       return res.toApiDBBlock();
     }
+    throw new Error('Block not found');
   }
 
   public async listTransaction({
