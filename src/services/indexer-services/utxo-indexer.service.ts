@@ -5,10 +5,12 @@ import { EntityManager, SelectQueryBuilder } from 'typeorm';
 
 import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
 import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
-import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
 
 import { ConfigService } from '@nestjs/config';
 import { IConfig, VerifierServerConfig } from 'src/config/configuration';
+import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
+import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
+import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
 import {
   DBUtxoIndexerBlock,
   DBUtxoTransaction,
@@ -20,9 +22,6 @@ import {
   TipSyncState,
 } from 'src/entity/utxo-entity-definitions';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
-import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
-import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
-import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
 
 abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables

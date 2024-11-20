@@ -1,6 +1,12 @@
-import { ConfigService } from '@nestjs/config';
+import { unPrefix0x } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { IConfig, VerifierServerConfig } from 'src/config/configuration';
+import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
+import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
+import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
+import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
+import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
 import {
   DBXrpIndexerBlock,
   DBXrpState,
@@ -11,13 +17,6 @@ import {
 } from 'src/entity/xrp-entity-definitions';
 import { EntityManager } from 'typeorm';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
-import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
-import { unPrefix0x } from '@flarenetwork/mcc';
-import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
-import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
-import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
 
 @Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {
