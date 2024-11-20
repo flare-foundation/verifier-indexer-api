@@ -11,7 +11,10 @@ import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
 import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock';
 import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
 import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
-import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
+import {
+  QueryBlock,
+  QueryTransaction,
+} from 'src/dtos/indexer/QueryTransaction.dto';
 import {
   IIndexerEngineService,
   IIndexerState,
@@ -50,6 +53,25 @@ abstract class BaseIndexerController {
   }
 
   /**
+   * Paged query for confirmed transactions subject to conditions from query parameters.
+   * Transactions are sorted first by block number and then by transaction id.
+   * @param from Minimal block number of query range
+   * @param to Maximal block number of the query range
+   * @param paymentReference 0x-prefixed lowercase hex string representing 32-bytes
+   * @param limit Query limit. Capped by server config settings
+   * @param offset Query offset
+   * @param returnResponse Whether response from node stored in the indexer database should be returned
+   * @returns
+   */
+
+  @Get('transaction')
+  public async transactionsList(
+    @Query() query: QueryTransaction,
+  ): Promise<ApiResponseWrapper<ApiDBTransaction[]>> {
+    return handleApiResponse(this.indexerEngine.listTransaction(query));
+  }
+
+  /**
    * Gets the transaction for a given transaction id (hash).
    * @param txHash
    * @returns
@@ -61,6 +83,18 @@ abstract class BaseIndexerController {
     return handleApiResponse(
       this.indexerEngine.getTransaction(txHash.toLowerCase()),
     );
+  }
+
+  /**
+   * Gets a block with given hash from the indexer database.
+   * @param blockHash
+   * @returns
+   */
+  @Get('block')
+  public async blockList(
+    @Query() query: QueryBlock,
+  ): Promise<ApiResponseWrapper<ApiDBBlock[]>> {
+    return handleApiResponse(this.indexerEngine.listBlock(query));
   }
 
   /**
@@ -110,27 +144,6 @@ abstract class BaseIndexerController {
   ): Promise<ApiResponseWrapper<ApiDBBlock>> {
     return handleApiResponse(
       this.indexerEngine.getTransactionBlock(txHash.toLowerCase()),
-    );
-  }
-
-  /**
-   * Paged query for confirmed transactions subject to conditions from query parameters.
-   * Transactions are sorted first by block number and then by transaction id.
-   * @param from Minimal block number of query range
-   * @param to Maximal block number of the query range
-   * @param paymentReference 0x-prefixed lowercase hex string representing 32-bytes
-   * @param limit Query limit. Capped by server config settings
-   * @param offset Query offset
-   * @param returnResponse Whether response from node stored in the indexer database should be returned
-   * @returns
-   */
-
-  @Get('transaction')
-  public async transactionsWithinBlockRange(
-    @Query() query: QueryTransaction,
-  ): Promise<ApiResponseWrapper<ApiDBTransaction[]>> {
-    return handleApiResponse(
-      this.indexerEngine.getTransactionsWithinBlockRange(query),
     );
   }
 }

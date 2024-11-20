@@ -124,10 +124,16 @@ export class DBXrpState {
   last_chain_block_timestamp: number;
 
   @Column()
+  last_indexed_block_updated: number;
+
+  @Column()
   last_indexed_block_number: number;
 
   @Column()
   last_indexed_block_timestamp: number;
+
+  @Column()
+  last_chain_block_updated: number;
 
   @Column()
   first_indexed_block_number: number;
@@ -135,8 +141,8 @@ export class DBXrpState {
   @Column()
   first_indexed_block_timestamp: number;
 
-  @Column({ type: 'timestamptz' }) 
-  updated: Date;
+  @Column()
+  last_history_drop: number;
 }
 
 export type IDBXrpState = new () => DBXrpState;

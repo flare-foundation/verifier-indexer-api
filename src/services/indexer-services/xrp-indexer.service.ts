@@ -11,7 +11,6 @@ import {
 } from 'src/entity/xrp-entity-definitions';
 import { EntityManager } from 'typeorm';
 import {
-  getTransactionsWithinBlockRangeProps,
   IIndexerEngineService,
   IIndexerState,
 } from '../common/base-indexer-engine-service';
@@ -19,6 +18,7 @@ import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock';
 import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
 import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
 import { unPrefix0x } from '@flarenetwork/mcc';
+import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
 
 @Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {
@@ -136,14 +136,14 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     }
   }
 
-  public async getTransactionsWithinBlockRange({
+  public async listTransaction({
     from,
     to,
     paymentReference,
     limit,
     offset,
     returnResponse,
-  }: getTransactionsWithinBlockRangeProps): Promise<ApiDBTransaction[]> {
+  }: QueryTransaction): Promise<ApiDBTransaction[]> {
     if (paymentReference) {
       if (!/^0x[0-9a-f]{64}$/i.test(paymentReference)) {
         throw new Error('Invalid payment reference');
@@ -177,6 +177,33 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     const results = await query.getMany();
     return results.map((res) => {
       return res.toApiDBTransaction(returnResponse);
+    });
+  }
+
+  public async listBlock({
+    from,
+    to,
+    limit,
+    offset,
+  }: QueryTransaction): Promise<ApiDBBlock[]> {
+    let theLimit = limit ?? this.indexerServerPageLimit;
+    theLimit = Math.min(theLimit, this.indexerServerPageLimit);
+    const theOffset = offset ?? 0;
+
+    let query = this.manager.createQueryBuilder(this.blockTable, 'block');
+    if (from !== undefined) {
+      query = query.andWhere('block.block_number >= :from', { from });
+    }
+    if (to !== undefined) {
+      query = query.andWhere('block.block_number <= :to', { to });
+    }
+    query = query
+      .orderBy('block.block_number', 'ASC')
+      .limit(theLimit)
+      .offset(theOffset);
+    const results = await query.getMany();
+    return results.map((res) => {
+      return res.toApiDBBlock();
     });
   }
 }

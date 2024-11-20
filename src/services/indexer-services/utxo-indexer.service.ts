@@ -22,8 +22,11 @@ import {
 import {
   IIndexerEngineService,
   IIndexerState,
-  getTransactionsWithinBlockRangeProps,
 } from '../common/base-indexer-engine-service';
+import {
+  QueryBlock,
+  QueryTransaction,
+} from 'src/dtos/indexer/QueryTransaction.dto';
 
 abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
@@ -198,19 +201,16 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   }
 
   /**
-   * Gets a confirmed transaction from the indexer database in the given block number range.
-   * @param from
-   * @param to
-   * @returns
+   * Gets a confirmed transaction from the indexer database in the given block number range. and pagination props
    */
-  public async getTransactionsWithinBlockRange({
+  public async listTransaction({
     from,
     to,
     paymentReference,
     limit,
     offset,
     returnResponse,
-  }: getTransactionsWithinBlockRangeProps): Promise<ApiDBTransaction[]> {
+  }: QueryTransaction): Promise<ApiDBTransaction[]> {
     if (paymentReference) {
       if (!/^0x[0-9a-f]{64}$/i.test(paymentReference)) {
         throw new Error('Invalid payment reference');
@@ -247,6 +247,36 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     const results = await query.getMany();
     return results.map((res) => {
       return res.toApiDBTransaction(this.chainType, returnResponse);
+    });
+  }
+
+  /**
+   * Gets a confirmed block from the indexer database in the given block number range and pagination props.
+   */
+  public async listBlock({
+    from,
+    to,
+    limit,
+    offset,
+  }: QueryBlock): Promise<ApiDBBlock[]> {
+    let theLimit = limit ?? this.indexerServerPageLimit;
+    theLimit = Math.min(theLimit, this.indexerServerPageLimit);
+    const theOffset = offset ?? 0;
+
+    let query = this.manager.createQueryBuilder(this.blockTable, 'block');
+    if (from !== undefined) {
+      query = query.andWhere('block.blockNumber >= :from', { from });
+    }
+    if (to !== undefined) {
+      query = query.andWhere('block.blockNumber <= :to', { to });
+    }
+    query = query
+      .orderBy('block.blockNumber', 'ASC')
+      .limit(theLimit)
+      .offset(theOffset);
+    const results = await query.getMany();
+    return results.map((res) => {
+      return res.toApiDBBlock();
     });
   }
 }
