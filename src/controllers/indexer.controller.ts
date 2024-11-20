@@ -24,6 +24,7 @@ import {
   ApiResponseWrapper,
   handleApiResponse,
 } from 'src/utils/api-models/ApiResponse';
+import { ApiResponseWrapperDec } from 'src/utils/open-api-utils';
 
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
@@ -35,6 +36,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('state')
+  @ApiResponseWrapperDec(ApiDBState, false)
   public async indexerState(): Promise<ApiResponseWrapper<ApiDBState>> {
     return handleApiResponse(this.indexerEngine.getStateSetting());
   }
@@ -44,6 +46,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('block-range')
+  @ApiResponseWrapperDec(BlockRange, false)
   public async blockRange(): Promise<ApiResponseWrapper<BlockRange>> {
     return handleApiResponse(this.indexerEngine.getBlockRange());
   }
@@ -53,6 +56,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('block-height-indexed')
+  @ApiResponseWrapperDec(Number, false)
   public async blockHeightIndexed(): Promise<ApiResponseWrapper<number>> {
     return handleApiResponse(this.indexerEngine.getBlockHeightIndexed());
   }
@@ -62,6 +66,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('block-height-tip')
+  @ApiResponseWrapperDec(Number, false)
   public async blockHeightTip(): Promise<ApiResponseWrapper<number>> {
     return handleApiResponse(this.indexerEngine.getBlockHeightTip());
   }
@@ -74,6 +79,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('confirmed-block-at/:blockNumber')
+  @ApiResponseWrapperDec(ApiDBBlock, false)
   public async confirmedBlockAt(
     @Param('blockNumber', new ParseIntPipe()) blockNumber: number,
   ): Promise<ApiResponseWrapper<ApiDBBlock>> {
@@ -88,6 +94,7 @@ abstract class BaseIndexerController {
    * @param offset Query offset
    */
   @Get('block')
+  @ApiResponseWrapperDec(ApiDBBlock, true)
   public async blockList(
     @Query() query: QueryBlock,
   ): Promise<ApiResponseWrapper<ApiDBBlock[]>> {
@@ -99,6 +106,7 @@ abstract class BaseIndexerController {
    * @param blockHash
    */
   @Get('block/:blockHash')
+  @ApiResponseWrapperDec(ApiDBBlock, false)
   public async block(
     @Param('blockHash') blockHash: string,
   ): Promise<ApiResponseWrapper<ApiDBBlock>> {
@@ -119,6 +127,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('transaction')
+  @ApiResponseWrapperDec(ApiDBTransaction, true)
   public async transactionsList(
     @Query() query: QueryTransaction,
   ): Promise<ApiResponseWrapper<ApiDBTransaction[]>> {
@@ -131,6 +140,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('transaction/:txHash')
+  @ApiResponseWrapperDec(ApiDBTransaction, false)
   public async transaction(
     @Param('txHash') txHash: string,
   ): Promise<ApiResponseWrapper<ApiDBTransaction>> {
@@ -145,6 +155,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('transaction-block/:txHash')
+  @ApiResponseWrapperDec(ApiDBBlock, false)
   public async transactionBlock(
     @Param('txHash') txHash: string,
   ): Promise<ApiResponseWrapper<ApiDBBlock>> {

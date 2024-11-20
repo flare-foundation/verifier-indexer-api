@@ -61,42 +61,42 @@ export function ApiResponseWrapperDec<TModel extends Type<any>>(
   );
 }
 
-/**
- *
- * @param models
- * @returns
- */
-export function ApiPropertyUnion<TTypeArray extends Array<Type<any>>>(
-  models: TTypeArray,
-) {
-  return applyDecorators(
-    ApiProperty({
-      oneOf: models.map((model) => {
-        return {
-          $ref: getSchemaPath(model),
-        };
-      }),
-    }),
-  );
-}
+// /**
+//  *
+//  * @param models
+//  * @returns
+//  */
+// export function ApiPropertyUnion<TTypeArray extends Array<Type<any>>>(
+//   models: TTypeArray,
+// ) {
+//   return applyDecorators(
+//     ApiProperty({
+//       oneOf: models.map((model) => {
+//         return {
+//           $ref: getSchemaPath(model),
+//         };
+//       }),
+//     }),
+//   );
+// }
 
-/**
- * Decorator for Union type generic responses.
- * @param models
- * @returns
- */
-export function ApiBodyUnion<TTypeArray extends Array<Type<any>>>(
-  models: TTypeArray,
-) {
-  return applyDecorators(
-    ApiBody({
-      schema: {
-        oneOf: models.map((model) => {
-          return {
-            $ref: getSchemaPath(model),
-          };
-        }),
-      },
-    }),
-  );
-}
+// /**
+//  * Decorator for Union type generic responses.
+//  * @param models
+//  * @returns
+//  */
+// export function ApiBodyUnion<TTypeArray extends Array<Type<any>>>(
+//   models: TTypeArray,
+// ) {
+//   return applyDecorators(
+//     ApiBody({
+//       schema: {
+//         oneOf: models.map((model) => {
+//           return {
+//             $ref: getSchemaPath(model),
+//           };
+//         }),
+//       },
+//     }),
+//   );
+// }
