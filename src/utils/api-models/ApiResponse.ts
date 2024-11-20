@@ -1,20 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-/**
- * All possible values of status.
- */
-// export type ApiDefaultResponseStatusEnum =
-//   | "OK"
-//   | "ERROR"
-//   | "REQUEST_BODY_ERROR"
-//   | "VALIDATION_ERROR"
-//   | "TOO_MANY_REQUESTS"
-//   | "UNAUTHORIZED"
-//   | "AUTH_ERROR"
-//   | "UPSTREAM_HTTP_ERROR"
-//   | "INVALID_REQUEST"
-//   | "NOT_IMPLEMENTED"
-//   | "PENDING";
 
 export enum ApiResStatusEnum {
   OK = 'OK',

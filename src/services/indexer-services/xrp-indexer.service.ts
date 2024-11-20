@@ -167,7 +167,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
       .andWhere('transaction.hash = :txHash', { txHash });
     const res = await query.getOne();
     if (res) {
-      return res.toApiDBTransaction();
+      return res.toApiDBTransaction(true);
     }
   }
 
