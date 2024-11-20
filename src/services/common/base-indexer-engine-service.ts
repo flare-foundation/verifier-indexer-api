@@ -8,9 +8,34 @@ import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
 export abstract class IIndexerEngineService {
   public abstract getStateSetting(): Promise<ApiDBState | null>;
 
-  public abstract getBlockRange(): Promise<BlockRange | null>;
+  /**
+   * Gets the range of available confirmed blocks in the indexer database.
+   * @returns
+   */
+  public async getBlockRange(): Promise<BlockRange> {
+    const state = await this.getStateSetting();
+    return {
+      first: state.bottom_indexed_block.height,
+      last: state.top_indexed_block.height,
+      tip: state.chain_tip_block.height,
+    };
+  }
 
-  public abstract getBlockHeight(): Promise<number | null>;
+  /**
+   * Get the height of the last observed block in the indexer database.
+   */
+  public async getBlockHeightIndexed(): Promise<number> {
+    const state = await this.getStateSetting();
+    return state.top_indexed_block.height;
+  }
+
+  /**
+   * Get the height of the last observed block in the indexer database.
+   */
+  public async getBlockHeightTip(): Promise<number> {
+    const state = await this.getStateSetting();
+    return state.chain_tip_block.height;
+  }
 
   public abstract confirmedBlockAt(
     blockNumber: number,

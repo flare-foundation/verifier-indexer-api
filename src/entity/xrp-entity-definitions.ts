@@ -40,8 +40,7 @@ export class DBXrpIndexerBlock {
       timestamp: this.timestamp,
       transactions: this.transactions,
       confirmed: true,
-      numberOfConfirmations: 0,
-      previousBlockHash: 'Add me', // TODO: update indexer and add this field
+      numberOfConfirmations: 0
     };
   }
 }

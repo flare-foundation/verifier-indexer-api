@@ -28,9 +28,4 @@ export class ApiDBBlock {
    * Number of confirmations of the block.
    */
   numberOfConfirmations: number;
-
-  /**
-   * Parent block hash.
-   */
-  previousBlockHash: string;
 }

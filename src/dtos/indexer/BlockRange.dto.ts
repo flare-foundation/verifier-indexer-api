@@ -1,10 +1,16 @@
 export class BlockRange {
   /**
-   * First block number (included)
+   * First indexed block number (included)
    */
   first: number;
+
   /**
-   * Last block number (included)
+   * Last indexed block number (included)
    */
   last: number;
+
+  /**
+   * Tip chain block number (included)
+   */
+  tip: number;
 }

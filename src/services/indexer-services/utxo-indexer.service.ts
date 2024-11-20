@@ -72,11 +72,17 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   public async getStateSetting(): Promise<ApiDBState> {
     const queryTop = this.manager.createQueryBuilder(this.tipState, 'state');
     const resTop = await queryTop.getOne();
+    if (!resTop) {
+      throw new Error('No tip state found in the indexer database');
+    }
     const queryPrune = this.manager.createQueryBuilder(
       this.pruneState,
       'state',
     );
     const resPrune = await queryPrune.getOne();
+    if (!resPrune) {
+      throw new Error('No prune state found in the indexer database');
+    }
     const state: ApiDBState = {
       bottom_indexed_block: {
         height: resPrune.latestIndexedTailHeight,
@@ -98,61 +104,6 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   }
 
   /**
-   * Gets the range of available confirmed blocks in the indexer database.
-   * @returns
-   */
-  public async getBlockRange(): Promise<BlockRange | null> {
-    const query = this.manager
-      .createQueryBuilder(this.transactionTable, 'transaction')
-      .select('MAX(transaction.blockNumber)', 'max')
-      .addSelect('MIN(transaction.blockNumber)', 'min');
-    const res = await query.getRawOne();
-    if (res) {
-      return {
-        first: res.min,
-        last: res.max,
-      };
-    }
-    return null;
-  }
-
-  /**
-   * Gets the confirmed transaction from the indexer database for a given transaction id (hash).
-   * @param txHash
-   * @returns
-   */
-  public async getTransaction(
-    txHash: string,
-  ): Promise<ApiDBTransaction> | null {
-    const query = this.joinTransactionQuery(
-      this.manager
-        .createQueryBuilder(this.transactionTable, 'transaction')
-        .andWhere('transaction.transactionId = :txHash', { txHash }),
-    );
-    const res = await query.getOne();
-    if (res === null) {
-      return null;
-    }
-    return res.toApiDBTransaction(this.chainType, true);
-  }
-
-  /**
-   * Gets a block header data from the indexer database for a given block hash.
-   * @param blockHash
-   * @returns
-   */
-  public async getBlock(blockHash: string): Promise<ApiDBBlock | null> {
-    const query = this.manager
-      .createQueryBuilder(this.blockTable, 'block')
-      .andWhere('block.blockHash = :blockHash', { blockHash });
-    const res = await query.getOne();
-    if (res === null) {
-      return null;
-    }
-    return res.toApiDBBlock();
-  }
-
-  /**
    * Gets a block in the indexer database with the given block number. Note that some chains may have blocks in multiple forks on the same height.
    * @param blockNumber
    * @returns
@@ -171,36 +122,49 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   }
 
   /**
-   * Get the height of the last observed block in the indexer database.
+   * Gets a confirmed block from the indexer database in the given block number range and pagination props.
    */
-  public async getBlockHeight(): Promise<number> | null {
+  public async listBlock({
+    from,
+    to,
+    limit,
+    offset,
+  }: QueryBlock): Promise<ApiDBBlock[]> {
+    let theLimit = limit ?? this.indexerServerPageLimit;
+    theLimit = Math.min(theLimit, this.indexerServerPageLimit);
+    const theOffset = offset ?? 0;
+
+    let query = this.manager.createQueryBuilder(this.blockTable, 'block');
+    if (from !== undefined) {
+      query = query.andWhere('block.blockNumber >= :from', { from });
+    }
+    if (to !== undefined) {
+      query = query.andWhere('block.blockNumber <= :to', { to });
+    }
+    query = query
+      .orderBy('block.blockNumber', 'ASC')
+      .limit(theLimit)
+      .offset(theOffset);
+    const results = await query.getMany();
+    return results.map((res) => {
+      return res.toApiDBBlock();
+    });
+  }
+
+  /**
+   * Gets a block header data from the indexer database for a given block hash.
+   * @param blockHash
+   * @returns
+   */
+  public async getBlock(blockHash: string): Promise<ApiDBBlock | null> {
     const query = this.manager
       .createQueryBuilder(this.blockTable, 'block')
-      .orderBy('block.blockNumber', 'DESC')
-      .limit(1);
+      .andWhere('block.blockHash = :blockHash', { blockHash });
     const res = await query.getOne();
     if (res === null) {
       return null;
     }
-    return res.blockNumber;
-  }
-
-  /**
-   * Get the block header data of the confirmed transaction in the database
-   * for the given transaction id.
-   * @param txHash
-   * @returns
-   */
-  public async getTransactionBlock(txHash: string): Promise<ApiDBBlock> | null {
-    const tx = await this.getTransaction(txHash);
-    if (tx) {
-      const block = await this.confirmedBlockAt(tx.blockNumber);
-      if (block === null) {
-        return null;
-      }
-      return block;
-    }
-    return null;
+    return res.toApiDBBlock();
   }
 
   /**
@@ -254,33 +218,41 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   }
 
   /**
-   * Gets a confirmed block from the indexer database in the given block number range and pagination props.
+   * Gets the confirmed transaction from the indexer database for a given transaction id (hash).
+   * @param txHash
+   * @returns
    */
-  public async listBlock({
-    from,
-    to,
-    limit,
-    offset,
-  }: QueryBlock): Promise<ApiDBBlock[]> {
-    let theLimit = limit ?? this.indexerServerPageLimit;
-    theLimit = Math.min(theLimit, this.indexerServerPageLimit);
-    const theOffset = offset ?? 0;
+  public async getTransaction(
+    txHash: string,
+  ): Promise<ApiDBTransaction> | null {
+    const query = this.joinTransactionQuery(
+      this.manager
+        .createQueryBuilder(this.transactionTable, 'transaction')
+        .andWhere('transaction.transactionId = :txHash', { txHash }),
+    );
+    const res = await query.getOne();
+    if (res === null) {
+      return null;
+    }
+    return res.toApiDBTransaction(this.chainType, true);
+  }
 
-    let query = this.manager.createQueryBuilder(this.blockTable, 'block');
-    if (from !== undefined) {
-      query = query.andWhere('block.blockNumber >= :from', { from });
+  /**
+   * Get the block header data of the confirmed transaction in the database
+   * for the given transaction id.
+   * @param txHash
+   * @returns
+   */
+  public async getTransactionBlock(txHash: string): Promise<ApiDBBlock> | null {
+    const tx = await this.getTransaction(txHash);
+    if (tx) {
+      const block = await this.confirmedBlockAt(tx.blockNumber);
+      if (block === null) {
+        return null;
+      }
+      return block;
     }
-    if (to !== undefined) {
-      query = query.andWhere('block.blockNumber <= :to', { to });
-    }
-    query = query
-      .orderBy('block.blockNumber', 'ASC')
-      .limit(theLimit)
-      .offset(theOffset);
-    const results = await query.getMany();
-    return results.map((res) => {
-      return res.toApiDBBlock();
-    });
+    return null;
   }
 }
 

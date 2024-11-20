@@ -44,6 +44,9 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
   public async getStateSetting(): Promise<ApiDBState> {
     const query = this.manager.createQueryBuilder(this.tipState, 'states');
     const res = await query.getOne();
+    if (!res) {
+      throw new Error('No state setting found in the database XRP');
+    }
     const response: ApiDBState = {
       bottom_indexed_block: {
         height: res.first_indexed_block_number,
@@ -64,43 +67,6 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     return response;
   }
 
-  public async getBlockRange(): Promise<BlockRange | null> {
-    const query = this.manager
-      .createQueryBuilder(this.transactionTable, 'transaction')
-      .select('MAX(transaction.block_number)', 'max')
-      .addSelect('MIN(transaction.block_number)', 'min');
-    const res = await query.getRawOne();
-    if (res) {
-      return {
-        first: res.min,
-        last: res.max,
-      };
-    }
-    return null;
-  }
-
-  public async getTransaction(
-    txHash: string,
-  ): Promise<ApiDBTransaction | null> {
-    const query = this.manager
-      .createQueryBuilder(this.transactionTable, 'transaction')
-      .andWhere('transaction.hash = :txHash', { txHash });
-    const res = await query.getOne();
-    if (res) {
-      return res.toApiDBTransaction();
-    }
-  }
-
-  public async getBlock(blockHash: string): Promise<ApiDBBlock | null> {
-    const query = this.manager
-      .createQueryBuilder(this.blockTable, 'block')
-      .andWhere('block.hash = :blockHash', { blockHash });
-    const res = await query.getOne();
-    if (res) {
-      return res.toApiDBBlock();
-    }
-  }
-
   public async confirmedBlockAt(
     blockNumber: number,
   ): Promise<ApiDBBlock | null> {
@@ -113,28 +79,37 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     }
   }
 
-  public async getBlockHeight(): Promise<number | null> {
-    const query = this.manager
-      .createQueryBuilder(this.blockTable, 'block')
-      .orderBy('block.block_number', 'DESC')
-      .limit(1);
-    const res = await query.getOne();
-    if (res === null) {
-      return null;
+  public async listBlock({
+    from,
+    to,
+    limit,
+    offset,
+  }: QueryBlock): Promise<ApiDBBlock[]> {
+    let theLimit = limit ?? this.indexerServerPageLimit;
+    theLimit = Math.min(theLimit, this.indexerServerPageLimit);
+    const theOffset = offset ?? 0;
+
+    let query = this.manager.createQueryBuilder(this.blockTable, 'block');
+    if (from !== undefined) {
+      query = query.andWhere('block.block_number >= :from', { from });
     }
-    return res.block_number;
+    if (to !== undefined) {
+      query = query.andWhere('block.block_number <= :to', { to });
+    }
+    query = query
+      .orderBy('block.block_number', 'ASC')
+      .limit(theLimit)
+      .offset(theOffset);
+    const results = await query.getMany();
+    return results.map((res) => {
+      return res.toApiDBBlock();
+    });
   }
 
-  public async getTransactionBlock(txHash: string): Promise<ApiDBBlock | null> {
-    const tx = await this.getTransaction(txHash);
-    if (!tx) {
-      return null;
-    }
+  public async getBlock(blockHash: string): Promise<ApiDBBlock | null> {
     const query = this.manager
       .createQueryBuilder(this.blockTable, 'block')
-      .andWhere('block.block_number = :blockNumber', {
-        blockNumber: tx.blockNumber,
-      });
+      .andWhere('block.hash = :blockHash', { blockHash });
     const res = await query.getOne();
     if (res) {
       return res.toApiDBBlock();
@@ -185,30 +160,43 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     });
   }
 
-  public async listBlock({
-    from,
-    to,
-    limit,
-    offset,
-  }: QueryBlock): Promise<ApiDBBlock[]> {
-    let theLimit = limit ?? this.indexerServerPageLimit;
-    theLimit = Math.min(theLimit, this.indexerServerPageLimit);
-    const theOffset = offset ?? 0;
+  public async getTransaction(
+    txHash: string,
+  ): Promise<ApiDBTransaction | null> {
+    const query = this.manager
+      .createQueryBuilder(this.transactionTable, 'transaction')
+      .andWhere('transaction.hash = :txHash', { txHash });
+    const res = await query.getOne();
+    if (res) {
+      return res.toApiDBTransaction();
+    }
+  }
 
-    let query = this.manager.createQueryBuilder(this.blockTable, 'block');
-    if (from !== undefined) {
-      query = query.andWhere('block.block_number >= :from', { from });
+  public async getBlockHeight(): Promise<number | null> {
+    const query = this.manager
+      .createQueryBuilder(this.blockTable, 'block')
+      .orderBy('block.block_number', 'DESC')
+      .limit(1);
+    const res = await query.getOne();
+    if (res === null) {
+      return null;
     }
-    if (to !== undefined) {
-      query = query.andWhere('block.block_number <= :to', { to });
+    return res.block_number;
+  }
+
+  public async getTransactionBlock(txHash: string): Promise<ApiDBBlock | null> {
+    const tx = await this.getTransaction(txHash);
+    if (!tx) {
+      return null;
     }
-    query = query
-      .orderBy('block.block_number', 'ASC')
-      .limit(theLimit)
-      .offset(theOffset);
-    const results = await query.getMany();
-    return results.map((res) => {
+    const query = this.manager
+      .createQueryBuilder(this.blockTable, 'block')
+      .andWhere('block.block_number = :blockNumber', {
+        blockNumber: tx.blockNumber,
+      });
+    const res = await query.getOne();
+    if (res) {
       return res.toApiDBBlock();
-    });
+    }
   }
 }

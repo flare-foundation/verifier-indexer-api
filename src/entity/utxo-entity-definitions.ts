@@ -59,8 +59,7 @@ export class DBUtxoIndexerBlock {
       timestamp: this.timestamp,
       transactions: this.transactions,
       confirmed: this.confirmed,
-      numberOfConfirmations: 0,
-      previousBlockHash: this.previousBlockHash,
+      numberOfConfirmations: 0
     };
   }
 }

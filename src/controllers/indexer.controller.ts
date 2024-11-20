@@ -44,7 +44,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('block-range')
-  public async blockRange(): Promise<ApiResponseWrapper<BlockRange | null>> {
+  public async blockRange(): Promise<ApiResponseWrapper<BlockRange>> {
     return handleApiResponse(this.indexerEngine.getBlockRange());
   }
 
@@ -52,10 +52,20 @@ abstract class BaseIndexerController {
    * Gets the indexed block height.
    * @returns
    */
-  @Get('block-height')
-  public async blockHeight(): Promise<ApiResponseWrapper<number>> {
-    return handleApiResponse(this.indexerEngine.getBlockHeight());
+  @Get('block-height-indexed')
+  public async blockHeightIndexed(): Promise<ApiResponseWrapper<number>> {
+    return handleApiResponse(this.indexerEngine.getBlockHeightIndexed());
   }
+
+  /**
+   * Gets the indexed block height.
+   * @returns
+   */
+  @Get('block-height-tip')
+  public async blockHeightTip(): Promise<ApiResponseWrapper<number>> {
+    return handleApiResponse(this.indexerEngine.getBlockHeightTip());
+  }
+
 
   /**
    * Gets confirmed block with the given block number.
