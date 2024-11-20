@@ -5,8 +5,8 @@ import {
   IUtxoVinTransactionPrevout,
   IUtxoVoutTransaction,
 } from '@flarenetwork/mcc';
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
+import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
+import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
 import {
   BlockResult,
   TransactionResult,

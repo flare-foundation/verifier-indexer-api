@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 
 import { EntityManager, SelectQueryBuilder } from 'typeorm';
 
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
+import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
+import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
 import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
 
 import { ConfigService } from '@nestjs/config';
@@ -19,14 +19,10 @@ import {
   PruneSyncState,
   TipSyncState,
 } from 'src/entity/utxo-entity-definitions';
-import {
-  IIndexerEngineService,
-  IIndexerState,
-} from '../common/base-indexer-engine-service';
-import {
-  QueryBlock,
-  QueryTransaction,
-} from 'src/dtos/indexer/QueryTransaction.dto';
+import { IIndexerEngineService } from '../common/base-indexer-engine-service';
+import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
+import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
+import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
 
 abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
@@ -73,23 +69,30 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
    * Gets the state entries from the indexer database.
    * @returns
    */
-  public async getStateSetting(): Promise<IIndexerState> {
+  public async getStateSetting(): Promise<ApiDBState> {
     const queryTop = this.manager.createQueryBuilder(this.tipState, 'state');
-    const res = await queryTop.getOne();
+    const resTop = await queryTop.getOne();
     const queryPrune = this.manager.createQueryBuilder(
       this.pruneState,
       'state',
     );
     const resPrune = await queryPrune.getOne();
-    const state = {
-      indexedBlockRange: {
-        first: resPrune.latestIndexedTailHeight,
-        last: res.latestIndexedHeight,
+    const state: ApiDBState = {
+      bottom_indexed_block: {
+        height: resPrune.latestIndexedTailHeight,
+        timestamp: -1, // FUTURE FEAT: (Luka) add to db
+        last_updated: resPrune.timestamp,
       },
-      tipHeight: res.latestTipHeight,
-      lastTipUpdateTimestamp: res.timestamp,
-      lastTailUpdateTimestamp: resPrune.timestamp,
-      state: res.syncState,
+      top_indexed_block: {
+        height: resTop.latestIndexedHeight,
+        timestamp: -1, // FUTURE FEAT: (Luka) add to db
+        last_updated: resTop.timestamp,
+      },
+      chain_tip_block: {
+        height: resTop.latestTipHeight,
+        timestamp: -1, // FUTURE FEAT: (Luka) add to db
+        last_updated: resTop.timestamp,
+      },
     };
     return state;
   }

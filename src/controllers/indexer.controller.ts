@@ -8,17 +8,13 @@ import {
 } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
+import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
+import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
+import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
 import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
-import {
-  QueryBlock,
-  QueryTransaction,
-} from 'src/dtos/indexer/QueryTransaction.dto';
-import {
-  IIndexerEngineService,
-  IIndexerState,
-} from 'src/services/common/base-indexer-engine-service';
+import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
+import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
+import { IIndexerEngineService } from 'src/services/common/base-indexer-engine-service';
 import {
   BtcExternalIndexerEngineService,
   DogeExternalIndexerEngineService,
@@ -39,7 +35,7 @@ abstract class BaseIndexerController {
    * @returns
    */
   @Get('state')
-  public async indexerState(): Promise<ApiResponseWrapper<IIndexerState>> {
+  public async indexerState(): Promise<ApiResponseWrapper<ApiDBState>> {
     return handleApiResponse(this.indexerEngine.getStateSetting());
   }
 
@@ -53,7 +49,56 @@ abstract class BaseIndexerController {
   }
 
   /**
-   * Paged query for confirmed transactions subject to conditions from query parameters.
+   * Gets the indexed block height.
+   * @returns
+   */
+  @Get('block-height')
+  public async blockHeight(): Promise<ApiResponseWrapper<number>> {
+    return handleApiResponse(this.indexerEngine.getBlockHeight());
+  }
+
+  /**
+   * Gets confirmed block with the given block number.
+   * Blocks that are not confirmed yet cannot be obtained using this route.
+   * @param blockNumber
+   * @returns
+   */
+  @Get('confirmed-block-at/:blockNumber')
+  public async confirmedBlockAt(
+    @Param('blockNumber', new ParseIntPipe()) blockNumber: number,
+  ): Promise<ApiResponseWrapper<ApiDBBlock>> {
+    return handleApiResponse(this.indexerEngine.confirmedBlockAt(blockNumber));
+  }
+
+  /**
+   * Paginated query for blocks subject to conditions from query parameters.
+   * @param from Minimal block number of query range
+   * @param to Maximal block number of the query range
+   * @param limit Query limit. Capped by server config settings
+   * @param offset Query offset
+   */
+  @Get('block')
+  public async blockList(
+    @Query() query: QueryBlock,
+  ): Promise<ApiResponseWrapper<ApiDBBlock[]>> {
+    return handleApiResponse(this.indexerEngine.listBlock(query));
+  }
+
+  /**
+   * Gets a block with given hash from the indexer database.
+   * @param blockHash
+   */
+  @Get('block/:blockHash')
+  public async block(
+    @Param('blockHash') blockHash: string,
+  ): Promise<ApiResponseWrapper<ApiDBBlock>> {
+    return handleApiResponse(
+      this.indexerEngine.getBlock(blockHash.toLowerCase()),
+    );
+  }
+
+  /**
+   * Paginated query for confirmed transactions subject to conditions from query parameters.
    * Transactions are sorted first by block number and then by transaction id.
    * @param from Minimal block number of query range
    * @param to Maximal block number of the query range
@@ -63,7 +108,6 @@ abstract class BaseIndexerController {
    * @param returnResponse Whether response from node stored in the indexer database should be returned
    * @returns
    */
-
   @Get('transaction')
   public async transactionsList(
     @Query() query: QueryTransaction,
@@ -83,54 +127,6 @@ abstract class BaseIndexerController {
     return handleApiResponse(
       this.indexerEngine.getTransaction(txHash.toLowerCase()),
     );
-  }
-
-  /**
-   * Gets a block with given hash from the indexer database.
-   * @param blockHash
-   * @returns
-   */
-  @Get('block')
-  public async blockList(
-    @Query() query: QueryBlock,
-  ): Promise<ApiResponseWrapper<ApiDBBlock[]>> {
-    return handleApiResponse(this.indexerEngine.listBlock(query));
-  }
-
-  /**
-   * Gets a block with given hash from the indexer database.
-   * @param blockHash
-   * @returns
-   */
-  @Get('block/:blockHash')
-  public async block(
-    @Param('blockHash') blockHash: string,
-  ): Promise<ApiResponseWrapper<ApiDBBlock>> {
-    return handleApiResponse(
-      this.indexerEngine.getBlock(blockHash.toLowerCase()),
-    );
-  }
-
-  /**
-   * Gets confirmed block with the given block number.
-   * Blocks that are not confirmed yet cannot be obtained using this route.
-   * @param blockNumber
-   * @returns
-   */
-  @Get('confirmed-block-at/:blockNumber')
-  public async confirmedBlockAt(
-    @Param('blockNumber', new ParseIntPipe()) blockNumber: number,
-  ): Promise<ApiResponseWrapper<ApiDBBlock>> {
-    return handleApiResponse(this.indexerEngine.confirmedBlockAt(blockNumber));
-  }
-
-  /**
-   * Gets the indexed block height.
-   * @returns
-   */
-  @Get('block-height')
-  public async blockHeight(): Promise<ApiResponseWrapper<number>> {
-    return handleApiResponse(this.indexerEngine.getBlockHeight());
   }
 
   /**

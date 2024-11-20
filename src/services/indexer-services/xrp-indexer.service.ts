@@ -10,15 +10,14 @@ import {
   IDBXrpTransaction,
 } from 'src/entity/xrp-entity-definitions';
 import { EntityManager } from 'typeorm';
-import {
-  IIndexerEngineService,
-  IIndexerState,
-} from '../common/base-indexer-engine-service';
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
+import { IIndexerEngineService } from '../common/base-indexer-engine-service';
+import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
+import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
 import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
 import { unPrefix0x } from '@flarenetwork/mcc';
 import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
+import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
+import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
 
 @Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {
@@ -42,20 +41,26 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;
   }
 
-  public async getStateSetting(): Promise<IIndexerState | null> {
-    const query = this.manager
-      .createQueryBuilder(this.tipState, 'states')
+  public async getStateSetting(): Promise<ApiDBState> {
+    const query = this.manager.createQueryBuilder(this.tipState, 'states');
     const res = await query.getOne();
-    const response: IIndexerState = {
-      indexedBlockRange: {
-        first: res.first_indexed_block_number,
-        last: res.last_indexed_block_number,
+    const response: ApiDBState = {
+      bottom_indexed_block: {
+        height: res.first_indexed_block_number,
+        timestamp: res.first_indexed_block_timestamp,
+        last_updated: res.last_history_drop,
       },
-      tipHeight: res.last_chain_block_number,
-      lastTipUpdateTimestamp: res.last_chain_block_timestamp, // TODO: (Luka) update
-      lastTailUpdateTimestamp: res.first_indexed_block_timestamp, // TODO: (Luka) update
-      state: ""
-    }
+      top_indexed_block: {
+        height: res.last_indexed_block_number,
+        timestamp: res.last_indexed_block_timestamp,
+        last_updated: res.last_indexed_block_updated,
+      },
+      chain_tip_block: {
+        height: res.last_chain_block_number,
+        timestamp: res.last_chain_block_timestamp,
+        last_updated: res.last_chain_block_updated,
+      },
+    };
     return response;
   }
 
@@ -185,7 +190,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     to,
     limit,
     offset,
-  }: QueryTransaction): Promise<ApiDBBlock[]> {
+  }: QueryBlock): Promise<ApiDBBlock[]> {
     let theLimit = limit ?? this.indexerServerPageLimit;
     theLimit = Math.min(theLimit, this.indexerServerPageLimit);
     const theOffset = offset ?? 0;

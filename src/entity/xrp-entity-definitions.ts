@@ -1,8 +1,8 @@
 // External Postgres Database Entities (XRP) (read only)
 
 import { ChainType } from '@flarenetwork/mcc';
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction';
+import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
+import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
 import {
   BlockResult,
   TransactionResult,
@@ -91,7 +91,7 @@ export class DBXrpTransaction {
   toApiDBTransaction(returnResponse: boolean = false): ApiDBTransaction {
     const baseRes = {
       id: 0,
-      chainType: ChainType.XRP, 
+      chainType: ChainType.XRP,
       transactionId: this.hash,
       blockNumber: this.block_number,
       timestamp: this.timestamp,
@@ -124,7 +124,7 @@ export class DBXrpState {
   last_chain_block_timestamp: number;
 
   @Column()
-  last_indexed_block_updated: number;
+  last_chain_block_updated: number;
 
   @Column()
   last_indexed_block_number: number;
@@ -133,7 +133,7 @@ export class DBXrpState {
   last_indexed_block_timestamp: number;
 
   @Column()
-  last_chain_block_updated: number;
+  last_indexed_block_updated: number;
 
   @Column()
   first_indexed_block_number: number;
