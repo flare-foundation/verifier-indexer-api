@@ -364,10 +364,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.1.tgz#de633db3ec2ef6a3c89e2f19038063e8a122e2c2"
   integrity sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==
 
-"@flarenetwork/mcc@^4.1.0-beta.1":
-  version "4.1.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@flarenetwork/mcc/-/mcc-4.1.0-beta.1.tgz#6a53427f20cf12e9008a621e276633b1066beaa3"
-  integrity sha512-7OYkxjJGqqZYJAU/CAelNeleSq8FEwseFs7ppp/W7XcEjy0FZnO/34YNbSAmRZJ6ww14YEgfrLX1AKz4Vbx23w==
+"@flarenetwork/mcc@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@flarenetwork/mcc/-/mcc-4.1.0.tgz#2668056614cf18262cd924d5d8f45773015d196a"
+  integrity sha512-DgA921UcVoSCAw762oZ1S1EQr36ZTyhbNPqmjxkLtvvlaVCu+u7ZJJ771UiVn3iKhN0JSjsl1iPVrEqcu4w+qQ==
   dependencies:
     axios "^1.6.7"
     axios-retry "^3.9.1"
