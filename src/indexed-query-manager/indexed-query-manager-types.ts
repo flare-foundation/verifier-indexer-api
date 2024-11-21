@@ -94,6 +94,7 @@ export interface ReferencedTransactionsQueryRequest {
   deadlineBlockNumber: number;
   deadlineBlockTimestamp: number;
   paymentReference: string; // payment reference
+  sourceAddressRoot?: string; // source address root
 }
 
 export type ReferencedTransactionsQueryStatusType =

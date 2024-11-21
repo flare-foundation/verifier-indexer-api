@@ -181,6 +181,7 @@ export abstract class IIndexedQueryManager {
       endBlockNumber: firstOverflowBlock.blockNumber - 1,
       paymentReference: params.paymentReference,
       chainType: this.settings.chainType,
+      sourceAddressRoot: params.sourceAddressRoot,
     });
 
     // Too small query window

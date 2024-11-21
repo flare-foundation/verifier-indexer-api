@@ -548,6 +548,7 @@ export async function verifyReferencedPaymentNonExistence<
       BigInt(request.requestBody.deadlineTimestamp).toString(),
     ),
     paymentReference: unPrefix0x(request.requestBody.standardPaymentReference),
+    sourceAddressRoot: unPrefix0x(request.requestBody.sourceAddressesRoot),
   });
 
   const status = verifyWorkflowForReferencedTransactions(
