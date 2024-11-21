@@ -4,6 +4,7 @@ import {
   PaymentNonexistenceSummaryStatus,
   PaymentSummaryResponse,
   PaymentSummaryStatus,
+  standardAddressHash,
   TransactionBase,
   TransactionSuccessStatus,
   unPrefix0x,
@@ -414,6 +415,8 @@ export async function responseReferencedPaymentNonExistence<
       return { status: VerificationStatus.SYSTEM_FAILURE };
     }
 
+    Logger.debug('Full transaction data: ', fullTxData);
+
     // In account based case this loop goes through only once.
     for (
       let outUtxo = 0;
@@ -421,15 +424,15 @@ export async function responseReferencedPaymentNonExistence<
       outUtxo++
     ) {
       const address = fullTxData.intendedReceivedAmounts[outUtxo].address;
+      Logger.debug('Nonexistance destination address: ', address);
       if (!address) {
         // no-address utxo, we skip it
         continue;
       }
-      // TODO: check if this is correct and the same as
-      // const destinationAddressHashTmp = Web3.utils.soliditySha3(address);
-      const destinationAddressHashTmp = ethers.keccak256(address);
+      const destinationAddressHashTmp = standardAddressHash(address);
+      Logger.debug('Nonexistance destination address hash: ', destinationAddressHashTmp);
       if (
-        destinationAddressHashTmp === request.requestBody.destinationAddressHash
+        unPrefix0x(destinationAddressHashTmp) ===  unPrefix0x(request.requestBody.destinationAddressHash)
       ) {
         const paymentSummary = fullTxData.paymentNonexistenceSummary(outUtxo);
 
@@ -548,8 +551,10 @@ export async function verifyReferencedPaymentNonExistence<
       BigInt(request.requestBody.deadlineTimestamp).toString(),
     ),
     paymentReference: unPrefix0x(request.requestBody.standardPaymentReference),
-    sourceAddressRoot: unPrefix0x(request.requestBody.sourceAddressesRoot),
+    sourceAddressRoot: request.requestBody.checkSourceAddresses ? unPrefix0x(request.requestBody.sourceAddressesRoot) : undefined,
   });
+
+  Logger.debug('Referenced transactions response: ', referencedTransactionsResponse);
 
   const status = verifyWorkflowForReferencedTransactions(
     referencedTransactionsResponse,
@@ -578,11 +583,14 @@ export async function verifyReferencedPaymentNonExistence<
     };
   }
 
-  return await responseReferencedPaymentNonExistence(
-    dbTransactions,
+  const nonexistanceResponse = await responseReferencedPaymentNonExistence(dbTransactions,
     TransactionClass,
     firstOverflowBlock,
     lowerBoundaryBlock,
     request,
   );
+  Logger.debug('Referenced payment nonexistence response: ', nonexistanceResponse);
+
+  return nonexistanceResponse;
+    
 }
