@@ -5,7 +5,7 @@ import {
   TransactionBase,
   XrpTransaction,
 } from '@flarenetwork/mcc';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IConfig } from 'src/config/configuration';
 import {
@@ -47,8 +47,6 @@ abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer
     TransactionClass: new (...args: any[]) => T,
     fixedRequest: Payment_Request,
   ): Promise<AttestationResponseDTO_Payment_Response> {
-    Logger.debug("Verifying Payment Attestation");
-    Logger.debug(fixedRequest);
     const result = await verifyPayment(
       TransactionClass,
       fixedRequest,

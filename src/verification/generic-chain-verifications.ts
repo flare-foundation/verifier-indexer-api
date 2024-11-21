@@ -88,14 +88,7 @@ export function responsePayment<T extends TransactionBase<any>>(
     );
     return { status: VerificationStatus.SYSTEM_FAILURE };
   }
-
-  Logger.debug('Fetched data to create trasnaction type ');
-  Logger.debug(parsedData);
-
   const fullTxData = new TransactionClass(parsedData);
-
-  Logger.debug('Full transaction data: ', fullTxData);
-
   if (
     BigInt(request.requestBody.inUtxo) < 0 ||
     BigInt(request.requestBody.inUtxo) >= Number.MAX_SAFE_INTEGER
@@ -120,7 +113,6 @@ export function responsePayment<T extends TransactionBase<any>>(
       outUtxo: utxoNumber,
     });
   } catch (e) {
-    Logger.debug('Payment summary error: ', e);
     return { status: VerificationStatus.NOT_CONFIRMED };
   }
 
@@ -182,7 +174,6 @@ export async function verifyPayment<T extends TransactionBase<any>>(
   const confirmedTransactionResult = await iqm.getConfirmedTransaction({
     txId: unPrefix0x(request.requestBody.transactionId),
   });
-  Logger.debug('Verify paymennt query response: ', confirmedTransactionResult);
   const status = verifyWorkflowForTransaction(confirmedTransactionResult);
   if (status !== VerificationStatus.NEEDS_MORE_CHECKS) {
     return { status };
@@ -194,7 +185,6 @@ export async function verifyPayment<T extends TransactionBase<any>>(
     TransactionClass,
     request,
   );
-  Logger.debug('Verify paymennt response: ', responsePaymentR);
   return responsePaymentR;
 }
 
@@ -415,8 +405,6 @@ export async function responseReferencedPaymentNonExistence<
       return { status: VerificationStatus.SYSTEM_FAILURE };
     }
 
-    Logger.debug('Full transaction data: ', fullTxData);
-
     // In account based case this loop goes through only once.
     for (
       let outUtxo = 0;
@@ -424,13 +412,11 @@ export async function responseReferencedPaymentNonExistence<
       outUtxo++
     ) {
       const address = fullTxData.intendedReceivedAmounts[outUtxo].address;
-      Logger.debug('Nonexistance destination address: ', address);
       if (!address) {
         // no-address utxo, we skip it
         continue;
       }
       const destinationAddressHashTmp = standardAddressHash(address);
-      Logger.debug('Nonexistance destination address hash: ', destinationAddressHashTmp);
       if (
         unPrefix0x(destinationAddressHashTmp) ===  unPrefix0x(request.requestBody.destinationAddressHash)
       ) {
@@ -554,8 +540,6 @@ export async function verifyReferencedPaymentNonExistence<
     sourceAddressRoot: request.requestBody.checkSourceAddresses ? unPrefix0x(request.requestBody.sourceAddressesRoot) : undefined,
   });
 
-  Logger.debug('Referenced transactions response: ', referencedTransactionsResponse);
-
   const status = verifyWorkflowForReferencedTransactions(
     referencedTransactionsResponse,
   );
@@ -589,7 +573,6 @@ export async function verifyReferencedPaymentNonExistence<
     lowerBoundaryBlock,
     request,
   );
-  Logger.debug('Referenced payment nonexistence response: ', nonexistanceResponse);
 
   return nonexistanceResponse;
     
