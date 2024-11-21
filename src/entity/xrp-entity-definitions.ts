@@ -125,7 +125,7 @@ export class DBXrpTransaction {
     if (returnResponse) {
       return {
         ...baseRes,
-        response: this.response,
+        response: this.responseJson(),
       };
     }
     return baseRes;
