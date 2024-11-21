@@ -46,8 +46,6 @@ jobs:
         tags: |
           ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
           ghcr.io/${{ github.repository }}:latest
-          #${{ secrets.DOCKER_HUB_REPO }}:${{ env.IMAGE_TAG }}
-          #${{ secrets.DOCKER_HUB_REPO }}:latest
 
     - name: Build and push image for main
       uses: docker/build-push-action@v5
