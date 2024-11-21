@@ -42,6 +42,7 @@ import {
   verifyWorkflowForReferencedTransactions,
   verifyWorkflowForTransaction,
 } from './verification-utils';
+import { Logger } from '@nestjs/common';
 
 /**
  * Serialize bigints to strings recursively.
@@ -87,7 +88,12 @@ export function responsePayment<T extends TransactionBase<any>>(
     return { status: VerificationStatus.SYSTEM_FAILURE };
   }
 
+  Logger.debug('Fetched data to create trasnaction type ');
+  Logger.debug(parsedData);
+
   const fullTxData = new TransactionClass(parsedData);
+
+  Logger.debug('Full transaction data: ', fullTxData);
 
   if (
     BigInt(request.requestBody.inUtxo) < 0 ||
@@ -113,6 +119,7 @@ export function responsePayment<T extends TransactionBase<any>>(
       outUtxo: utxoNumber,
     });
   } catch (e) {
+    Logger.debug('Payment summary error: ', e);
     return { status: VerificationStatus.NOT_CONFIRMED };
   }
 
@@ -174,14 +181,20 @@ export async function verifyPayment<T extends TransactionBase<any>>(
   const confirmedTransactionResult = await iqm.getConfirmedTransaction({
     txId: unPrefix0x(request.requestBody.transactionId),
   });
-
+  Logger.debug('Verify paymennt query response: ', confirmedTransactionResult);
   const status = verifyWorkflowForTransaction(confirmedTransactionResult);
   if (status !== VerificationStatus.NEEDS_MORE_CHECKS) {
     return { status };
   }
 
   const dbTransaction = confirmedTransactionResult.transaction;
-  return responsePayment(dbTransaction, TransactionClass, request);
+  const responsePaymentR = await responsePayment(
+    dbTransaction,
+    TransactionClass,
+    request,
+  );
+  Logger.debug('Verify paymennt response: ', responsePaymentR);
+  return responsePaymentR;
 }
 
 /**

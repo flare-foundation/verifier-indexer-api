@@ -1,6 +1,6 @@
 // External Postgres Database Entities (XRP) (read only)
 
-import { ChainType } from '@flarenetwork/mcc';
+import { ChainType, IXrpGetTransactionRes } from '@flarenetwork/mcc';
 import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
 import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
 import {
@@ -40,7 +40,7 @@ export class DBXrpIndexerBlock {
       timestamp: this.timestamp,
       transactions: this.transactions,
       confirmed: true,
-      numberOfConfirmations: 0
+      numberOfConfirmations: 0,
     };
   }
 }
@@ -76,11 +76,29 @@ export class DBXrpTransaction {
     return 'full_payment'; // TODO: This classification must be added to DB (same as MCC)
   }
 
+  responseJson(): IXrpGetTransactionRes {
+    const txData = JSON.parse(this.response);
+    const { metaData: _, ...txDataRest } = txData;
+    const modifiedTxData: IXrpGetTransactionRes = {
+      result: {
+        ...txDataRest,
+        hash: txData.hash,
+        ledger_index: this.block_number,
+        meta: txData.metaData,
+        validated: true,
+        date: this.timestamp,
+      },
+      id: '',
+      type: '',
+    };
+    return modifiedTxData;
+  }
+
   toTransactionResult(): TransactionResult {
-    const response = JSON.stringify(this.response);
+    const response = this.responseJson();
     return {
       getResponse() {
-        return response;
+        return JSON.stringify(response);
       },
       chainType: ChainType.XRP,
       transactionId: this.hash,
