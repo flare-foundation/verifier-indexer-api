@@ -85,17 +85,17 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     }
     const state: ApiDBState = {
       bottom_indexed_block: {
-        height: resPrune.latestIndexedTailHeight,
+        height: resPrune.latest_indexed_tail_height,
         timestamp: -1, // FUTURE FEAT: (Luka) add to db
         last_updated: resPrune.timestamp,
       },
       top_indexed_block: {
-        height: resTop.latestIndexedHeight,
+        height: resTop.latest_indexed_height,
         timestamp: -1, // FUTURE FEAT: (Luka) add to db
         last_updated: resTop.timestamp,
       },
       chain_tip_block: {
-        height: resTop.latestTipHeight,
+        height: resTop.latest_tip_height,
         timestamp: -1, // FUTURE FEAT: (Luka) add to db
         last_updated: resTop.timestamp,
       },
@@ -110,13 +110,13 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
    */
   public async confirmedBlockAt(
     blockNumber: number,
-  ): Promise<ApiDBBlock | null> {
+  ): Promise<ApiDBBlock> {
     const query = this.manager
       .createQueryBuilder(this.blockTable, 'block')
-      .andWhere('block.blockNumber = :blockNumber', { blockNumber });
+      .andWhere('block.block_number = :blockNumber', { blockNumber });
     const res = await query.getOne();
     if (res === null) {
-      return null;
+      throw new Error('Block not found');
     }
     return res.toApiDBBlock();
   }
@@ -126,7 +126,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
    */
   public async listBlock({ from, to }: QueryBlock): Promise<PaginatedList<ApiDBBlock>> {
     let theLimit = this.indexerServerPageLimit;
-    let query = this.manager.createQueryBuilder(this.blockTable, 'block').orderBy('block.blockNumber', 'ASC');
+    let query = this.manager.createQueryBuilder(this.blockTable, 'block').orderBy('block.block_number', 'ASC');
     const count = await query.getCount();
     theLimit = Math.min(theLimit, count);
 
@@ -135,15 +135,15 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     }
 
     if (from !== undefined) {
-      query = query.andWhere('block.blockNumber >= :from', { from });
+      query = query.andWhere('block.block_number >= :from', { from });
     } 
     if (to !== undefined) {
       if(from === undefined) {
-        query = query.andWhere('block.blockNumber <= :to', { to }).take(theLimit);
+        query = query.andWhere('block.block_number <= :to', { to }).take(theLimit);
       } else {
         const tempTo =  Math.min(to, from + theLimit - 1)
         theLimit = tempTo - from + 1;
-        query = query.andWhere('block.blockNumber <= :tempTo', { tempTo });
+        query = query.andWhere('block.block_number <= :tempTo', { tempTo });
       }
     }
     if (from === undefined && to === undefined) {
@@ -162,10 +162,10 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
    * @param blockHash
    * @returns
    */
-  public async getBlock(blockHash: string): Promise<ApiDBBlock | null> {
+  public async getBlock(blockHash: string): Promise<ApiDBBlock> {
     const query = this.manager
       .createQueryBuilder(this.blockTable, 'block')
-      .andWhere('block.blockHash = :blockHash', { blockHash });
+      .andWhere('block.block_hash = :blockHash', { blockHash });
     const res = await query.getOne();
     if (res) {
       return res.toApiDBBlock();
@@ -200,19 +200,19 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
       'transaction',
     );
     if (from !== undefined) {
-      query = query.andWhere('transaction.blockNumber >= :from', { from });
+      query = query.andWhere('transaction.block_number >= :from', { from });
     }
     if (to !== undefined) {
-      query = query.andWhere('transaction.blockNumber <= :to', { to });
+      query = query.andWhere('transaction.block_number <= :to', { to });
     }
     if (paymentReference) {
-      query = query.andWhere('transaction.paymentReference = :reference', {
+      query = query.andWhere('transaction.payment_reference = :reference', {
         reference: unPrefix0x(paymentReference),
       });
     }
     query = query
-      .orderBy('transaction.blockNumber', 'ASC')
-      .addOrderBy('transaction.transactionId', 'ASC')
+      .orderBy('transaction.block_number', 'ASC')
+      .addOrderBy('transaction.transaction_id', 'ASC')
       .limit(theLimit)
       .offset(theOffset);
     if (returnResponse) {
@@ -234,15 +234,15 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
    */
   public async getTransaction(
     txHash: string,
-  ): Promise<ApiDBTransaction> | null {
+  ): Promise<ApiDBTransaction> {
     const query = this.joinTransactionQuery(
       this.manager
         .createQueryBuilder(this.transactionTable, 'transaction')
-        .andWhere('transaction.transactionId = :txHash', { txHash }),
+        .andWhere('transaction.transaction_id = :txHash', { txHash }),
     );
     const res = await query.getOne();
     if (res === null) {
-      return null;
+      throw new Error('Transaction not found');
     }
     return res.toApiDBTransaction(this.chainType, true);
   }
@@ -253,16 +253,16 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
    * @param txHash
    * @returns
    */
-  public async getTransactionBlock(txHash: string): Promise<ApiDBBlock> | null {
+  public async getTransactionBlock(txHash: string): Promise<ApiDBBlock> {
     const tx = await this.getTransaction(txHash);
     if (tx) {
       const block = await this.confirmedBlockAt(tx.blockNumber);
       if (block === null) {
-        return null;
+        throw new Error('Block not found');
       }
       return block;
     }
-    return null;
+    throw new Error('Trasnaction not found');
   }
 }
 

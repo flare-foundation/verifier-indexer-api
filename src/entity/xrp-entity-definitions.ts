@@ -58,8 +58,13 @@ export class DBXrpTransaction {
   @Column()
   timestamp: number;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   payment_reference: string;
+
+  @Column()
+  source_addresses_root: string;
 
   @Column()
   is_native_payment: boolean;

@@ -25,10 +25,10 @@ import {
 @Entity('utxo_indexer_utxoblock')
 export class DBUtxoIndexerBlock {
   @PrimaryColumn({ type: 'char' })
-  blockHash: string;
+  block_hash: string;
 
   @Column()
-  blockNumber: number;
+  block_number: number;
 
   @Column()
   timestamp: number;
@@ -40,12 +40,12 @@ export class DBUtxoIndexerBlock {
   confirmed: boolean;
 
   @Column()
-  previousBlockHash: string;
+  previous_block_hash: string;
 
   toBlockResult(): BlockResult {
     return {
-      blockNumber: this.blockNumber,
-      blockHash: this.blockHash,
+      blockNumber: this.block_number,
+      blockHash: this.block_hash,
       timestamp: this.timestamp,
       transactions: this.transactions,
       confirmed: this.confirmed,
@@ -54,8 +54,8 @@ export class DBUtxoIndexerBlock {
 
   toApiDBBlock(): ApiDBBlock {
     return {
-      blockNumber: this.blockNumber,
-      blockHash: this.blockHash,
+      blockNumber: this.block_number,
+      blockHash: this.block_hash,
       timestamp: this.timestamp,
       transactions: this.transactions,
       confirmed: this.confirmed,
@@ -69,22 +69,27 @@ export type IDBUtxoIndexerBlock = new () => DBUtxoIndexerBlock;
 @Entity('utxo_indexer_utxotransaction')
 export class DBUtxoTransaction {
   @PrimaryColumn({ type: 'char' })
-  transactionId: string;
+  transaction_id: string;
 
   @Column()
-  blockNumber: number;
+  block_number: number;
 
   @Column()
   timestamp: number;
 
-  @Column()
-  paymentReference: string;
+  @Column({
+    nullable: true,
+  })
+  payment_reference: string;
 
   @Column()
-  isNativePayment: boolean;
+  source_addresses_root: string;
 
   @Column()
-  transactionType: string;
+  is_native_payment: boolean;
+
+  @Column()
+  transaction_type: string;
 
   @OneToMany(() => DBTransactionOutput, (output) => output.transaction_link_id)
   transactionoutput_set: DBTransactionOutput[];
@@ -106,9 +111,9 @@ export class DBUtxoTransaction {
           value: transaction_output.value,
           n: transaction_output.n,
           scriptPubKey: {
-            address: transaction_output.scriptKeyAddress,
-            asm: transaction_output.scriptKeyAsm,
-            hex: transaction_output.scriptKeyHex,
+            address: transaction_output.script_key_address,
+            asm: transaction_output.script_key_asm,
+            hex: transaction_output.script_key_hex,
           },
         };
       },
@@ -116,19 +121,19 @@ export class DBUtxoTransaction {
 
     const vin_arr: IUtxoVinTransactionPrevout[] = this.transactioninput_set
       .sort((a, b) => {
-        return a.vinN - b.vinN;
+        return a.vin_n - b.vin_n;
       })
       .map((transaction_inp) => {
         return {
-          sequence: transaction_inp.vinSequence,
-          txid: transaction_inp.vinPreviousTxid,
-          vout: transaction_inp.vinVoutIndex,
+          sequence: transaction_inp.vin_sequence,
+          txid: transaction_inp.vin_previous_txid,
+          vout: transaction_inp.vin_vout_index,
           prevout: {
             value: transaction_inp.value,
             scriptPubKey: {
-              address: transaction_inp.scriptKeyAddress,
-              asm: transaction_inp.scriptKeyAsm,
-              hex: transaction_inp.scriptKeyHex,
+              address: transaction_inp.script_key_address,
+              asm: transaction_inp.script_key_asm,
+              hex: transaction_inp.script_key_hex,
             },
           },
         };
@@ -137,21 +142,21 @@ export class DBUtxoTransaction {
     const vin_cb_arr: IUtxoVinTransactionCoinbase[] =
       this.transactioninputcoinbase_set
         .sort((a, b) => {
-          return a.vinN - b.vinN;
+          return a.vin_n - b.vin_n;
         })
         .map((transaction_inp) => {
           return {
-            sequence: transaction_inp.vinSequence,
-            coinbase: transaction_inp.vinCoinbase,
+            sequence: transaction_inp.vin_sequence,
+            coinbase: transaction_inp.vin_coinbase,
           };
         });
 
     const res_no_vin = {
-      txid: this.transactionId,
+      txid: this.transaction_id,
       time: this.timestamp,
       vout: vout_arr,
       blocktime: this.timestamp,
-      hash: this.transactionId,
+      hash: this.transaction_id,
       version: 1,
       size: 0,
       vsize: 0,
@@ -182,12 +187,12 @@ export class DBUtxoTransaction {
         return response;
       },
       chainType: chainType,
-      transactionId: this.transactionId,
-      blockNumber: this.blockNumber,
+      transactionId: this.transaction_id,
+      blockNumber: this.block_number,
       timestamp: this.timestamp,
-      paymentReference: this.paymentReference,
-      isNativePayment: this.isNativePayment,
-      transactionType: this.transactionType,
+      paymentReference: this.payment_reference,
+      isNativePayment: this.is_native_payment,
+      transactionType: this.transaction_type,
     };
   }
 
@@ -198,12 +203,12 @@ export class DBUtxoTransaction {
     const baseRes = {
       id: 0,
       chainType: chainType,
-      transactionId: this.transactionId,
-      blockNumber: this.blockNumber,
+      transactionId: this.transaction_id,
+      blockNumber: this.block_number,
       timestamp: this.timestamp,
-      paymentReference: this.paymentReference,
-      isNativePayment: this.isNativePayment,
-      transactionType: this.transactionType,
+      paymentReference: this.payment_reference,
+      isNativePayment: this.is_native_payment,
+      transactionType: this.transaction_type,
       response: '',
     };
     if (returnResponse) {
@@ -226,19 +231,19 @@ abstract class AbstractTransactionOutput {
   value: string;
 
   @Column()
-  scriptKeyAsm: string;
+  script_key_asm: string;
 
   @Column()
-  scriptKeyHex: string;
+  script_key_hex: string;
 
   @Column()
-  scriptKeyReqSigs: string;
+  script_key_req_sigs: string;
 
   @Column()
-  scriptKeyType: string;
+  script_key_type: string;
 
   @Column()
-  scriptKeyAddress: string;
+  script_key_address: string;
 }
 
 @Entity('utxo_indexer_transactionoutput')
@@ -269,13 +274,13 @@ export class DBTransactionInputCoinbase {
   transaction_link_id: DBUtxoTransaction;
 
   @Column()
-  vinN: number;
+  vin_n: number;
 
   @Column()
-  vinCoinbase: string;
+  vin_coinbase: string;
 
   @Column()
-  vinSequence: number;
+  vin_sequence: number;
 }
 
 @Entity('utxo_indexer_transactioninput')
@@ -292,22 +297,22 @@ export class DBTransactionInput extends AbstractTransactionOutput {
   transaction_link_id: DBUtxoTransaction;
 
   @Column()
-  vinN: number;
+  vin_n: number;
 
   @Column()
-  vinPreviousTxid: string;
+  vin_previous_txid: string;
 
   @Column()
-  vinVoutIndex: number;
+  vin_vout_index: number;
 
   @Column()
-  vinSequence: number;
+  vin_sequence: number;
 
   @Column()
-  vinScriptSigAsm: string;
+  vin_script_sig_asm: string;
 
   @Column()
-  vinScriptSigHex: string;
+  vin_script_sig_hex: string;
 }
 
 @Entity('utxo_indexer_tipsyncstate')
@@ -316,13 +321,13 @@ export class TipSyncState {
   id: string;
 
   @Column()
-  syncState: string;
+  sync_state: string;
 
   @Column()
-  latestTipHeight: number;
+  latest_tip_height: number;
 
   @Column()
-  latestIndexedHeight: number;
+  latest_indexed_height: number;
 
   @Column()
   timestamp: number;
@@ -338,7 +343,7 @@ export class PruneSyncState {
   id: string;
 
   @Column()
-  latestIndexedTailHeight: number;
+  latest_indexed_tail_height: number;
 
   @Column()
   timestamp: number;

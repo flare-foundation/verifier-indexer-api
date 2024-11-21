@@ -40,6 +40,7 @@ export enum VerificationStatus {
   REFERENCED_TRANSACTION_EXISTS = 'REFERENCED_TRANSACTION_EXISTS',
   ZERO_PAYMENT_REFERENCE_UNSUPPORTED = 'ZERO_PAYMENT_REFERENCE_UNSUPPORTED',
   NOT_STANDARD_PAYMENT_REFERENCE = 'NOT_STANDARD_PAYMENT_REFERENCE',
+  NOT_STANDARD_SOURCE_ADDRESS_ROOT = 'NOT_STANDARD_SOURCE_ADDRESS_ROOT',
   PAYMENT_SUMMARY_ERROR = 'PAYMENT_SUMMARY_ERROR',
 }
 
@@ -74,6 +75,7 @@ export function getSummarizedVerificationStatus(
     case VerificationStatus.REFERENCED_TRANSACTION_EXISTS:
     case VerificationStatus.ZERO_PAYMENT_REFERENCE_UNSUPPORTED:
     case VerificationStatus.NOT_STANDARD_PAYMENT_REFERENCE:
+    case VerificationStatus.NOT_STANDARD_SOURCE_ADDRESS_ROOT:
     case VerificationStatus.PAYMENT_SUMMARY_ERROR:
       return SummarizedVerificationStatus.invalid;
   }
@@ -99,6 +101,7 @@ export function getAttestationStatus(
     case VerificationStatus.REFERENCED_TRANSACTION_EXISTS:
     case VerificationStatus.ZERO_PAYMENT_REFERENCE_UNSUPPORTED:
     case VerificationStatus.NOT_STANDARD_PAYMENT_REFERENCE:
+    case VerificationStatus.NOT_STANDARD_SOURCE_ADDRESS_ROOT:
     case VerificationStatus.PAYMENT_SUMMARY_ERROR:
       return AttestationResponseStatus.INVALID;
   }

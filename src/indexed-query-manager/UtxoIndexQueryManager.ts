@@ -61,7 +61,7 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
   public async getLastConfirmedBlockNumber(): Promise<number> {
     try {
       const tipState = await this._getTipStateObject();
-      return tipState.latestIndexedHeight;
+      return tipState.latest_indexed_height;
     } catch {
       return 0;
     }
@@ -71,7 +71,7 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
     try {
       const tipState = await this._getTipStateObject();
       return {
-        height: tipState.latestTipHeight,
+        height: tipState.latest_tip_height,
         timestamp: tipState.timestamp,
       };
     } catch {
@@ -92,26 +92,32 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
     );
 
     if (params.transactionId) {
-      query = query.andWhere('transaction.transactionId = :txId', {
+      query = query.andWhere('transaction.transaction_id = :txId', {
         txId: params.transactionId,
       });
     }
 
     if (params.startBlockNumber) {
-      query = query.andWhere('transaction.blockNumber >= :startBlock', {
+      query = query.andWhere('transaction.block_number >= :startBlock', {
         startBlock: params.startBlockNumber,
       });
     }
 
     if (params.endBlockNumber) {
-      query = query.andWhere('transaction.blockNumber <= :endBlock', {
+      query = query.andWhere('transaction.block_number <= :endBlock', {
         endBlock: params.endBlockNumber,
       });
     }
 
     if (params.paymentReference) {
-      query = query.andWhere('transaction.paymentReference=:ref', {
+      query = query.andWhere('transaction.payment_reference=:ref', {
         ref: params.paymentReference,
+      });
+    }
+
+    if (params.sourceAddressRoot) {
+      query = query.andWhere('transaction.source_addresses_root=:root', {
+        root: params.sourceAddressRoot.toLowerCase(),
       });
     }
 
@@ -172,9 +178,9 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
       });
     }
     if (params.hash) {
-      query = query.andWhere('block.blockHash = :hash', { hash: params.hash });
+      query = query.andWhere('block.block_hash = :hash', { hash: params.hash });
     } else if (params.blockNumber) {
-      query = query.andWhere('block.blockNumber = :blockNumber', {
+      query = query.andWhere('block.block_number = :blockNumber', {
         blockNumber: params.blockNumber,
       });
     }
@@ -193,7 +199,7 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
   public async getBlockByHash(hash: string): Promise<BlockResult | undefined> {
     const query = this.entityManager
       .createQueryBuilder(this.blockTable, 'block')
-      .where('block.blockHash = :hash', { hash: hash });
+      .where('block.block_hash = :hash', { hash: hash });
     const result = await query.getOne();
     if (result) {
       return result.toBlockResult();
@@ -212,7 +218,7 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
       .createQueryBuilder(this.blockTable, 'block')
       .where('block.confirmed = :confirmed', { confirmed: true })
       .andWhere('block.timestamp < :timestamp', { timestamp: timestamp })
-      .orderBy('block.blockNumber', 'DESC')
+      .orderBy('block.block_number', 'DESC')
       .limit(1);
 
     const res = await query.getOne();
@@ -228,10 +234,10 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
       .createQueryBuilder(this.blockTable, 'block')
       .where('block.confirmed = :confirmed', { confirmed: true })
       .andWhere('block.timestamp > :timestamp', { timestamp: timestamp })
-      .andWhere('block.blockNumber > :blockNumber', {
+      .andWhere('block.block_number > :blockNumber', {
         blockNumber: blockNumber,
       })
-      .orderBy('block.blockNumber', 'ASC')
+      .orderBy('block.block_number', 'ASC')
       .limit(1);
 
     const res = await query.getOne();

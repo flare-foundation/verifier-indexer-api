@@ -77,6 +77,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     if (res) {
       return res.toApiDBBlock();
     }
+    throw new Error('Block not found');
   }
 
   public async listBlock({
@@ -176,7 +177,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
 
   public async getTransaction(
     txHash: string,
-  ): Promise<ApiDBTransaction | null> {
+  ): Promise<ApiDBTransaction> {
     const query = this.manager
       .createQueryBuilder(this.transactionTable, 'transaction')
       .andWhere('transaction.hash = :txHash', { txHash });
@@ -184,24 +185,14 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     if (res) {
       return res.toApiDBTransaction(true);
     }
+    throw new Error('Transaction not found');
   }
 
-  public async getBlockHeight(): Promise<number | null> {
-    const query = this.manager
-      .createQueryBuilder(this.blockTable, 'block')
-      .orderBy('block.block_number', 'DESC')
-      .limit(1);
-    const res = await query.getOne();
-    if (res === null) {
-      return null;
-    }
-    return res.block_number;
-  }
 
   public async getTransactionBlock(txHash: string): Promise<ApiDBBlock | null> {
     const tx = await this.getTransaction(txHash);
     if (!tx) {
-      return null;
+      throw new Error('Transaction not found');
     }
     const query = this.manager
       .createQueryBuilder(this.blockTable, 'block')
@@ -212,5 +203,6 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     if (res) {
       return res.toApiDBBlock();
     }
+    throw new Error('Block not found');
   }
 }

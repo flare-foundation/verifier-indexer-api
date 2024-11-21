@@ -86,6 +86,13 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
         ref: params.paymentReference.toLowerCase(),
       });
     }
+
+    if (params.sourceAddressRoot) {
+      query = query.andWhere('transaction.source_addresses_root=:root', {
+        root: params.sourceAddressRoot.toLowerCase(),
+      });
+    }
+
     if (params.transactionId) {
       query = query.andWhere('transaction.hash = :txId', {
         txId: params.transactionId.toLowerCase(),

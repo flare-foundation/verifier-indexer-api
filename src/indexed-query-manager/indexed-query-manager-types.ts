@@ -45,6 +45,7 @@ export interface TransactionQueryParams {
   endBlockNumber?: number;
   transactionId?: string;
   paymentReference?: string;
+  sourceAddressRoot?: string;
 }
 
 export interface BlockQueryParams {

@@ -500,6 +500,14 @@ export async function verifyReferencedPaymentNonExistence<
   }
 
   if (
+    !/^[0-9A-Fa-f]{64}$/.test(
+      unPrefix0x(request.requestBody.sourceAddressesRoot.toLowerCase()),
+    )
+  ) {
+    return { status: VerificationStatus.NOT_STANDARD_SOURCE_ADDRESS_ROOT };
+  }
+
+  if (
     BigInt(request.requestBody.minimalBlockNumber) < 0 ||
     BigInt(request.requestBody.minimalBlockNumber) >= Number.MAX_SAFE_INTEGER
   ) {
