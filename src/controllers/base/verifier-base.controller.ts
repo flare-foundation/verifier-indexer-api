@@ -2,7 +2,10 @@ import { Body, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { ApiSecurity } from '@nestjs/swagger';
 
 import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
-import { ARBase, ARESBase } from 'src/external-libs/interfaces';
+import {
+  AttestationTypeBase_Request,
+  AttestationTypeBase_Response,
+} from 'src/dtos/attestation-types/AttestationTypeBase.dto';
 import { BaseVerifierService } from 'src/services/common/verifier-base.service';
 import {
   AttestationResponse,
@@ -15,8 +18,8 @@ import {
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
 export abstract class BaseVerifierController<
-  Req extends ARBase,
-  Res extends ARESBase,
+  Req extends AttestationTypeBase_Request,
+  Res extends AttestationTypeBase_Response,
 > {
   protected abstract readonly verifierService: BaseVerifierService<Req, Res>;
 
@@ -43,9 +46,7 @@ export abstract class BaseVerifierController<
   async verifyFDC(
     @Body() body: EncodedRequest,
   ): Promise<AttestationResponseVerificationEncoded> {
-    return this.verifierService.verifyEncodedRequestFDC(
-      body.abiEncodedRequest,
-    );
+    return this.verifierService.verifyEncodedRequestFDC(body.abiEncodedRequest);
   }
 
   /**
@@ -64,7 +65,7 @@ export abstract class BaseVerifierController<
    * @param body
    */
   @HttpCode(200)
-  @Post('mic') // TODO: actually Request where mic is optional
+  @Post('mic')
   async mic(@Body() body: Req): Promise<MicResponse> {
     return this.verifierService.mic(body);
   }
@@ -75,7 +76,7 @@ export abstract class BaseVerifierController<
    * @param body
    */
   @HttpCode(200)
-  @Post('prepareRequest') // TODO: actually Request where mic is optional
+  @Post('prepareRequest')
   async prepareRequest(@Body() body: Req): Promise<EncodedRequestResponse> {
     return this.verifierService.prepareRequest(body);
   }

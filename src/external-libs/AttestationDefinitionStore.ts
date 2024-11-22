@@ -1,24 +1,24 @@
-import { TypeRecord } from './config-types';
-import { ethers } from 'ethers';
-import { ARBase, ARESBase } from './interfaces';
-import {
-  readAttestationTypeConfigs,
-  decodeAttestationName,
-  ABIFragment,
-  remapABIParsedToObjects,
-  structsDeepEqual,
-  DEFAULT_ATTESTATION_TYPE_CONFIGS_PATH,
-  serializeBigInts,
-} from './utils';
 import { ZERO_BYTES_32 } from '@flarenetwork/mcc';
+import { ethers } from 'ethers';
+import { AttestationTypeBase_Request, AttestationTypeBase_Response } from 'src/dtos/attestation-types/AttestationTypeBase.dto';
+import { TypeRecord } from './config-types';
+import {
+  ABIFragment,
+  decodeAttestationName,
+  DEFAULT_ATTESTATION_TYPE_CONFIGS_PATH,
+  readAttestationTypeConfigs,
+  remapABIParsedToObjects,
+  serializeBigInts,
+  structsDeepEqual,
+} from './utils';
 
 /**
  * Attestation definition store. Contains all the attestation type definitions
  * that are contained in the folder, from which the store was initialized.
  */
 export class AttestationDefinitionStore {
-  definitions!: Map<string, TypeRecord>;
-  coder!: ethers.AbiCoder;
+  definitions: Map<string, TypeRecord>;
+  coder: ethers.AbiCoder;
 
   constructor(configsPath = DEFAULT_ATTESTATION_TYPE_CONFIGS_PATH) {
     this.initialize(configsPath);
@@ -65,7 +65,7 @@ export class AttestationDefinitionStore {
    * @param salt
    * @returns
    */
-  attestationResponseHash<T extends ARESBase>(
+  attestationResponseHash<T extends AttestationTypeBase_Response>(
     response: T,
     salt?: string,
   ): string {
@@ -98,7 +98,7 @@ export class AttestationDefinitionStore {
   static extractPrefixFromRequest(
     bytes: string,
     decodeAttestationTypeName = false,
-  ): ARBase {
+  ): AttestationTypeBase_Request {
     if (!bytes) {
       throw new Error('Empty attestation request');
     }
@@ -117,7 +117,7 @@ export class AttestationDefinitionStore {
       sourceId: '0x' + bytes.slice(2 + 64, 2 + 2 * 64),
       messageIntegrityCode: '0x' + bytes.slice(2 + 2 * 64, 2 + 3 * 64),
       requestBody: '0x' + bytes.slice(2 + 3 * 64),
-    } as ARBase;
+    } as AttestationTypeBase_Request;
   }
 
   /**
@@ -126,7 +126,7 @@ export class AttestationDefinitionStore {
    * @param request
    * @returns
    */
-  encodeRequest(request: ARBase): string {
+  encodeRequest(request: AttestationTypeBase_Request): string {
     const attestationType = decodeAttestationName(request.attestationType);
     const definition =
       this.getDefinitionForDecodedAttestationType(attestationType);
@@ -160,7 +160,7 @@ export class AttestationDefinitionStore {
     return ethers.concat([abiEncodePrefix, abiEncodeBody]);
   }
 
-  encodeResponse(response: ARESBase): string {
+  encodeResponse(response: AttestationTypeBase_Response): string {
     const attestationType = decodeAttestationName(response.attestationType);
     const definition =
       this.getDefinitionForDecodedAttestationType(attestationType);
@@ -178,7 +178,7 @@ export class AttestationDefinitionStore {
    * @param bytes
    * @returns
    */
-  parseRequest<AR extends ARBase>(
+  parseRequest<AR extends AttestationTypeBase_Request>(
     bytes: string,
     decodeAttestationTypeName = false,
   ): AR {
@@ -218,7 +218,7 @@ export class AttestationDefinitionStore {
    * @param request2
    * @returns
    */
-  equalsRequest(request1: ARBase, request2: ARBase): boolean {
+  equalsRequest(request1: AttestationTypeBase_Request, request2: AttestationTypeBase_Request): boolean {
     if (request1.attestationType !== request2.attestationType) {
       return false;
     }

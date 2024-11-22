@@ -27,16 +27,3 @@ export function randomWeightedChoice<T>(choices: WeightedRandomChoice<T>[]): T {
   }
   return choices[choices.length - 1].name;
 }
-
-// /**
-//  * Converts objects to Hex value (optionally left padded)
-//  * @param x input object
-//  * @param padToBytes places to (left) pad to (optional)
-//  * @returns (padded) hex value
-//  */
-// export function toHex(x: string | number | BN, padToBytes?: number) {
-//   if ((padToBytes as any) > 0) {
-//     return Web3.utils.leftPad(Web3.utils.toHex(x), padToBytes! * 2);
-//   }
-//   return Web3.utils.toHex(x);
-// }

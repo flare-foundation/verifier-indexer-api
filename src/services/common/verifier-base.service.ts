@@ -8,7 +8,7 @@ import {
   VerifierServerConfig,
 } from 'src/config/configuration';
 
-import { ARBase, ARESBase } from 'src/external-libs/interfaces';
+import { AttestationTypeBase_Request, AttestationTypeBase_Response } from 'src/dtos/attestation-types/AttestationTypeBase.dto';
 import { IIndexedQueryManager } from 'src/indexed-query-manager/IIndexedQueryManager';
 import { IndexedQueryManagerOptions } from 'src/indexed-query-manager/indexed-query-manager-types';
 import {
@@ -44,8 +44,8 @@ export interface ITypeSpecificVerificationServiceConfig
   extends Omit<IVerificationServiceWithIndexerConfig, 'attestationName'> {}
 
 export abstract class BaseVerifierService<
-  Req extends ARBase,
-  Res extends ARESBase,
+  Req extends AttestationTypeBase_Request,
+  Res extends AttestationTypeBase_Response,
 > {
   store: AttestationDefinitionStore;
 
@@ -175,8 +175,8 @@ export abstract class BaseVerifierService<
 }
 
 export abstract class BaseVerifierServiceWithIndexer<
-  Req extends ARBase,
-  Res extends ARESBase,
+  Req extends AttestationTypeBase_Request,
+  Res extends AttestationTypeBase_Response,
 > extends BaseVerifierService<Req, Res> {
   indexedQueryManager: IIndexedQueryManager;
 
@@ -203,7 +203,7 @@ export abstract class BaseVerifierServiceWithIndexer<
   }
 }
 
-export function fromNoMic<T extends Omit<ARBase, 'messageIntegrityCode'>>(
+export function fromNoMic<T extends Omit<AttestationTypeBase_Request, 'messageIntegrityCode'>>(
   request: T,
 ) {
   const fixedRequest = {

@@ -1,15 +1,15 @@
 import { Controller } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
   AddressValidity_Request,
   AddressValidity_Response,
 } from 'src/dtos/attestation-types/AddressValidity.dto';
-import { BaseVerifierController } from './base/verifier-base.controller';
 import {
-  DOGEAddressValidityVerifierService,
   BTCAddressValidityVerifierService,
+  DOGEAddressValidityVerifierService,
   XRPAddressValidityVerifierService,
 } from 'src/services/address-validity-verifier.service';
-import { ApiTags } from '@nestjs/swagger';
+import { BaseVerifierController } from './base/verifier-base.controller';
 
 @ApiTags('AddressValidity')
 @Controller('AddressValidity')
