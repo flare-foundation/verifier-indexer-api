@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { ChainType } from '@flarenetwork/mcc';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IConfig } from 'src/config/configuration';
 import {
@@ -18,7 +19,6 @@ import { verifyAddressXRP } from 'src/verification/address-validity/address-vali
 import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
 import { VerificationResponse } from 'src/verification/verification-utils';
 import { BaseVerifierService } from './common/verifier-base.service';
-import { ChainType } from '@flarenetwork/mcc';
 
 abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
   AddressValidity_Request,

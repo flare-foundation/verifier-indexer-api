@@ -9,37 +9,39 @@ import {
   DOGEPaymentVerifierService,
   XRPPaymentVerifierService,
 } from 'src/services/payment-verifier.service';
-import { BaseVerifierController } from './base/verifier-base.controller';
+import {
+  BaseControllerFactory
+} from './base/verifier-base.controller';
 
 @ApiTags('Payment')
 @Controller('Payment')
-export class DOGEPaymentVerifierController extends BaseVerifierController<
+export class DOGEPaymentVerifierController extends BaseControllerFactory<
   Payment_Request,
   Payment_Response
-> {
-  constructor(protected readonly verifierService: DOGEPaymentVerifierService) {
+>(Payment_Request, Payment_Response) {
+  constructor(public readonly verifierService: DOGEPaymentVerifierService) {
     super();
   }
 }
 
 @ApiTags('Payment')
 @Controller('Payment')
-export class BTCPaymentVerifierController extends BaseVerifierController<
+export class BTCPaymentVerifierController extends BaseControllerFactory<
   Payment_Request,
   Payment_Response
-> {
-  constructor(protected readonly verifierService: BTCPaymentVerifierService) {
+>(Payment_Request, Payment_Response) {
+  constructor(public readonly verifierService: BTCPaymentVerifierService) {
     super();
   }
 }
 
 @ApiTags('Payment')
 @Controller('Payment')
-export class XRPPaymentVerifierController extends BaseVerifierController<
+export class XRPPaymentVerifierController extends BaseControllerFactory<
   Payment_Request,
   Payment_Response
-> {
-  constructor(protected readonly verifierService: XRPPaymentVerifierService) {
+>(Payment_Request, Payment_Response) {
+  constructor(public readonly verifierService: XRPPaymentVerifierService) {
     super();
   }
 }

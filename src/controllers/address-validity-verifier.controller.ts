@@ -9,16 +9,18 @@ import {
   DOGEAddressValidityVerifierService,
   XRPAddressValidityVerifierService,
 } from 'src/services/address-validity-verifier.service';
-import { BaseVerifierController } from './base/verifier-base.controller';
+import {
+  BaseControllerFactory,
+} from './base/verifier-base.controller';
 
 @ApiTags('AddressValidity')
 @Controller('AddressValidity')
-export class DOGEAddressValidityVerifierController extends BaseVerifierController<
-  AddressValidity_Request,
-  AddressValidity_Response
-> {
+export class DOGEAddressValidityVerifierController extends BaseControllerFactory<
+AddressValidity_Request,
+AddressValidity_Response
+>(AddressValidity_Request, AddressValidity_Response){
   constructor(
-    protected readonly verifierService: DOGEAddressValidityVerifierService,
+    public readonly verifierService: DOGEAddressValidityVerifierService,
   ) {
     super();
   }
@@ -26,25 +28,38 @@ export class DOGEAddressValidityVerifierController extends BaseVerifierControlle
 
 @ApiTags('AddressValidity')
 @Controller('AddressValidity')
-export class BTCAddressValidityVerifierController extends BaseVerifierController<
-  AddressValidity_Request,
-  AddressValidity_Response
-> {
+export class BTCAddressValidityVerifierController extends BaseControllerFactory<
+AddressValidity_Request,
+AddressValidity_Response
+>(AddressValidity_Request, AddressValidity_Response) {
   constructor(
-    protected readonly verifierService: BTCAddressValidityVerifierService,
+    public readonly verifierService: BTCAddressValidityVerifierService,
   ) {
     super();
   }
 }
 
+// @ApiTags('AddressValidity')
+// @Controller('AddressValidity')
+// export class XRPAddressValidityVerifierController extends BaseVerifierController<
+//   AddressValidity_Request,
+//   AddressValidity_Response
+// > {
+//   constructor(
+//     protected readonly verifierService: XRPAddressValidityVerifierService,
+//   ) {
+//     super();
+//   }
+// }
+
 @ApiTags('AddressValidity')
 @Controller('AddressValidity')
-export class XRPAddressValidityVerifierController extends BaseVerifierController<
+export class XRPAddressValidityVerifierController extends BaseControllerFactory<
   AddressValidity_Request,
   AddressValidity_Response
-> {
+>(AddressValidity_Request, AddressValidity_Response) {
   constructor(
-    protected readonly verifierService: XRPAddressValidityVerifierService,
+    public readonly verifierService: XRPAddressValidityVerifierService,
   ) {
     super();
   }

@@ -9,16 +9,16 @@ import {
   DOGEConfirmedBlockHeightExistsVerifierService,
   XRPConfirmedBlockHeightExistsVerifierService,
 } from 'src/services/confirmed-block-height-exists-verifier.service';
-import { BaseVerifierController } from './base/verifier-base.controller';
+import { BaseControllerFactory } from './base/verifier-base.controller';
 
 @ApiTags('ConfirmedBlockHeightExists')
 @Controller('ConfirmedBlockHeightExists')
-export class DOGEConfirmedBlockHeightExistsVerifierController extends BaseVerifierController<
-  ConfirmedBlockHeightExists_Request,
-  ConfirmedBlockHeightExists_Response
-> {
+export class DOGEConfirmedBlockHeightExistsVerifierController extends BaseControllerFactory<
+ConfirmedBlockHeightExists_Request,
+ConfirmedBlockHeightExists_Response
+>(ConfirmedBlockHeightExists_Request, ConfirmedBlockHeightExists_Response){
   constructor(
-    protected readonly verifierService: DOGEConfirmedBlockHeightExistsVerifierService,
+    public readonly verifierService: DOGEConfirmedBlockHeightExistsVerifierService,
   ) {
     super();
   }
@@ -26,12 +26,12 @@ export class DOGEConfirmedBlockHeightExistsVerifierController extends BaseVerifi
 
 @ApiTags('ConfirmedBlockHeightExists')
 @Controller('ConfirmedBlockHeightExists')
-export class BTCConfirmedBlockHeightExistsVerifierController extends BaseVerifierController<
-  ConfirmedBlockHeightExists_Request,
-  ConfirmedBlockHeightExists_Response
-> {
+export class BTCConfirmedBlockHeightExistsVerifierController extends BaseControllerFactory<
+ConfirmedBlockHeightExists_Request,
+ConfirmedBlockHeightExists_Response
+>(ConfirmedBlockHeightExists_Request, ConfirmedBlockHeightExists_Response){
   constructor(
-    protected readonly verifierService: BTCConfirmedBlockHeightExistsVerifierService,
+    public readonly verifierService: BTCConfirmedBlockHeightExistsVerifierService,
   ) {
     super();
   }
@@ -39,12 +39,12 @@ export class BTCConfirmedBlockHeightExistsVerifierController extends BaseVerifie
 
 @ApiTags('ConfirmedBlockHeightExists')
 @Controller('ConfirmedBlockHeightExists')
-export class XRPConfirmedBlockHeightExistsVerifierController extends BaseVerifierController<
-  ConfirmedBlockHeightExists_Request,
-  ConfirmedBlockHeightExists_Response
-> {
+export class XRPConfirmedBlockHeightExistsVerifierController extends BaseControllerFactory<
+ConfirmedBlockHeightExists_Request,
+ConfirmedBlockHeightExists_Response
+>(ConfirmedBlockHeightExists_Request, ConfirmedBlockHeightExists_Response){
   constructor(
-    protected readonly verifierService: XRPConfirmedBlockHeightExistsVerifierService,
+    public readonly verifierService: XRPConfirmedBlockHeightExistsVerifierService,
   ) {
     super();
   }

@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDefined,
   IsNotEmptyObject,
@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { IsUnsignedIntLike, IsHash32 } from '../dto-validators';
 import { AttestationResponseStatus } from '../generic/generic.dto';
+import { prefix0x } from '@flarenetwork/mcc';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -110,6 +111,7 @@ export class ConfirmedBlockHeightExists_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -121,6 +123,7 @@ export class ConfirmedBlockHeightExists_Request {
    * ID of the data source.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `ID of the data source.`,
     example:
@@ -132,6 +135,7 @@ export class ConfirmedBlockHeightExists_Request {
    * `MessageIntegrityCode` that is derived from the expected response as defined.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `'MessageIntegrityCode' that is derived from the expected response as defined.`,
     example:
@@ -162,6 +166,7 @@ export class ConfirmedBlockHeightExists_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -173,6 +178,7 @@ export class ConfirmedBlockHeightExists_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `Extracted from the request.`,
     example:

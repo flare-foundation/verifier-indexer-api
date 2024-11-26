@@ -5,21 +5,21 @@ import {
   BalanceDecreasingTransaction_Response,
 } from 'src/dtos/attestation-types/BalanceDecreasingTransaction.dto';
 
-import { BaseVerifierController } from './base/verifier-base.controller';
 import {
-  DOGEBalanceDecreasingTransactionVerifierService,
   BTCBalanceDecreasingTransactionVerifierService,
+  DOGEBalanceDecreasingTransactionVerifierService,
   XRPBalanceDecreasingTransactionVerifierService,
 } from 'src/services/balance-decreasing-transaction-verifier.service';
+import { BaseControllerFactory } from './base/verifier-base.controller';
 
 @ApiTags('BalanceDecreasingTransaction')
 @Controller('BalanceDecreasingTransaction')
-export class DOGEBalanceDecreasingTransactionVerifierController extends BaseVerifierController<
-  BalanceDecreasingTransaction_Request,
-  BalanceDecreasingTransaction_Response
-> {
+export class DOGEBalanceDecreasingTransactionVerifierController extends BaseControllerFactory<
+BalanceDecreasingTransaction_Request,
+BalanceDecreasingTransaction_Response
+>(BalanceDecreasingTransaction_Request, BalanceDecreasingTransaction_Response){
   constructor(
-    protected readonly verifierService: DOGEBalanceDecreasingTransactionVerifierService,
+    public readonly verifierService: DOGEBalanceDecreasingTransactionVerifierService,
   ) {
     super();
   }
@@ -27,12 +27,12 @@ export class DOGEBalanceDecreasingTransactionVerifierController extends BaseVeri
 
 @ApiTags('BalanceDecreasingTransaction')
 @Controller('BalanceDecreasingTransaction')
-export class BTCBalanceDecreasingTransactionVerifierController extends BaseVerifierController<
-  BalanceDecreasingTransaction_Request,
-  BalanceDecreasingTransaction_Response
-> {
+export class BTCBalanceDecreasingTransactionVerifierController extends BaseControllerFactory<
+BalanceDecreasingTransaction_Request,
+BalanceDecreasingTransaction_Response
+>(BalanceDecreasingTransaction_Request, BalanceDecreasingTransaction_Response){
   constructor(
-    protected readonly verifierService: BTCBalanceDecreasingTransactionVerifierService,
+    public readonly verifierService: BTCBalanceDecreasingTransactionVerifierService,
   ) {
     super();
   }
@@ -40,12 +40,12 @@ export class BTCBalanceDecreasingTransactionVerifierController extends BaseVerif
 
 @ApiTags('BalanceDecreasingTransaction')
 @Controller('BalanceDecreasingTransaction')
-export class XRPBalanceDecreasingTransactionVerifierController extends BaseVerifierController<
-  BalanceDecreasingTransaction_Request,
-  BalanceDecreasingTransaction_Response
-> {
+export class XRPBalanceDecreasingTransactionVerifierController extends BaseControllerFactory<
+BalanceDecreasingTransaction_Request,
+BalanceDecreasingTransaction_Response
+>(BalanceDecreasingTransaction_Request, BalanceDecreasingTransaction_Response){
   constructor(
-    protected readonly verifierService: XRPBalanceDecreasingTransactionVerifierService,
+    public readonly verifierService: XRPBalanceDecreasingTransactionVerifierService,
   ) {
     super();
   }

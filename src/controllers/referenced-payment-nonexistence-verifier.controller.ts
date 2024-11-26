@@ -4,21 +4,26 @@ import {
   ReferencedPaymentNonexistence_Request,
   ReferencedPaymentNonexistence_Response,
 } from 'src/dtos/attestation-types/ReferencedPaymentNonexistence.dto';
-import { BaseVerifierController } from './base/verifier-base.controller';
 import {
   BTCReferencedPaymentNonexistenceVerifierService,
   DOGEReferencedPaymentNonexistenceVerifierService,
   XRPReferencedPaymentNonexistenceVerifierService,
 } from 'src/services/referenced-payment-nonexistence-verifier.service';
+import {
+  BaseControllerFactory
+} from './base/verifier-base.controller';
 
 @ApiTags('ReferencedPaymentNonexistence')
 @Controller('ReferencedPaymentNonexistence')
-export class DOGEReferencedPaymentNonexistenceVerifierController extends BaseVerifierController<
+export class DOGEReferencedPaymentNonexistenceVerifierController extends BaseControllerFactory<
   ReferencedPaymentNonexistence_Request,
   ReferencedPaymentNonexistence_Response
-> {
+>(
+  ReferencedPaymentNonexistence_Request,
+  ReferencedPaymentNonexistence_Response,
+) {
   constructor(
-    protected readonly verifierService: DOGEReferencedPaymentNonexistenceVerifierService,
+    public readonly verifierService: DOGEReferencedPaymentNonexistenceVerifierService,
   ) {
     super();
   }
@@ -26,12 +31,15 @@ export class DOGEReferencedPaymentNonexistenceVerifierController extends BaseVer
 
 @ApiTags('ReferencedPaymentNonexistence')
 @Controller('ReferencedPaymentNonexistence')
-export class BTCReferencedPaymentNonexistenceVerifierController extends BaseVerifierController<
+export class BTCReferencedPaymentNonexistenceVerifierController extends BaseControllerFactory<
   ReferencedPaymentNonexistence_Request,
   ReferencedPaymentNonexistence_Response
-> {
+>(
+  ReferencedPaymentNonexistence_Request,
+  ReferencedPaymentNonexistence_Response,
+) {
   constructor(
-    protected readonly verifierService: BTCReferencedPaymentNonexistenceVerifierService,
+    public readonly verifierService: BTCReferencedPaymentNonexistenceVerifierService,
   ) {
     super();
   }
@@ -39,12 +47,15 @@ export class BTCReferencedPaymentNonexistenceVerifierController extends BaseVeri
 
 @ApiTags('ReferencedPaymentNonexistence')
 @Controller('ReferencedPaymentNonexistence')
-export class XRPReferencedPaymentNonexistenceVerifierController extends BaseVerifierController<
+export class XRPReferencedPaymentNonexistenceVerifierController extends BaseControllerFactory<
   ReferencedPaymentNonexistence_Request,
   ReferencedPaymentNonexistence_Response
-> {
+>(
+  ReferencedPaymentNonexistence_Request,
+  ReferencedPaymentNonexistence_Response,
+) {
   constructor(
-    protected readonly verifierService: XRPReferencedPaymentNonexistenceVerifierService,
+    public readonly verifierService: XRPReferencedPaymentNonexistenceVerifierService,
   ) {
     super();
   }

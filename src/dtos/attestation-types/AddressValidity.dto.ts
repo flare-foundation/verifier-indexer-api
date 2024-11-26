@@ -1,15 +1,17 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDefined,
   IsNotEmptyObject,
   IsObject,
+  IsString,
   Validate,
   ValidateNested,
 } from 'class-validator';
 import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../generic/generic.dto';
+import { prefix0x } from '@flarenetwork/mcc';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -48,6 +50,7 @@ export class AddressValidity_ResponseBody {
   /**
    * If `isValid`, standard form of the validated address. Otherwise an empty string.
    */
+  @IsString()
   @ApiProperty({
     description: `If 'isValid', standard form of the validated address. Otherwise an empty string.`,
     example: 'Example string',
@@ -58,6 +61,7 @@ export class AddressValidity_ResponseBody {
    * If `isValid`, standard address hash of the validated address. Otherwise a zero bytes32 string.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `If 'isValid', standard address hash of the validated address. Otherwise a zero bytes32 string.`,
     example:
@@ -74,6 +78,7 @@ export class AddressValidity_RequestBody {
   /**
    * Address to be verified.
    */
+  @IsString()
   @ApiProperty({
     description: `Address to be verified.`,
     example: 'Example string',
@@ -90,6 +95,7 @@ export class AddressValidity_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -101,6 +107,7 @@ export class AddressValidity_Request {
    * Id of the data source.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `Id of the data source.`,
     example:
@@ -112,6 +119,7 @@ export class AddressValidity_Request {
    * `MessageIntegrityCode` that is derived from the expected response.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `'MessageIntegrityCode' that is derived from the expected response.`,
     example:
@@ -122,14 +130,13 @@ export class AddressValidity_Request {
   /**
    * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
    */
-  @ValidateNested()
+  @ValidateNested({
+    message: `requestBody validation nested fail object`,
+  })
   @Type(() => AddressValidity_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
-  @ApiProperty({
-    description: `Data defining the request. Type (struct) and interpretation is determined by the 'attestationType'.`,
-  })
   requestBody: AddressValidity_RequestBody;
 }
 
@@ -142,6 +149,7 @@ export class AddressValidity_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -153,6 +161,7 @@ export class AddressValidity_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value))
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
