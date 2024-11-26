@@ -73,7 +73,7 @@ export class IsHash32 implements ValidatorConstraintInterface {
    * @returns
    */
   validate(text: any, _args: ValidationArguments) {
-    return typeof text === 'string' && /^0x[0-9a-f]{64}$/i.test(text);
+    return typeof text === 'string' && /^(0x|0X)?[0-9a-f]{64}$/i.test(text);
   }
 
   /**
@@ -82,7 +82,7 @@ export class IsHash32 implements ValidatorConstraintInterface {
    * @returns
    */
   defaultMessage(_args: ValidationArguments) {
-    return '($property) value ($value) is not 0x-prefixed hexadecimal string representing 32 bytes';
+    return `proerty ${_args.property} of value (${_args.value}) is not 0x/0X prefixed or unprefixed hexadecimal string representing 32 bytes`;
   }
 }
 
@@ -98,7 +98,7 @@ export class Is0xHex implements ValidatorConstraintInterface {
    * @returns
    */
   validate(text: any, _args: ValidationArguments) {
-    return typeof text === 'string' && /^0x[0-9a-f]+$/i.test(text);
+    return typeof text === 'string' && /^(0x|0X)?[0-9a-f]+$/i.test(text);
   }
 
   /**
@@ -123,7 +123,7 @@ export class IsEVMAddress implements ValidatorConstraintInterface {
    * @returns
    */
   validate(text: any, _args: ValidationArguments) {
-    return typeof text === 'string' && /^0x[0-9a-f]{40}$/i.test(text);
+    return typeof text === 'string' && /^(0x|0X)?[0-9a-f]{40}$/i.test(text);
   }
 
   /**

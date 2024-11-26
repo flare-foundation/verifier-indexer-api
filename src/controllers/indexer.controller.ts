@@ -1,3 +1,4 @@
+import { unPrefix0x } from '@flarenetwork/mcc';
 import {
   Controller,
   Get,
@@ -12,8 +13,11 @@ import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
 import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
 import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
 import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
-import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
-import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
+import { QueryBlock, QueryBlockDetail } from 'src/dtos/indexer/QueryBlock.dto';
+import {
+  QueryTransaction,
+  QueryTransactionDetail,
+} from 'src/dtos/indexer/QueryTransaction.dto';
 import { IIndexerEngineService } from 'src/services/common/base-indexer-engine-service';
 import {
   BtcExternalIndexerEngineService,
@@ -25,7 +29,10 @@ import {
   handleApiResponse,
 } from 'src/utils/api-models/ApiResponse';
 import { PaginatedList } from 'src/utils/api-models/PaginatedList';
-import { ApiResponseWrapperDec, ApiResponseWrapperPaginated } from 'src/utils/open-api-utils';
+import {
+  ApiResponseWrapperDec,
+  ApiResponseWrapperPaginated,
+} from 'src/utils/open-api-utils';
 
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
@@ -72,7 +79,6 @@ abstract class BaseIndexerController {
     return handleApiResponse(this.indexerEngine.getBlockHeightTip());
   }
 
-
   /**
    * Gets confirmed block with the given block number.
    * Blocks that are not confirmed yet cannot be obtained using this route.
@@ -107,7 +113,7 @@ abstract class BaseIndexerController {
   @Get('block/:blockHash')
   @ApiResponseWrapperDec(ApiDBBlock, false)
   public async block(
-    @Param('blockHash') blockHash: string,
+    @Param() { blockHash }: QueryBlockDetail,
   ): Promise<ApiResponseWrapper<ApiDBBlock>> {
     return handleApiResponse(
       this.indexerEngine.getBlock(blockHash.toLowerCase()),
@@ -141,10 +147,10 @@ abstract class BaseIndexerController {
   @Get('transaction/:txHash')
   @ApiResponseWrapperDec(ApiDBTransaction, false)
   public async transaction(
-    @Param('txHash') txHash: string,
+    @Param() { txHash }: QueryTransactionDetail,
   ): Promise<ApiResponseWrapper<ApiDBTransaction>> {
     return handleApiResponse(
-      this.indexerEngine.getTransaction(txHash.toLowerCase()),
+      this.indexerEngine.getTransaction(unPrefix0x(txHash.toLowerCase())),
     );
   }
 
@@ -156,10 +162,10 @@ abstract class BaseIndexerController {
   @Get('transaction-block/:txHash')
   @ApiResponseWrapperDec(ApiDBBlock, false)
   public async transactionBlock(
-    @Param('txHash') txHash: string,
+    @Param() { txHash }: QueryTransactionDetail,
   ): Promise<ApiResponseWrapper<ApiDBBlock>> {
     return handleApiResponse(
-      this.indexerEngine.getTransactionBlock(txHash.toLowerCase()),
+      this.indexerEngine.getTransactionBlock(unPrefix0x(txHash.toLowerCase())),
     );
   }
 }

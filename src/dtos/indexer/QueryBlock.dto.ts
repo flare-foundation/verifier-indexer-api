@@ -1,5 +1,7 @@
-import { Type } from "class-transformer";
-import { IsInt, IsOptional } from "class-validator";
+import { unPrefix0x } from "@flarenetwork/mcc";
+import { Transform, Type } from "class-transformer";
+import { IsInt, IsOptional, Validate } from "class-validator";
+import { IsHash32 } from "../dto-validators";
 
 /**
  * Query parameters for listing blocks from indexer database.
@@ -21,3 +23,16 @@ export class QueryBlock {
     @IsOptional()
     to?: number;
   }
+
+  /**
+ * Query parameters for detail block from indexer database.
+ */
+export class QueryBlockDetail {
+  /**
+   * Block hash
+   */
+
+  @Validate(IsHash32)
+  @Transform(({ value }) => unPrefix0x(value))
+  blockHash: string;
+}

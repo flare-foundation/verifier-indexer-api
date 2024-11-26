@@ -1,5 +1,7 @@
 import { Transform, Type } from 'class-transformer';
-import { IsInt, IsOptional } from 'class-validator';
+import { IsInt, IsOptional, Validate } from 'class-validator';
+import { IsHash32 } from '../dto-validators';
+import { prefix0x, unPrefix0x } from '@flarenetwork/mcc';
 
 /**
  * Query parameters for listing transactions from indexer database.
@@ -44,4 +46,17 @@ export class QueryTransaction {
   @Transform(({ value }) => value === 'true')
   @IsOptional()
   returnResponse?: boolean;
+}
+
+/**
+ * Query parameters for detail transactions from indexer database.
+ */
+export class QueryTransactionDetail {
+  /**
+   * Transaction id (hash)
+   */
+
+  @Validate(IsHash32)
+  @Transform(({ value }) => unPrefix0x(value))
+  txHash: string;
 }
