@@ -60,6 +60,4 @@ export async function runVerifierServer() {
   await app.listen(PORT, '0.0.0.0', () =>
     logger.log(`Server started listening at http://0.0.0.0:${PORT}`),
   );
-
-  logger.log(`Websocket server started listening at ws://0.0.0.0:${PORT}`);
 }
