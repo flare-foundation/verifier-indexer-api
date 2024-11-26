@@ -155,7 +155,7 @@ export class DBUtxoTransaction {
       txid: this.transaction_id,
       time: this.timestamp,
       vout: vout_arr,
-      blocktime: this.timestamp,
+      mediantime: this.timestamp,
       hash: this.transaction_id,
       version: 1,
       size: 0,

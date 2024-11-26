@@ -123,7 +123,6 @@ export function responsePayment<T extends TransactionBase<any>>(
   if (!paymentSummary.response) {
     throw new Error('critical error: should always have response');
   }
-
   const response = new Payment_Response({
     attestationType: request.attestationType,
     sourceId: request.sourceId,
