@@ -1,4 +1,4 @@
-import { ChainType, MccCreate } from '@flarenetwork/mcc';
+import { ChainType } from '@flarenetwork/mcc';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import {
   DBTransactionInput,

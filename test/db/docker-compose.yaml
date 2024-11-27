@@ -11,4 +11,4 @@ services:
 
 
 
-# docker compose -f tests/db/docker-compose.yaml up -d
+# docker compose -f test/db/docker-compose.yaml up -d
