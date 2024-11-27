@@ -1,0 +1,14 @@
+services:
+  postgres_testing_db:
+    container_name: testing_db
+    image: postgres
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "127.0.0.1:8080:5432"
+
+
+
+# docker compose -f tests/db/docker-compose.yaml up -d
