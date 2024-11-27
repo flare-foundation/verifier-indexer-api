@@ -8,6 +8,7 @@ import configuration, { IConfig } from '../config/configuration';
 import { DOGEAddressValidityVerifierController } from '../controllers/address-validity-verifier.controller';
 import { DOGEBalanceDecreasingTransactionVerifierController } from '../controllers/balance-decreasing-transaction-verifier.controller';
 import { DOGEConfirmedBlockHeightExistsVerifierController } from '../controllers/confirmed-block-height-exists-verifier.controller';
+import { DOGEHealthController } from '../controllers/health.controller';
 import { DOGEIndexerController } from '../controllers/indexer.controller';
 import { DOGEPaymentVerifierController } from '../controllers/payment-verifier.controller';
 import { DOGEReferencedPaymentNonexistenceVerifierController } from '../controllers/referenced-payment-nonexistence-verifier.controller';

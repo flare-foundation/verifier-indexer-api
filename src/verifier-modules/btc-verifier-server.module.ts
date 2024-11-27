@@ -8,6 +8,7 @@ import configuration, { IConfig } from '../config/configuration';
 import { BTCAddressValidityVerifierController } from '../controllers/address-validity-verifier.controller';
 import { BTCBalanceDecreasingTransactionVerifierController } from '../controllers/balance-decreasing-transaction-verifier.controller';
 import { BTCConfirmedBlockHeightExistsVerifierController } from '../controllers/confirmed-block-height-exists-verifier.controller';
+import { BTCHealthController } from '../controllers/health.controller';
 import { BTCIndexerController } from '../controllers/indexer.controller';
 import { BTCPaymentVerifierController } from '../controllers/payment-verifier.controller';
 import { BTCReferencedPaymentNonexistenceVerifierController } from '../controllers/referenced-payment-nonexistence-verifier.controller';
