@@ -69,14 +69,14 @@ export class Payment_ResponseBody {
   /**
    * The root of the Merkle tree of the source addresses.
    */
-    @Validate(IsHash32)
-    @Transform(({ value }) => prefix0x(value).toLowerCase())
-    @ApiProperty({
-      description: `The root of the Merkle tree of the source addresses.`,
-      example:
-        '0x0000000000000000000000000000000000000000000000000000000000000000',
-    })
-    sourceAddressesRoot: string;
+  @Validate(IsHash32)
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
+  @ApiProperty({
+    description: `The root of the Merkle tree of the source addresses.`,
+    example:
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
+  })
+  sourceAddressesRoot: string;
 
   /**
    * Standard address hash of the receiving address. The zero 32-byte string if there is no receivingAddress (if `status` is not success).
@@ -243,18 +243,6 @@ export class Payment_Request {
   sourceId: string;
 
   /**
-   * `MessageIntegrityCode` that is derived from the expected response.
-   */
-  @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value).toLowerCase())
-  @ApiProperty({
-    description: `'MessageIntegrityCode' that is derived from the expected response.`,
-    example:
-      '0x0000000000000000000000000000000000000000000000000000000000000000',
-  })
-  messageIntegrityCode: string;
-
-  /**
    * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
    */
   @ValidateNested()
@@ -370,8 +358,3 @@ export class Payment_Proof {
   @ApiProperty({ description: `Attestation response.` })
   data: Payment_Response;
 }
-
-export class Payment_RequestNoMic extends OmitType<
-  Payment_Request,
-  'messageIntegrityCode'
->(Payment_Request, ['messageIntegrityCode'] as const) {}

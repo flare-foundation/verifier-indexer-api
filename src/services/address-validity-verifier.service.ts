@@ -52,7 +52,7 @@ abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
     return {
       status,
       response,
-    } as AttestationResponse<AddressValidity_Response>;
+    };
   }
 }
 

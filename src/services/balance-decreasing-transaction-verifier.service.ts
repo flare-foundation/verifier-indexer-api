@@ -55,7 +55,7 @@ abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerif
     return serializeBigInts({
       status: getAttestationStatus(result.status),
       response: result.response,
-    }) as AttestationResponse<BalanceDecreasingTransaction_Response>;
+    });
   }
 }
 

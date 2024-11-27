@@ -1,4 +1,5 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { prefix0x } from '@flarenetwork/mcc';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsDefined,
@@ -7,9 +8,8 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
-import { IsUnsignedIntLike, IsHash32 } from '../dto-validators';
+import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../generic/generic.dto';
-import { prefix0x } from '@flarenetwork/mcc';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -132,18 +132,6 @@ export class ConfirmedBlockHeightExists_Request {
   sourceId: string;
 
   /**
-   * `MessageIntegrityCode` that is derived from the expected response as defined.
-   */
-  @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value).toLowerCase())
-  @ApiProperty({
-    description: `'MessageIntegrityCode' that is derived from the expected response as defined.`,
-    example:
-      '0x0000000000000000000000000000000000000000000000000000000000000000',
-  })
-  messageIntegrityCode: string;
-
-  /**
    * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
    */
   @ValidateNested()
@@ -259,8 +247,3 @@ export class ConfirmedBlockHeightExists_Proof {
   @ApiProperty({ description: `Attestation response.` })
   data: ConfirmedBlockHeightExists_Response;
 }
-
-export class ConfirmedBlockHeightExists_RequestNoMic extends OmitType<
-  ConfirmedBlockHeightExists_Request,
-  'messageIntegrityCode'
->(ConfirmedBlockHeightExists_Request, ['messageIntegrityCode'] as const) {}

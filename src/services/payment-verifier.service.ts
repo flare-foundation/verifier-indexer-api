@@ -55,7 +55,7 @@ abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer
     return serializeBigInts({
       status: getAttestationStatus(result.status),
       response: result.response,
-    }) as AttestationResponse<Payment_Response>;
+    });
   }
 }
 

@@ -150,18 +150,6 @@ export class BalanceDecreasingTransaction_Request {
   sourceId: string;
 
   /**
-   * `MessageIntegrityCode` that is derived from the expected response.
-   */
-  @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value).toLowerCase())
-  @ApiProperty({
-    description: `'MessageIntegrityCode' that is derived from the expected response.`,
-    example:
-      '0x0000000000000000000000000000000000000000000000000000000000000000',
-  })
-  messageIntegrityCode: string;
-
-  /**
    * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
    */
   @ValidateNested()
@@ -277,8 +265,3 @@ export class BalanceDecreasingTransaction_Proof {
   @ApiProperty({ description: `Attestation response.` })
   data: BalanceDecreasingTransaction_Response;
 }
-
-export class BalanceDecreasingTransaction_RequestNoMic extends OmitType<
-  BalanceDecreasingTransaction_Request,
-  'messageIntegrityCode'
->(BalanceDecreasingTransaction_Request, ['messageIntegrityCode'] as const) {}

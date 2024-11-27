@@ -1,15 +1,15 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { prefix0x } from '@flarenetwork/mcc';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsDefined,
   IsNotEmptyObject,
   IsObject,
   Validate,
-  ValidateNested
+  ValidateNested,
 } from 'class-validator';
 import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../generic/generic.dto';
-import { prefix0x } from '@flarenetwork/mcc';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -70,18 +70,6 @@ export class AttestationTypeBase_Request {
       '0x444f474500000000000000000000000000000000000000000000000000000000',
   })
   sourceId: string;
-
-  /**
-   * `MessageIntegrityCode` that is derived from the expected response.
-   */
-  @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value).toLowerCase())
-  @ApiProperty({
-    description: `'MessageIntegrityCode' that is derived from the expected response.`,
-    example:
-      '0x0000000000000000000000000000000000000000000000000000000000000000',
-  })
-  messageIntegrityCode: string;
 
   /**
    * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
@@ -199,8 +187,3 @@ export class AttestationTypeBase_Proof {
   @ApiProperty({ description: `Attestation response.` })
   data: AttestationTypeBase_Response;
 }
-
-export class AttestationTypeBase_RequestNoMic extends OmitType<
-AttestationTypeBase_Request,
-  'messageIntegrityCode'
->(AttestationTypeBase_Request, ['messageIntegrityCode'] as const) {}

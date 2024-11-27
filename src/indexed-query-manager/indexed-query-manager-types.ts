@@ -40,7 +40,7 @@ export interface BlockResult {
 ////////////////////////////////////////////////////////
 
 export interface TransactionQueryParams {
-  chainType: ChainType;
+  chainType?: ChainType;
   startBlockNumber?: number;
   endBlockNumber?: number;
   transactionId?: string;

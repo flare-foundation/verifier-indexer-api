@@ -145,7 +145,7 @@ export abstract class IIndexedQueryManager {
   ): Promise<ConfirmedTransactionQueryResponse> {
     const transactionsQueryResult = await this.queryTransactions({
       transactionId: params.txId,
-    } as TransactionQueryParams);
+    });
     const transactions = transactionsQueryResult.result || [];
 
     return {

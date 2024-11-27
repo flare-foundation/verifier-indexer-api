@@ -47,7 +47,7 @@ abstract class BaseConfirmedBlockHeightExistsVerifierService extends BaseVerifie
     return serializeBigInts({
       status: getAttestationStatus(result.status),
       response: result.response,
-    }) as AttestationResponse<ConfirmedBlockHeightExists_Response>;
+    });
   }
 }
 

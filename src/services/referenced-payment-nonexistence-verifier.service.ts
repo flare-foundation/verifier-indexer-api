@@ -55,7 +55,7 @@ abstract class BaseReferencedPaymentNonexistenceVerifierService extends BaseVeri
     return serializeBigInts({
       status: getAttestationStatus(result.status),
       response: result.response,
-    }) as AttestationResponse<ReferencedPaymentNonexistence_Response>;
+    });
   }
 }
 

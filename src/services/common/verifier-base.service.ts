@@ -8,7 +8,10 @@ import {
   VerifierServerConfig,
 } from 'src/config/configuration';
 
-import { AttestationTypeBase_Request, AttestationTypeBase_Response } from 'src/dtos/attestation-types/AttestationTypeBase.dto';
+import {
+  AttestationTypeBase_Request,
+  AttestationTypeBase_Response,
+} from 'src/dtos/attestation-types/AttestationTypeBase.dto';
 import { IIndexedQueryManager } from 'src/indexed-query-manager/IIndexedQueryManager';
 import { IndexedQueryManagerOptions } from 'src/indexed-query-manager/indexed-query-manager-types';
 import {
@@ -103,7 +106,11 @@ export abstract class BaseVerifierService<
   public async verifyEncodedRequest(
     abiEncodedRequest: string,
   ): Promise<AttestationResponse<Res>> {
-    const requestJSON = this.store.parseRequest<Req>(abiEncodedRequest);
+    const requestJSON = this.store.parseRequest<
+      {
+        messageIntegrityCode: string;
+      } & Req
+    >(abiEncodedRequest);
     const response = await this.verifyRequestInternal(requestJSON);
     return response;
   }
@@ -111,7 +118,11 @@ export abstract class BaseVerifierService<
   public async verifyEncodedRequestFDC(
     abiEncodedRequest: string,
   ): Promise<AttestationResponseEncoded> {
-    const requestJSON = this.store.parseRequest<Req>(abiEncodedRequest);
+    const requestJSON = this.store.parseRequest<
+      {
+        messageIntegrityCode: string;
+      } & Req
+    >(abiEncodedRequest);
     const response = await this.verifyRequestInternal(requestJSON);
     if (
       response.status !== AttestationResponseStatus.VALID ||
@@ -165,7 +176,7 @@ export abstract class BaseVerifierService<
         response,
         MIC_SALT,
       )!,
-    } as Req;
+    };
 
     return new EncodedRequestResponse({
       status: AttestationResponseStatus.VALID,
@@ -203,9 +214,9 @@ export abstract class BaseVerifierServiceWithIndexer<
   }
 }
 
-export function fromNoMic<T extends Omit<AttestationTypeBase_Request, 'messageIntegrityCode'>>(
-  request: T,
-) {
+export function fromNoMic<
+  T extends Omit<AttestationTypeBase_Request, 'messageIntegrityCode'>,
+>(request: T) {
   const fixedRequest = {
     messageIntegrityCode: ZERO_BYTES_32,
     ...request, // if messageIntegrityCode is provided, it will be shadowed

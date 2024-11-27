@@ -1,6 +1,9 @@
 import { ZERO_BYTES_32 } from '@flarenetwork/mcc';
 import { ethers } from 'ethers';
-import { AttestationTypeBase_Request, AttestationTypeBase_Response } from 'src/dtos/attestation-types/AttestationTypeBase.dto';
+import {
+  AttestationTypeBase_Request,
+  AttestationTypeBase_Response,
+} from 'src/dtos/attestation-types/AttestationTypeBase.dto';
 import { TypeRecord } from './config-types';
 import {
   ABIFragment,
@@ -11,6 +14,10 @@ import {
   serializeBigInts,
   structsDeepEqual,
 } from './utils';
+
+type AttestationRequestWithMic = AttestationTypeBase_Request & {
+  messageIntegrityCode: string;
+};
 
 /**
  * Attestation definition store. Contains all the attestation type definitions
@@ -98,7 +105,7 @@ export class AttestationDefinitionStore {
   static extractPrefixFromRequest(
     bytes: string,
     decodeAttestationTypeName = false,
-  ): AttestationTypeBase_Request {
+  ): AttestationRequestWithMic {
     if (!bytes) {
       throw new Error('Empty attestation request');
     }
@@ -117,7 +124,7 @@ export class AttestationDefinitionStore {
       sourceId: '0x' + bytes.slice(2 + 64, 2 + 2 * 64),
       messageIntegrityCode: '0x' + bytes.slice(2 + 2 * 64, 2 + 3 * 64),
       requestBody: '0x' + bytes.slice(2 + 3 * 64),
-    } as AttestationTypeBase_Request;
+    };
   }
 
   /**
@@ -126,7 +133,7 @@ export class AttestationDefinitionStore {
    * @param request
    * @returns
    */
-  encodeRequest(request: AttestationTypeBase_Request): string {
+  encodeRequest(request: AttestationRequestWithMic): string {
     const attestationType = decodeAttestationName(request.attestationType);
     const definition =
       this.getDefinitionForDecodedAttestationType(attestationType);
@@ -178,10 +185,7 @@ export class AttestationDefinitionStore {
    * @param bytes
    * @returns
    */
-  parseRequest<AR extends AttestationTypeBase_Request>(
-    bytes: string,
-    decodeAttestationTypeName = false,
-  ): AR {
+  parseRequest<AR extends AttestationRequestWithMic>(bytes: string): AR {
     const prefix = AttestationDefinitionStore.extractPrefixFromRequest(bytes);
     const attestationType = decodeAttestationName(prefix.attestationType);
     const definition =
@@ -203,9 +207,7 @@ export class AttestationDefinitionStore {
       '0x' + bytes.slice(2 + 3 * 64),
     )[0];
     return serializeBigInts({
-      attestationType: decodeAttestationTypeName
-        ? definition
-        : prefix.attestationType,
+      attestationType: prefix.attestationType,
       sourceId: prefix.sourceId,
       messageIntegrityCode: prefix.messageIntegrityCode,
       requestBody: remapABIParsedToObjects(parsed, requestBodyAbi),
@@ -218,7 +220,10 @@ export class AttestationDefinitionStore {
    * @param request2
    * @returns
    */
-  equalsRequest(request1: AttestationTypeBase_Request, request2: AttestationTypeBase_Request): boolean {
+  equalsRequest(
+    request1: AttestationTypeBase_Request,
+    request2: AttestationTypeBase_Request,
+  ): boolean {
     if (request1.attestationType !== request2.attestationType) {
       return false;
     }
@@ -226,9 +231,8 @@ export class AttestationDefinitionStore {
       return false;
     }
     const attestationType = decodeAttestationName(request1.attestationType);
-    const requestAbi = this.getDefinitionForDecodedAttestationType(
-      attestationType,
-    )?.requestAbi as ABIFragment;
+    const requestAbi =
+      this.getDefinitionForDecodedAttestationType(attestationType)?.requestAbi;
     if (!requestAbi) {
       throw new Error(`Unsupported attestation type id: '${attestationType}'`);
     }

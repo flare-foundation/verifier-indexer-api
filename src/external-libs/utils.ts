@@ -284,7 +284,7 @@ export function readAttestationTypeConfigs(
       name,
       JSON.parse(
         readFileSync(`${configsPath}/${fileName}`, 'utf8'),
-      ) as TypeRecord,
+      ),
     );
   });
   return typeRecMap;
@@ -295,7 +295,7 @@ export function readAttestationTypeConfigs(
  * @param obj
  * @returns
  */
-export function serializeBigInts(obj: any) {
+export function serializeBigInts<T>(obj: T): T {
   return JSON.parse(
     JSON.stringify(
       obj,
