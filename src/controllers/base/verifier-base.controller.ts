@@ -7,7 +7,7 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { ApiSecurity } from '@nestjs/swagger';
+import { ApiOperation, ApiSecurity } from '@nestjs/swagger';
 
 import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
 import {
@@ -23,6 +23,7 @@ import {
   EncodedRequestResponse,
   MicResponse,
 } from '../../dtos/generic/generic.dto';
+
 
 export function BaseControllerFactory<
   Req extends AttestationTypeBase_Request,
@@ -52,6 +53,7 @@ export function BaseControllerFactory<
      */
     @HttpCode(200)
     @Post()
+    @ApiOperation({ deprecated: true })
     async verify(
       @Body() body: EncodedRequest,
     ): Promise<AttestationResponse<Res>> {

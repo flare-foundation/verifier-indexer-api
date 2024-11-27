@@ -17,6 +17,7 @@ import { BTCPaymentVerifierService } from 'src/services/payment-verifier.service
 import { BTCReferencedPaymentNonexistenceVerifierService } from 'src/services/referenced-payment-nonexistence-verifier.service';
 import { BtcExternalIndexerEngineService } from 'src/services/indexer-services/utxo-indexer.service';
 import { BTCIndexerController } from 'src/controllers/indexer.controller';
+import { BTCHealthController } from 'src/controllers/health.controller';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { BTCIndexerController } from 'src/controllers/indexer.controller';
     AuthModule,
   ],
   controllers: [
+    BTCHealthController,
     BTCIndexerController,
     BTCAddressValidityVerifierController,
     BTCBalanceDecreasingTransactionVerifierController,

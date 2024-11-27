@@ -17,6 +17,7 @@ import configuration, { IConfig } from '../config/configuration';
 import { XRPAddressValidityVerifierController } from '../controllers/address-validity-verifier.controller';
 import { XRPAddressValidityVerifierService } from '../services/address-validity-verifier.service';
 import { XrpExternalIndexerEngineService } from 'src/services/indexer-services/xrp-indexer.service';
+import { XRPHealthController } from 'src/controllers/health.controller';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { XrpExternalIndexerEngineService } from 'src/services/indexer-services/x
     AuthModule,
   ],
   controllers: [
+    XRPHealthController,
     XrpIndexerController,
     XRPAddressValidityVerifierController,
     XRPBalanceDecreasingTransactionVerifierController,

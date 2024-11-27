@@ -17,6 +17,7 @@ import { DOGEConfirmedBlockHeightExistsVerifierController } from 'src/controller
 import { DOGEReferencedPaymentNonexistenceVerifierController } from 'src/controllers/referenced-payment-nonexistence-verifier.controller';
 import { DogeExternalIndexerEngineService } from 'src/services/indexer-services/utxo-indexer.service';
 import { DOGEIndexerController } from 'src/controllers/indexer.controller';
+import { DOGEHealthController } from 'src/controllers/health.controller';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { DOGEIndexerController } from 'src/controllers/indexer.controller';
     AuthModule,
   ],
   controllers: [
+    DOGEHealthController,
     DOGEIndexerController,
     DOGEAddressValidityVerifierController,
     DOGEBalanceDecreasingTransactionVerifierController,
