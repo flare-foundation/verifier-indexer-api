@@ -51,7 +51,7 @@ export class AttestationTypeBase_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -63,7 +63,7 @@ export class AttestationTypeBase_Request {
    * Id of the data source.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Id of the data source.`,
     example:
@@ -75,7 +75,7 @@ export class AttestationTypeBase_Request {
    * `MessageIntegrityCode` that is derived from the expected response.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `'MessageIntegrityCode' that is derived from the expected response.`,
     example:
@@ -106,7 +106,7 @@ export class AttestationTypeBase_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -118,7 +118,7 @@ export class AttestationTypeBase_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:

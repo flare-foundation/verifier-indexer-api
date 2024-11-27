@@ -106,7 +106,7 @@ export class ReferencedPaymentNonexistence_RequestBody {
    * The standard address hash of the address to which the payment had to be done.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `The standard address hash of the address to which the payment had to be done.`,
     example:
@@ -128,7 +128,7 @@ export class ReferencedPaymentNonexistence_RequestBody {
    * The requested standard payment reference.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `The requested standard payment reference.`,
     example:
@@ -151,7 +151,7 @@ export class ReferencedPaymentNonexistence_RequestBody {
    * The root of the Merkle tree of the source addresses.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `The root of the Merkle tree of the source addresses.`,
     example:
@@ -169,7 +169,7 @@ export class ReferencedPaymentNonexistence_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -181,7 +181,7 @@ export class ReferencedPaymentNonexistence_Request {
    * ID of the data source.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `ID of the data source.`,
     example:
@@ -193,7 +193,7 @@ export class ReferencedPaymentNonexistence_Request {
    * `MessageIntegrityCode` that is derived from the expected response as defined.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `'MessageIntegrityCode' that is derived from the expected response as defined.`,
     example:
@@ -224,7 +224,7 @@ export class ReferencedPaymentNonexistence_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -236,7 +236,7 @@ export class ReferencedPaymentNonexistence_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:

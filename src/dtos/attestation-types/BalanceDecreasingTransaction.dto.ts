@@ -59,7 +59,7 @@ export class BalanceDecreasingTransaction_ResponseBody {
    * Standard address hash of the address indicated by the `sourceAddressIndicator`.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Standard address hash of the address indicated by the 'sourceAddressIndicator'.`,
     example:
@@ -81,7 +81,7 @@ export class BalanceDecreasingTransaction_ResponseBody {
    * Standard payment reference of the transaction.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Standard payment reference of the transaction.`,
     example:
@@ -99,7 +99,7 @@ export class BalanceDecreasingTransaction_RequestBody {
    * ID of the payment transaction.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `ID of the payment transaction.`,
     example:
@@ -111,7 +111,7 @@ export class BalanceDecreasingTransaction_RequestBody {
    * The indicator of the address whose balance has been decreased.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `The indicator of the address whose balance has been decreased.`,
     example:
@@ -129,7 +129,7 @@ export class BalanceDecreasingTransaction_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -141,7 +141,7 @@ export class BalanceDecreasingTransaction_Request {
    * ID of the data source.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `ID of the data source.`,
     example:
@@ -153,7 +153,7 @@ export class BalanceDecreasingTransaction_Request {
    * `MessageIntegrityCode` that is derived from the expected response.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `'MessageIntegrityCode' that is derived from the expected response.`,
     example:
@@ -184,7 +184,7 @@ export class BalanceDecreasingTransaction_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -196,7 +196,7 @@ export class BalanceDecreasingTransaction_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:

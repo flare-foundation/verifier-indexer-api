@@ -76,8 +76,6 @@ export async function handleApiResponse<T>(
     const resp = await action;
     return new ApiResponseWrapper<T>(resp);
   } catch (reason) {
-    // TODO: Add logger
-    console.error(`Intercepted response error: ${reason}`);
     if (sanitize) {
       const message = reason.message ?? 'Error while processing request';
       return new ApiResponseWrapper<T>(

@@ -61,7 +61,7 @@ export class AddressValidity_ResponseBody {
    * If `isValid`, standard address hash of the validated address. Otherwise a zero bytes32 string.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `If 'isValid', standard address hash of the validated address. Otherwise a zero bytes32 string.`,
     example:
@@ -95,7 +95,7 @@ export class AddressValidity_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -107,7 +107,7 @@ export class AddressValidity_Request {
    * Id of the data source.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Id of the data source.`,
     example:
@@ -119,7 +119,7 @@ export class AddressValidity_Request {
    * `MessageIntegrityCode` that is derived from the expected response.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `'MessageIntegrityCode' that is derived from the expected response.`,
     example:
@@ -149,7 +149,7 @@ export class AddressValidity_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -161,7 +161,7 @@ export class AddressValidity_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value))
+  @Transform(({ value }) => prefix0x(value).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:

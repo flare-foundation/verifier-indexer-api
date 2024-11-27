@@ -39,40 +39,6 @@ export function BaseControllerFactory<
     { body: requestDto },
   );
 
-  // class CrudController<T, C, U, Q> implements ICrudController<T, C, U, Q> {
-  //   protected service: ICrudService<T, C, U, Q>;
-
-  //   @Post()
-  //   @UsePipes(createPipe)
-  //   async create(
-  //     @Body() body: C,
-  //     @CurrentUser() user: Partial<User>,
-  //   ): Promise<T> {
-  //     return this.service.createItem(body, user);
-  //   }
-
-  //   @Get(':id')
-  //   getOne(@Param() params: NumberIdDto): Promise<T> {
-  //     return this.service.getItem(params.id);
-  //   }
-
-  //   @Get()
-  //   @UsePipes(queryPipe)
-  //   get(@Query() query: Q): Promise<T[]> {
-  //     return this.service.getItems(query);
-  //   }
-
-  //   @Delete(':id')
-  //   delete(@Param() params: NumberIdDto): Promise<Partial<T>> {
-  //     return this.service.deleteItem(params.id);
-  //   }
-
-  //   @Patch()
-  //   @UsePipes(updatePipe)
-  //   update(@Body() body: U, @CurrentUser() user: Partial<User>): Promise<T> {
-  //     return this.service.updateItem(body, user);
-  //   }
-  // }
 
   @UseGuards(ApiKeyAuthGuard)
   @ApiSecurity('X-API-KEY')

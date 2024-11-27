@@ -79,7 +79,6 @@ export function responsePayment<T extends TransactionBase<any>>(
   try {
     parsedData = JSON.parse(dbTransaction.getResponse());
   } catch (error) {
-    // TODO: add logger
     console.error(
       error,
       `responsePayment '${
@@ -278,7 +277,6 @@ export async function verifyBalanceDecreasingTransaction<
   });
 
   const status = verifyWorkflowForTransaction(confirmedTransactionResult);
-  console.dir(status);
   if (status !== VerificationStatus.NEEDS_MORE_CHECKS) {
     return { status };
   }
@@ -417,7 +415,8 @@ export async function responseReferencedPaymentNonExistence<
       }
       const destinationAddressHashTmp = standardAddressHash(address);
       if (
-        unPrefix0x(destinationAddressHashTmp) ===  unPrefix0x(request.requestBody.destinationAddressHash)
+        unPrefix0x(destinationAddressHashTmp) ===
+        unPrefix0x(request.requestBody.destinationAddressHash)
       ) {
         const paymentSummary = fullTxData.paymentNonexistenceSummary(outUtxo);
 
@@ -536,7 +535,9 @@ export async function verifyReferencedPaymentNonExistence<
       BigInt(request.requestBody.deadlineTimestamp).toString(),
     ),
     paymentReference: unPrefix0x(request.requestBody.standardPaymentReference),
-    sourceAddressRoot: request.requestBody.checkSourceAddresses ? unPrefix0x(request.requestBody.sourceAddressesRoot) : undefined,
+    sourceAddressRoot: request.requestBody.checkSourceAddresses
+      ? unPrefix0x(request.requestBody.sourceAddressesRoot)
+      : undefined,
   });
 
   const status = verifyWorkflowForReferencedTransactions(
@@ -566,7 +567,8 @@ export async function verifyReferencedPaymentNonExistence<
     };
   }
 
-  const nonexistanceResponse = await responseReferencedPaymentNonExistence(dbTransactions,
+  const nonexistanceResponse = await responseReferencedPaymentNonExistence(
+    dbTransactions,
     TransactionClass,
     firstOverflowBlock,
     lowerBoundaryBlock,
@@ -574,5 +576,4 @@ export async function verifyReferencedPaymentNonExistence<
   );
 
   return nonexistanceResponse;
-    
 }
