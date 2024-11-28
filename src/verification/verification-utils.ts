@@ -36,7 +36,7 @@ export function verifyWorkflowForTransaction(
       return VerificationStatus.NON_EXISTENT_TRANSACTION;
     default:
       // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-      ((_: never): void => {})(result.status);
+      ((_: never): void => { })(result.status);
   }
 }
 
@@ -50,7 +50,7 @@ export function verifyWorkflowForBlock(
       return VerificationStatus.NON_EXISTENT_BLOCK;
     default:
       // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-      ((_: never): void => {})(result.status);
+      ((_: never): void => { })(result.status);
   }
 }
 
@@ -65,6 +65,6 @@ export function verifyWorkflowForReferencedTransactions(
       return VerificationStatus.DATA_AVAILABILITY_ISSUE;
     default:
       // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-      ((_: never): void => {})(result.status);
+      ((_: never): void => { })(result.status);
   }
 }

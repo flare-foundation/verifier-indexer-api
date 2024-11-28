@@ -3,12 +3,12 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   ConfirmedBlockHeightExists_Request,
   ConfirmedBlockHeightExists_Response,
-} from 'src/dtos/attestation-types/ConfirmedBlockHeightExists.dto';
+} from '../dtos/attestation-types/ConfirmedBlockHeightExists.dto';
 import {
   BTCConfirmedBlockHeightExistsVerifierService,
   DOGEConfirmedBlockHeightExistsVerifierService,
   XRPConfirmedBlockHeightExistsVerifierService,
-} from 'src/services/confirmed-block-height-exists-verifier.service';
+} from '../services/confirmed-block-height-exists-verifier.service';
 import { BaseControllerFactory } from './base/verifier-base.controller';
 
 @ApiTags('ConfirmedBlockHeightExists')

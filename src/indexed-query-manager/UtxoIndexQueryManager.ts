@@ -5,7 +5,7 @@ import {
   IDBUtxoTransaction,
   ITipSyncState,
   TipSyncState,
-} from 'src/entity/utxo-entity-definitions';
+} from '../entity/utxo-entity-definitions';
 import { IIndexedQueryManager } from './IIndexedQueryManager';
 import {
   BlockHeightSample,

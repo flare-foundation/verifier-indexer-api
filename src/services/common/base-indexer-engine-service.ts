@@ -1,10 +1,10 @@
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
-import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
-import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
-import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
-import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
-import { PaginatedList } from 'src/utils/api-models/PaginatedList';
+import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
+import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
+import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
+import { BlockRange } from '../../dtos/indexer/BlockRange.dto';
+import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
+import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
+import { PaginatedList } from '../../utils/api-models/PaginatedList';
 
 export abstract class IIndexerEngineService {
   public abstract getStateSetting(): Promise<ApiDBState | null>;

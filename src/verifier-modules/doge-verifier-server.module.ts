@@ -1,23 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ApiKeyStrategy } from 'src/auth/apikey.strategy';
-import { AuthModule } from 'src/auth/auth.module';
-import { AuthService } from 'src/auth/auth.service';
-import { DOGEPaymentVerifierController } from 'src/controllers/payment-verifier.controller';
-import { DOGEBalanceDecreasingTransactionVerifierService } from 'src/services/balance-decreasing-transaction-verifier.service';
+import { ApiKeyStrategy } from '../auth/apikey.strategy';
+import { AuthModule } from '../auth/auth.module';
+import { AuthService } from '../auth/auth.service';
 import configuration, { IConfig } from '../config/configuration';
 import { DOGEAddressValidityVerifierController } from '../controllers/address-validity-verifier.controller';
+import { DOGEBalanceDecreasingTransactionVerifierController } from '../controllers/balance-decreasing-transaction-verifier.controller';
+import { DOGEConfirmedBlockHeightExistsVerifierController } from '../controllers/confirmed-block-height-exists-verifier.controller';
+import { DOGEIndexerController } from '../controllers/indexer.controller';
+import { DOGEPaymentVerifierController } from '../controllers/payment-verifier.controller';
+import { DOGEReferencedPaymentNonexistenceVerifierController } from '../controllers/referenced-payment-nonexistence-verifier.controller';
 import { DOGEAddressValidityVerifierService } from '../services/address-validity-verifier.service';
-import { DOGEPaymentVerifierService } from 'src/services/payment-verifier.service';
-import { DOGEConfirmedBlockHeightExistsVerifierService } from 'src/services/confirmed-block-height-exists-verifier.service';
-import { DOGEReferencedPaymentNonexistenceVerifierService } from 'src/services/referenced-payment-nonexistence-verifier.service';
-import { DOGEBalanceDecreasingTransactionVerifierController } from 'src/controllers/balance-decreasing-transaction-verifier.controller';
-import { DOGEConfirmedBlockHeightExistsVerifierController } from 'src/controllers/confirmed-block-height-exists-verifier.controller';
-import { DOGEReferencedPaymentNonexistenceVerifierController } from 'src/controllers/referenced-payment-nonexistence-verifier.controller';
-import { DogeExternalIndexerEngineService } from 'src/services/indexer-services/utxo-indexer.service';
-import { DOGEIndexerController } from 'src/controllers/indexer.controller';
-import { DOGEHealthController } from 'src/controllers/health.controller';
+import { DOGEBalanceDecreasingTransactionVerifierService } from '../services/balance-decreasing-transaction-verifier.service';
+import { DOGEConfirmedBlockHeightExistsVerifierService } from '../services/confirmed-block-height-exists-verifier.service';
+import { DogeExternalIndexerEngineService } from '../services/indexer-services/utxo-indexer.service';
+import { DOGEPaymentVerifierService } from '../services/payment-verifier.service';
+import { DOGEReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
+import { DOGEHealthController } from '../controllers/health.controller';
 
 @Module({
   imports: [
@@ -53,4 +53,4 @@ import { DOGEHealthController } from 'src/controllers/health.controller';
     DOGEReferencedPaymentNonexistenceVerifierService,
   ],
 })
-export class DogeVerifierServerModule {}
+export class DogeVerifierServerModule { }

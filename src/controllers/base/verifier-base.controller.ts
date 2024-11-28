@@ -9,13 +9,13 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity } from '@nestjs/swagger';
 
-import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
+import { ApiKeyAuthGuard } from '../../auth/apikey.guard';
 import {
   AttestationTypeBase_Request,
   AttestationTypeBase_Response,
-} from 'src/dtos/attestation-types/AttestationTypeBase.dto';
-import { AbstractValidationPipe } from 'src/dtos/dto-validation-pipelines';
-import { BaseVerifierService } from 'src/services/common/verifier-base.service';
+} from '../../dtos/attestation-types/AttestationTypeBase.dto';
+import { AbstractValidationPipe } from '../../dtos/dto-validation-pipelines';
+import { BaseVerifierService } from '../../services/common/verifier-base.service';
 import {
   AttestationResponse,
   AttestationResponseVerificationEncoded,

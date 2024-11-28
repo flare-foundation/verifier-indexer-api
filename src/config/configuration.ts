@@ -8,12 +8,12 @@ import {
   DBUtxoTransaction,
   PruneSyncState,
   TipSyncState,
-} from 'src/entity/utxo-entity-definitions';
+} from '../entity/utxo-entity-definitions';
 import {
   DBXrpIndexerBlock,
   DBXrpState,
   DBXrpTransaction,
-} from 'src/entity/xrp-entity-definitions';
+} from '../entity/xrp-entity-definitions';
 
 // export type VerifierTypeOptions = 'doge' | 'btc' | 'xrp';
 

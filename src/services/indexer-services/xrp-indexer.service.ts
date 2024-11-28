@@ -1,12 +1,13 @@
 import { unPrefix0x } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IConfig, VerifierServerConfig } from 'src/config/configuration';
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
-import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
-import { QueryBlock } from 'src/dtos/indexer/QueryBlock.dto';
-import { QueryTransaction } from 'src/dtos/indexer/QueryTransaction.dto';
+import { EntityManager } from 'typeorm';
+import { IConfig, VerifierServerConfig } from '../../config/configuration';
+import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
+import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
+import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
+import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
+import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
 import {
   DBXrpIndexerBlock,
   DBXrpState,
@@ -14,10 +15,9 @@ import {
   IDBXrpIndexerBlock,
   IDBXrpState,
   IDBXrpTransaction,
-} from 'src/entity/xrp-entity-definitions';
-import { EntityManager } from 'typeorm';
+} from '../../entity/xrp-entity-definitions';
+import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
-import { PaginatedList } from 'src/utils/api-models/PaginatedList';
 
 @Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {
@@ -95,12 +95,12 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
 
     if (from !== undefined) {
       query = query.andWhere('block.block_number >= :from', { from });
-    } 
+    }
     if (to !== undefined) {
-      if(from === undefined) {
+      if (from === undefined) {
         query = query.andWhere('block.block_number <= :to', { to }).take(theLimit);
       } else {
-        const tempTo =  Math.min(to, from + theLimit - 1)
+        const tempTo = Math.min(to, from + theLimit - 1)
         theLimit = tempTo - from + 1;
         query = query.andWhere('block.block_number <= :tempTo', { tempTo });
       }

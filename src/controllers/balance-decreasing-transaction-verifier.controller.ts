@@ -3,13 +3,13 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   BalanceDecreasingTransaction_Request,
   BalanceDecreasingTransaction_Response,
-} from 'src/dtos/attestation-types/BalanceDecreasingTransaction.dto';
+} from '../dtos/attestation-types/BalanceDecreasingTransaction.dto';
 
 import {
   BTCBalanceDecreasingTransactionVerifierService,
   DOGEBalanceDecreasingTransactionVerifierService,
   XRPBalanceDecreasingTransactionVerifierService,
-} from 'src/services/balance-decreasing-transaction-verifier.service';
+} from '../services/balance-decreasing-transaction-verifier.service';
 import { BaseControllerFactory } from './base/verifier-base.controller';
 
 @ApiTags('BalanceDecreasingTransaction')

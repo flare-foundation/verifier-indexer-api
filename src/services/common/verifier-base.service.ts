@@ -6,20 +6,10 @@ import {
   IConfig,
   SourceNames,
   VerifierServerConfig,
-} from 'src/config/configuration';
+} from '../../config/configuration';
 
-import {
-  AttestationTypeBase_Request,
-  AttestationTypeBase_Response,
-} from 'src/dtos/attestation-types/AttestationTypeBase.dto';
-import { IIndexedQueryManager } from 'src/indexed-query-manager/IIndexedQueryManager';
-import { IndexedQueryManagerOptions } from 'src/indexed-query-manager/indexed-query-manager-types';
-import {
-  BtcIndexerQueryManager,
-  DogeIndexerQueryManager,
-} from 'src/indexed-query-manager/UtxoIndexQueryManager';
-import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
 import { EntityManager } from 'typeorm';
+import { AttestationTypeBase_Request, AttestationTypeBase_Response } from '../../dtos/attestation-types/AttestationTypeBase.dto';
 import {
   AttestationResponse,
   AttestationResponseEncoded,
@@ -29,6 +19,13 @@ import {
 } from '../../dtos/generic/generic.dto';
 import { AttestationDefinitionStore } from '../../external-libs/AttestationDefinitionStore';
 import { MIC_SALT, encodeAttestationName } from '../../external-libs/utils';
+import { IIndexedQueryManager } from '../../indexed-query-manager/IIndexedQueryManager';
+import { IndexedQueryManagerOptions } from '../../indexed-query-manager/indexed-query-manager-types';
+import {
+  BtcIndexerQueryManager,
+  DogeIndexerQueryManager,
+} from '../../indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from '../../indexed-query-manager/XrpIndexerQueryManager';
 
 interface IVerificationServiceConfig {
   source: ChainType;
@@ -38,13 +35,13 @@ interface IVerificationServiceConfig {
 interface IVerificationServiceWithIndexerConfig
   extends IVerificationServiceConfig {
   indexerQueryManager:
-    | typeof DogeIndexerQueryManager
-    | typeof BtcIndexerQueryManager
-    | typeof XrpIndexerQueryManager;
+  | typeof DogeIndexerQueryManager
+  | typeof BtcIndexerQueryManager
+  | typeof XrpIndexerQueryManager;
 }
 
 export interface ITypeSpecificVerificationServiceConfig
-  extends Omit<IVerificationServiceWithIndexerConfig, 'attestationName'> {}
+  extends Omit<IVerificationServiceWithIndexerConfig, 'attestationName'> { }
 
 export abstract class BaseVerifierService<
   Req extends AttestationTypeBase_Request,
@@ -76,20 +73,17 @@ export abstract class BaseVerifierService<
     if (
       request.attestationType !== encodeAttestationName(this.attestationName) ||
       request.sourceId !==
-        encodeAttestationName((this.isTestnet ? 'test' : '') + this.source)
+      encodeAttestationName((this.isTestnet ? 'test' : '') + this.source)
     ) {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: `Attestation type and source id combination not supported: (${
-            request.attestationType
-          }, ${request.sourceId}). This source supports attestation type '${
-            this.attestationName
-          }' (${encodeAttestationName(this.attestationName)}) and source id '${
-            (this.isTestnet ? 'test' : '') + this.source
-          }' (${encodeAttestationName(
-            (this.isTestnet ? 'test' : '') + this.source,
-          )}).`,
+          error: `Attestation type and source id combination not supported: (${request.attestationType
+            }, ${request.sourceId}). This source supports attestation type '${this.attestationName
+            }' (${encodeAttestationName(this.attestationName)}) and source id '${(this.isTestnet ? 'test' : '') + this.source
+            }' (${encodeAttestationName(
+              (this.isTestnet ? 'test' : '') + this.source,
+            )}).`,
         },
         HttpStatus.BAD_REQUEST,
       );

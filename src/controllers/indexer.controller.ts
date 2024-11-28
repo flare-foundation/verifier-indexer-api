@@ -8,31 +8,31 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAuthGuard } from 'src/auth/apikey.guard';
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
-import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
-import { BlockRange } from 'src/dtos/indexer/BlockRange.dto';
-import { QueryBlock, QueryBlockDetail } from 'src/dtos/indexer/QueryBlock.dto';
+import { ApiKeyAuthGuard } from '../auth/apikey.guard';
+import { ApiDBBlock } from '../dtos/indexer/ApiDbBlock.dto';
+import { ApiDBState } from '../dtos/indexer/ApiDbState.dto';
+import { ApiDBTransaction } from '../dtos/indexer/ApiDbTransaction.dto';
+import { BlockRange } from '../dtos/indexer/BlockRange.dto';
+import { QueryBlock, QueryBlockDetail } from '../dtos/indexer/QueryBlock.dto';
 import {
   QueryTransaction,
   QueryTransactionDetail,
-} from 'src/dtos/indexer/QueryTransaction.dto';
-import { IIndexerEngineService } from 'src/services/common/base-indexer-engine-service';
+} from '../dtos/indexer/QueryTransaction.dto';
+import { IIndexerEngineService } from '../services/common/base-indexer-engine-service';
 import {
   BtcExternalIndexerEngineService,
   DogeExternalIndexerEngineService,
-} from 'src/services/indexer-services/utxo-indexer.service';
-import { XrpExternalIndexerEngineService } from 'src/services/indexer-services/xrp-indexer.service';
+} from '../services/indexer-services/utxo-indexer.service';
+import { XrpExternalIndexerEngineService } from '../services/indexer-services/xrp-indexer.service';
 import {
   ApiResponseWrapper,
   handleApiResponse,
-} from 'src/utils/api-models/ApiResponse';
-import { PaginatedList } from 'src/utils/api-models/PaginatedList';
+} from '../utils/api-models/ApiResponse';
+import { PaginatedList } from '../utils/api-models/PaginatedList';
 import {
   ApiResponseWrapperDec,
   ApiResponseWrapperPaginated,
-} from 'src/utils/open-api-utils';
+} from '../utils/open-api-utils';
 
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')

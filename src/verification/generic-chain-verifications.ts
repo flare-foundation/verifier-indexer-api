@@ -10,7 +10,6 @@ import {
   unPrefix0x,
   ZERO_BYTES_32,
 } from '@flarenetwork/mcc';
-import { ethers } from 'ethers';
 import {
   BalanceDecreasingTransaction_Request,
   BalanceDecreasingTransaction_Response,
@@ -43,7 +42,6 @@ import {
   verifyWorkflowForReferencedTransactions,
   verifyWorkflowForTransaction,
 } from './verification-utils';
-import { Logger } from '@nestjs/common';
 
 /**
  * Serialize bigints to strings recursively.
@@ -81,8 +79,7 @@ export function responsePayment<T extends TransactionBase<any>>(
   } catch (error) {
     console.error(
       error,
-      `responsePayment '${
-        dbTransaction.transactionId
+      `responsePayment '${dbTransaction.transactionId
       }' JSON parse '${dbTransaction.getResponse()}'`,
     );
     return { status: VerificationStatus.SYSTEM_FAILURE };
@@ -208,8 +205,7 @@ export async function responseBalanceDecreasingTransaction<
     // TODO: add logger
     console.error(
       error,
-      `responseBalanceDecreasingTransaction '${
-        dbTransaction.transactionId
+      `responseBalanceDecreasingTransaction '${dbTransaction.transactionId
       }' JSON parse '${dbTransaction.getResponse()}'`,
     );
     return { status: VerificationStatus.SYSTEM_FAILURE };
@@ -354,7 +350,7 @@ export async function verifyConfirmedBlockHeightExists(
   const lowerQueryWindowBlock =
     await iqm.getLastConfirmedBlockStrictlyBeforeTime(
       dbBlock.timestamp -
-        parseInt(BigInt(request.requestBody.queryWindow).toString()),
+      parseInt(BigInt(request.requestBody.queryWindow).toString()),
     );
 
   if (!lowerQueryWindowBlock) {

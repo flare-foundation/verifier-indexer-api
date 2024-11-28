@@ -1,23 +1,23 @@
 import { ChainType } from '@flarenetwork/mcc';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IConfig } from 'src/config/configuration';
+import { IConfig } from '../config/configuration';
 import {
   AddressValidity_Request,
   AddressValidity_Response,
   AddressValidity_ResponseBody,
   AttestationResponseDTO_AddressValidity_Response,
-} from 'src/dtos/attestation-types/AddressValidity.dto';
+} from '../dtos/attestation-types/AddressValidity.dto';
 import {
   AttestationResponse,
   AttestationResponseStatus,
-} from 'src/dtos/generic/generic.dto';
-import { serializeBigInts } from 'src/external-libs/utils';
-import { verifyAddressBTC } from 'src/verification/address-validity/address-validity-btc';
-import { verifyAddressDOGE } from 'src/verification/address-validity/address-validity-doge';
-import { verifyAddressXRP } from 'src/verification/address-validity/address-validity-xrp';
-import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
-import { VerificationResponse } from 'src/verification/verification-utils';
+} from '../dtos/generic/generic.dto';
+import { serializeBigInts } from '../external-libs/utils';
+import { verifyAddressBTC } from '../verification/address-validity/address-validity-btc';
+import { verifyAddressDOGE } from '../verification/address-validity/address-validity-doge';
+import { verifyAddressXRP } from '../verification/address-validity/address-validity-xrp';
+import { getAttestationStatus } from '../verification/attestation-types/attestation-types';
+import { VerificationResponse } from '../verification/verification-utils';
 import { BaseVerifierService } from './common/verifier-base.service';
 
 abstract class BaseAddressValidityVerifierService extends BaseVerifierService<

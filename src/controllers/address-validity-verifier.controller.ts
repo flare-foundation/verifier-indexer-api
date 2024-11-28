@@ -3,12 +3,12 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   AddressValidity_Request,
   AddressValidity_Response,
-} from 'src/dtos/attestation-types/AddressValidity.dto';
+} from '../dtos/attestation-types/AddressValidity.dto';
 import {
   BTCAddressValidityVerifierService,
   DOGEAddressValidityVerifierService,
   XRPAddressValidityVerifierService,
-} from 'src/services/address-validity-verifier.service';
+} from '../services/address-validity-verifier.service';
 import {
   BaseControllerFactory,
 } from './base/verifier-base.controller';

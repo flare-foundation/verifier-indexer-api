@@ -3,12 +3,12 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   ReferencedPaymentNonexistence_Request,
   ReferencedPaymentNonexistence_Response,
-} from 'src/dtos/attestation-types/ReferencedPaymentNonexistence.dto';
+} from '../dtos/attestation-types/ReferencedPaymentNonexistence.dto';
 import {
   BTCReferencedPaymentNonexistenceVerifierService,
   DOGEReferencedPaymentNonexistenceVerifierService,
   XRPReferencedPaymentNonexistenceVerifierService,
-} from 'src/services/referenced-payment-nonexistence-verifier.service';
+} from '../services/referenced-payment-nonexistence-verifier.service';
 import {
   BaseControllerFactory
 } from './base/verifier-base.controller';

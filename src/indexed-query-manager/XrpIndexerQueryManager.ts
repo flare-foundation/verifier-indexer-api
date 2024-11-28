@@ -5,7 +5,7 @@ import {
   IDBXrpIndexerBlock,
   IDBXrpState,
   IDBXrpTransaction,
-} from 'src/entity/xrp-entity-definitions';
+} from '../entity/xrp-entity-definitions';
 import { IIndexedQueryManager } from './IIndexedQueryManager';
 import {
   BlockHeightSample,

@@ -5,12 +5,12 @@ import {
   IUtxoVinTransactionPrevout,
   IUtxoVoutTransaction,
 } from '@flarenetwork/mcc';
-import { ApiDBBlock } from 'src/dtos/indexer/ApiDbBlock.dto';
-import { ApiDBTransaction } from 'src/dtos/indexer/ApiDbTransaction.dto';
+import { ApiDBBlock } from '../dtos/indexer/ApiDbBlock.dto';
+import { ApiDBTransaction } from '../dtos/indexer/ApiDbTransaction.dto';
 import {
   BlockResult,
   TransactionResult,
-} from 'src/indexed-query-manager/indexed-query-manager-types';
+} from '../indexed-query-manager/indexed-query-manager-types';
 import {
   Column,
   Entity,

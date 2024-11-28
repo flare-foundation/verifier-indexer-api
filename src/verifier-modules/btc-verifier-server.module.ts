@@ -1,23 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ApiKeyStrategy } from 'src/auth/apikey.strategy';
-import { AuthModule } from 'src/auth/auth.module';
-import { AuthService } from 'src/auth/auth.service';
+import { ApiKeyStrategy } from '../auth/apikey.strategy';
+import { AuthModule } from '../auth/auth.module';
+import { AuthService } from '../auth/auth.service';
 import configuration, { IConfig } from '../config/configuration';
-import { BTCAddressValidityVerifierController } from 'src/controllers/address-validity-verifier.controller';
-import { BTCBalanceDecreasingTransactionVerifierController } from 'src/controllers/balance-decreasing-transaction-verifier.controller';
-import { BTCConfirmedBlockHeightExistsVerifierController } from 'src/controllers/confirmed-block-height-exists-verifier.controller';
-import { BTCPaymentVerifierController } from 'src/controllers/payment-verifier.controller';
-import { BTCReferencedPaymentNonexistenceVerifierController } from 'src/controllers/referenced-payment-nonexistence-verifier.controller';
-import { BTCAddressValidityVerifierService } from 'src/services/address-validity-verifier.service';
-import { BTCBalanceDecreasingTransactionVerifierService } from 'src/services/balance-decreasing-transaction-verifier.service';
-import { BTCConfirmedBlockHeightExistsVerifierService } from 'src/services/confirmed-block-height-exists-verifier.service';
-import { BTCPaymentVerifierService } from 'src/services/payment-verifier.service';
-import { BTCReferencedPaymentNonexistenceVerifierService } from 'src/services/referenced-payment-nonexistence-verifier.service';
-import { BtcExternalIndexerEngineService } from 'src/services/indexer-services/utxo-indexer.service';
-import { BTCIndexerController } from 'src/controllers/indexer.controller';
-import { BTCHealthController } from 'src/controllers/health.controller';
+import { BTCAddressValidityVerifierController } from '../controllers/address-validity-verifier.controller';
+import { BTCBalanceDecreasingTransactionVerifierController } from '../controllers/balance-decreasing-transaction-verifier.controller';
+import { BTCConfirmedBlockHeightExistsVerifierController } from '../controllers/confirmed-block-height-exists-verifier.controller';
+import { BTCIndexerController } from '../controllers/indexer.controller';
+import { BTCPaymentVerifierController } from '../controllers/payment-verifier.controller';
+import { BTCReferencedPaymentNonexistenceVerifierController } from '../controllers/referenced-payment-nonexistence-verifier.controller';
+import { BTCAddressValidityVerifierService } from '../services/address-validity-verifier.service';
+import { BTCBalanceDecreasingTransactionVerifierService } from '../services/balance-decreasing-transaction-verifier.service';
+import { BTCConfirmedBlockHeightExistsVerifierService } from '../services/confirmed-block-height-exists-verifier.service';
+import { BtcExternalIndexerEngineService } from '../services/indexer-services/utxo-indexer.service';
+import { BTCPaymentVerifierService } from '../services/payment-verifier.service';
+import { BTCReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
+import { BTCHealthController } from '../controllers/health.controller';
 
 @Module({
   imports: [
@@ -53,4 +53,4 @@ import { BTCHealthController } from 'src/controllers/health.controller';
     BTCReferencedPaymentNonexistenceVerifierService,
   ],
 })
-export class BtcVerifierServerModule {}
+export class BtcVerifierServerModule { }

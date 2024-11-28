@@ -2,7 +2,7 @@
 // Verification status
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { AttestationResponseStatus } from 'src/dtos/generic/generic.dto';
+import { AttestationResponseStatus } from '../../dtos/generic/generic.dto';
 
 /**
  * Enumerated verification status of attestation
@@ -81,7 +81,7 @@ export function getSummarizedVerificationStatus(
   }
   // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ((_: never): void => {})(status);
+  ((_: never): void => { })(status);
 }
 
 export function getAttestationStatus(
@@ -107,7 +107,7 @@ export function getAttestationStatus(
   }
   // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ((_: never): void => {})(status);
+  ((_: never): void => { })(status);
 }
 
 export interface WeightedRandomChoice<T> {

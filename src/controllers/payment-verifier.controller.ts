@@ -3,12 +3,12 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   Payment_Request,
   Payment_Response,
-} from 'src/dtos/attestation-types/Payment.dto';
+} from '../dtos/attestation-types/Payment.dto';
 import {
   BTCPaymentVerifierService,
   DOGEPaymentVerifierService,
   XRPPaymentVerifierService,
-} from 'src/services/payment-verifier.service';
+} from '../services/payment-verifier.service';
 import {
   BaseControllerFactory
 } from './base/verifier-base.controller';

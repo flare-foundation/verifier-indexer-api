@@ -7,22 +7,22 @@ import {
 } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IConfig } from 'src/config/configuration';
+import { EntityManager } from 'typeorm';
+import { IConfig } from '../config/configuration';
 import {
   AttestationResponseDTO_BalanceDecreasingTransaction_Response,
   BalanceDecreasingTransaction_Request,
   BalanceDecreasingTransaction_Response,
-} from 'src/dtos/attestation-types/BalanceDecreasingTransaction.dto';
-import { AttestationResponse } from 'src/dtos/generic/generic.dto';
-import { serializeBigInts } from 'src/external-libs/utils';
+} from '../dtos/attestation-types/BalanceDecreasingTransaction.dto';
+import { AttestationResponse } from '../dtos/generic/generic.dto';
+import { serializeBigInts } from '../external-libs/utils';
 import {
   BtcIndexerQueryManager,
   DogeIndexerQueryManager,
-} from 'src/indexed-query-manager/UtxoIndexQueryManager';
-import { XrpIndexerQueryManager } from 'src/indexed-query-manager/XrpIndexerQueryManager';
-import { getAttestationStatus } from 'src/verification/attestation-types/attestation-types';
-import { verifyBalanceDecreasingTransaction } from 'src/verification/generic-chain-verifications';
-import { EntityManager } from 'typeorm';
+} from '../indexed-query-manager/UtxoIndexQueryManager';
+import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
+import { getAttestationStatus } from '../verification/attestation-types/attestation-types';
+import { verifyBalanceDecreasingTransaction } from '../verification/generic-chain-verifications';
 import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,

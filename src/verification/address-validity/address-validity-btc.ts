@@ -1,12 +1,12 @@
 import base from 'base-x';
+import { AddressValidity_ResponseBody } from '../../dtos/attestation-types/AddressValidity.dto';
+import { VerificationStatus } from '../attestation-types/attestation-types';
+import { VerificationResponse } from '../verification-utils';
 import {
   INVALID_ADDRESS_RESPONSE,
   base58Checksum,
   validAddressToResponse,
 } from './utils';
-import { VerificationResponse } from '../verification-utils';
-import { AddressValidity_ResponseBody } from 'src/dtos/attestation-types/AddressValidity.dto';
-import { VerificationStatus } from '../attestation-types/attestation-types';
 
 enum BTCAddressTypes {
   P2PKH = 'P2PKH',
