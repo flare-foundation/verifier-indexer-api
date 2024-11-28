@@ -18,7 +18,7 @@ import { DOGEConfirmedBlockHeightExistsVerifierService } from '../services/confi
 import { DogeExternalIndexerEngineService } from '../services/indexer-services/utxo-indexer.service';
 import { DOGEPaymentVerifierService } from '../services/payment-verifier.service';
 import { DOGEReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
-import { DOGEHealthController } from '../controllers/health.controller';
+
 
 @Module({
   imports: [
