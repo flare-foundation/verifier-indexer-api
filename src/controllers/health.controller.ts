@@ -1,17 +1,17 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { ApiDBState } from 'src/dtos/indexer/ApiDbState.dto';
-import { IIndexerEngineService } from 'src/services/common/base-indexer-engine-service';
+import { ApiDBState } from '../dtos/indexer/ApiDbState.dto';
+import { IIndexerEngineService } from '../services/common/base-indexer-engine-service';
 import {
   BtcExternalIndexerEngineService,
   DogeExternalIndexerEngineService,
-} from 'src/services/indexer-services/utxo-indexer.service';
-import { XrpExternalIndexerEngineService } from 'src/services/indexer-services/xrp-indexer.service';
+} from '../services/indexer-services/utxo-indexer.service';
+import { XrpExternalIndexerEngineService } from '../services/indexer-services/xrp-indexer.service';
 import {
   ApiResponseWrapper,
   handleApiResponse,
-} from 'src/utils/api-models/ApiResponse';
-import { ApiResponseWrapperDec } from 'src/utils/open-api-utils';
+} from '../utils/api-models/ApiResponse';
+import { ApiResponseWrapperDec } from '../utils/open-api-utils';
 
 @ApiSecurity('X-API-KEY')
 abstract class BaseHealthController {

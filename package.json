@@ -21,7 +21,7 @@
     "make_db2": "docker compose -f e2e_tests/db/docker-compose.yaml exec postgres_testing_db dropdb -U user db",
     "make_db3": "docker compose -f e2e_tests/db/docker-compose.yaml exec postgres_testing_db createdb -U user -E utf8 -T template0 db",
     "make_db4": "docker compose -f e2e_tests/db/docker-compose.yaml exec postgres_testing_db pg_restore --no-owner --role=user -U user --dbname=db /tmp/dbdump",
-    "testm": "mocha -r ts-node/register --require source-map-support/register \"e2e_tests/**/*.e2e-spec.ts\""
+    "test": "mocha -r ts-node/register --require source-map-support/register \"e2e_tests/**/*.e2e-spec.ts\""
   },
   "dependencies": {
     "@flarenetwork/mcc": "^4.2.0-beta.0",
