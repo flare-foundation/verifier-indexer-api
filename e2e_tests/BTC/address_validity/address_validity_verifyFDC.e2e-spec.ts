@@ -1,0 +1,74 @@
+import { expect } from "chai";
+import * as request from "supertest";
+import { app } from "../helper";
+
+
+describe("/AddressValidity/verifyFDC", () => {
+    it("should get abiEncodedResponse", async () => {
+        const payload = {
+            abiEncodedRequest: "0x4164647265737356616c69646974790000000000000000000000000000000000746573744254430000000000000000000000000000000000000000000000000058b4073de8cbaaf8ee571f2209c4cabd702958c88d3a1a3feb0e644b05bdbd9c0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000226d6f68384e7852584c7137766876416e74596938435a33384862475232717163426e000000000000000000000000000000000000000000000000000000000000",
+        }
+        const response = await request(app.getHttpServer())
+            .post("/AddressValidity/verifyFDC")
+            .send(payload)
+            .set('X-API-KEY', '12345')
+            .expect(200)
+            .expect('Content-Type', /json/)
+
+        expect(response.body.status).to.be.equal('VALID');
+    });
+    it("should get abiEncodedResponse without 0x in abiEncodedRequest", async () => {
+        const payload = {
+            abiEncodedRequest: "4164647265737356616c69646974790000000000000000000000000000000000746573744254430000000000000000000000000000000000000000000000000058b4073de8cbaaf8ee571f2209c4cabd702958c88d3a1a3feb0e644b05bdbd9c0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000226d6f68384e7852584c7137766876416e74596938435a33384862475232717163426e000000000000000000000000000000000000000000000000000000000000",
+        }
+        const response = await request(app.getHttpServer())
+            .post("/AddressValidity/verifyFDC")
+            .send(payload)
+            .set('X-API-KEY', '12345')
+            .expect(200)
+            .expect('Content-Type', /json/)
+
+        expect(response.body.status).to.be.equal('VALID');
+    });
+    it("should get abiEncodedResponse with 0X in abiEncodedRequest", async () => {
+        const payload = {
+            abiEncodedRequest: "0X4164647265737356616c69646974790000000000000000000000000000000000746573744254430000000000000000000000000000000000000000000000000058b4073de8cbaaf8ee571f2209c4cabd702958c88d3a1a3feb0e644b05bdbd9c0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000226d6f68384e7852584c7137766876416e74596938435a33384862475232717163426e000000000000000000000000000000000000000000000000000000000000",
+        }
+        const response = await request(app.getHttpServer())
+            .post("/AddressValidity/verifyFDC")
+            .send(payload)
+            .set('X-API-KEY', '12345')
+            .expect(200)
+            .expect('Content-Type', /json/)
+
+        expect(response.body.status).to.be.equal('VALID');
+    });
+    it("should get bad request (400) with empty payload", async () => {
+        const payload = {
+        }
+        await request(app.getHttpServer())
+            .post("/AddressValidity/verifyFDC")
+            .send(payload)
+            .set('X-API-KEY', '12345')
+            .expect(400)
+    });
+    it("should get bad request (400) with non hexadecimal character in abiEncodedRequest", async () => {
+        const payload = {
+            abiEncodedRequest: "0xp164647265737356616c69646974790000000000000000000000000000000000746573744254430000000000000000000000000000000000000000000000000058b4073de8cbaaf8ee571f2209c4cabd702958c88d3a1a3feb0e644b05bdbd9c0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000226d6f68384e7852584c7137766876416e74596938435a33384862475232717163426e000000000000000000000000000000000000000000000000000000000000",
+        }
+        await request(app.getHttpServer())
+            .post("/AddressValidity/verifyFDC")
+            .send(payload)
+            .set('X-API-KEY', '12345')
+            .expect(400)
+    });
+});
+
+
+
+
+
+
+
+
+
