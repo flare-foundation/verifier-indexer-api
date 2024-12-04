@@ -7,7 +7,7 @@ describe("/AddressValidity/mic", () => {
     it("should get abiEncodedRequest", async () => {
         const payload = {
             attestationType: "0x4164647265737356616c69646974790000000000000000000000000000000000",
-            sourceId: "0x7465737442544300000000000000000000000000000a000000000000000000000",
+            sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 addressStr: "moh8NxRXLq7vhvAntYi8CZ38HbGR2qqcBn"
             }
