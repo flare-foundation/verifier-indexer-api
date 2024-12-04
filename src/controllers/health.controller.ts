@@ -13,7 +13,6 @@ import {
 } from '../utils/api-models/ApiResponse';
 import { ApiResponseWrapperDec } from '../utils/open-api-utils';
 
-@ApiSecurity('X-API-KEY')
 abstract class BaseHealthController {
   protected abstract indexerEngine: IIndexerEngineService;
 
