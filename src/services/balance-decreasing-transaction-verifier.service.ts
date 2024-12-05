@@ -14,7 +14,6 @@ import {
   BalanceDecreasingTransaction_Request,
   BalanceDecreasingTransaction_Response,
 } from '../dtos/attestation-types/BalanceDecreasingTransaction.dto';
-import { AttestationResponse } from '../dtos/generic/generic.dto';
 import { serializeBigInts } from '../external-libs/utils';
 import {
   BtcIndexerQueryManager,

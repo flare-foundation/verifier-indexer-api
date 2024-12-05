@@ -1,5 +1,5 @@
 import { ChainType } from '@flarenetwork/mcc';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IConfig } from '../config/configuration';
 import {
@@ -9,8 +9,7 @@ import {
   AttestationResponseDTO_AddressValidity_Response,
 } from '../dtos/attestation-types/AddressValidity.dto';
 import {
-  AttestationResponse,
-  AttestationResponseStatus,
+  AttestationResponseStatus
 } from '../dtos/generic/generic.dto';
 import { serializeBigInts } from '../external-libs/utils';
 import { verifyAddressBTC } from '../verification/address-validity/address-validity-btc';

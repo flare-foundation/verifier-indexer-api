@@ -1,5 +1,5 @@
 import { ChainType, ZERO_BYTES_32 } from '@flarenetwork/mcc';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AttestationTypeOptions,
@@ -9,7 +9,10 @@ import {
 } from '../../config/configuration';
 
 import { EntityManager } from 'typeorm';
-import { AttestationTypeBase_Request, AttestationTypeBase_Response } from '../../dtos/attestation-types/AttestationTypeBase.dto';
+import {
+  AttestationTypeBase_Request,
+  AttestationTypeBase_Response,
+} from '../../dtos/attestation-types/AttestationTypeBase.dto';
 import {
   AttestationResponse,
   AttestationResponseEncoded,
@@ -35,13 +38,13 @@ interface IVerificationServiceConfig {
 interface IVerificationServiceWithIndexerConfig
   extends IVerificationServiceConfig {
   indexerQueryManager:
-  | typeof DogeIndexerQueryManager
-  | typeof BtcIndexerQueryManager
-  | typeof XrpIndexerQueryManager;
+    | typeof DogeIndexerQueryManager
+    | typeof BtcIndexerQueryManager
+    | typeof XrpIndexerQueryManager;
 }
 
 export interface ITypeSpecificVerificationServiceConfig
-  extends Omit<IVerificationServiceWithIndexerConfig, 'attestationName'> { }
+  extends Omit<IVerificationServiceWithIndexerConfig, 'attestationName'> {}
 
 export abstract class BaseVerifierService<
   Req extends AttestationTypeBase_Request,
@@ -73,17 +76,20 @@ export abstract class BaseVerifierService<
     if (
       request.attestationType !== encodeAttestationName(this.attestationName) ||
       request.sourceId !==
-      encodeAttestationName((this.isTestnet ? 'test' : '') + this.source)
+        encodeAttestationName((this.isTestnet ? 'test' : '') + this.source)
     ) {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: `Attestation type and source id combination not supported: (${request.attestationType
-            }, ${request.sourceId}). This source supports attestation type '${this.attestationName
-            }' (${encodeAttestationName(this.attestationName)}) and source id '${(this.isTestnet ? 'test' : '') + this.source
-            }' (${encodeAttestationName(
-              (this.isTestnet ? 'test' : '') + this.source,
-            )}).`,
+          error: `Attestation type and source id combination not supported: (${
+            request.attestationType
+          }, ${request.sourceId}). This source supports attestation type '${
+            this.attestationName
+          }' (${encodeAttestationName(this.attestationName)}) and source id '${
+            (this.isTestnet ? 'test' : '') + this.source
+          }' (${encodeAttestationName(
+            (this.isTestnet ? 'test' : '') + this.source,
+          )}).`,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -112,12 +118,21 @@ export abstract class BaseVerifierService<
   public async verifyEncodedRequestFDC(
     abiEncodedRequest: string,
   ): Promise<AttestationResponseEncoded> {
-    const requestJSON = this.store.parseRequest<
-      {
-        messageIntegrityCode: string;
-      } & Req
-    >(abiEncodedRequest);
-    const response = await this.verifyRequestInternal(requestJSON);
+    let response: AttestationResponse<Res>;
+    try {
+      const requestJSON = this.store.parseRequest<
+        {
+          messageIntegrityCode: string;
+        } & Req
+      >(abiEncodedRequest);
+      response = await this.verifyRequestInternal(requestJSON);
+    } catch (error) {
+      Logger.debug(`Error parsing request: ${abiEncodedRequest}`);
+      Logger.error(`Error parsing request: ${error}`);
+      return {
+        status: AttestationResponseStatus.MALFORMED,
+      };
+    }
     if (
       response.status !== AttestationResponseStatus.VALID ||
       !response.response

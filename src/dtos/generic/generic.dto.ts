@@ -11,6 +11,10 @@ export enum AttestationResponseStatus {
    */
   INVALID = 'INVALID',
   /**
+   * Attestation request malformed.
+   */
+  MALFORMED = 'MALFORMED',
+  /**
    * Attestation request cannot be confirmed neither rejected by the verifier at the moment.
    */
   INDETERMINATE = 'INDETERMINATE',
