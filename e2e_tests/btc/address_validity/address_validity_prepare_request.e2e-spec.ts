@@ -3,7 +3,7 @@ import * as request from "supertest";
 import { app } from "../helper";
 
 
-describe("/AddressValidity/prepareResponse", () => {
+describe("/AddressValidity/prepareRequest", () => {
     it("should get abiEncodedRequest", async () => {
         const payload = {
             attestationType: "0x4164647265737356616c69646974790000000000000000000000000000000000",
@@ -13,22 +13,13 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         const response = await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(200)
             .expect('Content-Type', /json/)
 
         expect(response.body.status).to.be.equal('VALID');
-        const resp = response.body.response
-        expect(resp.attestationType).to.be.equal("0x4164647265737356616c69646974790000000000000000000000000000000000");
-        expect(resp.sourceId).to.be.equal("0x7465737442544300000000000000000000000000000000000000000000000000");
-        expect(resp.votingRound).to.be.equal("0");
-        expect(resp.lowestUsedTimestamp).to.be.equal('0xffffffffffffffff');
-        expect(resp.requestBody.addressStr).to.be.equal('moh8NxRXLq7vhvAntYi8CZ38HbGR2qqcBn');
-        expect(resp.responseBody.isValid).to.be.equal(true);
-        expect(resp.responseBody.standardAddress).to.be.equal("moh8NxRXLq7vhvAntYi8CZ38HbGR2qqcBn");
-        expect(resp.responseBody.standardAddressHash).to.be.equal("0xa6c89670eef18acb9c9e0822f035f081d6b41591e737fa639dda59d0a6657102");
     });
     it("should get abiEncodedRequest long address", async () => {
         const payload = {
@@ -39,24 +30,15 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         const response = await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(200)
             .expect('Content-Type', /json/)
 
         expect(response.body.status).to.be.equal('VALID');
-        const resp = response.body.response
-        expect(resp.attestationType).to.be.equal("0x4164647265737356616c69646974790000000000000000000000000000000000");
-        expect(resp.sourceId).to.be.equal("0x7465737442544300000000000000000000000000000000000000000000000000");
-        expect(resp.votingRound).to.be.equal("0");
-        expect(resp.lowestUsedTimestamp).to.be.equal('0xffffffffffffffff');
-        expect(resp.requestBody.addressStr).to.be.equal('tb1p9qsz6jcehlk30k0hl9fgujcyx0ym0quehwhcr2jd732far44ylmqhsygmw');
-        expect(resp.responseBody.isValid).to.be.equal(true);
-        expect(resp.responseBody.standardAddress).to.be.equal("tb1p9qsz6jcehlk30k0hl9fgujcyx0ym0quehwhcr2jd732far44ylmqhsygmw");
-        expect(resp.responseBody.standardAddressHash).to.be.equal("0x5bec008121e438bc0892567f2914ee471b46520b2b04bb65bccb1a115928823c");
     });
-    it("should get bad request (400) for empty address", async () => {
+    it("should get valid for empty address", async () => {
         const payload = {
             attestationType: "0x4164647265737356616c69646974790000000000000000000000000000000000",
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
@@ -64,11 +46,13 @@ describe("/AddressValidity/prepareResponse", () => {
                 addressStr: ""
             }
         }
-        await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+        const response = await request(app.getHttpServer())
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
-            .expect(400)
+            .expect(200)
+        
+        expect(response.body.status).to.be.equal('VALID');
     });
     it("should get abiEncodedRequest random address", async () => {
         const payload = {
@@ -79,21 +63,12 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         const response = await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(200)
 
         expect(response.body.status).to.be.equal('VALID');
-        const resp = response.body.response
-        expect(resp.attestationType).to.be.equal("0x4164647265737356616c69646974790000000000000000000000000000000000");
-        expect(resp.sourceId).to.be.equal("0x7465737442544300000000000000000000000000000000000000000000000000");
-        expect(resp.votingRound).to.be.equal("0");
-        expect(resp.lowestUsedTimestamp).to.be.equal('0xffffffffffffffff');
-        expect(resp.requestBody.addressStr).to.be.equal("moh8NxRXLq7vhvAntYi8CZ38sdfksjfweiurfz83fhowef ..sf9swf393+/()(2HbGR2qqcBn");
-        expect(resp.responseBody.isValid).to.be.equal(false);
-        expect(resp.responseBody.standardAddress).to.be.equal("");
-        expect(resp.responseBody.standardAddressHash).to.be.equal("0x0000000000000000000000000000000000000000000000000000000000000000");
     });
     it("should get abiEncodedRequest with no 0x in attestationType", async () => {
         const payload = {
@@ -104,7 +79,7 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         const response = await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(200)
@@ -121,21 +96,12 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         const response = await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(200)
 
         expect(response.body.status).to.be.equal('VALID');
-        const resp = response.body.response
-        expect(resp.attestationType).to.be.equal("0x4164647265737356616c69646974790000000000000000000000000000000000");
-        expect(resp.sourceId).to.be.equal("0x7465737442544300000000000000000000000000000000000000000000000000");
-        expect(resp.votingRound).to.be.equal("0");
-        expect(resp.lowestUsedTimestamp).to.be.equal('0xffffffffffffffff');
-        expect(resp.requestBody.addressStr).to.be.equal('moh8NxRXLq7vhvAntYi8CZ38HbGR2qqcBn');
-        expect(resp.responseBody.isValid).to.be.equal(true);
-        expect(resp.responseBody.standardAddress).to.be.equal("moh8NxRXLq7vhvAntYi8CZ38HbGR2qqcBn");
-        expect(resp.responseBody.standardAddressHash).to.be.equal("0xa6c89670eef18acb9c9e0822f035f081d6b41591e737fa639dda59d0a6657102");
     });
     it("should get bad request (400) with too long attestationType", async () => {
         const payload = {
@@ -146,7 +112,7 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(400)
@@ -160,7 +126,7 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(400)
@@ -174,7 +140,7 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(400)
@@ -188,21 +154,12 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         const response = await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(200)
 
         expect(response.body.status).to.be.equal('VALID');
-        const resp = response.body.response
-        expect(resp.attestationType).to.be.equal("0x4164647265737356616c69646974790000000000000000000000000000000000");
-        expect(resp.sourceId).to.be.equal("0x7465737442544300000000000000000000000000000000000000000000000000");
-        expect(resp.votingRound).to.be.equal("0");
-        expect(resp.lowestUsedTimestamp).to.be.equal('0xffffffffffffffff');
-        expect(resp.requestBody.addressStr).to.be.equal('moh8NxRXLq7vhvAntYi8CZ38HbGR2qqcBn');
-        expect(resp.responseBody.isValid).to.be.equal(true);
-        expect(resp.responseBody.standardAddress).to.be.equal("moh8NxRXLq7vhvAntYi8CZ38HbGR2qqcBn");
-        expect(resp.responseBody.standardAddressHash).to.be.equal("0xa6c89670eef18acb9c9e0822f035f081d6b41591e737fa639dda59d0a6657102");
     });
     it("should get abiEncodedRequest with 0X in sourceId", async () => {
         const payload = {
@@ -213,21 +170,12 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         const response = await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(200)
 
         expect(response.body.status).to.be.equal('VALID');
-        const resp = response.body.response
-        expect(resp.attestationType).to.be.equal("0x4164647265737356616c69646974790000000000000000000000000000000000");
-        expect(resp.sourceId).to.be.equal("0x7465737442544300000000000000000000000000000000000000000000000000");
-        expect(resp.votingRound).to.be.equal("0");
-        expect(resp.lowestUsedTimestamp).to.be.equal('0xffffffffffffffff');
-        expect(resp.requestBody.addressStr).to.be.equal('moh8NxRXLq7vhvAntYi8CZ38HbGR2qqcBn');
-        expect(resp.responseBody.isValid).to.be.equal(true);
-        expect(resp.responseBody.standardAddress).to.be.equal("moh8NxRXLq7vhvAntYi8CZ38HbGR2qqcBn");
-        expect(resp.responseBody.standardAddressHash).to.be.equal("0xa6c89670eef18acb9c9e0822f035f081d6b41591e737fa639dda59d0a6657102");
     });
     it("should get bad request (400) with too long sourceId", async () => {
         const payload = {
@@ -238,7 +186,7 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(400)
@@ -252,12 +200,12 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(400)
     });
-    it("should get bad request (400) with wrong attestationType (but with hexadecimal characters)", async () => {
+    it("should get bad request (400) with wrong sourceId (but with hexadecimal characters)", async () => {
         const payload = {
             attestationType: "0x4164647265737356616c69646974790000000000000000000000000000000000",
             sourceId: "0x746573744254430000000000000000000000000000000000000000000000000a",
@@ -266,7 +214,7 @@ describe("/AddressValidity/prepareResponse", () => {
             }
         }
         await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(400)
@@ -275,7 +223,18 @@ describe("/AddressValidity/prepareResponse", () => {
         const payload = {
         }
         await request(app.getHttpServer())
-            .post("/AddressValidity/prepareResponse")
+            .post("/AddressValidity/prepareRequest")
+            .send(payload)
+            .set('X-API-KEY', '12345')
+            .expect(400)
+    });
+    it("should get bad request (400) with wrong payload", async () => {
+        const payload = {
+            attestationType: "0x4164647265737356616c69646974790000000000000000000000000000000000",
+            sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
+        }
+        await request(app.getHttpServer())
+            .post("/AddressValidity/prepareRequest")
             .send(payload)
             .set('X-API-KEY', '12345')
             .expect(400)

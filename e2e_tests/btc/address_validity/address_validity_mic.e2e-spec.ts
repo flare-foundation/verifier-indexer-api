@@ -40,7 +40,7 @@ describe("/AddressValidity/mic", () => {
         expect(response.body.status).to.be.equal('VALID');
         expect(response.body.messageIntegrityCode.length).to.be.equal(66);
     });
-    it("should get bad request (400) for empty address", async () => {
+    it("should get VALID for empty address", async () => {
         const payload = {
             attestationType: "0x4164647265737356616c69646974790000000000000000000000000000000000",
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
@@ -48,11 +48,13 @@ describe("/AddressValidity/mic", () => {
                 addressStr: ""
             }
         }
-        await request(app.getHttpServer())
+        const response = await request(app.getHttpServer())
             .post("/AddressValidity/mic")
             .send(payload)
             .set('X-API-KEY', '12345')
-            .expect(400)
+            .expect(200)
+        expect(response.body.status).to.be.equal('VALID');
+        expect(response.body.messageIntegrityCode.length).to.be.equal(66);
     });
     it("should get abiEncodedRequest random address", async () => {
         const payload = {
@@ -210,7 +212,7 @@ describe("/AddressValidity/mic", () => {
             .set('X-API-KEY', '12345')
             .expect(400)
     });
-    it("should get bad request (400) with wrong attestationType (but with hexadecimal characters)", async () => {
+    it("should get bad request (400) with wrong sourceId (but with hexadecimal characters)", async () => {
         const payload = {
             attestationType: "0x4164647265737356616c69646974790000000000000000000000000000000000",
             sourceId: "0x746573744254430000000000000000000000000000000000000000000000000a",

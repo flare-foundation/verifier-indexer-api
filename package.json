@@ -17,9 +17,12 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix", 
-    "test": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh all",
-    "test:make_db": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh make_db",
-    "test:run_tests": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh run_tests",
+    "test:btc": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh all btc",
+    "test:make_db:btc": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh make_db btc",
+    "test:run_tests:btc": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh run_tests btc",
+    "test:doge": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh all doge",
+    "test:make_db:doge": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh make_db doge",
+    "test:run_tests:doge": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh run_tests doge",
     "test:delete_db": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh delete_db"
   },
   "dependencies": {

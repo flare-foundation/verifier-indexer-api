@@ -8,7 +8,3 @@ services:
       POSTGRES_PASSWORD: pass
     ports:
       - "127.0.0.1:8080:5432"
-
-
-
-# docker compose -f e2e_tests/db/docker-compose.yaml up -d

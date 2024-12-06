@@ -391,7 +391,7 @@ describe("/Payment/prepareResponse", () => {
         expect(response.body.status).to.be.equal('VALID');
         expect(response.body.response.attestationType).to.be.equal('0x5061796d656e7400000000000000000000000000000000000000000000000000');
     });
-    it("should get valid status with no 0x in attestationType", async () => {
+    it("should get valid status with no 0x in sourceId", async () => {
         const payload = {
             attestationType: "0x5061796d656e7400000000000000000000000000000000000000000000000000",
             sourceId: "7465737442544300000000000000000000000000000000000000000000000000",
@@ -411,10 +411,10 @@ describe("/Payment/prepareResponse", () => {
         expect(response.body.status).to.be.equal('VALID');
         expect(response.body.response.sourceId).to.be.equal('0x7465737442544300000000000000000000000000000000000000000000000000');
     });
-    it("should get valid status with 0X in attestationType", async () => {
+    it("should get valid status with 0X in sourceId", async () => {
         const payload = {
-            attestationType: "0X5061796d656e7400000000000000000000000000000000000000000000000000",
-            sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
+            attestationType: "0x5061796d656e7400000000000000000000000000000000000000000000000000",
+            sourceId: "0X7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 transactionId: "783c249c9e84ebb91e350d15403a0d741f530b43361ace8042a736242e68fc06",
                 inUtxo: "0",

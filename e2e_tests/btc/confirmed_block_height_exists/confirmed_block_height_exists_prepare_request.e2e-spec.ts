@@ -147,7 +147,7 @@ describe("/ConfirmedBlockHeightExists/prepareRequest", () => {
             attestationType: "0x436f6e6669726d6564426c6f636b486569676874457869737473000000000000",
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
-                blockNumber: "3490156a",
+                blockNumber: "3490156",
                 queryWindow: "1a"
             }
         }

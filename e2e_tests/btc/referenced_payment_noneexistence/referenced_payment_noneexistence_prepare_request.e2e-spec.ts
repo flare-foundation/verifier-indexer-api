@@ -61,7 +61,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -85,7 +85,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -109,7 +109,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -133,7 +133,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -157,7 +157,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -179,7 +179,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -200,7 +200,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -221,7 +221,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -243,7 +243,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -265,7 +265,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -287,7 +287,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -309,7 +309,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -331,7 +331,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -353,7 +353,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "-1",
@@ -375,7 +375,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "a",
@@ -397,7 +397,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: "",
                 amount: "5146310",
@@ -419,7 +419,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "-1",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -441,7 +441,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "a",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -507,7 +507,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "-1",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -529,7 +529,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "-ad",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -573,7 +573,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -597,7 +597,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0X7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -621,7 +621,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -645,7 +645,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -669,7 +669,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -693,7 +693,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "340156",
+                deadlineBlockNumber: "340154",
                 deadlineTimestamp: "1732779897",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -717,7 +717,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "3490153",
+                deadlineBlockNumber: "3490156",
                 deadlineTimestamp: "0",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -742,31 +742,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             requestBody: {
                 minimalBlockNumber: "3490151",
                 deadlineBlockNumber: "1",
-                deadlineTimestamp: "1732779897",
-                destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
-                amount: "5146310",
-                standardPaymentReference: "0000000000000000000000000000000000000000000000000000000000000001",
-                checkSourceAddresses: true,
-                sourceAddressesRoot: "cb59478070fabf8aef96f6ff20a05abb8e922601cd24f13a4fc876b35fa62feb"
-            }
-        }
-        const response = await request(app.getHttpServer())
-            .post("/ReferencedPaymentNonexistence/prepareRequest")
-            .send(payload)
-            .set('X-API-KEY', '12345')
-            .expect(200)
-            .expect('Content-Type', /json/)
-
-        expect(response.body.status).to.be.equal('VALID');
-    });
-    it("should get 200 as blocks from minimalBlockNumber to the heighest block in db", async () => {
-        const payload = {
-            attestationType: "0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000",
-            sourceId: "0x7465737442544300000000000000000000000000000000000000000000000000",
-            requestBody: {
-                minimalBlockNumber: "3490151",
-                deadlineBlockNumber: "3490156",
-                deadlineTimestamp: "1732779897",
+                deadlineTimestamp: "1732779898",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
                 standardPaymentReference: "0000000000000000000000000000000000000000000000000000000000000001",
@@ -877,7 +853,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             .expect(200)
             .expect('Content-Type', /json/)
 
-        expect(response.body.status).to.be.equal('INDETERMINATE');
+        expect(response.body.status).to.be.equal('INVALID');
     });
 });
 

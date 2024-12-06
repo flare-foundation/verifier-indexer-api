@@ -15,14 +15,14 @@ if [ "$1" = "all" ] || [ "$1" = "make_db" ]; then
   wait_for_pg_ready 
 
   commands=(
-    "docker compose -f e2e_tests/db/docker-compose.yaml cp e2e_tests/db/db postgres_testing_db:/tmp/dbdump"
+    "docker compose -f e2e_tests/db/docker-compose.yaml cp e2e_tests/db/db_$2 postgres_testing_db:/tmp/dbdump"
     "docker compose -f e2e_tests/db/docker-compose.yaml exec postgres_testing_db dropdb -U user db"
     "docker compose -f e2e_tests/db/docker-compose.yaml exec postgres_testing_db createdb -U user -E utf8 -T template0 db"
     "docker compose -f e2e_tests/db/docker-compose.yaml exec postgres_testing_db pg_restore --no-owner --role=user -U user --dbname=db /tmp/dbdump"
   )
 
   echo ""
-  echo Copying data to DB
+  echo Copying db_$2 to DB
   for command in "${commands[@]}"; do
     eval "$command"
     wait_for_pg_ready
@@ -32,8 +32,8 @@ fi
 
 if [ "$1" = "all" ] || [ "$1" = "run_tests" ]; then
   echo ""
-  echo Runing tests
-  mocha -r ts-node/register --require source-map-support/register "e2e_tests/**/*.e2e-spec.ts"
+  echo Runing $2 tests 
+  mocha -r ts-node/register --require source-map-support/register "e2e_tests/$2/**/*.e2e-spec.ts"
 fi
 
 
