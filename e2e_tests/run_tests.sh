@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Function to wait until PostgreSQL is ready
 wait_for_pg_ready() {
   until docker compose -f e2e_tests/db/docker-compose.yaml exec postgres_testing_db pg_isready -h 127.0.0.1 -p 5432 -U db 1> /dev/null; do
     sleep 1

@@ -16,7 +16,7 @@ describe("/ReferencedPaymentNonexistence/prepareResponse", () => {
                 deadlineBlockNumber: "6724583",
                 deadlineTimestamp: "1732810320",
                 destinationAddressHash: standardAddressHash("neRSiUUeJr8EB9jKmdG9MPycfFawSy2Nwy"),
-                amount: "5146310",
+                amount: "5146310000000000",
                 standardPaymentReference: "46425052664100010000000000000000000000000000000000000000001c1e87",
                 checkSourceAddresses: true,
                 sourceAddressesRoot: "a91052d869037a833d1b074cf02348ee2a6d0f47ef207358d3e04120731d9d6a"
@@ -29,7 +29,7 @@ describe("/ReferencedPaymentNonexistence/prepareResponse", () => {
             .expect(200)
             .expect('Content-Type', /json/)
 
-        expect(response.body.status).to.be.equal('INVALID');
+        expect(response.body.status).to.be.equal('VALID');
     });
     it("should get abiEncodedRequest", async () => {
         const payload = {

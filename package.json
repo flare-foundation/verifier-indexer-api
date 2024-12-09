@@ -23,6 +23,9 @@
     "test:doge": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh all doge",
     "test:make_db:doge": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh make_db doge",
     "test:run_tests:doge": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh run_tests doge",
+    "test:xrp": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh all xrp",
+    "test:make_db:xrp": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh make_db xrp",
+    "test:run_tests:xrp": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh run_tests xrp",
     "test:delete_db": "chmod +x e2e_tests/run_tests.sh && ./e2e_tests/run_tests.sh delete_db"
   },
   "dependencies": {
