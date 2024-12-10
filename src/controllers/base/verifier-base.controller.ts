@@ -7,7 +7,7 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { ApiOperation, ApiSecurity } from '@nestjs/swagger';
+import { ApiOperation, ApiSecurity, ApiBody } from '@nestjs/swagger';
 
 import { ApiKeyAuthGuard } from '../../auth/apikey.guard';
 import {
@@ -83,6 +83,7 @@ export function BaseControllerFactory<
     @HttpCode(200)
     @Post('prepareResponse')
     @UsePipes(requestDtoPipe)
+    @ApiBody({ type: requestDto })
     async prepareResponse(
       @Body() body: Req,
     ): Promise<AttestationResponse<Res>> {
@@ -96,6 +97,7 @@ export function BaseControllerFactory<
     @HttpCode(200)
     @Post('mic')
     @UsePipes(requestDtoPipe)
+    @ApiBody({ type: requestDto })
     async mic(@Body() body: Req): Promise<MicResponse> {
       return this.verifierService.mic(body);
     }
@@ -108,6 +110,7 @@ export function BaseControllerFactory<
     @HttpCode(200)
     @Post('prepareRequest')
     @UsePipes(requestDtoPipe)
+    @ApiBody({ type: requestDto })
     async prepareRequest(@Body() body: Req): Promise<EncodedRequestResponse> {
       return this.verifierService.prepareRequest(body);
     }
