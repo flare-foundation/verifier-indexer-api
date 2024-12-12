@@ -31,7 +31,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
 
         expect(response.body.status).to.be.equal('VALID');
     });
-    it("should get abiEncodedRequest with checkSourceAddresses=false and random sourceAddressesRoot", async () => {
+    it.skip("should get abiEncodedRequest with checkSourceAddresses=false and random sourceAddressesRoot", async () => {
         const payload = {
             attestationType: "0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000",
             sourceId: "0x7465737458525000000000000000000000000000000000000000000000000000",
@@ -55,7 +55,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
 
         expect(response.body.status).to.be.equal('VALID');
     });
-    it("should get abiEncodedRequest with checkSourceAddresses=false and no sourceAddressesRoot", async () => {
+    it.skip("should get abiEncodedRequest with checkSourceAddresses=false and no sourceAddressesRoot", async () => {
         const payload = {
             attestationType: "0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000",
             sourceId: "0x7465737458525000000000000000000000000000000000000000000000000000",

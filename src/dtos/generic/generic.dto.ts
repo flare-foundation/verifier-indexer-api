@@ -1,3 +1,8 @@
+import { prefix0x } from '@flarenetwork/mcc';
+import { Transform } from 'class-transformer';
+import { Validate } from 'class-validator';
+import { Is0xHex } from '../dto-validators';
+
 /**
  * Attestation status
  */
@@ -59,6 +64,8 @@ export class EncodedRequest {
   /**
    * Abi encoded request object see this for more info: https://gitlab.com/flarenetwork/state-connector-protocol/-/blob/main/attestation-objects/request-encoding-decoding.md
    */
+  @Validate(Is0xHex)
+  @Transform(({ value }) => prefix0x(value.toLowerCase()).toLowerCase())
   abiEncodedRequest: string;
 }
 

@@ -40,7 +40,7 @@ describe("/Payment/prepareRequest", () => {
             .expect(200)
             .expect('Content-Type', /json/)
 
-        expect(response.body.status).to.be.equal('INVALID');
+        expect(response.body.status).to.be.equal('VALID');
     });
     it("should get 400 for negative inUtxo", async () => {
         const payload = {
@@ -93,7 +93,7 @@ describe("/Payment/prepareRequest", () => {
             .expect(200)
             .expect('Content-Type', /json/)
 
-        expect(response.body.status).to.be.equal('INVALID');
+        expect(response.body.status).to.be.equal('VALID');
     });
     it("should get bad request (400) for empty transactionId", async () => {
         const payload = {

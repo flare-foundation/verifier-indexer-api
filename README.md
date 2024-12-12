@@ -48,4 +48,27 @@ $ yarn run test:cov
 
 ## Testing with postgresql dump
 
-TODO
+Get DB instances from some persistent storage, or ask other devs
+
+Move those db dumps to /e2e_tests/db/
+
+set .env, you will need to specify the right value for `VERIFIER_TYPE` and `TESTNET` variables
+for now all dbs are on testnets, so provide `TESTNET=true`
+
+### option1: running tests against db instance
+
+depending on your source, use the following command (btc example)
+```yarn test:btc```
+
+### option2: spinning up db from dumpb and persist it
+
+again depending on your sourrce create db instance
+```yarn test:make_db:btc```
+after that db will be available and you can 
+1. run tests against it, to do so use `yarn test:run_tests:btc`
+2. start up local server and make requests by hand
+
+After you are done make sure to stop the db server with
+```yarn test:delete_db```
+
+

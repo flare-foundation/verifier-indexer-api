@@ -39,19 +39,6 @@ AddressValidity_Response
   }
 }
 
-// @ApiTags('AddressValidity')
-// @Controller('AddressValidity')
-// export class XRPAddressValidityVerifierController extends BaseVerifierController<
-//   AddressValidity_Request,
-//   AddressValidity_Response
-// > {
-//   constructor(
-//     protected readonly verifierService: XRPAddressValidityVerifierService,
-//   ) {
-//     super();
-//   }
-// }
-
 @ApiTags('AddressValidity')
 @Controller('AddressValidity')
 export class XRPAddressValidityVerifierController extends BaseControllerFactory<

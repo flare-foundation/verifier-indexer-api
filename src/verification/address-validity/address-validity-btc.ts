@@ -34,6 +34,9 @@ const btcBase58 = base(BTC_BASE_58_DICT);
  * @returns
  */
 function typeBTC(address: string) {
+  if (address.length == 0) {
+    return BTCAddressTypes.INVALID;
+  }
   const prefix = address[0].toLowerCase();
   switch (prefix) {
     case '1':
@@ -55,6 +58,9 @@ function typeBTC(address: string) {
  * @returns
  */
 function typeBTCtestnet(address: string) {
+  if (address.length == 0) {
+    return BTCAddressTypes.INVALID;
+  }
   const prefix = address[0].toLowerCase();
   switch (prefix) {
     case 'n':

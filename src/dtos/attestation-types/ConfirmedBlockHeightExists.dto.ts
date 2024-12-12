@@ -111,7 +111,7 @@ export class ConfirmedBlockHeightExists_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value).toLowerCase())
+  @Transform(({ value }) => prefix0x(value.toLowerCase()).toLowerCase())
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -123,7 +123,7 @@ export class ConfirmedBlockHeightExists_Request {
    * ID of the data source.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value).toLowerCase())
+  @Transform(({ value }) => prefix0x(value.toLowerCase()).toLowerCase())
   @ApiProperty({
     description: `ID of the data source.`,
     example:
@@ -154,7 +154,7 @@ export class ConfirmedBlockHeightExists_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value).toLowerCase())
+  @Transform(({ value }) => prefix0x(value.toLowerCase()).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -166,7 +166,7 @@ export class ConfirmedBlockHeightExists_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value).toLowerCase())
+  @Transform(({ value }) => prefix0x(value.toLowerCase()).toLowerCase())
   @ApiProperty({
     description: `Extracted from the request.`,
     example:

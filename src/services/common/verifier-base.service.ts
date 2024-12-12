@@ -189,7 +189,7 @@ export abstract class BaseVerifierService<
 
     return new EncodedRequestResponse({
       status: AttestationResponseStatus.VALID,
-      abiEncodedRequest: this.store.encodeRequest(newRequest),
+      abiEncodedRequest: this.store.encodeRequest(newRequest).toLowerCase(),
     });
   }
 }

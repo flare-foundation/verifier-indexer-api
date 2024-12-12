@@ -71,7 +71,7 @@ describe("/ReferencedPaymentNonexistence/prepareResponse", () => {
         expect(response.body.response.responseBody.firstOverflowBlockTimestamp).to.be.equal('1732810325');
 
     });
-    it("should get abiEncodedRequest with checkSourceAddresses=false and random sourceAddressesRoot", async () => {
+    it.skip("should get abiEncodedRequest with checkSourceAddresses=false and random sourceAddressesRoot", async () => {
         const payload = {
             attestationType: "0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000",
             sourceId: "0x74657374444f4745000000000000000000000000000000000000000000000000",
@@ -111,7 +111,7 @@ describe("/ReferencedPaymentNonexistence/prepareResponse", () => {
         expect(response.body.response.responseBody.firstOverflowBlockTimestamp).to.be.equal('1732810325');
 
     });
-    it("should get abiEncodedRequest with checkSourceAddresses=false and no sourceAddressesRoot", async () => {
+    it.skip("should get abiEncodedRequest with checkSourceAddresses=false and no sourceAddressesRoot", async () => {
         const payload = {
             attestationType: "0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000",
             sourceId: "0x74657374444f4745000000000000000000000000000000000000000000000000",

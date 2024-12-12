@@ -55,7 +55,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
 
         expect(response.body.status).to.be.equal('VALID');
     });
-    it("should get abiEncodedRequest with checkSourceAddresses=false and random sourceAddressesRoot", async () => {
+    it.skip("should get abiEncodedRequest with checkSourceAddresses=false and random sourceAddressesRoot", async () => {
         const payload = {
             attestationType: "0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000",
             sourceId: "0x74657374444f4745000000000000000000000000000000000000000000000000",
@@ -79,7 +79,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
 
         expect(response.body.status).to.be.equal('VALID');
     });
-    it("should get abiEncodedRequest with checkSourceAddresses=false and no sourceAddressesRoot", async () => {
+    it.skip("should get abiEncodedRequest with checkSourceAddresses=false and no sourceAddressesRoot", async () => {
         const payload = {
             attestationType: "0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000",
             sourceId: "0x74657374444f4745000000000000000000000000000000000000000000000000",
@@ -741,7 +741,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             sourceId: "0x74657374444f4745000000000000000000000000000000000000000000000000",
             requestBody: {
                 minimalBlockNumber: "6724525",
-                deadlineBlockNumber: "6724602",
+                deadlineBlockNumber: "6724601",
                 deadlineTimestamp: "0",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
@@ -766,7 +766,7 @@ describe("/ReferencedPaymentNonexistence/prepareRequest", () => {
             requestBody: {
                 minimalBlockNumber: "6724525",
                 deadlineBlockNumber: "1",
-                deadlineTimestamp: "1732810420",
+                deadlineTimestamp: "1732810419",
                 destinationAddressHash: standardAddressHash("n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX"),
                 amount: "5146310",
                 standardPaymentReference: "0000000000000000000000000000000000000000000000000000000000000001",

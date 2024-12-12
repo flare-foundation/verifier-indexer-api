@@ -128,12 +128,12 @@ export function responsePayment<T extends TransactionBase<any>>(
     responseBody: new Payment_ResponseBody({
       blockNumber: dbTransaction.blockNumber.toString(),
       blockTimestamp: dbTransaction.timestamp.toString(),
-      sourceAddressHash: paymentSummary.response.sourceAddressHash,
-      sourceAddressesRoot: paymentSummary.response.sourceAddressesRoot,
-      receivingAddressHash: paymentSummary.response.receivingAddressHash,
+      sourceAddressHash: paymentSummary.response.sourceAddressHash.toLowerCase(),
+      sourceAddressesRoot: paymentSummary.response.sourceAddressesRoot.toLowerCase(),
+      receivingAddressHash: paymentSummary.response.receivingAddressHash.toLowerCase(),
       intendedReceivingAddressHash:
-        paymentSummary.response.intendedReceivingAddressHash,
-      standardPaymentReference: paymentSummary.response.paymentReference,
+        paymentSummary.response.intendedReceivingAddressHash.toLowerCase(),
+      standardPaymentReference: paymentSummary.response.paymentReference.toLowerCase(),
       spentAmount: paymentSummary.response.spentAmount.toString(),
       intendedSpentAmount:
         paymentSummary.response.intendedSourceAmount.toString(),
@@ -237,10 +237,10 @@ export async function responseBalanceDecreasingTransaction<
     responseBody: new BalanceDecreasingTransaction_ResponseBody({
       blockNumber: dbTransaction.blockNumber.toString(),
       blockTimestamp: dbTransaction.timestamp.toString(),
-      sourceAddressHash: balanceDecreasingSummary.response.sourceAddressHash,
+      sourceAddressHash: balanceDecreasingSummary.response.sourceAddressHash.toLowerCase(),
       spentAmount: balanceDecreasingSummary.response.spentAmount.toString(),
       standardPaymentReference:
-        balanceDecreasingSummary.response.paymentReference,
+        balanceDecreasingSummary.response.paymentReference.toLowerCase(),
     }),
   });
 
