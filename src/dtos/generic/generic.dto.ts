@@ -90,7 +90,7 @@ export class AttestationResponse<RES> {
   /**
    * Verification status.
    */
-  status!: AttestationResponseStatus;
+  status: AttestationResponseStatus;
   /**
    * Attestation response.
    */
