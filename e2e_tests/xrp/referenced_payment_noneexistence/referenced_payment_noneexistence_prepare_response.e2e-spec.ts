@@ -46,7 +46,7 @@ describe("/ReferencedPaymentNonexistence/prepareResponse", () => {
         expect(response.body.response.responseBody.firstOverflowBlockNumber).to.be.equal('2882131');
         expect(response.body.response.responseBody.firstOverflowBlockTimestamp).to.be.equal('1733476341');
     });
-    it.skip("should get abiEncodedRequest with checkSourceAddresses=false and random sourceAddressesRoot", async () => {
+    it("should get 400 with checkSourceAddresses=false and random sourceAddressesRoot", async () => {
         const payload = {
             attestationType: "0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000",
             sourceId: "0x7465737458525000000000000000000000000000000000000000000000000000",
@@ -61,16 +61,14 @@ describe("/ReferencedPaymentNonexistence/prepareResponse", () => {
                 sourceAddressesRoot: "dfe.fewf. .wef.wef .wew3=E#(/ R89 "
             }
         }
-        const response = await request(app.getHttpServer())
+        await request(app.getHttpServer())
             .post("/ReferencedPaymentNonexistence/prepareResponse")
             .send(payload)
             .set('X-API-KEY', '12345')
-            .expect(200)
+            .expect(400)
             .expect('Content-Type', /json/)
-
-        expect(response.body.status).to.be.equal('VALID');
     });
-    it.skip("should get abiEncodedRequest with checkSourceAddresses=false and no sourceAddressesRoot", async () => {
+    it("should get 400 with checkSourceAddresses=false and no sourceAddressesRoot", async () => {
         const payload = {
             attestationType: "0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000",
             sourceId: "0x7465737458525000000000000000000000000000000000000000000000000000",
@@ -85,14 +83,12 @@ describe("/ReferencedPaymentNonexistence/prepareResponse", () => {
                 sourceAddressesRoot: ""
             }
         }
-        const response = await request(app.getHttpServer())
+        await request(app.getHttpServer())
             .post("/ReferencedPaymentNonexistence/prepareResponse")
             .send(payload)
             .set('X-API-KEY', '12345')
-            .expect(200)
+            .expect(400)
             .expect('Content-Type', /json/)
-
-        expect(response.body.status).to.be.equal('VALID');
     });
     it("should get invalid status with zero standardPaymentReference", async () => {
         const payload = {

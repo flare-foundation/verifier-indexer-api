@@ -76,7 +76,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
       response.body.response.responseBody.firstOverflowBlockTimestamp,
     ).to.be.equal('1732779898');
   });
-  it.skip('should get abiEncodedRequest with checkSourceAddresses=false and random sourceAddressesRoot', async () => {
+  it('should get 400 with checkSourceAddresses=false and random sourceAddressesRoot', async () => {
     const payload = {
       attestationType:
         '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
@@ -96,59 +96,14 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
         sourceAddressesRoot: 'dfe.fewf. .wef.wef .wew3=E#(/ R89 ',
       },
     };
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/ReferencedPaymentNonexistence/prepareResponse')
       .send(payload)
       .set('X-API-KEY', '12345')
-      .expect(200)
+      .expect(400)
       .expect('Content-Type', /json/);
-
-    expect(response.body.status).to.be.equal('VALID');
-    expect(response.body.response.attestationType).to.be.equal(
-      '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
-    );
-    expect(response.body.response.sourceId).to.be.equal(
-      '0x7465737442544300000000000000000000000000000000000000000000000000',
-    );
-    expect(response.body.response.votingRound).to.be.equal('0');
-    expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732779896',
-    );
-    expect(response.body.response.requestBody.minimalBlockNumber).to.be.equal(
-      '3490151',
-    );
-    expect(response.body.response.requestBody.deadlineBlockNumber).to.be.equal(
-      '3490154',
-    );
-    expect(response.body.response.requestBody.deadlineTimestamp).to.be.equal(
-      '1732779897',
-    );
-    expect(
-      response.body.response.requestBody.destinationAddressHash,
-    ).to.be.equal(standardAddressHash('n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX'));
-    expect(response.body.response.requestBody.amount).to.be.equal('5146310');
-    expect(
-      response.body.response.requestBody.standardPaymentReference,
-    ).to.be.equal(
-      '0x0000000000000000000000000000000000000000000000000000000000000001',
-    );
-    expect(response.body.response.requestBody.checkSourceAddresses).to.be.equal(
-      true,
-    );
-    expect(response.body.response.requestBody.sourceAddressesRoot).to.be.equal(
-      '0xcb59478070fabf8aef96f6ff20a05abb8e922601cd24f13a4fc876b35fa62feb',
-    );
-    expect(
-      response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
-    expect(
-      response.body.response.responseBody.firstOverflowBlockNumber,
-    ).to.be.equal('3490156');
-    expect(
-      response.body.response.responseBody.firstOverflowBlockTimestamp,
-    ).to.be.equal('1732779898');
   });
-  it.skip('should get abiEncodedRequest with checkSourceAddresses=false and empty sourceAddressesRoot', async () => {
+  it('should get 400 with checkSourceAddresses=false and empty sourceAddressesRoot', async () => {
     const payload = {
       attestationType:
         '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
@@ -168,57 +123,12 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
         sourceAddressesRoot: '',
       },
     };
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/ReferencedPaymentNonexistence/prepareResponse')
       .send(payload)
       .set('X-API-KEY', '12345')
-      .expect(200)
+      .expect(400)
       .expect('Content-Type', /json/);
-
-    expect(response.body.status).to.be.equal('VALID');
-    expect(response.body.response.attestationType).to.be.equal(
-      '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
-    );
-    expect(response.body.response.sourceId).to.be.equal(
-      '0x7465737442544300000000000000000000000000000000000000000000000000',
-    );
-    expect(response.body.response.votingRound).to.be.equal('0');
-    expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732779896',
-    );
-    expect(response.body.response.requestBody.minimalBlockNumber).to.be.equal(
-      '3490151',
-    );
-    expect(response.body.response.requestBody.deadlineBlockNumber).to.be.equal(
-      '3490154',
-    );
-    expect(response.body.response.requestBody.deadlineTimestamp).to.be.equal(
-      '1732779897',
-    );
-    expect(
-      response.body.response.requestBody.destinationAddressHash,
-    ).to.be.equal(standardAddressHash('n24Juz7LGy3uFFuZBggLw1eH1E9G19JrbX'));
-    expect(response.body.response.requestBody.amount).to.be.equal('5146310');
-    expect(
-      response.body.response.requestBody.standardPaymentReference,
-    ).to.be.equal(
-      '0x0000000000000000000000000000000000000000000000000000000000000001',
-    );
-    expect(response.body.response.requestBody.checkSourceAddresses).to.be.equal(
-      true,
-    );
-    expect(response.body.response.requestBody.sourceAddressesRoot).to.be.equal(
-      '0xcb59478070fabf8aef96f6ff20a05abb8e922601cd24f13a4fc876b35fa62feb',
-    );
-    expect(
-      response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
-    expect(
-      response.body.response.responseBody.firstOverflowBlockNumber,
-    ).to.be.equal('3490156');
-    expect(
-      response.body.response.responseBody.firstOverflowBlockTimestamp,
-    ).to.be.equal('1732779898');
   });
   it('should get invalid status with zero standardPaymentReference', async () => {
     const payload = {

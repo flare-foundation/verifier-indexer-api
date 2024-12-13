@@ -35,7 +35,7 @@ describe('/ReferencedPaymentNonexistence/mic', () => {
     expect(response.body.status).to.be.equal('VALID');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
-  it.skip('should get abiEncodedRequest with checkSourceAddresses=false and random sourceAddressesRoot', async () => {
+  it('should get 400 with checkSourceAddresses=false and random sourceAddressesRoot', async () => {
     const payload = {
       attestationType:
         '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
@@ -55,17 +55,14 @@ describe('/ReferencedPaymentNonexistence/mic', () => {
         sourceAddressesRoot: 'dfe.fewf. .wef.wef .wew3=E#(/ R89 ',
       },
     };
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/ReferencedPaymentNonexistence/mic')
       .send(payload)
       .set('X-API-KEY', '12345')
-      .expect(200)
+      .expect(400)
       .expect('Content-Type', /json/);
-
-    expect(response.body.status).to.be.equal('VALID');
-    expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
-  it.skip('should get abiEncodedRequest with checkSourceAddresses=false and empty sourceAddressesRoot', async () => {
+  it('should get 400 with checkSourceAddresses=false and empty sourceAddressesRoot', async () => {
     const payload = {
       attestationType:
         '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
@@ -85,15 +82,12 @@ describe('/ReferencedPaymentNonexistence/mic', () => {
         sourceAddressesRoot: '',
       },
     };
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/ReferencedPaymentNonexistence/mic')
       .send(payload)
       .set('X-API-KEY', '12345')
-      .expect(200)
+      .expect(400)
       .expect('Content-Type', /json/);
-
-    expect(response.body.status).to.be.equal('VALID');
-    expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
   it('should get invalid status with zero standardPaymentReference', async () => {
     const payload = {

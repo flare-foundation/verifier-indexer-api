@@ -11,9 +11,6 @@ You can run the verifier api service on 3 different sources:
 
 For the api to work properly the service must be connected to the appropriate underlying postgresql database that is being filled with the the aproriate indexing solution (BTC indexer -> BTC api service)
 
-
-
-
 ## Local Installation
 
 Make sure you are using the node version specified in .nvmrc file. We recommend that you use `nvm` to manage local node installations. Make sure to use/enable `yarn`
@@ -48,27 +45,37 @@ $ yarn run test:cov
 
 ## Testing with postgresql dump
 
-Get DB instances from some persistent storage, or ask other devs
+Get db instances from some persistent storage, or ask other devs.
 
-Move those db dumps to /e2e_tests/db/
+Move those db dumps to `/e2e_tests/db/`.
 
-set .env, you will need to specify the right value for `VERIFIER_TYPE` and `TESTNET` variables
-for now all dbs are on testnets, so provide `TESTNET=true`
+For now all dbs are on testnets.
 
-### option1: running tests against db instance
+### Option1: running tests against db instance
 
-depending on your source, use the following command (btc example)
-```yarn test:btc```
+Depending on your source, use the following command (btc example)
+```yarn test:btc```.
 
-### option2: spinning up db from dumpb and persist it
+### Option2: spinning up db from dumpb and persist it
 
-again depending on your sourrce create db instance
-```yarn test:make_db:btc```
+Again depending on your source create db instance
+```yarn test:make_db:btc```,
 after that db will be available and you can 
-1. run tests against it, to do so use `yarn test:run_tests:btc`
-2. start up local server and make requests by hand
+1. run tests against it, to do so use `yarn test:run_tests:btc`,
+2. start up local server and make requests by hand.
+
+In the second case set env variables of db to
+```bash
+# .env file
+DB_DATABASE=db
+DB_USERNAME=user
+DB_PASSWORD=pass
+DB_HOST=127.0.0.1
+DB_PORT=8080
+```
+and specify the right values for `VERIFIER_TYPE` and `TESTNET=true` variables.
 
 After you are done make sure to stop the db server with
-```yarn test:delete_db```
+```yarn test:delete_db```.
 
 

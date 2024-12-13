@@ -29,7 +29,7 @@ describe("/ConfirmedBlockHeightExists/mic", () => {
             sourceId: "0x74657374444f4745000000000000000000000000000000000000000000000000",
             requestBody: {
                 blockNumber: "6724543",
-                queryWindow: "200"
+                queryWindow: "100"
             }
         }
         const response = await request(app.getHttpServer())
@@ -40,6 +40,7 @@ describe("/ConfirmedBlockHeightExists/mic", () => {
             .expect('Content-Type', /json/)
 
         expect(response.body.status).to.be.equal('INDETERMINATE');
+        // The last block in DB is 6724602
     });
     it("should get VALID status with queryWindow=0", async () => {
         const payload = {
