@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiKeyStrategy } from '../auth/apikey.strategy';
@@ -18,6 +18,7 @@ import { BTCConfirmedBlockHeightExistsVerifierService } from '../services/confir
 import { BtcExternalIndexerEngineService } from '../services/indexer-services/utxo-indexer.service';
 import { BTCPaymentVerifierService } from '../services/payment-verifier.service';
 import { BTCReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
+import { LoggerMiddleware } from 'src/middlware/LoggerMiddlwar';
 
 
 @Module({
@@ -54,4 +55,8 @@ import { BTCReferencedPaymentNonexistenceVerifierService } from '../services/ref
     BTCReferencedPaymentNonexistenceVerifierService,
   ],
 })
-export class BtcVerifierServerModule { }
+export class BtcVerifierServerModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

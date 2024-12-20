@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiKeyStrategy } from '../auth/apikey.strategy';
@@ -18,7 +18,7 @@ import { XRPConfirmedBlockHeightExistsVerifierService } from '../services/confir
 import { XrpExternalIndexerEngineService } from '../services/indexer-services/xrp-indexer.service';
 import { XRPPaymentVerifierService } from '../services/payment-verifier.service';
 import { XRPReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
-
+import { LoggerMiddleware } from 'src/middlware/LoggerMiddlwar';
 
 @Module({
   imports: [
@@ -54,4 +54,8 @@ import { XRPReferencedPaymentNonexistenceVerifierService } from '../services/ref
     XRPReferencedPaymentNonexistenceVerifierService,
   ],
 })
-export class XRPVerifierServerModule { }
+export class XRPVerifierServerModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiKeyStrategy } from '../auth/apikey.strategy';
@@ -18,7 +18,7 @@ import { DOGEConfirmedBlockHeightExistsVerifierService } from '../services/confi
 import { DogeExternalIndexerEngineService } from '../services/indexer-services/utxo-indexer.service';
 import { DOGEPaymentVerifierService } from '../services/payment-verifier.service';
 import { DOGEReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
-
+import { LoggerMiddleware } from 'src/middlware/LoggerMiddlwar';
 
 @Module({
   imports: [
@@ -54,4 +54,8 @@ import { DOGEReferencedPaymentNonexistenceVerifierService } from '../services/re
     DOGEReferencedPaymentNonexistenceVerifierService,
   ],
 })
-export class DogeVerifierServerModule { }
+export class DogeVerifierServerModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
