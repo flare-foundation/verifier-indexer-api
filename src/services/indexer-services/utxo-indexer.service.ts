@@ -108,9 +108,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
    * @param blockNumber
    * @returns
    */
-  public async confirmedBlockAt(
-    blockNumber: number,
-  ): Promise<ApiDBBlock> {
+  public async confirmedBlockAt(blockNumber: number): Promise<ApiDBBlock> {
     const query = this.manager
       .createQueryBuilder(this.blockTable, 'block')
       .andWhere('block.block_number = :blockNumber', { blockNumber });
@@ -124,9 +122,15 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   /**
    * Gets a confirmed block from the indexer database in the given block number range and pagination props.
    */
-  public async listBlock({ from, to }: QueryBlock): Promise<PaginatedList<ApiDBBlock>> {
+  public async listBlock({
+    from,
+    to,
+  }: QueryBlock): Promise<PaginatedList<ApiDBBlock>> {
+    // TODO: (Luka) add pagination
     let theLimit = this.indexerServerPageLimit;
-    let query = this.manager.createQueryBuilder(this.blockTable, 'block').orderBy('block.block_number', 'ASC');
+    let query = this.manager
+      .createQueryBuilder(this.blockTable, 'block')
+      .orderBy('block.block_number', 'ASC');
     const count = await query.getCount();
     theLimit = Math.min(theLimit, count);
 
@@ -139,9 +143,11 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     }
     if (to !== undefined) {
       if (from === undefined) {
-        query = query.andWhere('block.block_number <= :to', { to }).take(theLimit);
+        query = query
+          .andWhere('block.block_number <= :to', { to })
+          .take(theLimit);
       } else {
-        const tempTo = Math.min(to, from + theLimit - 1)
+        const tempTo = Math.min(to, from + theLimit - 1);
         theLimit = tempTo - from + 1;
         query = query.andWhere('block.block_number <= :tempTo', { tempTo });
       }
@@ -154,7 +160,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
       return res.toApiDBBlock();
     });
 
-    return new PaginatedList(items, count, theLimit, 0);
+    return new PaginatedList(items, theLimit, 0);
   }
 
   /**
@@ -171,7 +177,6 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
       return res.toApiDBBlock();
     }
     throw new Error('Block not found');
-
   }
 
   /**
@@ -218,13 +223,12 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     if (returnResponse) {
       query = this.joinTransactionQuery(query);
     }
-    const count = await query.getCount();
     const results = await query.getMany();
     const items = results.map((res) => {
       return res.toApiDBTransaction(this.chainType, returnResponse);
     });
 
-    return new PaginatedList(items, count, theLimit, theOffset);
+    return new PaginatedList(items, theLimit, theOffset);
   }
 
   /**
@@ -232,9 +236,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
    * @param txHash
    * @returns
    */
-  public async getTransaction(
-    txHash: string,
-  ): Promise<ApiDBTransaction> {
+  public async getTransaction(txHash: string): Promise<ApiDBTransaction> {
     const query = this.joinTransactionQuery(
       this.manager
         .createQueryBuilder(this.transactionTable, 'transaction')

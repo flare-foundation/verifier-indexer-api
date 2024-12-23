@@ -82,10 +82,13 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
 
   public async listBlock({
     from,
-    to
+    to,
   }: QueryBlock): Promise<PaginatedList<ApiDBBlock>> {
+    // TODO: (Luka) add pagination
     let theLimit = this.indexerServerPageLimit;
-    let query = this.manager.createQueryBuilder(this.blockTable, 'block').orderBy('block.block_number', 'ASC');
+    let query = this.manager
+      .createQueryBuilder(this.blockTable, 'block')
+      .orderBy('block.block_number', 'ASC');
     const count = await query.getCount();
     theLimit = Math.min(theLimit, count);
 
@@ -98,9 +101,11 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     }
     if (to !== undefined) {
       if (from === undefined) {
-        query = query.andWhere('block.block_number <= :to', { to }).take(theLimit);
+        query = query
+          .andWhere('block.block_number <= :to', { to })
+          .take(theLimit);
       } else {
-        const tempTo = Math.min(to, from + theLimit - 1)
+        const tempTo = Math.min(to, from + theLimit - 1);
         theLimit = tempTo - from + 1;
         query = query.andWhere('block.block_number <= :tempTo', { tempTo });
       }
@@ -113,7 +118,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
       return res.toApiDBBlock();
     });
 
-    return new PaginatedList(items, count, theLimit, 0);
+    return new PaginatedList(items, theLimit, 0);
   }
 
   public async getBlock(blockHash: string): Promise<ApiDBBlock> {
@@ -166,18 +171,15 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
       .limit(theLimit)
       .offset(theOffset);
 
-    const count = await query.getCount();
     const results = await query.getMany();
     const items = results.map((res) => {
       return res.toApiDBTransaction(returnResponse);
     });
 
-    return new PaginatedList(items, count, theLimit, theOffset);
+    return new PaginatedList(items, theLimit, theOffset);
   }
 
-  public async getTransaction(
-    txHash: string,
-  ): Promise<ApiDBTransaction> {
+  public async getTransaction(txHash: string): Promise<ApiDBTransaction> {
     const query = this.manager
       .createQueryBuilder(this.transactionTable, 'transaction')
       .andWhere('transaction.hash = :txHash', { txHash });
@@ -187,7 +189,6 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     }
     throw new Error('Transaction not found');
   }
-
 
   public async getTransactionBlock(txHash: string): Promise<ApiDBBlock | null> {
     const tx = await this.getTransaction(txHash);
