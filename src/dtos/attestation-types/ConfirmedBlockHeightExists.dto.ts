@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../generic/generic.dto';
+import { transformHash32 } from '../dto-transform-utils';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -111,7 +112,7 @@ export class ConfirmedBlockHeightExists_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value.toLowerCase()).toLowerCase())
+  @Transform(transformHash32)
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -123,7 +124,7 @@ export class ConfirmedBlockHeightExists_Request {
    * ID of the data source.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value.toLowerCase()).toLowerCase())
+  @Transform(transformHash32)
   @ApiProperty({
     description: `ID of the data source.`,
     example:
@@ -154,7 +155,7 @@ export class ConfirmedBlockHeightExists_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value.toLowerCase()).toLowerCase())
+  @Transform(transformHash32)
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -166,7 +167,7 @@ export class ConfirmedBlockHeightExists_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
-  @Transform(({ value }) => prefix0x(value.toLowerCase()).toLowerCase())
+  @Transform(transformHash32)
   @ApiProperty({
     description: `Extracted from the request.`,
     example:

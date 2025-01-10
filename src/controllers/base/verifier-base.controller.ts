@@ -1,13 +1,12 @@
 import {
   Body,
   HttpCode,
-  Logger,
   Post,
   Type,
   UseGuards,
-  UsePipes,
+  UsePipes
 } from '@nestjs/common';
-import { ApiOperation, ApiSecurity, ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiSecurity } from '@nestjs/swagger';
 
 import { ApiKeyAuthGuard } from '../../auth/apikey.guard';
 import {
@@ -15,7 +14,6 @@ import {
   AttestationTypeBase_Response,
 } from '../../dtos/attestation-types/AttestationTypeBase.dto';
 import { AbstractValidationPipe } from '../../dtos/dto-validation-pipelines';
-import { BaseVerifierService } from '../../services/common/verifier-base.service';
 import {
   AttestationResponse,
   AttestationResponseVerificationEncoded,
@@ -23,6 +21,7 @@ import {
   EncodedRequestResponse,
   MicResponse,
 } from '../../dtos/generic/generic.dto';
+import { BaseVerifierService } from '../../services/common/verifier-base.service';
 
 
 export function BaseControllerFactory<
@@ -30,7 +29,7 @@ export function BaseControllerFactory<
   Res extends AttestationTypeBase_Response,
 >(
   requestDto: Type<Req>,
-  responseDto: Type<Res>,
+  _responseDto: Type<Res>,
 ): Type<IBaseVerifierController<Req, Res>> {
   const requestDtoPipe = new AbstractValidationPipe(
     {

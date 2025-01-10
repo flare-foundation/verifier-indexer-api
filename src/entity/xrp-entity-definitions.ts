@@ -1,13 +1,13 @@
 // External Postgres Database Entities (XRP) (read only)
 
 import { ChainType, IXrpGetTransactionRes } from '@flarenetwork/mcc';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ApiDBBlock } from '../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBTransaction } from '../dtos/indexer/ApiDbTransaction.dto';
 import {
   BlockResult,
   TransactionResult,
 } from '../indexed-query-manager/indexed-query-manager-types';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ApiDBVersion, IndexerVersion } from '../dtos/indexer/ApiDbVersion.dto';
 
 @Entity('blocks')

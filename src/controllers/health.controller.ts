@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ApiDBState } from '../dtos/indexer/ApiDbState.dto';
 import { IIndexerEngineService } from '../services/common/base-indexer-engine-service';
 import {

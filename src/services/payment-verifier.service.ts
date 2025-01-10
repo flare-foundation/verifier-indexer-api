@@ -7,13 +7,13 @@ import {
 } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EntityManager } from 'typeorm';
 import { IConfig } from '../config/configuration';
 import {
   AttestationResponseDTO_Payment_Response,
   Payment_Request,
   Payment_Response,
 } from '../dtos/attestation-types/Payment.dto';
-import { AttestationResponse } from '../dtos/generic/generic.dto';
 import { serializeBigInts } from '../external-libs/utils';
 import {
   BtcIndexerQueryManager,
@@ -22,7 +22,6 @@ import {
 import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
 import { getAttestationStatus } from '../verification/attestation-types/attestation-types';
 import { verifyPayment } from '../verification/generic-chain-verifications';
-import { EntityManager } from 'typeorm';
 import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,

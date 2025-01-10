@@ -14,7 +14,6 @@ import {
   ReferencedPaymentNonexistence_Request,
   ReferencedPaymentNonexistence_Response,
 } from '../dtos/attestation-types/ReferencedPaymentNonexistence.dto';
-import { AttestationResponse } from '../dtos/generic/generic.dto';
 import { serializeBigInts } from '../external-libs/utils';
 import {
   BtcIndexerQueryManager,

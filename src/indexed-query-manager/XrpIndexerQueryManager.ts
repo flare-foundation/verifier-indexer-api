@@ -17,11 +17,6 @@ import {
   TransactionQueryResult,
 } from './indexed-query-manager-types';
 
-type XrpStateTypes =
-  | 'first_database_block'
-  | 'last_database_block'
-  | 'last_chain_block';
-
 /**
  * Class for Verifier server implementation (FDC)
  */

@@ -1,13 +1,13 @@
 import { ChainType } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EntityManager } from 'typeorm';
 import { IConfig } from '../config/configuration';
 import {
   AttestationResponseDTO_ConfirmedBlockHeightExists_Response,
   ConfirmedBlockHeightExists_Request,
   ConfirmedBlockHeightExists_Response,
 } from '../dtos/attestation-types/ConfirmedBlockHeightExists.dto';
-import { AttestationResponse } from '../dtos/generic/generic.dto';
 import { serializeBigInts } from '../external-libs/utils';
 import {
   BtcIndexerQueryManager,
@@ -16,7 +16,6 @@ import {
 import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
 import { getAttestationStatus } from '../verification/attestation-types/attestation-types';
 import { verifyConfirmedBlockHeightExists } from '../verification/generic-chain-verifications';
-import { EntityManager } from 'typeorm';
 import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,
