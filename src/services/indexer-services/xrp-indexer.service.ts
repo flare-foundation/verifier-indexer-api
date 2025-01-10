@@ -18,6 +18,7 @@ import {
 } from '../../entity/xrp-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
+import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
 
 @Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {
@@ -65,6 +66,11 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
       },
     };
     return response;
+  }
+
+  public getIndexerServiceVersion(): Promise<ApiDBVersion> {
+    // TODO: (Luka) implement
+    throw new Error('Method not implemented.');
   }
 
   public async confirmedBlockAt(

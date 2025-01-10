@@ -1,3 +1,4 @@
+import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
 import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
@@ -8,6 +9,8 @@ import { PaginatedList } from '../../utils/api-models/PaginatedList';
 
 export abstract class IIndexerEngineService {
   public abstract getStateSetting(): Promise<ApiDBState | null>;
+
+  public abstract getIndexerServiceVersion(): Promise<ApiDBVersion>
 
   /**
    * Gets the range of available confirmed blocks in the indexer database.

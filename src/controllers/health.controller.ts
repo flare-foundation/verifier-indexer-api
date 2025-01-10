@@ -12,6 +12,7 @@ import {
   handleApiResponse,
 } from '../utils/api-models/ApiResponse';
 import { ApiResponseWrapperDec } from '../utils/open-api-utils';
+import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
 
 abstract class BaseHealthController {
   protected abstract indexerEngine: IIndexerEngineService;
@@ -25,6 +26,17 @@ abstract class BaseHealthController {
   public async indexerState(): Promise<ApiResponseWrapper<ApiDBState>> {
     return handleApiResponse(this.indexerEngine.getStateSetting());
   }
+
+  /**
+   * Gets the version of the indexer service.
+   * @returns
+   */
+  @Get('version')
+  @ApiResponseWrapperDec(ApiDBVersion, false)
+  public async indexerVersion(): Promise<ApiResponseWrapper<ApiDBVersion>> {
+    return handleApiResponse(this.indexerEngine.getIndexerServiceVersion());
+  }
+
 }
 
 @ApiTags('Health')

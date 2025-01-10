@@ -16,6 +16,8 @@ import {
   DBUtxoTransaction,
   IDBUtxoIndexerBlock,
   IDBUtxoTransaction,
+  IIndexerVersionState,
+  IndexerVersionState,
   IPruneSyncState,
   ITipSyncState,
   PruneSyncState,
@@ -23,6 +25,7 @@ import {
 } from '../../entity/utxo-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
+import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
 
 abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
@@ -30,6 +33,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   private blockTable: IDBUtxoIndexerBlock;
   private tipState: ITipSyncState;
   private pruneState: IPruneSyncState;
+  private versionTable: IIndexerVersionState;
 
   private indexerServerPageLimit: number;
 
@@ -44,6 +48,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     this.transactionTable = DBUtxoTransaction;
     this.tipState = TipSyncState;
     this.pruneState = PruneSyncState;
+    this.versionTable = IndexerVersionState;
     const verifierConfig =
       this.configService.get<VerifierServerConfig>('verifierConfig');
     this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;
@@ -101,6 +106,21 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
       },
     };
     return state;
+  }
+
+  /**
+   * Gets the version of the indexer service.
+   */
+  public async getIndexerServiceVersion(): Promise<ApiDBVersion> {
+    const queryVersion = this.manager.createQueryBuilder(
+      this.versionTable,
+      'version',
+    );
+    const resVersion = await queryVersion.getOne();
+    if (!resVersion) {
+      throw new Error('No tip state found in the indexer database');
+    }
+    return resVersion.toApiDBVersion();
   }
 
   /**
