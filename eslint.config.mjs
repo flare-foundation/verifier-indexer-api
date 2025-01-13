@@ -2,54 +2,57 @@
 
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import prettier from 'eslint-config-prettier';
-// TODO add   prettier.rules.recommended,
 
 export default tseslint.config(
   eslint.configs.recommended,
+  // linting with type information
   tseslint.configs.recommendedTypeChecked,
+  // tells parser how to find the tsconfig
   {
     languageOptions: {
-        parserOptions: {
-          projectService: true,
-          tsconfigRootDir: import.meta.dirname,
-        },
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
-//     rules: {
-//       '@typescript-eslint/interface-name-prefix': 'off',
-//       '@typescript-eslint/explicit-function-return-type': 'off',
-//       '@typescript-eslint/explicit-module-boundary-types': 'off',
-//       '@typescript-eslint/no-explicit-any': 'off',
-//   }
-}
-
+    },
+  },
+  {
+    // add aditional rules here
+    rules: {
+      // Disables the rule that prefers the namespace keyword over the module keyword for declaring TypeScript namespaces.
+      '@typescript-eslint/prefer-namespace-keyword': 'off',
+      // Disables the rule that disallows the use of custom TypeScript namespaces.
+      '@typescript-eslint/no-namespace': 'off',
+      // Allow explicit type declarations for variables or parameters initialized to a number, string, or boolean.
+      '@typescript-eslint/no-inferrable-types': 'off',
+      // Allow any type.
+      '@typescript-eslint/no-explicit-any': 'error',
+      // Warns about unused variables, but ignores variables that start with an underscore (^_) and arguments that match any pattern (.).
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '.',
+        },
+      ],
+      // Require for-in loops to include an if statement that checks hasOwnProperty.
+      'guard-for-in': 'warn',
+      // Errors when a case in a switch statement falls through to the next case without a break statement or other termination.
+      'no-fallthrough': 'error',
+    },
+  },
+  // Override rules for specific files
+  // {
+  //   files: ['test/**/*.ts'],
+  //   rules: {
+  //     // Disables the rule that disallows constant expressions in conditions (e.g., if (true)).
+  //     'no-constant-condition': 'off',
+  //     // Disables the rule that disallows non-null assertions using the ! postfix operator.
+  //     '@typescript-eslint/no-non-null-assertion': 'off',
+  //     // Disables the rule that disallows unused variables.
+  //     '@typescript-eslint/no-unused-vars': 'off',
+  //     // Disables the rule that disallows unused expressions.
+  //     '@typescript-eslint/no-unused-expressions': 'off',
+  //   },
+  // },
 );
-
-// export default tseslint.config(
-//     // languageOptions: {
-//     //     parser: '@typescript-eslint/parser',
-//     //     parserOptions: {
-//     //         project: 'tsconfig.json',
-//     //         tsconfigRootDir: import.meta.dirname,
-//     //         sourceType: 'module',
-//     //       },
-//     // },
-//     plugins: ['@typescript-eslint/eslint-plugin'],
-//     extends: [
-//       'plugin:@typescript-eslint/recommended',
-//       'plugin:prettier/recommended',
-//     ],
-//     root: true,
-//     env: {
-//       node: true,
-//       jest: true,
-//     },
-//     ignorePatterns: ['.eslintrc.js'],
-//     rules: {
-//       '@typescript-eslint/interface-name-prefix': 'off',
-//       '@typescript-eslint/explicit-function-return-type': 'off',
-//       '@typescript-eslint/explicit-module-boundary-types': 'off',
-//       '@typescript-eslint/no-explicit-any': 'off',
-//     },
-// );
-  
