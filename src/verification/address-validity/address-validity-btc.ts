@@ -115,14 +115,12 @@ function polyMod(values: string | any[]) {
   return chk;
 }
 
-export function hrpExpand(hrp: hrp) {
-  const ret = [];
-  let p;
+export function hrpExpand(hrp: hrp): number[] {
+  const ret: number[] = [];
+  let p: number;
   for (p = 0; p < hrp.length; ++p) {
     const a = hrp.charCodeAt(p) >> 5;
-    console.log(typeof a);
-    console.log(a);
-    ret.push(hrp.charCodeAt(p) >> 5);
+    ret.push(a);
   }
   ret.push(0);
   for (p = 0; p < hrp.length; ++p) {
