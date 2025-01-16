@@ -12,6 +12,7 @@ import {
 } from '../entity/utxo-entity-definitions';
 import {
   DBXrpIndexerBlock,
+  DBXrpIndexerVersion,
   DBXrpState,
   DBXrpTransaction,
 } from '../entity/xrp-entity-definitions';
@@ -146,7 +147,12 @@ function getDatabaseEntities(verifierType: ChainType) {
         IndexerVersionState,
       ];
     case ChainType.XRP:
-      return [DBXrpIndexerBlock, DBXrpTransaction, DBXrpState];
+      return [
+        DBXrpIndexerBlock,
+        DBXrpTransaction,
+        DBXrpState,
+        DBXrpIndexerVersion,
+      ];
     default:
       throw new Error(`Unsupported verifier type: ${verifierType}`);
   }

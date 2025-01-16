@@ -10,9 +10,11 @@ import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
 import {
   DBXrpIndexerBlock,
+  DBXrpIndexerVersion,
   DBXrpState,
   DBXrpTransaction,
   IDBXrpIndexerBlock,
+  IDBXrpIndexerVersion,
   IDBXrpState,
   IDBXrpTransaction,
 } from '../../entity/xrp-entity-definitions';
@@ -26,6 +28,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
   private transactionTable: IDBXrpTransaction;
   private blockTable: IDBXrpIndexerBlock;
   private tipState: IDBXrpState;
+  private versionTable: IDBXrpIndexerVersion;
 
   private indexerServerPageLimit: number;
 
@@ -37,6 +40,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     this.transactionTable = DBXrpTransaction;
     this.blockTable = DBXrpIndexerBlock;
     this.tipState = DBXrpState;
+    this.versionTable = DBXrpIndexerVersion;
     const verifierConfig =
       this.configService.get<VerifierServerConfig>('verifierConfig');
     this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;
@@ -68,9 +72,16 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     return response;
   }
 
-  public getIndexerServiceVersion(): Promise<ApiDBVersion> {
-    // TODO: (Luka) implement
-    throw new Error('Method not implemented.');
+  public async getIndexerServiceVersion(): Promise<ApiDBVersion> {
+    const queryVersion = this.manager.createQueryBuilder(
+      this.versionTable,
+      'version',
+    );
+    const resVersion = await queryVersion.getOne();
+    if (!resVersion) {
+      throw new Error('No versions state found in the indexer database');
+    }
+    return resVersion.toApiDBVersion();
   }
 
   public async confirmedBlockAt(

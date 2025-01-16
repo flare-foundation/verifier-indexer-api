@@ -118,7 +118,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     );
     const resVersion = await queryVersion.getOne();
     if (!resVersion) {
-      throw new Error('No tip state found in the indexer database');
+      throw new Error('No versions state found in the indexer database');
     }
     return resVersion.toApiDBVersion();
   }
