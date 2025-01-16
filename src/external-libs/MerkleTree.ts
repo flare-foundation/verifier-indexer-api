@@ -52,7 +52,7 @@ export function commitHash(
       ['bytes32', 'bytes32', 'address'],
       [merkleRoot, randomNumber, address],
     ),
-  )!;
+  );
 }
 
 /**

@@ -14,6 +14,7 @@ import {
 import { ApiResponseWrapperDec } from '../utils/open-api-utils';
 import { ApiDBVersion } from '../dtos/indexer/ApiDbVersion.dto';
 
+
 abstract class BaseHealthController {
   protected abstract indexerEngine: IIndexerEngineService;
 

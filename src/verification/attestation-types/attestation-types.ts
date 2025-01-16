@@ -80,7 +80,7 @@ export function getSummarizedVerificationStatus(
       return SummarizedVerificationStatus.invalid;
   }
   // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   ((_: never): void => { })(status);
 }
 
@@ -106,7 +106,7 @@ export function getAttestationStatus(
       return AttestationResponseStatus.INVALID;
   }
   // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   ((_: never): void => { })(status);
 }
 

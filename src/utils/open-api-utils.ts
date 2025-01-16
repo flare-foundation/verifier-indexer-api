@@ -1,9 +1,5 @@
 import { applyDecorators, Type } from '@nestjs/common';
-import {
-  ApiExtraModels,
-  ApiOkResponse,
-  getSchemaPath
-} from '@nestjs/swagger';
+import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
 import { ApiResponseWrapper } from './api-models/ApiResponse';
 import { PaginatedList } from './api-models/PaginatedList';
 
@@ -12,7 +8,7 @@ import { PaginatedList } from './api-models/PaginatedList';
  * @param model
  * @returns
  */
-function arrayResults<TModel extends Type<any>>(model: TModel) {
+function arrayResults<TModel extends Type>(model: TModel) {
   return {
     properties: {
       data: {
@@ -28,7 +24,7 @@ function arrayResults<TModel extends Type<any>>(model: TModel) {
  * @param model
  * @returns
  */
-function flatResults<TModel extends Type<any>>(model: TModel) {
+function flatResults<TModel extends Type>(model: TModel) {
   return {
     properties: {
       data: { $ref: getSchemaPath(model) },
@@ -42,7 +38,7 @@ function flatResults<TModel extends Type<any>>(model: TModel) {
  * @param isArray
  * @returns
  */
-export function ApiResponseWrapperDec<TModel extends Type<any>>(
+export function ApiResponseWrapperDec<TModel extends Type>(
   model: TModel,
   isArray: boolean = false,
 ) {
@@ -66,7 +62,7 @@ export function ApiResponseWrapperDec<TModel extends Type<any>>(
  * @param isArray
  * @returns
  */
-export function ApiResponseWrapperPaginated<TModel extends Type<any>>(
+export function ApiResponseWrapperPaginated<TModel extends Type>(
   model: TModel,
 ) {
   return applyDecorators(
@@ -99,43 +95,3 @@ export function ApiResponseWrapperPaginated<TModel extends Type<any>>(
     ApiExtraModels(ApiResponseWrapper),
   );
 }
-
-// /**
-//  *
-//  * @param models
-//  * @returns
-//  */
-// export function ApiPropertyUnion<TTypeArray extends Array<Type<any>>>(
-//   models: TTypeArray,
-// ) {
-//   return applyDecorators(
-//     ApiProperty({
-//       oneOf: models.map((model) => {
-//         return {
-//           $ref: getSchemaPath(model),
-//         };
-//       }),
-//     }),
-//   );
-// }
-
-// /**
-//  * Decorator for Union type generic responses.
-//  * @param models
-//  * @returns
-//  */
-// export function ApiBodyUnion<TTypeArray extends Array<Type<any>>>(
-//   models: TTypeArray,
-// ) {
-//   return applyDecorators(
-//     ApiBody({
-//       schema: {
-//         oneOf: models.map((model) => {
-//           return {
-//             $ref: getSchemaPath(model),
-//           };
-//         }),
-//       },
-//     }),
-//   );
-// }

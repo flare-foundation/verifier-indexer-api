@@ -66,7 +66,7 @@ export class XRPAddressValidityVerifierService extends BaseAddressValidityVerifi
 
   verifyAddress(
     address: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     testnet: boolean,
   ): VerificationResponse<AddressValidity_ResponseBody> {
     return verifyAddressXRP(address);

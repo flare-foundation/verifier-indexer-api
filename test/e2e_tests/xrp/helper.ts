@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
-import { XRPVerifierServerModule } from '../../src/verifier-modules/xrp-verifier-server.module';
+import { XRPVerifierServerModule } from '../../../src/verifier-modules/xrp-verifier-server.module';
 
 export let app: INestApplication;
 

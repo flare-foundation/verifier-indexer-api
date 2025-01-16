@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
-import { DogeVerifierServerModule } from '../../src/verifier-modules/doge-verifier-server.module';
+import { DogeVerifierServerModule } from '../../../src/verifier-modules/doge-verifier-server.module';
 
 export let app: INestApplication;
 

@@ -2,6 +2,7 @@ import { unPrefix0x } from '@flarenetwork/mcc';
 import { Transform, Type } from 'class-transformer';
 import { IsInt, IsOptional, Validate } from 'class-validator';
 import { IsHash32 } from '../dto-validators';
+import { transformUnprefix0x } from '../dto-transform-utils';
 
 /**
  * Query parameters for listing transactions from indexer database.
@@ -57,6 +58,6 @@ export class QueryTransactionDetail {
    */
 
   @Validate(IsHash32)
-  @Transform(({ value }) => unPrefix0x(value))
+  @Transform(transformUnprefix0x)
   txHash: string;
 }

@@ -184,7 +184,7 @@ export abstract class BaseVerifierService<
       messageIntegrityCode: this.store.attestationResponseHash<Res>(
         response,
         MIC_SALT,
-      )!,
+      ),
     };
 
     return new EncodedRequestResponse({

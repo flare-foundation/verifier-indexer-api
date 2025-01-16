@@ -157,7 +157,7 @@ export function remapABIParsedToObjects(
 ): any {
   if (abi.type == 'tuple' || (abi.type == 'tuple[]' && ignoreArray)) {
     const result: any = {};
-    for (const [index, item] of abi.components!.entries()) {
+    for (const [index, item] of abi.components.entries()) {
       const key = item.name;
       result[key] = remapABIParsedToObjects(decoded[index], item);
     }
@@ -311,7 +311,7 @@ export function serializeBigInts<T>(obj: T): T {
  */
 export function findPackageRoot(moduleDir: string) {
   let dir = path.resolve(moduleDir);
-  // eslint-disable-next-line no-constant-condition
+   
   while (true) {
     const packageJson = path.resolve(dir, 'package.json');
     const hasPackageJson =

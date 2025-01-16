@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
-import { BtcVerifierServerModule } from '../../src/verifier-modules/btc-verifier-server.module';
+import { BtcVerifierServerModule } from '../../../src/verifier-modules/btc-verifier-server.module';
 
 export let app: INestApplication;
 
