@@ -6,15 +6,15 @@ import { XRPVerifierServerModule } from '../../../src/verifier-modules/xrp-verif
 export let app: INestApplication;
 
 before(async () => {
-    app = await NestFactory.create(XRPVerifierServerModule);
+  app = await NestFactory.create(XRPVerifierServerModule);
 
-    app.use(helmet());
-    app.useGlobalPipes(new ValidationPipe({ transform: true }));
-    app.enableCors();
+  app.use(helmet());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.enableCors();
 
-    await app.listen(3120, '0.0.0.0');
-})
+  await app.listen(3120, '0.0.0.0');
+});
 
 after(async () => {
-    await app.close();
-})
+  await app.close();
+});

@@ -15,9 +15,9 @@ import { BaseControllerFactory } from './base/verifier-base.controller';
 @ApiTags('BalanceDecreasingTransaction')
 @Controller('BalanceDecreasingTransaction')
 export class DOGEBalanceDecreasingTransactionVerifierController extends BaseControllerFactory<
-BalanceDecreasingTransaction_Request,
-BalanceDecreasingTransaction_Response
->(BalanceDecreasingTransaction_Request, BalanceDecreasingTransaction_Response){
+  BalanceDecreasingTransaction_Request,
+  BalanceDecreasingTransaction_Response
+>(BalanceDecreasingTransaction_Request, BalanceDecreasingTransaction_Response) {
   constructor(
     public readonly verifierService: DOGEBalanceDecreasingTransactionVerifierService,
   ) {
@@ -28,9 +28,9 @@ BalanceDecreasingTransaction_Response
 @ApiTags('BalanceDecreasingTransaction')
 @Controller('BalanceDecreasingTransaction')
 export class BTCBalanceDecreasingTransactionVerifierController extends BaseControllerFactory<
-BalanceDecreasingTransaction_Request,
-BalanceDecreasingTransaction_Response
->(BalanceDecreasingTransaction_Request, BalanceDecreasingTransaction_Response){
+  BalanceDecreasingTransaction_Request,
+  BalanceDecreasingTransaction_Response
+>(BalanceDecreasingTransaction_Request, BalanceDecreasingTransaction_Response) {
   constructor(
     public readonly verifierService: BTCBalanceDecreasingTransactionVerifierService,
   ) {
@@ -41,9 +41,9 @@ BalanceDecreasingTransaction_Response
 @ApiTags('BalanceDecreasingTransaction')
 @Controller('BalanceDecreasingTransaction')
 export class XRPBalanceDecreasingTransactionVerifierController extends BaseControllerFactory<
-BalanceDecreasingTransaction_Request,
-BalanceDecreasingTransaction_Response
->(BalanceDecreasingTransaction_Request, BalanceDecreasingTransaction_Response){
+  BalanceDecreasingTransaction_Request,
+  BalanceDecreasingTransaction_Response
+>(BalanceDecreasingTransaction_Request, BalanceDecreasingTransaction_Response) {
   constructor(
     public readonly verifierService: XRPBalanceDecreasingTransactionVerifierService,
   ) {

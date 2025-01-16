@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-
 export enum ApiResStatusEnum {
   OK = 'OK',
   ERROR = 'ERROR',

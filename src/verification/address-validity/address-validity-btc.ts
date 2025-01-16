@@ -121,7 +121,7 @@ export function hrpExpand(hrp: hrp) {
   for (p = 0; p < hrp.length; ++p) {
     const a = hrp.charCodeAt(p) >> 5;
     console.log(typeof a);
-    console.log(a); 
+    console.log(a);
     ret.push(hrp.charCodeAt(p) >> 5);
   }
   ret.push(0);

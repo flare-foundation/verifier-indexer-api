@@ -1,6 +1,9 @@
 import { ZERO_BYTES_32 } from '@flarenetwork/mcc';
 import { ethers } from 'ethers';
-import { AttestationTypeBase_Request, AttestationTypeBase_Response } from '../dtos/attestation-types/AttestationTypeBase.dto';
+import {
+  AttestationTypeBase_Request,
+  AttestationTypeBase_Response,
+} from '../dtos/attestation-types/AttestationTypeBase.dto';
 import { TypeRecord } from './config-types';
 import {
   ABIFragment,

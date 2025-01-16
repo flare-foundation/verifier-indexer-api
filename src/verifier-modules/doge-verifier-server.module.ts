@@ -18,7 +18,7 @@ import { DOGEConfirmedBlockHeightExistsVerifierService } from '../services/confi
 import { DogeExternalIndexerEngineService } from '../services/indexer-services/utxo-indexer.service';
 import { DOGEPaymentVerifierService } from '../services/payment-verifier.service';
 import { DOGEReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
-import { LoggerMiddleware } from '../middlware/LoggerMiddlwar';
+import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 
 @Module({
   imports: [

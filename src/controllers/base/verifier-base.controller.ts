@@ -4,7 +4,7 @@ import {
   Post,
   Type,
   UseGuards,
-  UsePipes
+  UsePipes,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiSecurity } from '@nestjs/swagger';
 
@@ -23,7 +23,6 @@ import {
 } from '../../dtos/generic/generic.dto';
 import { BaseVerifierService } from '../../services/common/verifier-base.service';
 
-
 export function BaseControllerFactory<
   Req extends AttestationTypeBase_Request,
   Res extends AttestationTypeBase_Response,
@@ -38,7 +37,6 @@ export function BaseControllerFactory<
     },
     { body: requestDto },
   );
-
 
   @UseGuards(ApiKeyAuthGuard)
   @ApiSecurity('X-API-KEY')

@@ -18,7 +18,7 @@ import { XRPConfirmedBlockHeightExistsVerifierService } from '../services/confir
 import { XrpExternalIndexerEngineService } from '../services/indexer-services/xrp-indexer.service';
 import { XRPPaymentVerifierService } from '../services/payment-verifier.service';
 import { XRPReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
-import { LoggerMiddleware } from '../middlware/LoggerMiddlwar';
+import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 
 @Module({
   imports: [

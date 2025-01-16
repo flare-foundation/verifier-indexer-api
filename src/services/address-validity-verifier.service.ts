@@ -8,9 +8,7 @@ import {
   AddressValidity_ResponseBody,
   AttestationResponseDTO_AddressValidity_Response,
 } from '../dtos/attestation-types/AddressValidity.dto';
-import {
-  AttestationResponseStatus
-} from '../dtos/generic/generic.dto';
+import { AttestationResponseStatus } from '../dtos/generic/generic.dto';
 import { serializeBigInts } from '../external-libs/utils';
 import { verifyAddressBTC } from '../verification/address-validity/address-validity-btc';
 import { verifyAddressDOGE } from '../verification/address-validity/address-validity-doge';
@@ -66,7 +64,7 @@ export class XRPAddressValidityVerifierService extends BaseAddressValidityVerifi
 
   verifyAddress(
     address: string,
-     
+
     testnet: boolean,
   ): VerificationResponse<AddressValidity_ResponseBody> {
     return verifyAddressXRP(address);

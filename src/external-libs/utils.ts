@@ -282,9 +282,7 @@ export function readAttestationTypeConfigs(
     const name = path.basename(fileName, '.json');
     typeRecMap.set(
       name,
-      JSON.parse(
-        readFileSync(`${configsPath}/${fileName}`, 'utf8'),
-      ),
+      JSON.parse(readFileSync(`${configsPath}/${fileName}`, 'utf8')),
     );
   });
   return typeRecMap;
@@ -311,7 +309,7 @@ export function serializeBigInts<T>(obj: T): T {
  */
 export function findPackageRoot(moduleDir: string) {
   let dir = path.resolve(moduleDir);
-   
+
   while (true) {
     const packageJson = path.resolve(dir, 'package.json');
     const hasPackageJson =

@@ -33,5 +33,3 @@ export class ApiDBState {
    */
   chain_tip_block: BdStateUnit;
 }
-
-

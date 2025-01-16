@@ -38,8 +38,7 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
   }
 
   private async _getStateObject(): Promise<DBXrpState> {
-    const query = this.entityManager
-      .createQueryBuilder(this.tipState, 'state')
+    const query = this.entityManager.createQueryBuilder(this.tipState, 'state');
     return query.getOne();
   }
 

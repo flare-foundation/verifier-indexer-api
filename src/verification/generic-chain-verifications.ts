@@ -48,11 +48,13 @@ import {
  * @param obj
  * @returns
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function serializeBigInts(obj: any) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return JSON.parse(
     JSON.stringify(
       obj,
-      (key, value) => (typeof value === 'bigint' ? value.toString() : value), // return everything else unchanged
+      (_key, value) => (typeof value === 'bigint' ? value.toString() : value), // return everything else unchanged
     ),
   );
 }
@@ -79,7 +81,8 @@ export function responsePayment<T extends TransactionBase<any>>(
   } catch (error) {
     console.error(
       error,
-      `responsePayment '${dbTransaction.transactionId
+      `responsePayment '${
+        dbTransaction.transactionId
       }' JSON parse '${dbTransaction.getResponse()}'`,
     );
     return { status: VerificationStatus.SYSTEM_FAILURE };
@@ -128,12 +131,16 @@ export function responsePayment<T extends TransactionBase<any>>(
     responseBody: new Payment_ResponseBody({
       blockNumber: dbTransaction.blockNumber.toString(),
       blockTimestamp: dbTransaction.timestamp.toString(),
-      sourceAddressHash: paymentSummary.response.sourceAddressHash.toLowerCase(),
-      sourceAddressesRoot: paymentSummary.response.sourceAddressesRoot.toLowerCase(),
-      receivingAddressHash: paymentSummary.response.receivingAddressHash.toLowerCase(),
+      sourceAddressHash:
+        paymentSummary.response.sourceAddressHash.toLowerCase(),
+      sourceAddressesRoot:
+        paymentSummary.response.sourceAddressesRoot.toLowerCase(),
+      receivingAddressHash:
+        paymentSummary.response.receivingAddressHash.toLowerCase(),
       intendedReceivingAddressHash:
         paymentSummary.response.intendedReceivingAddressHash.toLowerCase(),
-      standardPaymentReference: paymentSummary.response.paymentReference.toLowerCase(),
+      standardPaymentReference:
+        paymentSummary.response.paymentReference.toLowerCase(),
       spentAmount: paymentSummary.response.spentAmount.toString(),
       intendedSpentAmount:
         paymentSummary.response.intendedSourceAmount.toString(),
@@ -205,7 +212,8 @@ export async function responseBalanceDecreasingTransaction<
     // TODO: add logger
     console.error(
       error,
-      `responseBalanceDecreasingTransaction '${dbTransaction.transactionId
+      `responseBalanceDecreasingTransaction '${
+        dbTransaction.transactionId
       }' JSON parse '${dbTransaction.getResponse()}'`,
     );
     return { status: VerificationStatus.SYSTEM_FAILURE };
@@ -237,7 +245,8 @@ export async function responseBalanceDecreasingTransaction<
     responseBody: new BalanceDecreasingTransaction_ResponseBody({
       blockNumber: dbTransaction.blockNumber.toString(),
       blockTimestamp: dbTransaction.timestamp.toString(),
-      sourceAddressHash: balanceDecreasingSummary.response.sourceAddressHash.toLowerCase(),
+      sourceAddressHash:
+        balanceDecreasingSummary.response.sourceAddressHash.toLowerCase(),
       spentAmount: balanceDecreasingSummary.response.spentAmount.toString(),
       standardPaymentReference:
         balanceDecreasingSummary.response.paymentReference.toLowerCase(),
@@ -350,7 +359,7 @@ export async function verifyConfirmedBlockHeightExists(
   const lowerQueryWindowBlock =
     await iqm.getLastConfirmedBlockStrictlyBeforeTime(
       dbBlock.timestamp -
-      parseInt(BigInt(request.requestBody.queryWindow).toString()),
+        parseInt(BigInt(request.requestBody.queryWindow).toString()),
     );
 
   if (!lowerQueryWindowBlock) {

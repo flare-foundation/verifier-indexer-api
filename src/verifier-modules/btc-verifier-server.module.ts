@@ -18,8 +18,7 @@ import { BTCConfirmedBlockHeightExistsVerifierService } from '../services/confir
 import { BtcExternalIndexerEngineService } from '../services/indexer-services/utxo-indexer.service';
 import { BTCPaymentVerifierService } from '../services/payment-verifier.service';
 import { BTCReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
-import { LoggerMiddleware } from '../middlware/LoggerMiddlwar';
-
+import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 
 @Module({
   imports: [

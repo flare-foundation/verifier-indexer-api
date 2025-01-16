@@ -255,7 +255,6 @@ export class DBTransactionOutput extends AbstractTransactionOutput {
   id: string;
 
   @ManyToOne(
-     
     (type) => DBUtxoTransaction,
     (transaction) => transaction.transactionoutput_set,
   )
@@ -269,7 +268,6 @@ export class DBTransactionInputCoinbase {
   id: string;
 
   @ManyToOne(
-     
     (type) => DBUtxoTransaction,
     (transaction) => transaction.transactionoutput_set,
   )
@@ -292,7 +290,6 @@ export class DBTransactionInput extends AbstractTransactionOutput {
   id: string;
 
   @ManyToOne(
-     
     (type) => DBUtxoTransaction,
     (transaction) => transaction.transactionoutput_set,
   )

@@ -9,16 +9,14 @@ import {
   DOGEAddressValidityVerifierService,
   XRPAddressValidityVerifierService,
 } from '../services/address-validity-verifier.service';
-import {
-  BaseControllerFactory,
-} from './base/verifier-base.controller';
+import { BaseControllerFactory } from './base/verifier-base.controller';
 
 @ApiTags('AddressValidity')
 @Controller('AddressValidity')
 export class DOGEAddressValidityVerifierController extends BaseControllerFactory<
-AddressValidity_Request,
-AddressValidity_Response
->(AddressValidity_Request, AddressValidity_Response){
+  AddressValidity_Request,
+  AddressValidity_Response
+>(AddressValidity_Request, AddressValidity_Response) {
   constructor(
     public readonly verifierService: DOGEAddressValidityVerifierService,
   ) {
@@ -29,8 +27,8 @@ AddressValidity_Response
 @ApiTags('AddressValidity')
 @Controller('AddressValidity')
 export class BTCAddressValidityVerifierController extends BaseControllerFactory<
-AddressValidity_Request,
-AddressValidity_Response
+  AddressValidity_Request,
+  AddressValidity_Response
 >(AddressValidity_Request, AddressValidity_Response) {
   constructor(
     public readonly verifierService: BTCAddressValidityVerifierService,

@@ -9,9 +9,7 @@ import {
   DOGEReferencedPaymentNonexistenceVerifierService,
   XRPReferencedPaymentNonexistenceVerifierService,
 } from '../services/referenced-payment-nonexistence-verifier.service';
-import {
-  BaseControllerFactory
-} from './base/verifier-base.controller';
+import { BaseControllerFactory } from './base/verifier-base.controller';
 
 @ApiTags('ReferencedPaymentNonexistence')
 @Controller('ReferencedPaymentNonexistence')

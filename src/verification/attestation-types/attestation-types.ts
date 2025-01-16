@@ -80,8 +80,8 @@ export function getSummarizedVerificationStatus(
       return SummarizedVerificationStatus.invalid;
   }
   // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-   
-  ((_: never): void => { })(status);
+
+  ((_: never): void => {})(status);
 }
 
 export function getAttestationStatus(
@@ -106,8 +106,8 @@ export function getAttestationStatus(
       return AttestationResponseStatus.INVALID;
   }
   // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-   
-  ((_: never): void => { })(status);
+
+  ((_: never): void => {})(status);
 }
 
 export interface WeightedRandomChoice<T> {

@@ -9,9 +9,7 @@ import {
   DOGEPaymentVerifierService,
   XRPPaymentVerifierService,
 } from '../services/payment-verifier.service';
-import {
-  BaseControllerFactory
-} from './base/verifier-base.controller';
+import { BaseControllerFactory } from './base/verifier-base.controller';
 
 @ApiTags('Payment')
 @Controller('Payment')
