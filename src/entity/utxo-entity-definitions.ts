@@ -60,7 +60,7 @@ export class DBUtxoIndexerBlock {
       timestamp: this.timestamp,
       transactions: this.transactions,
       confirmed: this.confirmed,
-      numberOfConfirmations: 0
+      numberOfConfirmations: 0,
     };
   }
 }
@@ -106,8 +106,11 @@ export class DBUtxoTransaction {
 
   // Transaction methods
   private get response(): IUtxoGetTransactionRes {
-    const vout_arr: IUtxoVoutTransaction[] = this.transactionoutput_set.map(
-      (transaction_output) => {
+    const vout_arr: IUtxoVoutTransaction[] = this.transactionoutput_set
+      .sort((a, b) => {
+        return a.n - b.n;
+      })
+      .map((transaction_output) => {
         return {
           value: transaction_output.value,
           n: transaction_output.n,
@@ -117,8 +120,7 @@ export class DBUtxoTransaction {
             hex: transaction_output.script_key_hex,
           },
         };
-      },
-    );
+      });
 
     const vin_arr: IUtxoVinTransactionPrevout[] = this.transactioninput_set
       .sort((a, b) => {
@@ -352,7 +354,6 @@ export class DBPruneSyncState {
 
 export type IDBPruneSyncState = new () => DBPruneSyncState;
 
-
 @Entity('utxo_indexer_version')
 export class DBIndexerVersion {
   @PrimaryColumn({ type: 'bigint' })
@@ -384,7 +385,7 @@ export class DBIndexerVersion {
       buildDate: this.build_date,
       numConfirmations: this.num_confirmations,
       historySeconds: this.history_seconds,
-    }
+    };
   }
 }
 
