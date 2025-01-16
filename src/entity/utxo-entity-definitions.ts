@@ -317,7 +317,7 @@ export class DBTransactionInput extends AbstractTransactionOutput {
 }
 
 @Entity('utxo_indexer_tipsyncstate')
-export class TipSyncState {
+export class DBTipSyncState {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
 
@@ -336,10 +336,10 @@ export class TipSyncState {
   // TODO: add sync state variables such as confirmation height, etc.
 }
 
-export type ITipSyncState = new () => TipSyncState;
+export type IDBTipSyncState = new () => DBTipSyncState;
 
 @Entity('utxo_indexer_prunesyncstate')
-export class PruneSyncState {
+export class DBPruneSyncState {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
 
@@ -350,11 +350,11 @@ export class PruneSyncState {
   timestamp: number;
 }
 
-export type IPruneSyncState = new () => PruneSyncState;
+export type IDBPruneSyncState = new () => DBPruneSyncState;
 
 
 @Entity('utxo_indexer_version')
-export class IndexerVersionState {
+export class DBIndexerVersion {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
 
@@ -388,4 +388,4 @@ export class IndexerVersionState {
   }
 }
 
-export type IIndexerVersionState = new () => IndexerVersionState;
+export type IDBIndexerVersion = new () => DBIndexerVersion;

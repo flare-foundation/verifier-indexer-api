@@ -16,12 +16,12 @@ import {
   DBUtxoTransaction,
   IDBUtxoIndexerBlock,
   IDBUtxoTransaction,
-  IIndexerVersionState,
-  IndexerVersionState,
-  IPruneSyncState,
-  ITipSyncState,
-  PruneSyncState,
-  TipSyncState,
+  IDBIndexerVersion,
+  DBIndexerVersion,
+  IDBPruneSyncState,
+  IDBTipSyncState,
+  DBPruneSyncState,
+  DBTipSyncState,
 } from '../../entity/utxo-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
@@ -31,9 +31,9 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
   private transactionTable: IDBUtxoTransaction;
   private blockTable: IDBUtxoIndexerBlock;
-  private tipState: ITipSyncState;
-  private pruneState: IPruneSyncState;
-  private versionTable: IIndexerVersionState;
+  private tipState: IDBTipSyncState;
+  private pruneState: IDBPruneSyncState;
+  private versionTable: IDBIndexerVersion;
 
   private indexerServerPageLimit: number;
 
@@ -46,9 +46,9 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     super();
     this.blockTable = DBUtxoIndexerBlock;
     this.transactionTable = DBUtxoTransaction;
-    this.tipState = TipSyncState;
-    this.pruneState = PruneSyncState;
-    this.versionTable = IndexerVersionState;
+    this.tipState = DBTipSyncState;
+    this.pruneState = DBPruneSyncState;
+    this.versionTable = DBIndexerVersion;
     const verifierConfig =
       this.configService.get<VerifierServerConfig>('verifierConfig');
     this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;

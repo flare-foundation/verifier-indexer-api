@@ -3,8 +3,8 @@ import {
   DBUtxoTransaction,
   IDBUtxoIndexerBlock,
   IDBUtxoTransaction,
-  ITipSyncState,
-  TipSyncState,
+  IDBTipSyncState,
+  DBTipSyncState,
 } from '../entity/utxo-entity-definitions';
 import { IIndexedQueryManager } from './IIndexedQueryManager';
 import {
@@ -31,14 +31,14 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
   // Block table entity
   private transactionTable: IDBUtxoTransaction;
   private blockTable: IDBUtxoIndexerBlock;
-  private tipState: ITipSyncState;
+  private tipState: IDBTipSyncState;
 
   protected abstract chainType: ChainType;
 
   constructor(options: IndexedQueryManagerOptions) {
     super(options);
     this.blockTable = DBUtxoIndexerBlock;
-    this.tipState = TipSyncState;
+    this.tipState = DBTipSyncState;
     this.transactionTable = DBUtxoTransaction;
   }
 
@@ -50,7 +50,7 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
   // Last confirmed blocks, tips
   ////////////////////////////////////////////////////////////
 
-  private async _getTipStateObject(): Promise<TipSyncState> {
+  private async _getTipStateObject(): Promise<DBTipSyncState> {
     const res = await this.entityManager.findOne(this.tipState, {});
     if (res === undefined || res === null) {
       throw new Error('Cant find tip sync state in DB');

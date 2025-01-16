@@ -6,9 +6,9 @@ import {
   DBTransactionOutput,
   DBUtxoIndexerBlock,
   DBUtxoTransaction,
-  IndexerVersionState,
-  PruneSyncState,
-  TipSyncState,
+  DBIndexerVersion,
+  DBPruneSyncState,
+  DBTipSyncState,
 } from '../entity/utxo-entity-definitions';
 import {
   DBXrpIndexerBlock,
@@ -142,9 +142,9 @@ function getDatabaseEntities(verifierType: ChainType) {
         DBTransactionInput,
         DBTransactionInputCoinbase,
         DBTransactionOutput,
-        TipSyncState,
-        PruneSyncState,
-        IndexerVersionState,
+        DBTipSyncState,
+        DBPruneSyncState,
+        DBIndexerVersion,
       ];
     case ChainType.XRP:
       return [
