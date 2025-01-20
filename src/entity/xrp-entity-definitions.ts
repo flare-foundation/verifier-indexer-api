@@ -8,7 +8,7 @@ import {
   TransactionResult,
 } from '../indexed-query-manager/indexed-query-manager-types';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
+import { ApiDBVersion, IndexerVersion } from '../dtos/indexer/ApiDbVersion.dto';
 
 @Entity('blocks')
 export class DBXrpIndexerBlock {
@@ -170,7 +170,6 @@ export class DBXrpState {
 
 export type IDBXrpState = new () => DBXrpState;
 
-
 @Entity('versions')
 export class DBXrpIndexerVersion {
   @PrimaryColumn({ type: 'bigint' })
@@ -195,14 +194,18 @@ export class DBXrpIndexerVersion {
   history_seconds: number;
 
   toApiDBVersion(): ApiDBVersion {
-    return {
-      nodeVersion: this.node_version,
+    const indexerVersion: IndexerVersion = {
       gitTag: this.git_tag,
       gitHash: this.git_hash,
       buildDate: this.build_date,
       numConfirmations: this.num_confirmations,
       historySeconds: this.history_seconds,
-    }
+    };
+    return {
+      nodeVersion: this.node_version,
+      indexer: indexerVersion,
+      apiServer: null,
+    };
   }
 }
 

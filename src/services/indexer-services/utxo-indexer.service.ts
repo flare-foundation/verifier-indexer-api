@@ -1,5 +1,6 @@
 import { ChainType, unPrefix0x } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
+import { Version } from '../../dtos/indexer/ApiDbVersion.dto';
 
 import { EntityManager, SelectQueryBuilder } from 'typeorm';
 
@@ -7,25 +8,25 @@ import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
 
 import { ConfigService } from '@nestjs/config';
+import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
 import { IConfig, VerifierServerConfig } from '../../config/configuration';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
 import {
-  DBUtxoIndexerBlock,
-  DBUtxoTransaction,
-  IDBUtxoIndexerBlock,
-  IDBUtxoTransaction,
-  IDBIndexerVersion,
   DBIndexerVersion,
-  IDBPruneSyncState,
-  IDBTipSyncState,
   DBPruneSyncState,
   DBTipSyncState,
+  DBUtxoIndexerBlock,
+  DBUtxoTransaction,
+  IDBIndexerVersion,
+  IDBPruneSyncState,
+  IDBTipSyncState,
+  IDBUtxoIndexerBlock,
+  IDBUtxoTransaction,
 } from '../../entity/utxo-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
-import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
 
 abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
@@ -116,11 +117,33 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
       this.versionTable,
       'version',
     );
+
     const resVersion = await queryVersion.getOne();
     if (!resVersion) {
       throw new Error('No versions state found in the indexer database');
     }
-    return resVersion.toApiDBVersion();
+
+    let versions = resVersion.toApiDBVersion();
+
+    const [gitTag, gitHash, buildDate] = await Promise.all([
+      UtxoExternalIndexerEngineService.readVersionFile(
+        '../../../PROJECT_VERSION',
+      ),
+      UtxoExternalIndexerEngineService.readVersionFile(
+        '../../../PROJECT_COMMIT_HASH',
+      ),
+      UtxoExternalIndexerEngineService.readVersionFile(
+        '../../../PROJECT_BUILD_DATE',
+      ),
+    ]);
+    const apiServerVersion: Version = {
+      gitTag: gitTag || 'local',
+      gitHash: gitHash || 'local',
+      buildDate: Number(buildDate) || Math.floor(Date.now() / 1000),
+    };
+    versions.apiServer = apiServerVersion;
+
+    return versions;
   }
 
   /**

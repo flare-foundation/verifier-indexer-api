@@ -5,12 +5,6 @@ import {
   IUtxoVinTransactionPrevout,
   IUtxoVoutTransaction,
 } from '@flarenetwork/mcc';
-import { ApiDBBlock } from '../dtos/indexer/ApiDbBlock.dto';
-import { ApiDBTransaction } from '../dtos/indexer/ApiDbTransaction.dto';
-import {
-  BlockResult,
-  TransactionResult,
-} from '../indexed-query-manager/indexed-query-manager-types';
 import {
   Column,
   Entity,
@@ -19,7 +13,13 @@ import {
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
-import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
+import { ApiDBBlock } from '../dtos/indexer/ApiDbBlock.dto';
+import { ApiDBTransaction } from '../dtos/indexer/ApiDbTransaction.dto';
+import { ApiDBVersion, IndexerVersion } from '../dtos/indexer/ApiDbVersion.dto';
+import {
+  BlockResult,
+  TransactionResult,
+} from '../indexed-query-manager/indexed-query-manager-types';
 
 // External Postgres Database Entities (Utxo (BTC and DOGE)) (read only)
 
@@ -378,13 +378,17 @@ export class DBIndexerVersion {
   history_seconds: number;
 
   toApiDBVersion(): ApiDBVersion {
-    return {
-      nodeVersion: this.node_version,
+    const indexerVersion: IndexerVersion = {
       gitTag: this.git_tag,
       gitHash: this.git_hash,
       buildDate: this.build_date,
       numConfirmations: this.num_confirmations,
       historySeconds: this.history_seconds,
+    };
+    return {
+      nodeVersion: this.node_version,
+      indexer: indexerVersion,
+      apiServer: null,
     };
   }
 }

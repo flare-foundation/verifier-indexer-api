@@ -1,11 +1,13 @@
 import { unPrefix0x } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
 import { EntityManager } from 'typeorm';
 import { IConfig, VerifierServerConfig } from '../../config/configuration';
 import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
+import { Version } from '../../dtos/indexer/ApiDbVersion.dto';
 import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
 import {
@@ -20,7 +22,6 @@ import {
 } from '../../entity/xrp-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
-import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
 
 @Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {
@@ -72,16 +73,41 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     return response;
   }
 
+  /**
+   * Gets the version of the indexer service.
+   */
   public async getIndexerServiceVersion(): Promise<ApiDBVersion> {
     const queryVersion = this.manager.createQueryBuilder(
       this.versionTable,
       'version',
     );
+
     const resVersion = await queryVersion.getOne();
     if (!resVersion) {
       throw new Error('No versions state found in the indexer database');
     }
-    return resVersion.toApiDBVersion();
+
+    let versions = resVersion.toApiDBVersion();
+
+    const [gitTag, gitHash, buildDate] = await Promise.all([
+      XrpExternalIndexerEngineService.readVersionFile(
+        '../../../PROJECT_VERSION',
+      ),
+      XrpExternalIndexerEngineService.readVersionFile(
+        '../../../PROJECT_COMMIT_HASH',
+      ),
+      XrpExternalIndexerEngineService.readVersionFile(
+        '../../../PROJECT_BUILD_DATE',
+      ),
+    ]);
+    const apiServerVersion: Version = {
+      gitTag: gitTag || 'local',
+      gitHash: gitHash || 'local',
+      buildDate: Number(buildDate) || Math.floor(Date.now() / 1000),
+    };
+    versions.apiServer = apiServerVersion;
+
+    return versions;
   }
 
   public async confirmedBlockAt(

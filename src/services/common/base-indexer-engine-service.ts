@@ -1,4 +1,6 @@
-import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
 import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
@@ -10,7 +12,21 @@ import { PaginatedList } from '../../utils/api-models/PaginatedList';
 export abstract class IIndexerEngineService {
   public abstract getStateSetting(): Promise<ApiDBState | null>;
 
-  public abstract getIndexerServiceVersion(): Promise<ApiDBVersion>
+  public abstract getIndexerServiceVersion(): Promise<ApiDBVersion>;
+
+  /**
+   * Reads the version file from the file system.
+   */
+  public static async readVersionFile(filePath: string): Promise<string> {
+    return readFile(join(__dirname, filePath), 'utf-8')
+      .then((data) => data)
+      .catch((error) => {
+        if (error.code === 'ENOENT') {
+          return null;
+        }
+        throw error;
+      });
+  }
 
   /**
    * Gets the range of available confirmed blocks in the indexer database.
@@ -45,7 +61,9 @@ export abstract class IIndexerEngineService {
     blockNumber: number,
   ): Promise<ApiDBBlock | null>;
 
-  public abstract listBlock(props: QueryBlock): Promise<PaginatedList<ApiDBBlock>>;
+  public abstract listBlock(
+    props: QueryBlock,
+  ): Promise<PaginatedList<ApiDBBlock>>;
 
   public abstract getBlock(blockHash: string): Promise<ApiDBBlock>;
 

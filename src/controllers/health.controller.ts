@@ -12,7 +12,7 @@ import {
   handleApiResponse,
 } from '../utils/api-models/ApiResponse';
 import { ApiResponseWrapperDec } from '../utils/open-api-utils';
-import { ApiDBVersion } from 'src/dtos/indexer/ApiDbVersion.dto';
+import { ApiDBVersion } from '../dtos/indexer/ApiDbVersion.dto';
 
 abstract class BaseHealthController {
   protected abstract indexerEngine: IIndexerEngineService;
