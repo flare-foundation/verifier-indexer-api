@@ -21,7 +21,7 @@ export abstract class IIndexerEngineService {
     filePath: string,
   ): Promise<string | null> {
     return readFile(join(__dirname, filePath), 'utf-8')
-      .then((data) => data)
+      .then((data) => data.trim())
       .catch((error) => {
         if (error.code === 'ENOENT') {
           return null;
