@@ -10,12 +10,12 @@ COPY . .
 RUN yarn build
 EXPOSE 3000
 
-USER node
-
 RUN git describe --tags --always > PROJECT_VERSION && \
     date +%s > PROJECT_BUILD_DATE && \
     git rev-parse HEAD > PROJECT_COMMIT_HASH && \
     rm -rf .git
+
+USER node
 
 ENV PATH="${PATH}:/app/verifier-indexer-api/docker/scripts"
 ENV NODE_ENV=production
