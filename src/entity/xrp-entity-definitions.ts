@@ -78,7 +78,12 @@ export class DBXrpTransaction {
   }
 
   responseJson(): IXrpGetTransactionRes {
-    const txData = JSON.parse(this.response);
+    const txData: unknown = JSON.parse(this.response);
+    if (
+      !(typeof txData == 'object' && 'metaData' in txData && 'hash' in txData)
+    ) {
+      throw new Error('Invalid response JSON');
+    }
     const { metaData: _, ...txDataRest } = txData;
     const modifiedTxData: IXrpGetTransactionRes = {
       result: {
@@ -88,7 +93,7 @@ export class DBXrpTransaction {
         meta: txData.metaData,
         validated: true,
         date: this.timestamp,
-      },
+      } as IXrpGetTransactionRes['result'],
       id: '',
       type: '',
     };

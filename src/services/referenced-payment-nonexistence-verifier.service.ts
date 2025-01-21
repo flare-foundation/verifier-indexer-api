@@ -42,8 +42,8 @@ abstract class BaseReferencedPaymentNonexistenceVerifierService extends BaseVeri
     });
   }
 
-  async _verifyRequest<T extends TransactionBase<any>>(
-    TransactionClass: new (...args: any[]) => T,
+  async _verifyRequest<T extends TransactionBase<unknown>>(
+    TransactionClass: new (...args: unknown[]) => T,
     fixedRequest: ReferencedPaymentNonexistence_Request,
   ): Promise<AttestationResponseDTO_ReferencedPaymentNonexistence_Response> {
     const result = await verifyReferencedPaymentNonExistence(

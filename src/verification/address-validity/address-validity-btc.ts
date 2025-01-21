@@ -101,11 +101,11 @@ function getEncodingConst(enc: encoding) {
   }
 }
 
-function polyMod(values: string | any[]) {
+function polyMod(values: string | number[]) {
   let chk = 1;
   for (let p = 0; p < values.length; ++p) {
     const top = chk >> 25;
-    chk = ((chk & 0x1ffffff) << 5) ^ values[p];
+    chk = ((chk & 0x1ffffff) << 5) ^ (values[p] as number);
     for (let i = 0; i < 5; ++i) {
       if ((top >> i) & 1) {
         chk ^= GENERATOR[i];
@@ -134,7 +134,7 @@ function verifyChecksum(hrp: hrp, data: number[], enc: encoding) {
 }
 
 export function bech32_decode(bechString: string, enc: encoding) {
-  let p;
+  let p: number;
   let has_lower = false;
   let has_upper = false;
   for (p = 0; p < bechString.length; ++p) {
@@ -158,7 +158,7 @@ export function bech32_decode(bechString: string, enc: encoding) {
   }
   const hrp = bechString.substring(0, pos);
   if (!isHrp(hrp)) return null;
-  const data = [];
+  const data: number[] = [];
   for (p = pos + 1; p < bechString.length; ++p) {
     const d = CHARSET.indexOf(bechString.charAt(p));
     if (d === -1) {
@@ -180,7 +180,7 @@ export function convertBits(
 ) {
   let acc = 0;
   let bits = 0;
-  const ret = [];
+  const ret: number[] = [];
   const maxv = (1 << toBits) - 1;
   for (let p = 0; p < data.length; ++p) {
     const value = data[p];

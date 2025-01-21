@@ -76,16 +76,16 @@ export async function handleApiResponse<T>(
     return new ApiResponseWrapper<T>(resp);
   } catch (reason) {
     if (sanitize) {
-      const message = reason.message ?? 'Error while processing request';
+      const message = reason instanceof Error ? reason.message : 'Error while processing request';
       return new ApiResponseWrapper<T>(
-        undefined as any,
+        undefined,
         ApiResStatusEnum.ERROR,
         message,
         // message,
       );
     }
     return new ApiResponseWrapper<T>(
-      undefined as any,
+      undefined,
       ApiResStatusEnum.ERROR,
       '' + reason,
       // reason,

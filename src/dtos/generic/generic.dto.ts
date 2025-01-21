@@ -1,4 +1,3 @@
-import { prefix0x } from '@flarenetwork/mcc';
 import { Transform } from 'class-transformer';
 import { Validate } from 'class-validator';
 import { Is0xHex } from '../dto-validators';

@@ -1,4 +1,3 @@
-import { prefix0x } from '@flarenetwork/mcc';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {

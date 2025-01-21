@@ -128,14 +128,17 @@ export class MerkleTree {
     const sorted = values.map((x) => x);
     sorted.sort();
 
-    const hashes = [];
+    const hashes: string[] = [];
     for (let i = 0; i < sorted.length; i++) {
       if (i == 0 || sorted[i] !== sorted[i - 1]) {
         hashes.push(sorted[i]);
       }
     }
     const n = hashes.length;
-    this._tree = [...new Array(Math.max(n - 1, 0)).fill(0), ...hashes];
+    this._tree = [
+      ...(new Array(Math.max(n - 1, 0)).fill(0) as string[]),
+      ...hashes,
+    ];
     for (let i = n - 2; i >= 0; i--) {
       this._tree[i] = sortedHashPair(
         this._tree[2 * i + 1],
@@ -167,7 +170,8 @@ export class MerkleTree {
     while (count > 1) {
       // Invariants: low < high, 2 <= count == high - low == [low .. high].length
       const mid = low + Math.floor(count / 2); // low < mid < high _strictly_
-      hash < this.sortedHashes[mid] ? (high = mid) : (low = mid); // low < high still
+      if (hash < this.sortedHashes[mid]) high = mid;
+      else low = mid; // low < high still
       count = high - low; // preserves invariant
     }
     const i = low; // Only element left: count == 1, since 0 != count <= 1

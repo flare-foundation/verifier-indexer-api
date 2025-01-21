@@ -1,4 +1,3 @@
-import { prefix0x } from '@flarenetwork/mcc';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
@@ -9,9 +8,9 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
+import { transformHash32 } from '../dto-transform-utils';
 import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../generic/generic.dto';
-import { transformHash32 } from '../dto-transform-utils';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////

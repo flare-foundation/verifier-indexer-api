@@ -26,7 +26,7 @@ abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
     testnet: boolean,
   ): VerificationResponse<AddressValidity_ResponseBody>;
 
-  async verifyRequest(
+  verifyRequest(
     fixedRequest: AddressValidity_Request,
   ): Promise<AttestationResponseDTO_AddressValidity_Response> {
     const result = this.verifyAddress(
@@ -35,7 +35,8 @@ abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
     );
 
     const status = getAttestationStatus(result.status);
-    if (status != AttestationResponseStatus.VALID) return { status };
+    if (status != AttestationResponseStatus.VALID)
+      return Promise.resolve({ status });
 
     const response: AddressValidity_Response = serializeBigInts({
       attestationType: fixedRequest.attestationType,
@@ -46,10 +47,10 @@ abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
       responseBody: result.response,
     });
 
-    return {
+    return Promise.resolve({
       status,
       response,
-    };
+    });
   }
 }
 

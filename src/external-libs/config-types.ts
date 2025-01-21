@@ -5,15 +5,15 @@ export interface ABIDefinitions {
   /**
    * JSON ABI definition for attestation type request
    */
-  requestAbi: any;
+  requestAbi: unknown;
   /**
    * JSON ABI definition for attestation type response
    */
-  responseAbi: any;
+  responseAbi: unknown;
   /**
    * JSON ABI definition for attestation type proof
    */
-  proofAbi: any;
+  proofAbi: unknown;
 }
 
 /**

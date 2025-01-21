@@ -42,8 +42,8 @@ abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer
     });
   }
 
-  async _verifyRequest<T extends TransactionBase<any>>(
-    TransactionClass: new (...args: any[]) => T,
+  async _verifyRequest<T extends TransactionBase<unknown>>(
+    TransactionClass: new (...args: unknown[]) => T,
     fixedRequest: Payment_Request,
   ): Promise<AttestationResponseDTO_Payment_Response> {
     const result = await verifyPayment(

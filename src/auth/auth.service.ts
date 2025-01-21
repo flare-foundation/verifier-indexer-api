@@ -7,7 +7,7 @@ export class AuthService {
   API_KEYS: string[];
 
   constructor(private readonly configService: ConfigService<IConfig>) {
-    const API_KEYS = this.configService.get('api_keys');
+    const API_KEYS: string[] = this.configService.get('api_keys');
     if (!API_KEYS) {
       throw new Error('Env variables are missing (API_KEYS)');
     }

@@ -33,6 +33,6 @@ export class QueryBlockDetail {
    */
 
   @Validate(IsHash32)
-  @Transform(({ value }) => unPrefix0x(value))
+  @Transform(({ value }: { value: string }) => unPrefix0x(value))
   blockHash: string;
 }

@@ -1,10 +1,10 @@
 import { ZERO_BYTES_32 } from '@flarenetwork/mcc';
-import { ethers } from 'ethers';
+import { ethers, ParamType } from 'ethers';
 import {
   AttestationTypeBase_Request,
   AttestationTypeBase_Response,
 } from '../dtos/attestation-types/AttestationTypeBase.dto';
-import { TypeRecord } from './config-types';
+import { ABIDefinitions, TypeRecord } from './config-types';
 import {
   ABIFragment,
   decodeAttestationName,
@@ -49,7 +49,7 @@ export class AttestationDefinitionStore {
     return this.definitions.get(attestationType);
   }
 
-  getABIsForDecodedAttestationType(attestationTypeId: string) {
+  getABIsForDecodedAttestationType(attestationTypeId: string): ABIDefinitions {
     const definition =
       this.getDefinitionForDecodedAttestationType(attestationTypeId);
     if (!definition) {
@@ -82,14 +82,17 @@ export class AttestationDefinitionStore {
     if (!definition) {
       throw new Error(`Unsupported attestation type id: '${attestationType}'`);
     }
-    let abiEncoded;
+    let abiEncoded: ethers.BytesLike;
     if (salt) {
       abiEncoded = this.coder.encode(
-        [definition.responseAbi, 'string'],
+        [definition.responseAbi as string | ParamType, 'string'],
         [response, salt],
       );
     } else {
-      abiEncoded = this.coder.encode([definition.responseAbi], [response]);
+      abiEncoded = this.coder.encode(
+        [definition.responseAbi as string | ParamType],
+        [response],
+      );
     }
     return ethers.keccak256(abiEncoded);
   }
@@ -152,7 +155,16 @@ export class AttestationDefinitionStore {
       ],
     );
     // ABI encoding for the request body
-    const requestBodyAbi = definition.requestAbi.components.find(
+    if (
+      !(
+        typeof definition.requestAbi === 'object' &&
+        'components' in definition.requestAbi &&
+        definition.requestAbi.components instanceof Array
+      )
+    ) {
+      throw new Error(`Invalid request ABI`);
+    }
+    const requestBodyAbi: unknown = definition.requestAbi.components.find(
       (item: ABIFragment) => item.name == 'requestBody',
     );
     if (!requestBodyAbi) {
@@ -176,7 +188,10 @@ export class AttestationDefinitionStore {
         `Unsupported attestation type id: '${response.attestationType}'`,
       );
     }
-    const abiEncode = this.coder.encode([definition.responseAbi], [response]);
+    const abiEncode = this.coder.encode(
+      [definition.responseAbi as string | ParamType],
+      [response],
+    );
     return abiEncode;
   }
 
@@ -193,7 +208,16 @@ export class AttestationDefinitionStore {
     if (!definition) {
       throw new Error(`Unsupported attestation type id: '${attestationType}'`);
     }
-    const requestBodyAbi = definition.requestAbi?.components.find(
+    if (
+      !(
+        typeof definition.requestAbi === 'object' &&
+        'components' in definition.requestAbi &&
+        definition.requestAbi.components instanceof Array
+      )
+    ) {
+      throw new Error(`Invalid request ABI`);
+    }
+    const requestBodyAbi: unknown = definition.requestAbi?.components.find(
       (item: ABIFragment) => item.name == 'requestBody',
     );
     if (!requestBodyAbi) {
@@ -202,7 +226,7 @@ export class AttestationDefinitionStore {
       );
     }
 
-    const parsed = this.coder.decode(
+    const parsed: unknown = this.coder.decode(
       [requestBodyAbi],
       '0x' + bytes.slice(2 + 3 * 64),
     )[0];
@@ -210,7 +234,7 @@ export class AttestationDefinitionStore {
       attestationType: prefix.attestationType,
       sourceId: prefix.sourceId,
       messageIntegrityCode: prefix.messageIntegrityCode,
-      requestBody: remapABIParsedToObjects(parsed, requestBodyAbi),
+      requestBody: remapABIParsedToObjects(parsed, requestBodyAbi) as unknown,
     }) as AR;
   }
 
@@ -231,8 +255,10 @@ export class AttestationDefinitionStore {
       return false;
     }
     const attestationType = decodeAttestationName(request1.attestationType);
-    const requestAbi =
-      this.getDefinitionForDecodedAttestationType(attestationType)?.requestAbi;
+
+    const requestAbi: ABIFragment = this.getDefinitionForDecodedAttestationType(
+      attestationType,
+    )?.requestAbi as ABIFragment;
     if (!requestAbi) {
       throw new Error(`Unsupported attestation type id: '${attestationType}'`);
     }

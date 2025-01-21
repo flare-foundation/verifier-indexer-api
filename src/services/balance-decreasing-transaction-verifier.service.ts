@@ -42,8 +42,8 @@ abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerif
     });
   }
 
-  async _verifyRequest<T extends TransactionBase<any>>(
-    TransactionClass: new (...args: any[]) => T,
+  async _verifyRequest<T extends TransactionBase<unknown>>(
+    TransactionClass: new (...args: unknown[]) => T,
     fixedRequest: BalanceDecreasingTransaction_Request,
   ): Promise<AttestationResponseDTO_BalanceDecreasingTransaction_Response> {
     const result = await verifyBalanceDecreasingTransaction(

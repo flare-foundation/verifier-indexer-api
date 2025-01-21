@@ -43,8 +43,7 @@ interface IVerificationServiceWithIndexerConfig
     | typeof XrpIndexerQueryManager;
 }
 
-export interface ITypeSpecificVerificationServiceConfig
-  extends Omit<IVerificationServiceWithIndexerConfig, 'attestationName'> {}
+export type ITypeSpecificVerificationServiceConfig = Omit<IVerificationServiceWithIndexerConfig, 'attestationName'>;
 
 export abstract class BaseVerifierService<
   Req extends AttestationTypeBase_Request,

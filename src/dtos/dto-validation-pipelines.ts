@@ -1,13 +1,13 @@
 import {
+  ArgumentMetadata,
   Injectable,
+  Type,
   ValidationPipe,
   ValidationPipeOptions,
-  Type,
-  ArgumentMetadata,
 } from '@nestjs/common';
 
 @Injectable()
-export class AbstractValidationPipe extends ValidationPipe {
+export class AbstractValidationPipe<T, K> extends ValidationPipe {
   constructor(
     options: ValidationPipeOptions,
     private readonly targetTypes: { body?: Type; query?: Type; param?: Type },
@@ -15,16 +15,16 @@ export class AbstractValidationPipe extends ValidationPipe {
     super(options);
   }
 
-  async transform(value: any, metadata: ArgumentMetadata) {
-    const targetType = this.targetTypes[metadata.type];
+  async transform(value: T, metadata: ArgumentMetadata): Promise<K> {
+    const targetType = this.targetTypes[metadata.type] as Type;
     if (!targetType) {
-      const result = await super.transform(value, metadata);
+      const result = (await super.transform(value, metadata)) as K;
       return result;
     }
-    const res = await super.transform(value, {
+    const res = (await super.transform(value, {
       ...metadata,
       metatype: targetType,
-    });
+    })) as K;
     return res;
   }
 }

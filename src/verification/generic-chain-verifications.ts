@@ -30,6 +30,7 @@ import {
   ReferencedPaymentNonexistence_Response,
   ReferencedPaymentNonexistence_ResponseBody,
 } from '../dtos/attestation-types/ReferencedPaymentNonexistence.dto';
+import { serializeBigInts } from '../external-libs/utils';
 import { IIndexedQueryManager } from '../indexed-query-manager/IIndexedQueryManager';
 import {
   BlockResult,
@@ -43,21 +44,6 @@ import {
   verifyWorkflowForTransaction,
 } from './verification-utils';
 
-/**
- * Serialize bigints to strings recursively.
- * @param obj
- * @returns
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function serializeBigInts(obj: any) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return JSON.parse(
-    JSON.stringify(
-      obj,
-      (_key, value) => (typeof value === 'bigint' ? value.toString() : value), // return everything else unchanged
-    ),
-  );
-}
 //////////////////////////////////////////////////
 // Verification functions
 /////////////////////////////////////////////////
@@ -70,12 +56,12 @@ function serializeBigInts(obj: any) {
  * @param client
  * @returns
  */
-export function responsePayment<T extends TransactionBase<any>>(
+export function responsePayment<T extends TransactionBase<unknown>>(
   dbTransaction: TransactionResult,
-  TransactionClass: new (...args: any[]) => T,
+  TransactionClass: new (...args: unknown[]) => T,
   request: Payment_Request,
 ) {
-  let parsedData: any;
+  let parsedData: unknown;
   try {
     parsedData = JSON.parse(dbTransaction.getResponse());
   } catch (error) {
@@ -111,7 +97,7 @@ export function responsePayment<T extends TransactionBase<any>>(
       inUtxo: inUtxoNumber,
       outUtxo: utxoNumber,
     });
-  } catch (e) {
+  } catch {
     return { status: VerificationStatus.NOT_CONFIRMED };
   }
 
@@ -167,8 +153,8 @@ export function responsePayment<T extends TransactionBase<any>>(
  * @returns Verification response: object containing status and attestation response
  * @category Verifiers
  */
-export async function verifyPayment<T extends TransactionBase<any>>(
-  TransactionClass: new (...args: any[]) => T,
+export async function verifyPayment<T extends TransactionBase<unknown>>(
+  TransactionClass: new (...args: unknown[]) => T,
   request: Payment_Request,
   iqm: IIndexedQueryManager,
 ): Promise<VerificationResponse<Payment_Response>> {
@@ -182,7 +168,7 @@ export async function verifyPayment<T extends TransactionBase<any>>(
   }
 
   const dbTransaction = confirmedTransactionResult.transaction;
-  const responsePaymentR = await responsePayment(
+  const responsePaymentR = responsePayment(
     dbTransaction,
     TransactionClass,
     request,
@@ -198,14 +184,14 @@ export async function verifyPayment<T extends TransactionBase<any>>(
  * @param client
  * @returns
  */
-export async function responseBalanceDecreasingTransaction<
-  T extends TransactionBase<any>,
+export function responseBalanceDecreasingTransaction<
+  T extends TransactionBase<unknown>,
 >(
   dbTransaction: TransactionResult,
-  TransactionClass: new (...args: any[]) => T,
+  TransactionClass: new (...args: unknown[]) => T,
   request: BalanceDecreasingTransaction_Request,
 ) {
-  let parsedData: any;
+  let parsedData: unknown;
   try {
     parsedData = JSON.parse(dbTransaction.getResponse());
   } catch (error) {
@@ -270,9 +256,9 @@ export async function responseBalanceDecreasingTransaction<
  * @category Verifiers
  */
 export async function verifyBalanceDecreasingTransaction<
-  T extends TransactionBase<any>,
+  T extends TransactionBase<unknown>,
 >(
-  TransactionClass: new (...args: any[]) => T,
+  TransactionClass: new (...args: unknown[]) => T,
   request: BalanceDecreasingTransaction_Request,
   iqm: IIndexedQueryManager,
 ): Promise<VerificationResponse<BalanceDecreasingTransaction_Response>> {
@@ -388,11 +374,11 @@ export async function verifyConfirmedBlockHeightExists(
  * @param amount
  * @returns
  */
-export async function responseReferencedPaymentNonExistence<
-  T extends TransactionBase<any>,
+export function responseReferencedPaymentNonExistence<
+  T extends TransactionBase<unknown>,
 >(
   dbTransactions: TransactionResult[],
-  TransactionClass: new (...args: any[]) => T,
+  TransactionClass: new (...args: unknown[]) => T,
   firstOverflowBlock: BlockResult,
   lowerBoundaryBlock: BlockResult,
   request: ReferencedPaymentNonexistence_Request,
@@ -401,9 +387,9 @@ export async function responseReferencedPaymentNonExistence<
   for (const dbTransaction of dbTransactions) {
     let fullTxData: T;
     try {
-      const parsedData = JSON.parse(dbTransaction.getResponse());
+      const parsedData: unknown = JSON.parse(dbTransaction.getResponse());
       fullTxData = new TransactionClass(parsedData);
-    } catch (e) {
+    } catch {
       return { status: VerificationStatus.SYSTEM_FAILURE };
     }
 
@@ -481,9 +467,9 @@ export async function responseReferencedPaymentNonExistence<
  * @returns Verification response, status and attestation response
  */
 export async function verifyReferencedPaymentNonExistence<
-  T extends TransactionBase<any>,
+  T extends TransactionBase<unknown>,
 >(
-  TransactionClass: new (...args: any[]) => T,
+  TransactionClass: new (...args: unknown[]) => T,
   request: ReferencedPaymentNonexistence_Request,
   iqm: IIndexedQueryManager,
 ): Promise<VerificationResponse<ReferencedPaymentNonexistence_Response>> {
@@ -572,7 +558,7 @@ export async function verifyReferencedPaymentNonExistence<
     };
   }
 
-  const nonexistanceResponse = await responseReferencedPaymentNonExistence(
+  const nonexistanceResponse = responseReferencedPaymentNonExistence(
     dbTransactions,
     TransactionClass,
     firstOverflowBlock,

@@ -28,18 +28,22 @@ export const ZERO_BYTES_20 = ethers.zeroPadBytes('0x', 20);
  * @param type
  * @returns
  */
-function compareElementaryTypes(val1: any, val2: any, type: string): boolean {
+function compareElementaryTypes(
+  val1: unknown,
+  val2: unknown,
+  type: string,
+): boolean {
   if (type.match(/^u?int\d+$/)) {
     // Input values could be number, BigInt or string representing decimal or hex (0x-prefixed).
     if (
-      typeof val1 === 'number' ||
-      typeof val1 === 'bigint' ||
-      typeof val1 === 'string'
+      (typeof val1 === 'number' && typeof val2 === 'number') ||
+      (typeof val1 === 'bigint' && typeof val2 === 'bigint') ||
+      (typeof val1 === 'string' && typeof val2 === 'string')
     ) {
       // throws if the value is not parsable as a BigInt
       return BigInt(val1) === BigInt(val2);
     }
-    throw new Error(`Invalid values for type '${type}': ${val1}, ${val2}`);
+    throw new Error(`Invalid values for type '${type}'`);
   }
   if (type.match(/^bool$/)) {
     // values must be true or false
@@ -49,7 +53,7 @@ function compareElementaryTypes(val1: any, val2: any, type: string): boolean {
     ) {
       return val1 === val2;
     }
-    throw new Error(`Invalid values for type '${type}': ${val1}, ${val2}`);
+    throw new Error(`Invalid values for type '${type}'`);
   }
   if (
     type.match(/^bytes\d*$/) ||
@@ -64,14 +68,14 @@ function compareElementaryTypes(val1: any, val2: any, type: string): boolean {
         return lower1 === lower2;
       }
     }
-    throw new Error(`Invalid values for type '${type}': '${val1}', '${val2}'`);
+    throw new Error(`Invalid values for type '${type}'`);
   }
   if (type.match(/^string$/)) {
     // Input values must be string
     if (typeof val1 === 'string' && typeof val2 === 'string') {
       return val1 === val2;
     }
-    throw new Error(`Invalid values for type '${type}': '${val1}', '${val2}'`);
+    throw new Error(`Invalid values for type '${type}'`);
   }
   throw new Error(`Unknown or unsupported type '${type}'`);
 }
@@ -102,11 +106,6 @@ export function isSupportedBasicSolidityType(type: string): boolean {
  * @returns '0x'-prefixed hex string representing 32-bytes
  */
 export function encodeAttestationName(attestationTypeName: string) {
-  if (typeof attestationTypeName !== 'string') {
-    throw new Error(
-      `Attestation type name must be a string. Provided value ${attestationTypeName}`,
-    );
-  }
   if (
     attestationTypeName.startsWith('0x') ||
     attestationTypeName.startsWith('0X')
@@ -199,8 +198,8 @@ export function remapABIParsedToObjects(
  * @returns
  */
 export function structsDeepEqual(
-  struct1: any,
-  struct2: any,
+  struct1: unknown,
+  struct2: unknown,
   abi: ABIFragment,
 ): boolean {
   if (Object.keys(struct1).length !== Object.keys(struct2).length) {
@@ -208,8 +207,8 @@ export function structsDeepEqual(
   }
   for (const item of abi.components || []) {
     const key = item.name;
-    const val1 = struct1[key];
-    const val2 = struct2[key];
+    const val1: unknown = struct1[key];
+    const val2: unknown = struct2[key];
 
     if (val1 === undefined || val2 === undefined) {
       throw new Error(`Structs must not have undefined values for ${key}`);
@@ -222,7 +221,15 @@ export function structsDeepEqual(
       continue;
     }
 
-    if (item.type == 'tuple[]') {
+    if (
+      item.type == 'tuple[]' &&
+      typeof val1 === 'object' &&
+      'length' in val1 &&
+      typeof val1.length === 'number' &&
+      typeof val2 === 'object' &&
+      'length' in val2 &&
+      typeof val2.length === 'number'
+    ) {
       if (val1.length != val2.length) {
         return false;
       }
@@ -251,7 +258,16 @@ export function structsDeepEqual(
     // we assume here we have `type[]` where `type` is one of simple types.
     const match = item.type.match(/^(.+)\[\]$/);
 
-    if (match && isSupportedBasicSolidityType(match[1])) {
+    if (
+      match &&
+      isSupportedBasicSolidityType(match[1]) &&
+      typeof val1 === 'object' &&
+      'length' in val1 &&
+      typeof val1.length === 'number' &&
+      typeof val2 === 'object' &&
+      'length' in val2 &&
+      typeof val2.length === 'number'
+    ) {
       if (val1.length !== val2.length) {
         return false;
       }
@@ -282,7 +298,9 @@ export function readAttestationTypeConfigs(
     const name = path.basename(fileName, '.json');
     typeRecMap.set(
       name,
-      JSON.parse(readFileSync(`${configsPath}/${fileName}`, 'utf8')),
+      JSON.parse(
+        readFileSync(`${configsPath}/${fileName}`, 'utf8'),
+      ) as TypeRecord,
     );
   });
   return typeRecMap;
@@ -297,9 +315,10 @@ export function serializeBigInts<T>(obj: T): T {
   return JSON.parse(
     JSON.stringify(
       obj,
-      (key, value) => (typeof value === 'bigint' ? value.toString() : value), // return everything else unchanged
+      (key, value: unknown) =>
+        typeof value === 'bigint' ? value.toString() : value, // return everything else unchanged
     ),
-  );
+  ) as T;
 }
 
 /**

@@ -21,7 +21,7 @@ export class ApiKeyStrategy extends PassportStrategy(
     super(
       { header: 'X-API-KEY', prefix: '' },
       true,
-      async (apiKey: string, verified: verifiedCallback, req: Request) => {
+      (apiKey: string, verified: verifiedCallback, req: Request) => {
         if (this.authService.validateApiKey(apiKey)) {
           verified(null, {}, {});
           return req;

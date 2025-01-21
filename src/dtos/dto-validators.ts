@@ -15,7 +15,7 @@ export class IsUnsignedIntLike implements ValidatorConstraintInterface {
    * @param args
    * @returns
    */
-  validate(text: any, _args: ValidationArguments) {
+  validate(text: unknown, _args: ValidationArguments) {
     return (
       typeof text === 'string' &&
       (/^0x[0-9a-fA-F]+$/i.test(text) || /^[0-9]+$/i.test(text))
@@ -43,7 +43,7 @@ export class IsSignedIntLike implements ValidatorConstraintInterface {
    * @param args
    * @returns
    */
-  validate(text: any, _args: ValidationArguments) {
+  validate(text: unknown, _args: ValidationArguments) {
     return (
       typeof text === 'string' &&
       (/^-?0x[0-9a-fA-F]+$/i.test(text) || /^-?[0-9]+$/i.test(text))
@@ -71,7 +71,7 @@ export class IsHash32 implements ValidatorConstraintInterface {
    * @param args
    * @returns
    */
-  validate(text: any, _args: ValidationArguments) {
+  validate(text: unknown, _args: ValidationArguments) {
     return typeof text === 'string' && /^(0x|0X)?[0-9a-f]{64}$/i.test(text);
   }
 
@@ -96,7 +96,7 @@ export class Is0xHex implements ValidatorConstraintInterface {
    * @param args
    * @returns
    */
-  validate(text: any, _args: ValidationArguments) {
+  validate(text: unknown, _args: ValidationArguments) {
     return typeof text === 'string' && /^(0x|0X)?[0-9a-f]+$/i.test(text);
   }
 
@@ -121,7 +121,7 @@ export class IsEVMAddress implements ValidatorConstraintInterface {
    * @param args
    * @returns
    */
-  validate(text: any, _args: ValidationArguments) {
+  validate(text: unknown, _args: ValidationArguments) {
     return typeof text === 'string' && /^(0x|0X)?[0-9a-f]{40}$/i.test(text);
   }
 
