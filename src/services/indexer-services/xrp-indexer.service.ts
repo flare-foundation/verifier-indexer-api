@@ -87,27 +87,15 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
       throw new Error('No versions state found in the indexer database');
     }
 
-    let versions = resVersion.toApiDBVersion();
+    const nodeVersion = resVersion.toNodeVersion()
+    const indexerVersion = resVersion.toIndexerVersion()
+    const apiServerVersion = await this.getServiceVersion();
 
-    const [gitTag, gitHash, buildDate] = await Promise.all([
-      XrpExternalIndexerEngineService.readVersionFile(
-        '../../../PROJECT_VERSION',
-      ),
-      XrpExternalIndexerEngineService.readVersionFile(
-        '../../../PROJECT_COMMIT_HASH',
-      ),
-      XrpExternalIndexerEngineService.readVersionFile(
-        '../../../PROJECT_BUILD_DATE',
-      ),
-    ]);
-    const apiServerVersion: Version = {
-      gitTag: gitTag || 'local',
-      gitHash: gitHash || 'local',
-      buildDate: Number(buildDate) || Math.floor(Date.now() / 1000),
+    return {
+      nodeVersion,
+      indexer: indexerVersion,
+      apiServer: apiServerVersion,
     };
-    versions.apiServer = apiServerVersion;
-
-    return versions;
   }
 
   public async confirmedBlockAt(

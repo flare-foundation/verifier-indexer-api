@@ -123,27 +123,15 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
       throw new Error('No versions state found in the indexer database');
     }
 
-    let versions = resVersion.toApiDBVersion();
+    const nodeVersion = resVersion.toNodeVersion()
+    const indexerVersion = resVersion.toIndexerVersion()
+    const apiServerVersion = await this.getServiceVersion();
 
-    const [gitTag, gitHash, buildDate] = await Promise.all([
-      UtxoExternalIndexerEngineService.readVersionFile(
-        '../../../PROJECT_VERSION',
-      ),
-      UtxoExternalIndexerEngineService.readVersionFile(
-        '../../../PROJECT_COMMIT_HASH',
-      ),
-      UtxoExternalIndexerEngineService.readVersionFile(
-        '../../../PROJECT_BUILD_DATE',
-      ),
-    ]);
-    const apiServerVersion: Version = {
-      gitTag: gitTag || 'local',
-      gitHash: gitHash || 'local',
-      buildDate: Number(buildDate) || Math.floor(Date.now() / 1000),
+    return {
+      nodeVersion,
+      indexer: indexerVersion,
+      apiServer: apiServerVersion,
     };
-    versions.apiServer = apiServerVersion;
-
-    return versions;
   }
 
   /**

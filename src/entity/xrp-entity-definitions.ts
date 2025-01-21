@@ -193,19 +193,18 @@ export class DBXrpIndexerVersion {
   @Column()
   history_seconds: number;
 
-  toApiDBVersion(): ApiDBVersion {
-    const indexerVersion: IndexerVersion = {
+  toIndexerVersion(): IndexerVersion {
+    return {
       gitTag: this.git_tag,
       gitHash: this.git_hash,
       buildDate: this.build_date,
       numConfirmations: this.num_confirmations,
       historySeconds: this.history_seconds,
     };
-    return {
-      nodeVersion: this.node_version,
-      indexer: indexerVersion,
-      apiServer: null,
-    };
+  }
+
+  toNodeVersion(): string {
+    return this.node_version;
   }
 }
 
