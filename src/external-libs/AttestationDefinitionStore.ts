@@ -164,16 +164,16 @@ export class AttestationDefinitionStore {
     ) {
       throw new Error(`Invalid request ABI`);
     }
-    const requestBodyAbi: unknown = definition.requestAbi.components.find(
+    const requestBodyAbi = definition.requestAbi.components.find(
       (item: ABIFragment) => item.name == 'requestBody',
-    );
+    ) as ABIFragment;
     if (!requestBodyAbi) {
       throw new Error(
         `Invalid request ABI for attestation type id: '${request.attestationType}'. No 'requestBody'.`,
       );
     }
     const abiEncodeBody = this.coder.encode(
-      [requestBodyAbi],
+      [requestBodyAbi as unknown as ParamType],
       [request.requestBody],
     );
     return ethers.concat([abiEncodePrefix, abiEncodeBody]);
@@ -217,24 +217,23 @@ export class AttestationDefinitionStore {
     ) {
       throw new Error(`Invalid request ABI`);
     }
-    const requestBodyAbi: unknown = definition.requestAbi?.components.find(
+    const requestBodyAbi = definition.requestAbi?.components.find(
       (item: ABIFragment) => item.name == 'requestBody',
-    );
+    ) as ABIFragment;
     if (!requestBodyAbi) {
       throw new Error(
         `Invalid request ABI for attestation type id: '${prefix.attestationType}'. No 'requestBody'.`,
       );
     }
-
     const parsed: unknown = this.coder.decode(
-      [requestBodyAbi],
+      [requestBodyAbi as unknown as ParamType],
       '0x' + bytes.slice(2 + 3 * 64),
     )[0];
     return serializeBigInts({
       attestationType: prefix.attestationType,
       sourceId: prefix.sourceId,
       messageIntegrityCode: prefix.messageIntegrityCode,
-      requestBody: remapABIParsedToObjects(parsed, requestBodyAbi) as unknown,
+      requestBody: remapABIParsedToObjects(parsed, requestBodyAbi),
     }) as AR;
   }
 

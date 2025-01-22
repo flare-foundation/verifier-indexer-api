@@ -150,12 +150,12 @@ export function decodeAttestationName(encoded: string) {
  * @returns
  */
 export function remapABIParsedToObjects(
-  decoded: any,
+  decoded: unknown,
   abi: ABIFragment,
   ignoreArray = false,
-): any {
+): unknown {
   if (abi.type == 'tuple' || (abi.type == 'tuple[]' && ignoreArray)) {
-    const result: any = {};
+    const result = {};
     for (const [index, item] of abi.components.entries()) {
       const key = item.name;
       result[key] = remapABIParsedToObjects(decoded[index], item);
@@ -163,8 +163,8 @@ export function remapABIParsedToObjects(
     return result;
   }
   if (abi.type == 'tuple[]') {
-    const result: any = [];
-    for (const item of decoded) {
+    const result = [];
+    for (const item of decoded as unknown[]) {
       result.push(remapABIParsedToObjects(item, abi, true));
     }
     return result;
@@ -181,8 +181,8 @@ export function remapABIParsedToObjects(
   // we assume here we have `type[]` where `type` is one of simple types.
   const match = abi.type.match(/^(.+)\[\]$/);
   if (match && isSupportedBasicSolidityType(match[1])) {
-    const result: any = [];
-    for (const item of decoded) {
+    const result = [];
+    for (const item of decoded as unknown[]) {
       result.push(item);
     }
     return result;

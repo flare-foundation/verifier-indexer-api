@@ -2,7 +2,6 @@
 
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import * as importPlugin from 'eslint-plugin-import';
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -16,15 +15,8 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
       },
     },
-    // extends: [
-    //   flatConfigs.recommended, flatConfigs.typescript
-    // ],
-    plugins: {
-      import: importPlugin
-    },
-  // },
-  // {
-    // add aditional rules here
+    // import plugins for rules
+    // plugins: { import: importPlugin },
     rules: {
       // Disables the rule that prefers the namespace keyword over the module keyword for declaring TypeScript namespaces.
       '@typescript-eslint/prefer-namespace-keyword': 'off',
@@ -46,8 +38,6 @@ export default tseslint.config(
       'guard-for-in': 'warn',
       // Errors when a case in a switch statement falls through to the next case without a break statement or other termination.
       'no-fallthrough': 'error',
-      // Only allow relative path imports (e.g., import { foo } from './foo';). 
-      'import/no-absolute-path': 'error',
     },
   },
   // Override rules for specific files
