@@ -1,13 +1,12 @@
 import { unPrefix0x } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
 import { EntityManager } from 'typeorm';
 import { IConfig, VerifierServerConfig } from '../../config/configuration';
 import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
-import { Version } from '../../dtos/indexer/ApiDbVersion.dto';
+import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
 import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
 import {
@@ -87,8 +86,8 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
       throw new Error('No versions state found in the indexer database');
     }
 
-    const nodeVersion = resVersion.toNodeVersion()
-    const indexerVersion = resVersion.toIndexerVersion()
+    const nodeVersion = resVersion.toNodeVersion();
+    const indexerVersion = resVersion.toIndexerVersion();
     const apiServerVersion = await this.getServiceVersion();
 
     return {

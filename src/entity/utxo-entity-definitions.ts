@@ -15,7 +15,7 @@ import {
 } from 'typeorm';
 import { ApiDBBlock } from '../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBTransaction } from '../dtos/indexer/ApiDbTransaction.dto';
-import { ApiDBVersion, IndexerVersion } from '../dtos/indexer/ApiDbVersion.dto';
+import { IndexerVersion } from '../dtos/indexer/ApiDbVersion.dto';
 import {
   BlockResult,
   TransactionResult,

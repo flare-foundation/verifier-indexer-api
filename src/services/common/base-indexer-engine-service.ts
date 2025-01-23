@@ -1,9 +1,9 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { ApiDBVersion, Version } from '../../dtos/indexer/ApiDbVersion.dto';
 import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
+import { ApiDBVersion, Version } from '../../dtos/indexer/ApiDbVersion.dto';
 import { BlockRange } from '../../dtos/indexer/BlockRange.dto';
 import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
@@ -22,9 +22,13 @@ export abstract class IIndexerEngineService {
   ): Promise<string | null> {
     return readFile(join(__dirname, filePath), 'utf-8')
       .then((data) => data.trim())
-      .catch((error) => {
-        if (error.code === 'ENOENT') {
-          return null;
+      .catch((error: unknown) => {
+        if (
+          typeof error === 'object' &&
+          'code' in error &&
+          error.code === 'ENOENT'
+        ) {
+          return null as string;
         }
         throw error;
       });

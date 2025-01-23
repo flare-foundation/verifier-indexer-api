@@ -1,6 +1,5 @@
 import { ChainType, unPrefix0x } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
-import { Version } from '../../dtos/indexer/ApiDbVersion.dto';
 
 import { EntityManager, SelectQueryBuilder } from 'typeorm';
 

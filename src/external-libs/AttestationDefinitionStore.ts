@@ -6,7 +6,6 @@ import {
 } from '../dtos/attestation-types/AttestationTypeBase.dto';
 import { ABIDefinitions, TypeRecord } from './config-types';
 import {
-  ABIFragment,
   decodeAttestationName,
   DEFAULT_ATTESTATION_TYPE_CONFIGS_PATH,
   readAttestationTypeConfigs,
@@ -165,15 +164,15 @@ export class AttestationDefinitionStore {
       throw new Error(`Invalid request ABI`);
     }
     const requestBodyAbi = definition.requestAbi.components.find(
-      (item: ABIFragment) => item.name == 'requestBody',
-    ) as ABIFragment;
+      (item: ParamType) => item.name == 'requestBody',
+    ) as ParamType;
     if (!requestBodyAbi) {
       throw new Error(
         `Invalid request ABI for attestation type id: '${request.attestationType}'. No 'requestBody'.`,
       );
     }
     const abiEncodeBody = this.coder.encode(
-      [requestBodyAbi as unknown as ParamType],
+      [requestBodyAbi],
       [request.requestBody],
     );
     return ethers.concat([abiEncodePrefix, abiEncodeBody]);
@@ -218,15 +217,15 @@ export class AttestationDefinitionStore {
       throw new Error(`Invalid request ABI`);
     }
     const requestBodyAbi = definition.requestAbi?.components.find(
-      (item: ABIFragment) => item.name == 'requestBody',
-    ) as ABIFragment;
+      (item: ParamType) => item.name == 'requestBody',
+    ) as ParamType;
     if (!requestBodyAbi) {
       throw new Error(
         `Invalid request ABI for attestation type id: '${prefix.attestationType}'. No 'requestBody'.`,
       );
     }
     const parsed: unknown = this.coder.decode(
-      [requestBodyAbi as unknown as ParamType],
+      [requestBodyAbi],
       '0x' + bytes.slice(2 + 3 * 64),
     )[0];
     return serializeBigInts({
@@ -255,9 +254,9 @@ export class AttestationDefinitionStore {
     }
     const attestationType = decodeAttestationName(request1.attestationType);
 
-    const requestAbi: ABIFragment = this.getDefinitionForDecodedAttestationType(
+    const requestAbi: ParamType = this.getDefinitionForDecodedAttestationType(
       attestationType,
-    )?.requestAbi as ABIFragment;
+    )?.requestAbi as ParamType;
     if (!requestAbi) {
       throw new Error(`Unsupported attestation type id: '${attestationType}'`);
     }

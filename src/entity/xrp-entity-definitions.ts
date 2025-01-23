@@ -4,11 +4,11 @@ import { ChainType, IXrpGetTransactionRes } from '@flarenetwork/mcc';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ApiDBBlock } from '../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBTransaction } from '../dtos/indexer/ApiDbTransaction.dto';
+import { IndexerVersion } from '../dtos/indexer/ApiDbVersion.dto';
 import {
   BlockResult,
   TransactionResult,
 } from '../indexed-query-manager/indexed-query-manager-types';
-import { ApiDBVersion, IndexerVersion } from '../dtos/indexer/ApiDbVersion.dto';
 
 @Entity('blocks')
 export class DBXrpIndexerBlock {

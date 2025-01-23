@@ -1,17 +1,7 @@
-import { ethers } from 'ethers';
-import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
+import { ethers, ParamType } from 'ethers';
+import { existsSync, readdirSync, readFileSync, statSync } from 'fs';
 import * as path from 'path';
 import { TypeRecord } from './config-types';
-
-/**
- * ABIFragment is a subset of ethers ABIFragment. It is used to define the ABI fragments
- */
-export interface ABIFragment {
-  components?: ABIFragment[];
-  internalType: string;
-  name: string;
-  type: string;
-}
 
 export const DEFAULT_ATTESTATION_TYPE_CONFIGS_PATH = path.resolve(
   findPackageRoot(__dirname),
@@ -151,7 +141,7 @@ export function decodeAttestationName(encoded: string) {
  */
 export function remapABIParsedToObjects(
   decoded: unknown,
-  abi: ABIFragment,
+  abi: ParamType,
   ignoreArray = false,
 ): unknown {
   if (abi.type == 'tuple' || (abi.type == 'tuple[]' && ignoreArray)) {
@@ -200,7 +190,7 @@ export function remapABIParsedToObjects(
 export function structsDeepEqual(
   struct1: unknown,
   struct2: unknown,
-  abi: ABIFragment,
+  abi: ParamType,
 ): boolean {
   if (Object.keys(struct1).length !== Object.keys(struct2).length) {
     return false;
