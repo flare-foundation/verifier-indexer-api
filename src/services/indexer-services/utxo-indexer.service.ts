@@ -122,8 +122,8 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
       throw new Error('No versions state found in the indexer database');
     }
 
-    const nodeVersion = resVersion.toNodeVersion()
-    const indexerVersion = resVersion.toIndexerVersion()
+    const nodeVersion = resVersion.toNodeVersion();
+    const indexerVersion = resVersion.toIndexerVersion();
     const apiServerVersion = await this.getServiceVersion();
 
     return {
