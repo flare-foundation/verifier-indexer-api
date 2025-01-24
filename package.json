@@ -22,7 +22,7 @@
     "format:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "-----Testing-----": "echo \"Testing scripts\"",
     "makeE2Eexecutable": "chmod +x test/e2e_tests/run_tests.sh",
-    "test:btc": "./test/e2e_tests/run_tests.sh all btc",
+    "test": "./test/e2e_tests/run_tests.sh ",
     "test:make_db:btc": "./test/e2e_tests/run_tests.sh make_db btc",
     "test:run_tests:btc": "./test/e2e_tests/run_tests.sh run_tests btc",
     "test:doge": "./test/e2e_tests/run_tests.sh all doge",

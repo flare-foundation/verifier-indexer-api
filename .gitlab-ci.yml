@@ -1,0 +1,42 @@
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  image: node:20.18.1
+  before_script:
+    - yarn install --frozen-lockfile
+  script:
+    - yarn build
+
+e2e_test:
+  stage: test
+  image: node:20.18.1
+  variables:
+    POSTGRES_DB: db
+    POSTGRES_USER: user
+    POSTGRES_PASSWORD: pass
+    PGPASSWORD: ${POSTGRES_PASSWORD}
+  services:
+    - name: postgres:17
+      alias: postgres
+  before_script:
+    - yarn install --frozen-lockfile
+    - apt update && apt install -y postgresql-common
+    - YES=1 /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+    - apt -y install postgresql-client-17
+    - curl -o test/e2e_tests/db/db_btc_testnet https://githubstatic.flare.center/db_btc_testnet 
+    - curl -o test/e2e_tests/db/db_doge_testnet https://githubstatic.flare.center/db_doge_testnet
+    - curl -o test/e2e_tests/db/db_xrp_testnet https://githubstatic.flare.center/db_xrp_testnet 
+  script:
+    - yarn test ci
+
+lint:
+  stage: test
+  image: node:20.18.1
+  before_script:
+    - yarn install --frozen-lockfile
+  script:
+    - yarn lint:check
+    - yarn format:check
