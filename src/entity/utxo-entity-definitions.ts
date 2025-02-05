@@ -1,5 +1,5 @@
 import {
-  ChainType,
+  
   IUtxoGetTransactionRes,
   IUtxoVinTransactionCoinbase,
   IUtxoVinTransactionPrevout,
@@ -20,6 +20,7 @@ import {
   BlockResult,
   TransactionResult,
 } from '../indexed-query-manager/indexed-query-manager-types';
+import { ChainType } from '../config/configuration';
 
 // External Postgres Database Entities (Utxo (BTC and DOGE)) (read only)
 

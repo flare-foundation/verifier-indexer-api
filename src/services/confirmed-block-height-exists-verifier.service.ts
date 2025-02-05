@@ -1,8 +1,8 @@
-import { ChainType } from '@flarenetwork/mcc';
+
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityManager } from 'typeorm';
-import { IConfig } from '../config/configuration';
+import { ChainType, IConfig } from '../config/configuration';
 import {
   AttestationResponseDTO_ConfirmedBlockHeightExists_Response,
   ConfirmedBlockHeightExists_Request,

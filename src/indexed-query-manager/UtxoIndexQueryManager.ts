@@ -1,3 +1,6 @@
+
+
+import { ChainType } from '../config/configuration';
 import {
   DBUtxoIndexerBlock,
   DBUtxoTransaction,
@@ -16,7 +19,7 @@ import {
   TransactionQueryParams,
   TransactionQueryResult,
 } from './indexed-query-manager-types';
-import { ChainType } from '@flarenetwork/mcc';
+
 
 ////////////////////////////////////////////////////////
 // IndexedQueryManger - a class used to carry out

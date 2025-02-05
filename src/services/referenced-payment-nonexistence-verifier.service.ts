@@ -1,6 +1,5 @@
 import {
   BtcTransaction,
-  ChainType,
   DogeTransaction,
   TransactionBase,
   XrpTransaction,
@@ -8,7 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityManager } from 'typeorm';
-import { IConfig } from '../config/configuration';
+import { ChainType, IConfig } from '../config/configuration';
 import {
   AttestationResponseDTO_ReferencedPaymentNonexistence_Response,
   ReferencedPaymentNonexistence_Request,

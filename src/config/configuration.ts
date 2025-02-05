@@ -1,14 +1,13 @@
-import { ChainType } from '@flarenetwork/mcc';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import {
+  DBIndexerVersion,
+  DBPruneSyncState,
+  DBTipSyncState,
   DBTransactionInput,
   DBTransactionInputCoinbase,
   DBTransactionOutput,
   DBUtxoIndexerBlock,
   DBUtxoTransaction,
-  DBIndexerVersion,
-  DBPruneSyncState,
-  DBTipSyncState,
 } from '../entity/utxo-entity-definitions';
 import {
   DBXrpIndexerBlock,
@@ -125,6 +124,8 @@ export function extractVerifierType(): ChainType {
       return ChainType.BTC;
     case 'xrp':
       return ChainType.XRP;
+    case 'web2':
+      return ChainType.WEB2;
     default:
       throw new Error(
         `Wrong verifier type: '${process.env.VERIFIER_TYPE}' provide a valid verifier type: 'doge' | 'btc' | 'xrp'`,
@@ -153,15 +154,27 @@ export function getDatabaseEntities(verifierType: ChainType) {
         DBXrpState,
         DBXrpIndexerVersion,
       ];
+    case ChainType.WEB2:
+      return [];
     default:
       throw new Error(`Unsupported verifier type: ${verifierType}`);
   }
 }
 
-export type SourceNames = 'DOGE' | 'BTC' | 'XRP';
+export type SourceNames = 'DOGE' | 'BTC' | 'XRP' | 'WEB2';
 export type AttestationTypeOptions =
   | 'AddressValidity'
   | 'BalanceDecreasingTransaction'
   | 'ConfirmedBlockHeightExists'
   | 'Payment'
-  | 'ReferencedPaymentNonexistence';
+  | 'ReferencedPaymentNonexistence'
+  | 'JsonApi';
+
+export enum ChainType {
+  invalid = -1,
+  BTC = 0,
+  DOGE = 2,
+  XRP = 3,
+  WEB2 = 4,
+  // ... make sure IDs are the same as in Flare node
+}

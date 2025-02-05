@@ -3,10 +3,10 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 // import { VerifierBtcServerModule } from './verifier-btc-server.module';
-import { ChainType } from '@flarenetwork/mcc';
-import { extractVerifierType } from './config/configuration';
+import { ChainType, extractVerifierType } from './config/configuration';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
 import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
+import { JsonApiVerifierServerModule } from './verifier-modules/jq-verifier-sever.module';
 import { XRPVerifierServerModule } from './verifier-modules/xrp-verifier-server.module';
 // import { VerifierXrpServerModule } from './verifier-xrp-server.module';
 
@@ -22,6 +22,8 @@ function moduleForDataSource():
       return BtcVerifierServerModule;
     case ChainType.XRP:
       return XRPVerifierServerModule;
+    case ChainType.WEB2:
+      return JsonApiVerifierServerModule;
     default:
       throw new Error(`Wrong verifier type: '${process.env.VERIFIER_TYPE}'`);
   }

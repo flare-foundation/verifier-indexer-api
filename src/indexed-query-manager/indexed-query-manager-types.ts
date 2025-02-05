@@ -1,4 +1,4 @@
-import { ChainType } from '@flarenetwork/mcc';
+import { ChainType } from '../config/configuration';
 import { EntityManager } from 'typeorm';
 
 export interface IndexedQueryManagerOptions {

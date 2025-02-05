@@ -1,8 +1,9 @@
-import { ChainType, ZERO_BYTES_32 } from '@flarenetwork/mcc';
+import { ZERO_BYTES_32 } from '@flarenetwork/mcc';
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AttestationTypeOptions,
+  ChainType,
   IConfig,
   SourceNames,
   VerifierServerConfig,
@@ -240,6 +241,8 @@ function getSourceName(source: ChainType): SourceNames {
       return 'BTC';
     case ChainType.XRP:
       return 'XRP';
+    case ChainType.WEB2:
+      return 'WEB2';
     default:
       throw new Error(`Unsupported source chain, ${source}`);
   }
