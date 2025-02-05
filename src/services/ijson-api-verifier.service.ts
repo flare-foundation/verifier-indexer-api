@@ -18,7 +18,7 @@ export class IJsonApiVerifierService extends BaseVerifierService<
   constructor(protected configService: ConfigService<IConfig>) {
     super(configService, {
       source: ChainType.WEB2,
-      attestationName: 'JsonApi',
+      attestationName: 'IJsonApi',
     });
   }
 
@@ -26,6 +26,7 @@ export class IJsonApiVerifierService extends BaseVerifierService<
     fixedRequest: IJsonApi_Request,
   ): Promise<AttestationResponseDTO_IJsonApi_Response> {
     const result = await verifyJsonApi(fixedRequest);
+
 
     return serializeBigInts({
       status: result.status,

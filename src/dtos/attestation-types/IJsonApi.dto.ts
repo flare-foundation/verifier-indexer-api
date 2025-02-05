@@ -89,7 +89,7 @@ export class IJsonApi_Request {
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
-      '0x4a736f6e41706900000000000000000000000000000000000000000000000000',
+      '0x494a736f6e417069000000000000000000000000000000000000000000000000',
   })
   attestationType: string;
 

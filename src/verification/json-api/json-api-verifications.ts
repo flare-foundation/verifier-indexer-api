@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
-import jq from 'node-jq';
+import * as jq from 'node-jq';
+import { JsonInput } from 'node-jq/lib/options';
 import {
   IJsonApi_Request,
   IJsonApi_Response,
@@ -20,7 +21,7 @@ export async function verifyJsonApi(
 ): Promise<VerificationResponse<IJsonApi_Response>> {
   const url = request.requestBody.url;
   const jqScheme = request.requestBody.postprocessJq;
-  const abiSign = JSON.parse(request.requestBody.abi_signature) as string[];
+  const abiSign = JSON.parse(request.requestBody.abi_signature) as object;
 
   return fetch(url)
     .then((response) => {
@@ -32,24 +33,15 @@ export async function verifyJsonApi(
     .catch(() => {
       throw new Error('Data availability issue');
     })
-    .then((responseData) => {
-      return (
-        jq as {
-          run: (
-            scheme: string,
-            data: unknown,
-            options: { input: string },
-          ) => Promise<string>;
-        }
-      ).run(jqScheme, responseData, {
-        input: 'json',
-      });
+    .then((data: JsonInput) => {
+      return jq.run(jqScheme, data, { input: 'json' });
     })
-    .then((output: string) => {
-      const dataJq: unknown = JSON.parse(output);
-      const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(abiSign, [
-        dataJq,
-      ]);
+    .then((filteredData: string) => {
+      const dataJq = JSON.parse(filteredData) as JsonInput;
+      const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
+        [abiSign as ethers.ParamType],
+        [dataJq],
+      );
 
       const response = new IJsonApi_Response({
         attestationType: request.attestationType,
@@ -61,14 +53,15 @@ export async function verifyJsonApi(
           abi_encoded_data: encodedData,
         }),
       });
+      console.log('encodedData', encodedData);
 
       return {
         status: AttestationResponseStatus.VALID,
         response,
       };
     })
-    .catch((error) => {
-      if ((error as Error).message === 'Data availability issue') {
+    .catch((error: Error) => {
+      if (error.message === 'Data availability issue') {
         return {
           status: AttestationResponseStatus.INVALID_DATA_AVAILABILITY_ISSUE,
         };

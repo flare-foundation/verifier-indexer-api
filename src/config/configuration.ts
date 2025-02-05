@@ -168,7 +168,7 @@ export type AttestationTypeOptions =
   | 'ConfirmedBlockHeightExists'
   | 'Payment'
   | 'ReferencedPaymentNonexistence'
-  | 'JsonApi';
+  | 'IJsonApi';
 
 export enum ChainType {
   invalid = -1,
