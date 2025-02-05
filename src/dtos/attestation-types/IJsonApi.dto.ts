@@ -18,18 +18,18 @@ import { AttestationResponseStatus } from '../../verification/response-status';
 /**
  * Attestation response for specific attestation type (flattened)
  */
-export class AttestationResponseDTO_JsonApi_Response {
-  constructor(params: Required<AttestationResponseDTO_JsonApi_Response>) {
+export class AttestationResponseDTO_IJsonApi_Response {
+  constructor(params: Required<AttestationResponseDTO_IJsonApi_Response>) {
     Object.assign(this, params);
   }
 
   status: AttestationResponseStatus;
 
-  response?: JsonApi_Response;
+  response?: IJsonApi_Response;
 }
 
-export class JsonApi_ResponseBody {
-  constructor(params: Required<JsonApi_ResponseBody>) {
+export class IJsonApi_ResponseBody {
+  constructor(params: Required<IJsonApi_ResponseBody>) {
     Object.assign(this, params);
   }
 
@@ -41,8 +41,8 @@ export class JsonApi_ResponseBody {
   abi_encoded_data: string;
 }
 
-export class JsonApi_RequestBody {
-  constructor(params: Required<JsonApi_RequestBody>) {
+export class IJsonApi_RequestBody {
+  constructor(params: Required<IJsonApi_RequestBody>) {
     Object.assign(this, params);
   }
 
@@ -77,8 +77,8 @@ export class JsonApi_RequestBody {
   abi_signature: string;
 }
 
-export class JsonApi_Request {
-  constructor(params: Required<JsonApi_Request>) {
+export class IJsonApi_Request {
+  constructor(params: Required<IJsonApi_Request>) {
     Object.assign(this, params);
   }
 
@@ -119,18 +119,18 @@ export class JsonApi_Request {
    * Data defining the request. Type (struct) and interpretation is determined
    */
   @ValidateNested()
-  @Type(() => JsonApi_RequestBody)
+  @Type(() => IJsonApi_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
     description: `Data defining the request. Type (struct) and interpretation is determined`,
   })
-  requestBody: JsonApi_RequestBody;
+  requestBody: IJsonApi_RequestBody;
 }
 
-export class JsonApi_Response {
-  constructor(params: Required<JsonApi_Response>) {
+export class IJsonApi_Response {
+  constructor(params: Required<IJsonApi_Response>) {
     Object.assign(this, params);
   }
 
@@ -180,29 +180,29 @@ export class JsonApi_Response {
    * Extracted from the request.
    */
   @ValidateNested()
-  @Type(() => JsonApi_RequestBody)
+  @Type(() => IJsonApi_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Extracted from the request.` })
-  requestBody: JsonApi_RequestBody;
+  requestBody: IJsonApi_RequestBody;
 
   /**
    * Data defining the response. The verification rules for the construction
    */
   @ValidateNested()
-  @Type(() => JsonApi_ResponseBody)
+  @Type(() => IJsonApi_ResponseBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
     description: `Data defining the response. The verification rules for the construction`,
   })
-  responseBody: JsonApi_ResponseBody;
+  responseBody: IJsonApi_ResponseBody;
 }
 
-export class JsonApi_Proof {
-  constructor(params: Required<JsonApi_Proof>) {
+export class IJsonApi_Proof {
+  constructor(params: Required<IJsonApi_Proof>) {
     Object.assign(this, params);
   }
 
@@ -222,10 +222,10 @@ export class JsonApi_Proof {
    * Attestation response.
    */
   @ValidateNested()
-  @Type(() => JsonApi_Response)
+  @Type(() => IJsonApi_Response)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Attestation response.` })
-  data: JsonApi_Response;
+  data: IJsonApi_Response;
 }

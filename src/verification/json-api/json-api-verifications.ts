@@ -1,15 +1,13 @@
 import { ethers } from 'ethers';
 import jq from 'node-jq';
 import {
-  JsonApi_Request,
-  JsonApi_Response,
-  JsonApi_ResponseBody,
-} from '../../dtos/attestation-types/JsonApi.dto';
+  IJsonApi_Request,
+  IJsonApi_Response,
+  IJsonApi_ResponseBody,
+} from '../../dtos/attestation-types/IJsonApi.dto';
 import { serializeBigInts } from '../../external-libs/utils';
-import {
-  AttestationResponseStatus,
-  VerificationResponse,
-} from './../response-status';
+import { VerificationResponse } from '../response-status';
+import { AttestationResponseStatus } from './../response-status';
 
 /**
  * `JsonApi` attestation type verification function
@@ -18,8 +16,8 @@ import {
  * @category Verifiers
  */
 export async function verifyJsonApi(
-  request: JsonApi_Request,
-): Promise<VerificationResponse<JsonApi_Response>> {
+  request: IJsonApi_Request,
+): Promise<VerificationResponse<IJsonApi_Response>> {
   const url = request.requestBody.url;
   const jqScheme = request.requestBody.postprocessJq;
   const abiSign = JSON.parse(request.requestBody.abi_signature) as string[];
@@ -53,13 +51,13 @@ export async function verifyJsonApi(
         dataJq,
       ]);
 
-      const response = new JsonApi_Response({
+      const response = new IJsonApi_Response({
         attestationType: request.attestationType,
         sourceId: request.sourceId,
         votingRound: '0',
         lowestUsedTimestamp: '0',
         requestBody: serializeBigInts(request.requestBody),
-        responseBody: new JsonApi_ResponseBody({
+        responseBody: new IJsonApi_ResponseBody({
           abi_encoded_data: encodedData,
         }),
       });

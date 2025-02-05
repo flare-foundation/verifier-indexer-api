@@ -2,18 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ChainType, IConfig } from '../config/configuration';
 import {
-  AttestationResponseDTO_JsonApi_Response,
-  JsonApi_Request,
-  JsonApi_Response,
-} from '../dtos/attestation-types/JsonApi.dto';
+  AttestationResponseDTO_IJsonApi_Response,
+  IJsonApi_Request,
+  IJsonApi_Response,
+} from '../dtos/attestation-types/IJsonApi.dto';
 import { serializeBigInts } from '../external-libs/utils';
 import { verifyJsonApi } from '../verification/json-api/json-api-verifications';
 import { BaseVerifierService } from './common/verifier-base.service';
 
 @Injectable()
-export class JsonApiVerifierService extends BaseVerifierService<
-  JsonApi_Request,
-  JsonApi_Response
+export class IJsonApiVerifierService extends BaseVerifierService<
+  IJsonApi_Request,
+  IJsonApi_Response
 > {
   constructor(protected configService: ConfigService<IConfig>) {
     super(configService, {
@@ -23,8 +23,8 @@ export class JsonApiVerifierService extends BaseVerifierService<
   }
 
   async verifyRequest(
-    fixedRequest: JsonApi_Request,
-  ): Promise<AttestationResponseDTO_JsonApi_Response> {
+    fixedRequest: IJsonApi_Request,
+  ): Promise<AttestationResponseDTO_IJsonApi_Response> {
     const result = await verifyJsonApi(fixedRequest);
 
     return serializeBigInts({

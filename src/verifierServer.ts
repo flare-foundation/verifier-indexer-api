@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import { ChainType, extractVerifierType } from './config/configuration';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
 import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
-import { JsonApiVerifierServerModule } from './verifier-modules/jq-verifier-sever.module';
+import { IJsonApiVerifierServerModule } from './verifier-modules/ijson-api-verifier-sever.module';
 import { XRPVerifierServerModule } from './verifier-modules/xrp-verifier-server.module';
 // import { VerifierXrpServerModule } from './verifier-xrp-server.module';
 
@@ -23,7 +23,7 @@ function moduleForDataSource():
     case ChainType.XRP:
       return XRPVerifierServerModule;
     case ChainType.WEB2:
-      return JsonApiVerifierServerModule;
+      return IJsonApiVerifierServerModule;
     default:
       throw new Error(`Wrong verifier type: '${process.env.VERIFIER_TYPE}'`);
   }
