@@ -10,6 +10,17 @@ import { serializeBigInts } from '../../external-libs/utils';
 import { VerificationResponse } from '../response-status';
 import { AttestationResponseStatus } from './../response-status';
 
+interface AuthData {
+  basic?: { username: string; password: string };
+  header?: { key: string; value: string };
+  query?: { key: string; value: string };
+}
+
+// TODO!: Add urls and auth data to the map
+// Example:
+// authUrls.set('https://example.com', { basic: { username: 'user', password: 'pass' } });
+const authUrls = new Map<string, AuthData>();
+
 /**
  * `JsonApi` attestation type verification function
  * @param request attestation request
@@ -23,7 +34,49 @@ export async function verifyJsonApi(
   const jqScheme = request.requestBody.postprocessJq;
   const abiSign = JSON.parse(request.requestBody.abi_signature) as object;
 
-  return fetch(url)
+  let requestURL: globalThis.Request;
+  const headers = new Headers();
+
+  if (authUrls.has(url)) {
+    const authData = authUrls.get(url);
+
+    switch (authData) {
+      case authData.basic:
+        headers.set(
+          'Authorization',
+          'Basic ' +
+            btoa(`${authData.basic.username}:${authData.basic.password}`),
+        );
+        requestURL = new globalThis.Request(url, {
+          method: 'GET',
+          headers,
+        });
+        break;
+      case authData.header:
+        headers.set(authData.header.key, authData.header.value);
+        requestURL = new globalThis.Request(url, {
+          method: 'GET',
+          headers,
+        });
+        break;
+      case authData.query:
+        requestURL = new globalThis.Request(
+          `${url}?${authData.query.key}=${authData.query.value}`,
+          {
+            method: 'GET',
+          },
+        );
+        break;
+      default:
+        throw new Error('Invalid auth data');
+    }
+  } else {
+    requestURL = new globalThis.Request(url, {
+      method: 'GET',
+    });
+  }
+
+  return fetch(requestURL)
     .then((response) => {
       if (!response.ok) {
         throw new Error();
@@ -53,7 +106,6 @@ export async function verifyJsonApi(
           abi_encoded_data: encodedData,
         }),
       });
-      console.log('encodedData', encodedData);
 
       return {
         status: AttestationResponseStatus.VALID,
