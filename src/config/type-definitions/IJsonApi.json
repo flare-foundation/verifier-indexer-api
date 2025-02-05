@@ -1,0 +1,328 @@
+{
+  "name": "IJsonApi",
+  "fullComment": " @custom:name IJsonApi\n @custom:supported WEB2\n @author Flare\n @notice An attestation request that fetches data from the given url and then edits the information with a\n jq transformation.\n @custom:verification  Data is fetched from an url `url`. The received data is then processed with jq as\n the `postprocessJq` states. The structure of the final json is written in the `abi_signature`.\n The response contains an abi encoding of the final data.\n @custom:lut `0xffffffffffffffff`\n @custom:lut-limit `0xffffffffffffffff`",
+  "description": "An attestation request that fetches data from the given url and then edits the information with a\n jq transformation.",
+  "verification": "Data is fetched from an url `url`. The received data is then processed with jq as\n the `postprocessJq` states. The structure of the final json is written in the `abi_signature`.\n The response contains an abi encoding of the final data.\n ",
+  "lut": "`0xffffffffffffffff`",
+  "proof": {
+    "name": "Proof",
+    "description": "Toplevel proof",
+    "above": "",
+    "below": "",
+    "fullComment": " @notice Toplevel proof\n @param merkleProof Merkle proof corresponding to the attestation response.\n @param data Attestation response.",
+    "params": [
+      {
+        "name": "merkleProof",
+        "type": "bytes32[]",
+        "typeSimple": "bytes32[]",
+        "comment": "Merkle proof corresponding to the attestation response."
+      },
+      {
+        "name": "data",
+        "type": "struct IJsonApi.Response",
+        "typeSimple": "Response",
+        "comment": "Attestation response."
+      }
+    ]
+  },
+  "request": {
+    "name": "Request",
+    "description": "Toplevel request",
+    "above": "",
+    "below": "",
+    "fullComment": " @notice Toplevel request\n @param attestationType ID of the attestation type.\n @param sourceId ID of the data source.\n @param messageIntegrityCode `MessageIntegrityCode` that is derived from the expected response.\n @param requestBody Data defining the request. Type (struct) and interpretation is determined\n by the `attestationType`.",
+    "params": [
+      {
+        "name": "attestationType",
+        "type": "bytes32",
+        "typeSimple": "bytes32",
+        "comment": "ID of the attestation type."
+      },
+      {
+        "name": "sourceId",
+        "type": "bytes32",
+        "typeSimple": "bytes32",
+        "comment": "ID of the data source."
+      },
+      {
+        "name": "messageIntegrityCode",
+        "type": "bytes32",
+        "typeSimple": "bytes32",
+        "comment": "`MessageIntegrityCode` that is derived from the expected response."
+      },
+      {
+        "name": "requestBody",
+        "type": "struct IJsonApi.RequestBody",
+        "typeSimple": "RequestBody",
+        "comment": "Data defining the request. Type (struct) and interpretation is determined"
+      }
+    ]
+  },
+  "response": {
+    "name": "Response",
+    "description": "Toplevel response",
+    "above": "",
+    "below": "",
+    "fullComment": " @notice Toplevel response\n @param attestationType Extracted from the request.\n @param sourceId Extracted from the request.\n @param votingRound The ID of the State Connector round in which the request was considered.\n @param lowestUsedTimestamp The lowest timestamp used to generate the response.\n @param requestBody Extracted from the request.\n @param responseBody Data defining the response. The verification rules for the construction\n of the response body and the type are defined per specific `attestationType`.",
+    "params": [
+      {
+        "name": "attestationType",
+        "type": "bytes32",
+        "typeSimple": "bytes32",
+        "comment": "Extracted from the request."
+      },
+      {
+        "name": "sourceId",
+        "type": "bytes32",
+        "typeSimple": "bytes32",
+        "comment": "Extracted from the request."
+      },
+      {
+        "name": "votingRound",
+        "type": "uint64",
+        "typeSimple": "uint64",
+        "comment": "The ID of the State Connector round in which the request was considered."
+      },
+      {
+        "name": "lowestUsedTimestamp",
+        "type": "uint64",
+        "typeSimple": "uint64",
+        "comment": "The lowest timestamp used to generate the response."
+      },
+      {
+        "name": "requestBody",
+        "type": "struct IJsonApi.RequestBody",
+        "typeSimple": "RequestBody",
+        "comment": "Extracted from the request."
+      },
+      {
+        "name": "responseBody",
+        "type": "struct IJsonApi.ResponseBody",
+        "typeSimple": "ResponseBody",
+        "comment": "Data defining the response. The verification rules for the construction"
+      }
+    ]
+  },
+  "requestBody": {
+    "name": "RequestBody",
+    "description": "Request body for Payment attestation type",
+    "above": "",
+    "below": "",
+    "fullComment": " @notice Request body for Payment attestation type\n @param url URL of the data source\n @param postprocessJq jq filter to postprocess the data\n @param abi_signature ABI signature of the data",
+    "params": [
+      {
+        "name": "url",
+        "type": "string",
+        "typeSimple": "string",
+        "comment": "URL of the data source"
+      },
+      {
+        "name": "postprocessJq",
+        "type": "string",
+        "typeSimple": "string",
+        "comment": "jq filter to postprocess the data"
+      },
+      {
+        "name": "abi_signature",
+        "type": "string",
+        "typeSimple": "string",
+        "comment": "ABI signature of the data"
+      }
+    ]
+  },
+  "responseBody": {
+    "name": "ResponseBody",
+    "description": "Response body for Payment attestation type",
+    "above": "",
+    "below": "",
+    "fullComment": " @notice Response body for Payment attestation type\n @param abi_encoded_data ABI encoded data",
+    "params": [
+      {
+        "name": "abi_encoded_data",
+        "type": "bytes",
+        "typeSimple": "bytes",
+        "comment": "ABI encoded data"
+      }
+    ]
+  },
+  "requestStructs": [],
+  "responseStructs": [],
+  "requestAbi": {
+    "components": [
+      {
+        "internalType": "bytes32",
+        "name": "attestationType",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "sourceId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "messageIntegrityCode",
+        "type": "bytes32"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "url",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "postprocessJq",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "abi_signature",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IJsonApi.RequestBody",
+        "name": "requestBody",
+        "type": "tuple"
+      }
+    ],
+    "internalType": "struct IJsonApi.Request",
+    "name": "_request",
+    "type": "tuple"
+  },
+  "responseAbi": {
+    "components": [
+      {
+        "internalType": "bytes32",
+        "name": "attestationType",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "sourceId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint64",
+        "name": "votingRound",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "lowestUsedTimestamp",
+        "type": "uint64"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "url",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "postprocessJq",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "abi_signature",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IJsonApi.RequestBody",
+        "name": "requestBody",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "abi_encoded_data",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IJsonApi.ResponseBody",
+        "name": "responseBody",
+        "type": "tuple"
+      }
+    ],
+    "internalType": "struct IJsonApi.Response",
+    "name": "_response",
+    "type": "tuple"
+  },
+  "proofAbi": {
+    "components": [
+      {
+        "internalType": "bytes32[]",
+        "name": "merkleProof",
+        "type": "bytes32[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "attestationType",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "sourceId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "votingRound",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "lowestUsedTimestamp",
+            "type": "uint64"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "url",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "postprocessJq",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "abi_signature",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct IJsonApi.RequestBody",
+            "name": "requestBody",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes",
+                "name": "abi_encoded_data",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct IJsonApi.ResponseBody",
+            "name": "responseBody",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IJsonApi.Response",
+        "name": "data",
+        "type": "tuple"
+      }
+    ],
+    "internalType": "struct IJsonApi.Proof",
+    "name": "_proof",
+    "type": "tuple"
+  }
+}
