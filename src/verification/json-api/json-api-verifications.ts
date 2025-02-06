@@ -10,14 +10,18 @@ import { serializeBigInts } from '../../external-libs/utils';
 import { VerificationResponse } from '../response-status';
 import { AttestationResponseStatus } from './../response-status';
 
-interface AuthData {
-  basic?: { username: string; password: string };
-  header?: { key: string; value: string };
-  query?: { key: string; value: string };
+interface BasicAuth {
+  basic: { username: string; password: string };
+}
+interface HeaderAuth {
+  header: { key: string; value: string };
+}
+interface QueryAuth {
+  query: { key: string; value: string };
 }
 
 // TODO!: Add urls and auth data to the map
-const authUrls = new Map<string, AuthData>();
+const authUrls = new Map<string, BasicAuth | HeaderAuth | QueryAuth>();
 // Use the base URL without the trailing .com, .org, or other domain suffixes.
 // Examples:
 // authUrls.set('https://example', { basic: { username: 'user', password: 'pass' }, });
@@ -43,17 +47,17 @@ export async function verifyJsonApi(
   if (authUrls.has(baseUrl)) {
     const authData = authUrls.get(baseUrl);
 
-    if (authData?.basic) {
+    if ('basic' in authData) {
       headers.set(
         'Authorization',
         'Basic ' +
           btoa(`${authData.basic.username}:${authData.basic.password}`),
       );
     }
-    if (authData?.header) {
+    if ('header' in authData) {
       headers.set(authData.header.key, authData.header.value);
     }
-    if (authData?.query) {
+    if ('query' in authData) {
       const urlObj = new URL(url);
       urlObj.searchParams.append(authData.query.key, authData.query.value);
       url = urlObj.toString();
@@ -111,4 +115,3 @@ export async function verifyJsonApi(
       }
     });
 }
-
