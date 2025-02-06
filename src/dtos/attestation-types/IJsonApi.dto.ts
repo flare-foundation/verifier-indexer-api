@@ -52,7 +52,7 @@ export class IJsonApi_RequestBody {
   @IsString()
   @ApiProperty({
     description: `URL of the data source`,
-    example: 'https://flare-systems-explorer.flare.network/',
+    example: 'https://jsonplaceholder.typicode.com/todos/1',
   })
   url: string;
 
@@ -62,7 +62,7 @@ export class IJsonApi_RequestBody {
   @IsString()
   @ApiProperty({
     description: `jq filter to postprocess the data`,
-    example: '.[] | select(.age > 25)',
+    example: '.',
   })
   postprocessJq: string;
 
@@ -72,7 +72,8 @@ export class IJsonApi_RequestBody {
   @IsString()
   @ApiProperty({
     description: `ABI signature of the data`,
-    example: 'struct Person { string name; uint256 age; }',
+    example:
+      '{"components": [{"internalType": "uint8","name": "userId","type": "uint8"},{"internalType": "uint8","name": "id","type": "uint8"},{"internalType": "string","name": "title","type": "string"},{"internalType": "bool","name": "completed","type": "bool"}],"name": "task","type": "tuple"}',
   })
   abi_signature: string;
 }
