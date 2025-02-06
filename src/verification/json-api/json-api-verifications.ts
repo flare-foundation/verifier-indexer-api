@@ -17,9 +17,12 @@ interface AuthData {
 }
 
 // TODO!: Add urls and auth data to the map
-// Example:
-// authUrls.set('https://example.com', { basic: { username: 'user', password: 'pass' } });
 const authUrls = new Map<string, AuthData>();
+// Use the base URL without the trailing .com, .org, or other domain suffixes.
+// Examples:
+// authUrls.set('https://example', { basic: { username: 'user', password: 'pass' }, });
+// authUrls.set('https://example', { header: { key: 'Auth', value: 'Bearer token' }, });
+// authUrls.set('https://example', { query: { key: 'key', value: 'token' }, });
 
 /**
  * `JsonApi` attestation type verification function
@@ -30,51 +33,37 @@ const authUrls = new Map<string, AuthData>();
 export async function verifyJsonApi(
   request: IJsonApi_Request,
 ): Promise<VerificationResponse<IJsonApi_Response>> {
-  const url = request.requestBody.url;
+  let url = request.requestBody.url;
   const jqScheme = request.requestBody.postprocessJq;
   const abiSign = JSON.parse(request.requestBody.abi_signature) as object;
 
-  let requestURL: globalThis.Request;
   const headers = new Headers();
+  const baseUrl = new URL(url).origin;
 
-  if (authUrls.has(url)) {
-    const authData = authUrls.get(url);
+  if (authUrls.has(baseUrl)) {
+    const authData = authUrls.get(baseUrl);
 
-    switch (authData) {
-      case authData.basic:
-        headers.set(
-          'Authorization',
-          'Basic ' +
-            btoa(`${authData.basic.username}:${authData.basic.password}`),
-        );
-        requestURL = new globalThis.Request(url, {
-          method: 'GET',
-          headers,
-        });
-        break;
-      case authData.header:
-        headers.set(authData.header.key, authData.header.value);
-        requestURL = new globalThis.Request(url, {
-          method: 'GET',
-          headers,
-        });
-        break;
-      case authData.query:
-        requestURL = new globalThis.Request(
-          `${url}?${authData.query.key}=${authData.query.value}`,
-          {
-            method: 'GET',
-          },
-        );
-        break;
-      default:
-        throw new Error('Invalid auth data');
+    if (authData?.basic) {
+      headers.set(
+        'Authorization',
+        'Basic ' +
+          btoa(`${authData.basic.username}:${authData.basic.password}`),
+      );
     }
-  } else {
-    requestURL = new globalThis.Request(url, {
-      method: 'GET',
-    });
+    if (authData?.header) {
+      headers.set(authData.header.key, authData.header.value);
+    }
+    if (authData?.query) {
+      const urlObj = new URL(url);
+      urlObj.searchParams.append(authData.query.key, authData.query.value);
+      url = urlObj.toString();
+    }
   }
+
+  const requestURL = new globalThis.Request(url, {
+    method: 'GET',
+    headers: headers,
+  });
 
   return fetch(requestURL)
     .then((response) => {
@@ -84,7 +73,7 @@ export async function verifyJsonApi(
       return response.json();
     })
     .catch(() => {
-      throw new Error('Data availability issue');
+      throw new Error(AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR);
     })
     .then((data: JsonInput) => {
       return jq.run(jqScheme, data, { input: 'json' });
@@ -113,12 +102,13 @@ export async function verifyJsonApi(
       };
     })
     .catch((error: Error) => {
-      if (error.message === 'Data availability issue') {
-        return {
-          status: AttestationResponseStatus.INVALID_DATA_AVAILABILITY_ISSUE,
-        };
+      if (
+        error.message === AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR.toString()
+      ) {
+        return { status: AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR };
       } else {
         return { status: AttestationResponseStatus.INVALID_JQ_PARSE_ERROR };
       }
     });
 }
+
