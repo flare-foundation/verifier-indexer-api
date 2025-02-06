@@ -27,7 +27,6 @@ export class IJsonApiVerifierService extends BaseVerifierService<
   ): Promise<AttestationResponseDTO_IJsonApi_Response> {
     const result = await verifyJsonApi(fixedRequest);
 
-
     return serializeBigInts({
       status: result.status,
       response: result.response,

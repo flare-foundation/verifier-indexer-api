@@ -1,5 +1,3 @@
-
-
 import { ChainType } from '../config/configuration';
 import {
   DBUtxoIndexerBlock,
@@ -19,7 +17,6 @@ import {
   TransactionQueryParams,
   TransactionQueryResult,
 } from './indexed-query-manager-types';
-
 
 ////////////////////////////////////////////////////////
 // IndexedQueryManger - a class used to carry out

@@ -1,6 +1,5 @@
 import {
   BtcTransaction,
-
   DogeTransaction,
   TransactionBase,
   XrpTransaction,

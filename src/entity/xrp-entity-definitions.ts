@@ -1,6 +1,6 @@
 // External Postgres Database Entities (XRP) (read only)
 
-import {  IXrpGetTransactionRes } from '@flarenetwork/mcc';
+import { IXrpGetTransactionRes } from '@flarenetwork/mcc';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ApiDBBlock } from '../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBTransaction } from '../dtos/indexer/ApiDbTransaction.dto';
