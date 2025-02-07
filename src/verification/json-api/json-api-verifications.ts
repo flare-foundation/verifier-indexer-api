@@ -77,7 +77,9 @@ export async function verifyJsonApi(
       return response.json();
     })
     .catch(() => {
-      throw new Error(AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR);
+      throw new Error(
+        AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR,
+      );
     })
     .then((data: JsonInput) => {
       return jq.run(jqScheme, data, { input: 'json' });
@@ -107,9 +109,12 @@ export async function verifyJsonApi(
     })
     .catch((error: Error) => {
       if (
-        error.message === AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR.toString()
+        error.message ===
+        AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR.toString()
       ) {
-        return { status: AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR };
+        return {
+          status: AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR,
+        };
       } else {
         return { status: AttestationResponseStatus.INVALID_JQ_PARSE_ERROR };
       }
