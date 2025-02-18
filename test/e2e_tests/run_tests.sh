@@ -4,7 +4,7 @@ export DB_DATABASE=db
 export DB_USERNAME=user
 export DB_PASSWORD=pass
 export DB_HOST=127.0.0.1
-export DB_PORT=8081
+export DB_PORT=8080
 
 export TESTNET=true
 
@@ -103,7 +103,6 @@ main() {
   shift
   case "$CMD" in
   run)
-  # TODO:(andraz) add validtion (only one argument)
     make_db "$@"
     run_tests "$@"
     delete_db 
@@ -118,7 +117,6 @@ main() {
     delete_db
     ;;
   ci)
-  # TODO:(andraz) can be improved that it doesn't crash at first error but runs all tests
     make_db_ci btc &&
     run_tests btc &&
     make_db_ci doge &&

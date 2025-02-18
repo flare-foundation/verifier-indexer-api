@@ -2,25 +2,33 @@
   <a href="https://flare.network/" target="blank"><img src="https://flare.network/wp-content/uploads/Artboard-1-1.svg" width="400" height="300" alt="Flare Logo" /></a>
 </p>
 
-Verifier server API implementation
+# Verifier server API implementation
 
-You can run the verifier api service on 3 different sources:
-* BTC / testBTC
-* XRP / testXRP
-* DOGE / testDOGE
+One can run the Verifier API service on three different sources:
 
-For the api to work properly the service must be connected to the appropriate underlying postgresql database that is being filled with the the aproriate indexing solution (BTC indexer -> BTC api service)
+- **BTC** / testBTC
+- **XRP** / testXRP
+- **DOGE** / testDOGE
+
+For the API to function correctly, the service must be connected to the corresponding PostgreSQL database, which is populated using the appropriate indexing solution (e.g., BTC Indexer for BTC API Service).
 
 ## Local Installation
 
-Make sure you are using the node version specified in .nvmrc file. We recommend that you use `nvm` to manage local node installations. Make sure to use/enable `yarn`
+Make sure you're using the Node version specified in the `.nvmrc` file. We recommend using `nvm` to manage your local Node installations. Additionally, ensure that `yarn` is installed and enabled.
 
 Install the dependencies
+
 ```bash
 $ yarn install
 ```
 
+## Configuration
+
+Copy `.env.example` to `.env` and fill the required configuration.
+
 ## Running the app
+
+To start app run
 
 ```bash
 # development
@@ -30,41 +38,44 @@ $ yarn run start
 $ yarn run start:dev
 ```
 
-## Test
-
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
-
 ## Testing with postgresql dump
 
-Get db instances from some persistent storage, or ask other devs.
+Download the database instances from the following links:
 
-Move those db dumps to `/e2e_tests/db/`.
+- [BTC Testnet Database](https://githubstatic.flare.center/db_btc_testnet)
+- [DOGE Testnet Database](https://githubstatic.flare.center/db_doge_testnet)
+- [XRP Testnet Database](https://githubstatic.flare.center/db_xrp_testnet)
 
-For now all dbs are on testnets.
+Move these database dumps to the `/e2e_tests/db/` directory. Currently, all databases are on testnets.
 
-### Option1: running tests against db instance
+### Option 1: Running Tests Against a Database Instance
 
-Depending on your source, use the following command (btc example)
-```yarn test:btc```.
+Depending on your source, use the following command (example for BTC):
 
-### Option2: spinning up db from dumpb and persist it
+```bash
+yarn test run btc
+```
 
-Again depending on your source create db instance
-```yarn test:make_db:btc```,
-after that db will be available and you can 
-1. run tests against it, to do so use `yarn test:run_tests:btc`,
-2. start up local server and make requests by hand.
+### Option 2: Spinning Up a Database from a Dump and Persisting It
 
-In the second case set env variables of db to
+Depending on your source, create a database instance using the following command:
+
+```bash
+yarn test make_db btc
+```
+
+After the database is available, you can:
+
+1. Run tests against it using:
+
+```bash
+yarn test run_tests btc
+```
+
+2. Start a local server and make requests manually.
+
+In the second case, set the database environment variables in the `.env` file:
+
 ```bash
 # .env file
 DB_DATABASE=db
@@ -73,9 +84,16 @@ DB_PASSWORD=pass
 DB_HOST=127.0.0.1
 DB_PORT=8080
 ```
-and specify the right values for `VERIFIER_TYPE` and `TESTNET=true` variables.
 
-After you are done make sure to stop the db server with
-```yarn test:delete_db```.
+Also, specify the correct values for the `VERIFIER_TYPE` and `TESTNET` variables:
 
+```bash
+VERIFIER_TYPE=btc
+TESTNET=true
+```
 
+After you are done, make sure to stop the database server with:
+
+```bash
+yarn test delete_db
+```

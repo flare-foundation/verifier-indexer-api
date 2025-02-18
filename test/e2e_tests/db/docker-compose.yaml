@@ -7,4 +7,4 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
     ports:
-      - "127.0.0.1:8081:5432"
+      - "127.0.0.1:8080:5432"
