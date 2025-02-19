@@ -2,13 +2,13 @@ import base from 'base-x';
 
 import { AddressValidity_ResponseBody } from '../../dtos/attestation-types/AddressValidity.dto';
 
+import { VerificationStatus } from '../attestation-types';
+import { VerificationResponse } from '../verification-utils';
 import {
   INVALID_ADDRESS_RESPONSE,
   base58Checksum,
   validAddressToResponse,
 } from './utils';
-import { VerificationResponse } from '../verification-utils';
-import { VerificationStatus } from '../attestation-types/attestation-types';
 
 const R_B58_DICT = 'rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz';
 const base58 = base(R_B58_DICT);

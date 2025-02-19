@@ -14,8 +14,9 @@ import {
   DogeIndexerQueryManager,
 } from '../indexed-query-manager/UtxoIndexQueryManager';
 import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
-import { getAttestationStatus } from '../verification/attestation-types/attestation-types';
-import { verifyConfirmedBlockHeightExists } from '../verification/generic-chain-verifications';
+import { getAttestationStatus } from '../verification/attestation-types';
+
+import { verifyConfirmedBlockHeightExists } from '../verification/confirmed-block-height-exists/confirmed-block-height-exists';
 import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,

@@ -103,9 +103,14 @@ main() {
   shift
   case "$CMD" in
   run)
+  # TODO:(andraz) add validtion (only one argument)
+  if [ "$@" = "web2" ]; then
+    run_tests "$@"
+  else
     make_db "$@"
     run_tests "$@"
     delete_db 
+  fi
     ;;
   make_db)
     make_db "$@"
@@ -117,12 +122,14 @@ main() {
     delete_db
     ;;
   ci)
+  # TODO:(andraz) can be improved that it doesn't crash at first error but runs all tests
     make_db_ci btc &&
     run_tests btc &&
     make_db_ci doge &&
     run_tests doge &&
     make_db_ci xrp &&
-    run_tests xrp
+    run_tests xrp &&
+    run_tests web2
     ;;
   *)
     show_help

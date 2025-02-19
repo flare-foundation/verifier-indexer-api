@@ -1,6 +1,6 @@
 import base from 'base-x';
 import { AddressValidity_ResponseBody } from '../../dtos/attestation-types/AddressValidity.dto';
-import { VerificationStatus } from '../attestation-types/attestation-types';
+import { VerificationStatus } from '../attestation-types';
 import { VerificationResponse } from '../verification-utils';
 import {
   INVALID_ADDRESS_RESPONSE,

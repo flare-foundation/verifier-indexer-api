@@ -2,7 +2,7 @@
 // Verification status
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { AttestationResponseStatus } from '../../dtos/generic/generic.dto';
+import { AttestationResponseStatus } from '../dtos/generic/generic.dto';
 
 /**
  * Enumerated verification status of attestation
@@ -43,7 +43,6 @@ export enum VerificationStatus {
   NOT_STANDARD_SOURCE_ADDRESS_ROOT = 'NOT_STANDARD_SOURCE_ADDRESS_ROOT',
   PAYMENT_SUMMARY_ERROR = 'PAYMENT_SUMMARY_ERROR',
 }
-
 
 export function getAttestationStatus(
   status: VerificationStatus,

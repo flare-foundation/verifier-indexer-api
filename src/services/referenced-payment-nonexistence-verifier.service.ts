@@ -20,8 +20,8 @@ import {
   DogeIndexerQueryManager,
 } from '../indexed-query-manager/UtxoIndexQueryManager';
 import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
-import { getAttestationStatus } from '../verification/attestation-types/attestation-types';
-import { verifyReferencedPaymentNonExistence } from '../verification/generic-chain-verifications';
+import { getAttestationStatus } from '../verification/attestation-types';
+import { verifyReferencedPaymentNonExistence } from '../verification/referenced-payment-nonexistence/referenced-payment-nonexistence';
 import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,

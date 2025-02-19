@@ -1,12 +1,12 @@
 import basex from 'base-x';
 import { AddressValidity_ResponseBody } from '../../dtos/attestation-types/AddressValidity.dto';
+import { VerificationStatus } from '../attestation-types';
+import { VerificationResponse } from '../verification-utils';
 import {
   INVALID_ADDRESS_RESPONSE,
   base58Checksum,
   validAddressToResponse,
 } from './utils';
-import { VerificationResponse } from '../verification-utils';
-import { VerificationStatus } from '../attestation-types/attestation-types';
 
 const DOGE_BASE_58_DICT =
   '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';

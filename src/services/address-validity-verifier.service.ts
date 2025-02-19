@@ -13,7 +13,7 @@ import { serializeBigInts } from '../external-libs/utils';
 import { verifyAddressBTC } from '../verification/address-validity/address-validity-btc';
 import { verifyAddressDOGE } from '../verification/address-validity/address-validity-doge';
 import { verifyAddressXRP } from '../verification/address-validity/address-validity-xrp';
-import { getAttestationStatus } from '../verification/attestation-types/attestation-types';
+import { getAttestationStatus } from '../verification/attestation-types';
 import { VerificationResponse } from '../verification/verification-utils';
 import { BaseVerifierService } from './common/verifier-base.service';
 

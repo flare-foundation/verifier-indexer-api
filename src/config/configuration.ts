@@ -105,7 +105,7 @@ export default () => {
     db: db,
     typeOrmModuleOptions: {
       ...db,
-      type: 'postgres', 
+      type: 'postgres',
       entities: entities,
       synchronize: false,
       migrationsRun: false,
