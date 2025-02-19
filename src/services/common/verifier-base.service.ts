@@ -225,16 +225,6 @@ export abstract class BaseVerifierServiceWithIndexer<
   }
 }
 
-export function fromNoMic<
-  T extends Omit<AttestationTypeBase_Request, 'messageIntegrityCode'>,
->(request: T) {
-  const fixedRequest = {
-    messageIntegrityCode: ZERO_BYTES_32,
-    ...request, // if messageIntegrityCode is provided, it will be shadowed
-  };
-  return fixedRequest;
-}
-
 function getSourceName(source: ChainType): SourceNames {
   switch (source) {
     case ChainType.DOGE:

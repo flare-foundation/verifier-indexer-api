@@ -8,7 +8,6 @@ export const DEFAULT_ATTESTATION_TYPE_CONFIGS_PATH = path.resolve(
   'src/src/config/type-definitions',
 );
 export const MIC_SALT = 'Flare';
-export const ZERO_BYTES_20 = ethers.zeroPadBytes('0x', 20);
 
 /**
  * Compares values of Solidity elementary types when represented in JSON.

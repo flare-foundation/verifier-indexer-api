@@ -44,45 +44,6 @@ export enum VerificationStatus {
   PAYMENT_SUMMARY_ERROR = 'PAYMENT_SUMMARY_ERROR',
 }
 
-/**
- * Summarized verification status into three options.
- */
-export enum SummarizedVerificationStatus {
-  valid,
-  invalid,
-  indeterminate,
-}
-
-/**
- * Given a VerificationStatus status it returns the corresponding SummarizedValidationStatus
- * @param status
- * @returns
- */
-export function getSummarizedVerificationStatus(
-  status: VerificationStatus,
-): SummarizedVerificationStatus {
-  switch (status) {
-    case VerificationStatus.OK:
-      return SummarizedVerificationStatus.valid;
-    case VerificationStatus.DATA_AVAILABILITY_ISSUE:
-    case VerificationStatus.NEEDS_MORE_CHECKS:
-    case VerificationStatus.SYSTEM_FAILURE:
-    case VerificationStatus.NON_EXISTENT_BLOCK:
-      return SummarizedVerificationStatus.indeterminate;
-    case VerificationStatus.NOT_CONFIRMED:
-    case VerificationStatus.NON_EXISTENT_TRANSACTION:
-    case VerificationStatus.NOT_PAYMENT:
-    case VerificationStatus.REFERENCED_TRANSACTION_EXISTS:
-    case VerificationStatus.ZERO_PAYMENT_REFERENCE_UNSUPPORTED:
-    case VerificationStatus.NOT_STANDARD_PAYMENT_REFERENCE:
-    case VerificationStatus.NOT_STANDARD_SOURCE_ADDRESS_ROOT:
-    case VerificationStatus.PAYMENT_SUMMARY_ERROR:
-      return SummarizedVerificationStatus.invalid;
-  }
-  // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-
-  ((_: never): void => {})(status);
-}
 
 export function getAttestationStatus(
   status: VerificationStatus,
@@ -108,9 +69,4 @@ export function getAttestationStatus(
   // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
 
   ((_: never): void => {})(status);
-}
-
-export interface WeightedRandomChoice<T> {
-  name: T;
-  weight: number;
 }

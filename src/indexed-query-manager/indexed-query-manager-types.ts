@@ -54,8 +54,6 @@ export interface BlockQueryParams {
   confirmed?: boolean;
 }
 
-export type IndexerQueryType = 'FIRST_CHECK' | 'RECHECK';
-
 export interface TransactionQueryResult {
   result: TransactionResult[];
   startBlock?: BlockResult;
@@ -106,16 +104,4 @@ export interface ReferencedTransactionsQueryResponse {
   transactions?: TransactionResult[];
   firstOverflowBlock?: BlockResult;
   minimalBlock?: BlockResult;
-}
-
-/**
- * Options for random transaction generation/choice from the indexer database.
- * Random transaction selection is used with spammers, that are used to test the State Connector system.
- */
-export interface RandomTransactionOptions {
-  mustBeNativePayment?: boolean;
-  mustNotBeNativePayment?: boolean;
-  mustHavePaymentReference?: boolean;
-  mustNotHavePaymentReference?: boolean;
-  startTime?: number;
 }
