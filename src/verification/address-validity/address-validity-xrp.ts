@@ -2,8 +2,8 @@ import base from 'base-x';
 
 import { AddressValidity_ResponseBody } from '../../dtos/attestation-types/AddressValidity.dto';
 
-import { VerificationStatus } from '../attestation-types';
-import { VerificationResponse } from '../verification-utils';
+import { AttestationResponseStatus } from '../response-status';
+import { VerificationResponse } from '../response-status';
 import {
   INVALID_ADDRESS_RESPONSE,
   base58Checksum,
@@ -33,14 +33,14 @@ export function verifyAddressXRP(
   const char = validCharacters(address);
   if (!char)
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
   const decodedAddress = Buffer.from(base58.decode(address));
   if (decodedAddress.length != 25)
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -48,16 +48,16 @@ export function verifyAddressXRP(
 
   if (!checksum)
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
   if (decodedAddress[0] != 0)
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
   const response = validAddressToResponse(address, false);
-  return { status: VerificationStatus.OK, response };
+  return { status: AttestationResponseStatus.VALID, response };
 }

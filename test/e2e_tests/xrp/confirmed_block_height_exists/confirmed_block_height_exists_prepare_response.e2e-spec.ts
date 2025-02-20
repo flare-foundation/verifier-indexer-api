@@ -49,7 +49,7 @@ describe('/ConfirmedBlockHeightExists/prepareResponse', () => {
       response.body.response.responseBody.lowestQueryWindowBlockTimestamp,
     ).to.be.equal('1733476512');
   });
-  it('should get INDETERMINATE status if queryWindow is out of range (too big)', async () => {
+  it('should get INVALID status if queryWindow is out of range (too big)', async () => {
     const payload = {
       attestationType:
         '0x436f6e6669726d6564426c6f636b486569676874457869737473000000000000',
@@ -67,7 +67,7 @@ describe('/ConfirmedBlockHeightExists/prepareResponse', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INDETERMINATE');
+    expect(response.body.status).to.be.equal('INVALID: BLOCK DOES NOT EXIST');
   });
   it('should get VALID status with queryWindow=0', async () => {
     const payload = {

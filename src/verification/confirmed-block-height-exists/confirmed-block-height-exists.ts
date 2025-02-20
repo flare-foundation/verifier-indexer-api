@@ -6,11 +6,11 @@ import {
 import { serializeBigInts } from '../../external-libs/utils';
 import { IIndexedQueryManager } from '../../indexed-query-manager/IIndexedQueryManager';
 import { BlockResult } from '../../indexed-query-manager/indexed-query-manager-types';
-import { VerificationStatus } from './../attestation-types';
 import {
   VerificationResponse,
   verifyWorkflowForBlock,
-} from './../verification-utils';
+} from '../response-status';
+import { AttestationResponseStatus } from './../response-status';
 
 /**
  * Auxiliary function for assembling attestation response for 'ConfirmedBlockHeightExists' attestation type.
@@ -43,7 +43,7 @@ export function responseConfirmedBlockHeightExists(
   });
 
   return {
-    status: VerificationStatus.OK,
+    status: AttestationResponseStatus.VALID,
     response,
   };
 }
@@ -63,7 +63,7 @@ export async function verifyConfirmedBlockHeightExists(
   });
 
   const status = verifyWorkflowForBlock(confirmedBlockQueryResult);
-  if (status !== VerificationStatus.NEEDS_MORE_CHECKS) {
+  if (status !== AttestationResponseStatus.NEEDS_MORE_CHECKS) {
     return { status };
   }
 
@@ -79,7 +79,7 @@ export async function verifyConfirmedBlockHeightExists(
 
   if (!lowerQueryWindowBlock) {
     return {
-      status: VerificationStatus.DATA_AVAILABILITY_ISSUE,
+      status: AttestationResponseStatus.BLOCK_AVAILABILITY_ISSUE,
     };
   }
   return responseConfirmedBlockHeightExists(

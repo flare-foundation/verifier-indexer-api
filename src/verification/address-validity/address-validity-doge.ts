@@ -1,7 +1,7 @@
 import basex from 'base-x';
 import { AddressValidity_ResponseBody } from '../../dtos/attestation-types/AddressValidity.dto';
-import { VerificationStatus } from '../attestation-types';
-import { VerificationResponse } from '../verification-utils';
+import { AttestationResponseStatus } from '../response-status';
+import { VerificationResponse } from '../response-status';
 import {
   INVALID_ADDRESS_RESPONSE,
   base58Checksum,
@@ -39,7 +39,7 @@ export function verifyAddressDOGE(
   const shortLen = 25 > address.length || address.length > 34;
   if (shortLen)
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -47,7 +47,7 @@ export function verifyAddressDOGE(
   const invalidChar = DOGE_BASE_58_DICT_regex.test(address);
   if (invalidChar)
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -55,7 +55,7 @@ export function verifyAddressDOGE(
   const prefix = validPrefix.includes(address[0]);
   if (!prefix)
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -64,7 +64,7 @@ export function verifyAddressDOGE(
   //decoded length
   if (decodedAddress.length != 25)
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -72,18 +72,18 @@ export function verifyAddressDOGE(
   const checksum = base58Checksum(decodedAddress);
   if (!checksum)
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
   //prefix in hex
   if (!validPrefixDecodedDec.includes(decodedAddress[0]))
     return {
-      status: VerificationStatus.OK,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
   else {
     const response = validAddressToResponse(address, false);
-    return { status: VerificationStatus.OK, response };
+    return { status: AttestationResponseStatus.VALID, response };
   }
 }

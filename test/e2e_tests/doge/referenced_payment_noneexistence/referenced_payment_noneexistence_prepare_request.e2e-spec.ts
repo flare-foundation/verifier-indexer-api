@@ -146,7 +146,9 @@ describe('/ReferencedPaymentNonexistence/prepareRequest', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID');
+    expect(response.body.status).to.be.equal(
+      'INVALID: ZERO PAYMENT REFERENCE UNSUPPORTED',
+    );
   });
   it('should get abiEncodedRequest with 0x in standardPaymentReference', async () => {
     const payload = {
@@ -999,7 +1001,7 @@ describe('/ReferencedPaymentNonexistence/prepareRequest', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INDETERMINATE');
+    expect(response.body.status).to.be.equal('INVALID: BLOCK DOES NOT EXIST');
   });
   it('should get 200 INDETERMINATE as deadlineTimestamp not in db', async () => {
     const payload = {
@@ -1029,7 +1031,7 @@ describe('/ReferencedPaymentNonexistence/prepareRequest', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INDETERMINATE');
+    expect(response.body.status).to.be.equal('INVALID: BLOCK DOES NOT EXIST');
   });
   it('should get 200 INDETERMINATE as deadlineBlockNumber not in db', async () => {
     const payload = {
@@ -1059,6 +1061,6 @@ describe('/ReferencedPaymentNonexistence/prepareRequest', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INDETERMINATE');
+    expect(response.body.status).to.be.equal('INVALID: BLOCK DOES NOT EXIST');
   });
 });

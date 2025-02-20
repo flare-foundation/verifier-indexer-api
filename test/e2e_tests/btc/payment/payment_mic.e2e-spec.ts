@@ -108,7 +108,7 @@ describe('/Payment/mic', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID');
+    expect(response.body.status).to.be.equal('INVALID: NO RECEIVING ADDRESS');
   });
   it('should get bad request (400) for empty transactionId', async () => {
     const payload = {

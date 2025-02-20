@@ -14,7 +14,6 @@ import {
   DogeIndexerQueryManager,
 } from '../indexed-query-manager/UtxoIndexQueryManager';
 import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
-import { getAttestationStatus } from '../verification/attestation-types';
 
 import { verifyConfirmedBlockHeightExists } from '../verification/confirmed-block-height-exists/confirmed-block-height-exists';
 import {
@@ -45,7 +44,7 @@ abstract class BaseConfirmedBlockHeightExistsVerifierService extends BaseVerifie
       this.indexedQueryManager,
     );
     return serializeBigInts({
-      status: getAttestationStatus(result.status),
+      status: result.status,
       response: result.response,
     });
   }

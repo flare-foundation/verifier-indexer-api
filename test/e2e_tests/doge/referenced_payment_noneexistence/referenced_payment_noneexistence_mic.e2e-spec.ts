@@ -148,7 +148,9 @@ describe('/ReferencedPaymentNonexistence/mic', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID');
+    expect(response.body.status).to.be.equal(
+      'INVALID: ZERO PAYMENT REFERENCE UNSUPPORTED',
+    );
   });
   it('should get abiEncodedRequest with 0x in standardPaymentReference', async () => {
     const payload = {

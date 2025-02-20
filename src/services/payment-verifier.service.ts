@@ -20,7 +20,6 @@ import {
   DogeIndexerQueryManager,
 } from '../indexed-query-manager/UtxoIndexQueryManager';
 import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
-import { getAttestationStatus } from '../verification/attestation-types';
 
 import { verifyPayment } from '../verification/payment/payment';
 import {
@@ -53,7 +52,7 @@ abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer
       this.indexedQueryManager,
     );
     return serializeBigInts({
-      status: getAttestationStatus(result.status),
+      status: result.status,
       response: result.response,
     });
   }

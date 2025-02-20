@@ -128,8 +128,7 @@ main() {
     make_db_ci doge &&
     run_tests doge &&
     make_db_ci xrp &&
-    run_tests xrp &&
-    run_tests web2
+    run_tests xrp
     ;;
   *)
     show_help

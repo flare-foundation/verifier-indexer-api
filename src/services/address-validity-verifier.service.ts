@@ -8,13 +8,12 @@ import {
   AddressValidity_ResponseBody,
   AttestationResponseDTO_AddressValidity_Response,
 } from '../dtos/attestation-types/AddressValidity.dto';
-import { AttestationResponseStatus } from '../dtos/generic/generic.dto';
 import { serializeBigInts } from '../external-libs/utils';
 import { verifyAddressBTC } from '../verification/address-validity/address-validity-btc';
 import { verifyAddressDOGE } from '../verification/address-validity/address-validity-doge';
 import { verifyAddressXRP } from '../verification/address-validity/address-validity-xrp';
-import { getAttestationStatus } from '../verification/attestation-types';
-import { VerificationResponse } from '../verification/verification-utils';
+import { AttestationResponseStatus } from '../verification/response-status';
+import { VerificationResponse } from '../verification/response-status';
 import { BaseVerifierService } from './common/verifier-base.service';
 
 abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
@@ -34,7 +33,7 @@ abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
       this.isTestnet,
     );
 
-    const status = getAttestationStatus(result.status);
+    const status = result.status;
     if (status != AttestationResponseStatus.VALID)
       return Promise.resolve({ status });
 

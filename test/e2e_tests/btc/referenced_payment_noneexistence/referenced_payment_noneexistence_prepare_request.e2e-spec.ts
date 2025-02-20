@@ -116,7 +116,9 @@ describe('/ReferencedPaymentNonexistence/prepareRequest', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID');
+    expect(response.body.status).to.be.equal(
+      'INVALID: ZERO PAYMENT REFERENCE UNSUPPORTED',
+    );
   });
   it('should get abiEncodedRequest with 0x in standardPaymentReference', async () => {
     const payload = {
@@ -941,7 +943,7 @@ describe('/ReferencedPaymentNonexistence/prepareRequest', () => {
 
     expect(response.body.status).to.be.equal('VALID');
   });
-  it('should get 200 INDETERMINATE as minimalBlockNumber not in db', async () => {
+  it('should get 200 INVALID as minimalBlockNumber not in db', async () => {
     const payload = {
       attestationType:
         '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
@@ -969,9 +971,9 @@ describe('/ReferencedPaymentNonexistence/prepareRequest', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INDETERMINATE');
+    expect(response.body.status).to.be.equal('INVALID: BLOCK DOES NOT EXIST');
   });
-  it('should get 200 INDETERMINATE as deadlineTimestamp not in db', async () => {
+  it('should get 200 INVALID as deadlineTimestamp not in db', async () => {
     const payload = {
       attestationType:
         '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
@@ -999,9 +1001,9 @@ describe('/ReferencedPaymentNonexistence/prepareRequest', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INDETERMINATE');
+    expect(response.body.status).to.be.equal('INVALID: BLOCK DOES NOT EXIST');
   });
-  it('should get 200 INDETERMINATE as deadlineBlockNumber not in db', async () => {
+  it('should get 200 INVALID as deadlineBlockNumber not in db', async () => {
     const payload = {
       attestationType:
         '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
@@ -1029,7 +1031,7 @@ describe('/ReferencedPaymentNonexistence/prepareRequest', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INDETERMINATE');
+    expect(response.body.status).to.be.equal('INVALID: BLOCK DOES NOT EXIST');
   });
   it('should get 200 INVALID as minimalBlockNumber > max(deadlineBlockNumber,deadlineTimestamp)', async () => {
     const payload = {

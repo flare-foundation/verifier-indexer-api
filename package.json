@@ -21,17 +21,7 @@
     "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "-----Testing-----": "echo \"Testing scripts\"",
-    "makeE2Eexecutable": "chmod +x test/e2e_tests/run_tests.sh",
-    "test": "./test/e2e_tests/run_tests.sh ",
-    "test:make_db:btc": "./test/e2e_tests/run_tests.sh make_db btc",
-    "test:run_tests:btc": "./test/e2e_tests/run_tests.sh run_tests btc",
-    "test:doge": "./test/e2e_tests/run_tests.sh all doge",
-    "test:make_db:doge": "./test/e2e_tests/run_tests.sh make_db doge",
-    "test:run_tests:doge": "./test/e2e_tests/run_tests.sh run_tests doge",
-    "test:xrp": "./test/e2e_tests/run_tests.sh all xrp",
-    "test:make_db:xrp": "./test/e2e_tests/run_tests.sh make_db xrp",
-    "test:run_tests:xrp": "./test/e2e_tests/run_tests.sh run_tests xrp",
-    "test:delete_db": "./test/e2e_tests/run_tests.sh delete_db"
+    "test": "./test/e2e_tests/run_tests.sh "
   },
   "dependencies": {
     "@flarenetwork/mcc": "4.3.0-rc.0",

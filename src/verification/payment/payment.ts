@@ -12,11 +12,11 @@ import {
 import { serializeBigInts } from '../../external-libs/utils';
 import { IIndexedQueryManager } from '../../indexed-query-manager/IIndexedQueryManager';
 import { TransactionResult } from '../../indexed-query-manager/indexed-query-manager-types';
-import { VerificationStatus } from './../attestation-types';
 import {
   VerificationResponse,
   verifyWorkflowForTransaction,
-} from './../verification-utils';
+} from '../response-status';
+import { AttestationResponseStatus } from './../response-status';
 
 //////////////////////////////////////////////////
 // Verification functions
@@ -45,20 +45,20 @@ export function responsePayment<T extends TransactionBase<unknown>>(
         dbTransaction.transactionId
       }' JSON parse '${dbTransaction.getResponse()}'`,
     );
-    return { status: VerificationStatus.SYSTEM_FAILURE };
+    return { status: AttestationResponseStatus.SYSTEM_FAILURE };
   }
   const fullTxData = new TransactionClass(parsedData);
   if (
     BigInt(request.requestBody.inUtxo) < 0 ||
     BigInt(request.requestBody.inUtxo) >= Number.MAX_SAFE_INTEGER
   ) {
-    return { status: VerificationStatus.NOT_CONFIRMED };
+    return { status: AttestationResponseStatus.INVALID_UTXOS };
   }
   if (
     BigInt(request.requestBody.utxo) < 0 ||
     BigInt(request.requestBody.utxo) >= Number.MAX_SAFE_INTEGER
   ) {
-    return { status: VerificationStatus.NOT_CONFIRMED };
+    return { status: AttestationResponseStatus.INVALID_UTXOS };
   }
 
   // We assume that a transaction cannot have more than Number.MAX_SAFE_INTEGER utxo inputs or outputs.
@@ -72,11 +72,29 @@ export function responsePayment<T extends TransactionBase<unknown>>(
       outUtxo: utxoNumber,
     });
   } catch {
-    return { status: VerificationStatus.NOT_CONFIRMED };
+    return { status: AttestationResponseStatus.INVALID };
   }
 
-  if (paymentSummary.status !== PaymentSummaryStatus.Success) {
-    return { status: VerificationStatus.NOT_CONFIRMED };
+  //TODO!!!!!!!!!!!!!!!!!!!
+  const status = paymentSummary.status;
+  if (status === PaymentSummaryStatus.Coinbase) {
+    return { status: AttestationResponseStatus.COINBASE_TRANSACTION };
+  } else if (status === PaymentSummaryStatus.NotNativePayment) {
+    return { status: AttestationResponseStatus.NO_NATIVE_PAYMENT };
+  } else if (status === PaymentSummaryStatus.NoSpentAmountAddress) {
+    return { status: AttestationResponseStatus.NO_SOURCE_ADDRESS };
+  } else if (status === PaymentSummaryStatus.NoReceiveAmountAddress) {
+    return { status: AttestationResponseStatus.NO_RECEIVING_ADDRESS };
+  } else if (status === PaymentSummaryStatus.UnexpectedNumberOfParticipants) {
+    return {
+      status: AttestationResponseStatus.UNEXPECTED_NUMBER_OF_PARTICIPANTS,
+    };
+  } else if (status === PaymentSummaryStatus.NoIntendedSpentAmountAddress) {
+    return { status: AttestationResponseStatus.NO_INTENDED_SOURCE_ADDRESS };
+  } else if (status === PaymentSummaryStatus.NoIntendedReceiveAmountAddress) {
+    return { status: AttestationResponseStatus.NO_INTENDED_RECEIVING_ADDRESS };
+  } else if (status !== PaymentSummaryStatus.Success) {
+    return { status: AttestationResponseStatus.INVALID };
   }
 
   if (!paymentSummary.response) {
@@ -119,7 +137,7 @@ export function responsePayment<T extends TransactionBase<unknown>>(
   });
 
   return {
-    status: VerificationStatus.OK,
+    status: AttestationResponseStatus.VALID,
     response,
   };
 }
@@ -143,7 +161,7 @@ export async function verifyPayment<T extends TransactionBase<unknown>>(
     txId: unPrefix0x(request.requestBody.transactionId),
   });
   const status = verifyWorkflowForTransaction(confirmedTransactionResult);
-  if (status !== VerificationStatus.NEEDS_MORE_CHECKS) {
+  if (status !== AttestationResponseStatus.NEEDS_MORE_CHECKS) {
     return { status };
   }
 

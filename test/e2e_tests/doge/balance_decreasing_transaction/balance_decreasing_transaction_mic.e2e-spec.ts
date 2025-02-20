@@ -192,7 +192,9 @@ describe('/BalanceDecreasingTransaction/mic', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID');
+    expect(response.body.status).to.be.equal(
+      'INVALID: TRANSACTION DOES NOT EXIST',
+    );
   });
   it('should get 400 with too short transactionId', async () => {
     const payload = {

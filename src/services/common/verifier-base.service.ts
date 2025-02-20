@@ -16,7 +16,6 @@ import {
 import {
   AttestationResponse,
   AttestationResponseEncoded,
-  AttestationResponseStatus,
   EncodedRequestResponse,
   MicResponse,
 } from '../../dtos/generic/generic.dto';
@@ -29,6 +28,7 @@ import {
   DogeIndexerQueryManager,
 } from '../../indexed-query-manager/UtxoIndexQueryManager';
 import { XrpIndexerQueryManager } from '../../indexed-query-manager/XrpIndexerQueryManager';
+import { AttestationResponseStatus } from '../../verification/response-status';
 
 interface IVerificationServiceConfig {
   source: ChainType;

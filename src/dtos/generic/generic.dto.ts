@@ -2,28 +2,7 @@ import { Transform } from 'class-transformer';
 import { Validate } from 'class-validator';
 import { Is0xHex } from '../dto-validators';
 import { transformHash32 } from '../dto-transform-utils';
-
-/**
- * Attestation status
- */
-export enum AttestationResponseStatus {
-  /**
-   * Attestation request is valid.
-   */
-  VALID = 'VALID',
-  /**
-   * Attestation request is invalid.
-   */
-  INVALID = 'INVALID',
-  /**
-   * Attestation request malformed.
-   */
-  MALFORMED = 'MALFORMED',
-  /**
-   * Attestation request cannot be confirmed neither rejected by the verifier at the moment.
-   */
-  INDETERMINATE = 'INDETERMINATE',
-}
+import { AttestationResponseStatus } from '../../verification/response-status';
 
 export class AttestationResponseVerificationEncoded {
   constructor(params: Required<AttestationResponseVerificationEncoded>) {

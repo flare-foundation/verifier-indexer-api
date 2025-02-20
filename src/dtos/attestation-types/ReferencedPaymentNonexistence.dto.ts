@@ -8,9 +8,9 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
+import { AttestationResponseStatus } from '../../verification/response-status';
 import { transformHash32 } from '../dto-transform-utils';
 import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
-import { AttestationResponseStatus } from '../generic/generic.dto';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////

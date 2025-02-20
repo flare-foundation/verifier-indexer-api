@@ -12,11 +12,11 @@ import {
 import { serializeBigInts } from '../../external-libs/utils';
 import { IIndexedQueryManager } from '../../indexed-query-manager/IIndexedQueryManager';
 import { TransactionResult } from '../../indexed-query-manager/indexed-query-manager-types';
-import { VerificationStatus } from './../attestation-types';
 import {
   VerificationResponse,
   verifyWorkflowForTransaction,
-} from './../verification-utils';
+} from '../response-status';
+import { AttestationResponseStatus } from './../response-status';
 
 //////////////////////////////////////////////////
 // Verification functions
@@ -26,8 +26,7 @@ import {
  * Auxiliary function for assembling attestation response for 'BalanceDecreasingTransaction' attestation type.
  * @param dbTransaction
  * @param TransactionClass
- * @param sourceAddressIndicator
- * @param client
+ * @param request
  * @returns
  */
 export function responseBalanceDecreasingTransaction<
@@ -48,7 +47,7 @@ export function responseBalanceDecreasingTransaction<
         dbTransaction.transactionId
       }' JSON parse '${dbTransaction.getResponse()}'`,
     );
-    return { status: VerificationStatus.SYSTEM_FAILURE };
+    return { status: AttestationResponseStatus.SYSTEM_FAILURE };
   }
 
   const fullTxData = new TransactionClass(parsedData);
@@ -58,10 +57,13 @@ export function responseBalanceDecreasingTransaction<
       request.requestBody.sourceAddressIndicator,
     );
 
-  if (
-    balanceDecreasingSummary.status !== BalanceDecreasingSummaryStatus.Success
-  ) {
-    return { status: VerificationStatus.NOT_CONFIRMED };
+  const status = balanceDecreasingSummary.status;
+  if (status === BalanceDecreasingSummaryStatus.Coinbase) {
+    return { status: AttestationResponseStatus.COINBASE_TRANSACTION };
+  } else if (status === BalanceDecreasingSummaryStatus.NoSourceAddress) {
+    return { status: AttestationResponseStatus.NO_SOURCE_ADDRESS };
+  } else if (status !== BalanceDecreasingSummaryStatus.Success) {
+    return { status: AttestationResponseStatus.INVALID };
   }
 
   if (!balanceDecreasingSummary.response) {
@@ -86,7 +88,7 @@ export function responseBalanceDecreasingTransaction<
   });
 
   return {
-    status: VerificationStatus.OK,
+    status: AttestationResponseStatus.VALID,
     response,
   };
 }
@@ -114,7 +116,7 @@ export async function verifyBalanceDecreasingTransaction<
   });
 
   const status = verifyWorkflowForTransaction(confirmedTransactionResult);
-  if (status !== VerificationStatus.NEEDS_MORE_CHECKS) {
+  if (status !== AttestationResponseStatus.NEEDS_MORE_CHECKS) {
     return { status };
   }
 

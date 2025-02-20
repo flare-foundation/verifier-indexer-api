@@ -17,11 +17,11 @@ import {
   BlockResult,
   TransactionResult,
 } from '../../indexed-query-manager/indexed-query-manager-types';
-import { VerificationStatus } from '../attestation-types';
+import { AttestationResponseStatus } from '../response-status';
 import {
   VerificationResponse,
   verifyWorkflowForReferencedTransactions,
-} from '../verification-utils';
+} from '../response-status';
 
 /**
  * Auxiliary function for assembling attestation response for 'ReferencedPaymentNonExistence' attestation type.
@@ -52,7 +52,7 @@ export function responseReferencedPaymentNonExistence<
       const parsedData: unknown = JSON.parse(dbTransaction.getResponse());
       fullTxData = new TransactionClass(parsedData);
     } catch {
-      return { status: VerificationStatus.SYSTEM_FAILURE };
+      return { status: AttestationResponseStatus.SYSTEM_FAILURE };
     }
 
     // In account based case this loop goes through only once.
@@ -98,7 +98,9 @@ export function responseReferencedPaymentNonExistence<
             TransactionSuccessStatus.SENDER_FAILURE
           ) {
             // it must be SUCCESS or RECEIVER_FAULT, so the sender sent it correctly
-            return { status: VerificationStatus.REFERENCED_TRANSACTION_EXISTS };
+            return {
+              status: AttestationResponseStatus.REFERENCED_TRANSACTION_EXISTS,
+            };
           }
         }
         // Payment summary for each output matching the destination address is equal, so the destination address has been processed.
@@ -121,7 +123,7 @@ export function responseReferencedPaymentNonExistence<
   });
 
   return {
-    status: VerificationStatus.OK,
+    status: AttestationResponseStatus.VALID,
     response,
   };
 }
@@ -147,7 +149,9 @@ export async function verifyReferencedPaymentNonExistence<
     unPrefix0x(request.requestBody.standardPaymentReference).toLowerCase() ===
     unPrefix0x(ZERO_BYTES_32).toLowerCase()
   ) {
-    return { status: VerificationStatus.ZERO_PAYMENT_REFERENCE_UNSUPPORTED };
+    return {
+      status: AttestationResponseStatus.ZERO_PAYMENT_REFERENCE_UNSUPPORTED,
+    };
   }
 
   if (
@@ -155,7 +159,7 @@ export async function verifyReferencedPaymentNonExistence<
       unPrefix0x(request.requestBody.standardPaymentReference.toLowerCase()),
     )
   ) {
-    return { status: VerificationStatus.NOT_STANDARD_PAYMENT_REFERENCE };
+    return { status: AttestationResponseStatus.NOT_STANDARD_PAYMENT_REFERENCE };
   }
 
   if (
@@ -163,21 +167,23 @@ export async function verifyReferencedPaymentNonExistence<
       unPrefix0x(request.requestBody.sourceAddressesRoot.toLowerCase()),
     )
   ) {
-    return { status: VerificationStatus.NOT_STANDARD_SOURCE_ADDRESS_ROOT };
+    return {
+      status: AttestationResponseStatus.NOT_STANDARD_SOURCE_ADDRESS_ROOT,
+    };
   }
 
   if (
     BigInt(request.requestBody.minimalBlockNumber) < 0 ||
     BigInt(request.requestBody.minimalBlockNumber) >= Number.MAX_SAFE_INTEGER
   ) {
-    return { status: VerificationStatus.NOT_CONFIRMED };
+    return { status: AttestationResponseStatus.INVALID_SEARCH_RANGE };
   }
 
   if (
     BigInt(request.requestBody.deadlineBlockNumber) < 0 ||
     BigInt(request.requestBody.deadlineBlockNumber) >= Number.MAX_SAFE_INTEGER
   ) {
-    return { status: VerificationStatus.NOT_CONFIRMED };
+    return { status: AttestationResponseStatus.INVALID_SEARCH_RANGE };
   }
 
   const minimalBlockNumber = parseInt(
@@ -202,7 +208,7 @@ export async function verifyReferencedPaymentNonExistence<
   const status = verifyWorkflowForReferencedTransactions(
     referencedTransactionsResponse,
   );
-  if (status !== VerificationStatus.NEEDS_MORE_CHECKS) {
+  if (status !== AttestationResponseStatus.NEEDS_MORE_CHECKS) {
     return { status };
   }
 
@@ -222,7 +228,7 @@ export async function verifyReferencedPaymentNonExistence<
   }
   if (minimalBlockNumber >= firstOverflowBlock.blockNumber) {
     return {
-      status: VerificationStatus.NOT_CONFIRMED,
+      status: AttestationResponseStatus.INVALID_SEARCH_RANGE,
     };
   }
 
