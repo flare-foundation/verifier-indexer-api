@@ -15,41 +15,54 @@ export PORT=3100
 export API_KEYS=12345
 
 
-
-
-wait_for_pg_ready() {
-  until $DOCKER_CMD pg_isready -h $DB_HOST -p 5432 -U db 1> /dev/null; do
+_wait_for_pg_ready() {
+  until $DOCKER_CMD pg_isready -h $DB_HOST -p 5432 1> /dev/null; do
     sleep 1
   done
 }
 
 _make_db(){
-  $DOCKER_CMD dropdb -h $DB_HOST -U user db 
-  wait_for_pg_ready 
-  $DOCKER_CMD createdb -h $DB_HOST -U user -E utf8 -T template0 db 
-  wait_for_pg_ready 
-  $DOCKER_CMD pg_restore -h $DB_HOST --no-owner --role=user -U user --dbname=db /tmp/dbdump 
-  wait_for_pg_ready 
+  VERIFIER_TYPE=$1
+
+  if $DOCKER_CMD psql -h $DB_HOST -U user -lqt | cut -d "|" -f 1 | tr -d ' ' | grep -qw "^db${VERIFIER_TYPE}$"; then
+    $DOCKER_CMD dropdb -h $DB_HOST -U user db${VERIFIER_TYPE} 
+    _wait_for_pg_ready 
+  fi
+
+  $DOCKER_CMD createdb -h $DB_HOST -U user -E utf8 -T template0 db${VERIFIER_TYPE} 
+  _wait_for_pg_ready 
+  $DOCKER_CMD pg_restore -h $DB_HOST --no-owner --role=user -U user --dbname=db${VERIFIER_TYPE} /tmp/dbdump${VERIFIER_TYPE}
+  _wait_for_pg_ready 
 }
 
 make_db(){
-  export VERIFIER_TYPE=$1
+  VERIFIER_TYPE=$1
   DOCKER_CMD="docker compose -f test/e2e_tests/db/docker-compose.yaml exec postgres_testing_db"
 
   echo ""
   echo Making mock DB for $VERIFIER_TYPE
   
   docker compose -f test/e2e_tests/db/docker-compose.yaml up -d
-  wait_for_pg_ready 
-  docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_${VERIFIER_TYPE}_testnet postgres_testing_db:/tmp/dbdump
-  echo "Copying dump to DB"
-  wait_for_pg_ready 
+  _wait_for_pg_ready 
   
-  _make_db
+  if [ "$VERIFIER_TYPE" == "all" ]; then
+    docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_btc_testnet postgres_testing_db:/tmp/dbdumpbtc
+    docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_doge_testnet postgres_testing_db:/tmp/dbdumpdoge
+    docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_xrp_testnet postgres_testing_db:/tmp/dbdumpxrp
+    _wait_for_pg_ready 
+
+    _make_db btc
+    _make_db doge
+    _make_db xrp
+  else
+    docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_${VERIFIER_TYPE}_testnet postgres_testing_db:/tmp/dbdump
+    _wait_for_pg_ready 
+
+    _make_db ""
+  fi
 }
 
-make_db_ci(){
-  export VERIFIER_TYPE=$1
+_make_db_ci(){
   export DB_HOST=postgres
   export DB_PORT=5432
   DOCKER_CMD=""
@@ -57,16 +70,27 @@ make_db_ci(){
   echo ""
   echo Copying dumb to DB
 
-  cp test/e2e_tests/db/db_${VERIFIER_TYPE}_testnet /tmp/dbdump
+  cp test/e2e_tests/db/db_btc_testnet /tmp/dbdumpbtc
+  cp test/e2e_tests/db/db_doge_testnet /tmp/dbdumpdoge
+  cp test/e2e_tests/db/db_xrp_testnet /tmp/dbdumpxrp
   
-  _make_db
+  _make_db btc
+  _make_db doge
+  _make_db xrp
 }
 
-run_tests(){
-  export VERIFIER_TYPE=$1
+_run_all_tests(){
+  export RUNNING_ALL_TESTS=true
+
   echo ""
-  echo Runing $VERIFIER_TYPE tests 
-  mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/${VERIFIER_TYPE}/**/*.e2e-spec.ts"
+
+  if [ "$1" == "coverage" ]; then
+    echo Runing all tests with coverage
+    nyc mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/**/*.e2e-spec.ts"
+  else
+    echo Runing all tests
+    mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/**/*.e2e-spec.ts"
+  fi
 }
 
 delete_db(){
@@ -80,16 +104,10 @@ show_help() {
 Usage: yarn test COMMAND ARGUMENT
 
 Commands:
-  run          Run e2e tests (create db, run tests, delete db)    (needs verifier type as argument, e.g. yarn test run btc)         
-  make_db      Create mock DB                                     (needs verifier type as argument, e.g. yarn test make_db btc)
-  run_tests    Run e2e tests (existing db needed)                 (needs verifier type as argument, e.g. yarn test run_tests btc)
-  delete_db    Delete mock DB                      
-  ci           Run tests in gitlab ci     
-
-Arguments:
-  btc          Bitcoin verifier
-  doge         Dogecoin verifier
-  xrp          Ripple verifier                             
+  run               Run e2e tests (create DBs for all verifier types, run tests, delete DBs)   
+  coverage          Run e2e tests with coverage (create DBs for all verifier types, run tests with coverage, delete DBs)
+  make_db <type>    Create mock DB for a verifier type, <type> can be 'btc', 'doge' or 'xrp'.
+  delete_db         Delete mock DB                            
 "
 }
 
@@ -103,32 +121,24 @@ main() {
   shift
   case "$CMD" in
   run)
-  # TODO:(andraz) add validtion (only one argument)
-  if [ "$@" = "web2" ]; then
-    run_tests "$@"
-  else
-    make_db "$@"
-    run_tests "$@"
+    make_db all
+    _run_all_tests
     delete_db 
-  fi
+    ;;
+  coverage)
+    make_db all
+    _run_all_tests coverage
+    delete_db 
     ;;
   make_db)
     make_db "$@"
-    ;;
-  run_tests)
-    run_tests "$@"
     ;;
   delete_db)
     delete_db
     ;;
   ci)
-  # TODO:(andraz) can be improved that it doesn't crash at first error but runs all tests
-    make_db_ci btc &&
-    run_tests btc &&
-    make_db_ci doge &&
-    run_tests doge &&
-    make_db_ci xrp &&
-    run_tests xrp
+    _make_db_ci &&
+    _run_all_tests
     ;;
   *)
     show_help
@@ -138,3 +148,4 @@ main() {
 
 main "$@"
 
+                                                   

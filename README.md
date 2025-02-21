@@ -50,10 +50,11 @@ Move these database dumps to the `/e2e_tests/db/` directory. Currently, all data
 
 ### Option 1: Running Tests Against a Database Instance
 
-Depending on your source, use the following command (example for BTC):
+To run all tests across all sources or check code coverage, use the following commands:
 
 ```bash
-yarn test run btc
+yarn test run
+yarn test coverage
 ```
 
 ### Option 2: Spinning Up a Database from a Dump and Persisting It
@@ -64,17 +65,7 @@ Depending on your source, create a database instance using the following command
 yarn test make_db btc
 ```
 
-After the database is available, you can:
-
-1. Run tests against it using:
-
-```bash
-yarn test run_tests btc
-```
-
-2. Start a local server and make requests manually.
-
-In the second case, set the database environment variables in the `.env` file:
+Once the database is up and running, you can start a local server and manually send requests. For this setup, set the following environment variables to your `.env` file:
 
 ```bash
 # .env file
@@ -85,14 +76,14 @@ DB_HOST=127.0.0.1
 DB_PORT=8080
 ```
 
-Also, specify the correct values for the `VERIFIER_TYPE` and `TESTNET` variables:
+Additionally, set the appropriate values for `VERIFIER_TYPE` and `TESTNET`:
 
 ```bash
 VERIFIER_TYPE=btc
 TESTNET=true
 ```
 
-After you are done, make sure to stop the database server with:
+When you're finished, remember to stop the database server with:
 
 ```bash
 yarn test delete_db

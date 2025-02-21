@@ -103,7 +103,7 @@ export function responsePayment<T extends TransactionBase<unknown>>(
 
   // if there is more than one output to the receiving address, the payment is not valid.
   if (!paymentSummary.response.toOne) {
-    return { status: VerificationStatus.NOT_CONFIRMED };
+    return { status: AttestationResponseStatus.MORE_THAN_ONE_OUTPUT };
   }
 
   const response = new Payment_Response({

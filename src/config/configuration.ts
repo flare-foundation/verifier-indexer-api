@@ -132,7 +132,7 @@ export function extractVerifierType(): ChainType {
   }
 }
 
-function getDatabaseEntities(verifierType: ChainType) {
+export function getDatabaseEntities(verifierType: ChainType) {
   switch (verifierType) {
     case ChainType.BTC:
     case ChainType.DOGE:
