@@ -58,7 +58,7 @@ describe('/AddressValidity/prepareRequest', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS TYPE');
   });
   it('should get abiEncodedRequest random address', async () => {
     const payload = {
@@ -77,7 +77,7 @@ describe('/AddressValidity/prepareRequest', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
   });
   it('should get abiEncodedRequest with no 0x in attestationType', async () => {
     const payload = {

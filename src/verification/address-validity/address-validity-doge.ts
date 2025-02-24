@@ -1,7 +1,9 @@
 import basex from 'base-x';
 import { AddressValidity_ResponseBody } from '../../dtos/attestation-types/AddressValidity.dto';
-import { AttestationResponseStatus } from '../response-status';
-import { VerificationResponse } from '../response-status';
+import {
+  AttestationResponseStatus,
+  VerificationResponse,
+} from '../response-status';
 import {
   INVALID_ADDRESS_RESPONSE,
   base58Checksum,
@@ -39,7 +41,7 @@ export function verifyAddressDOGE(
   const shortLen = 25 > address.length || address.length > 34;
   if (shortLen)
     return {
-      status: AttestationResponseStatus.VALID,
+      status: AttestationResponseStatus.INVALID_ADDRESS_LENGTH,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -47,7 +49,7 @@ export function verifyAddressDOGE(
   const invalidChar = DOGE_BASE_58_DICT_regex.test(address);
   if (invalidChar)
     return {
-      status: AttestationResponseStatus.VALID,
+      status: AttestationResponseStatus.INVALID_ADDRESS_CHARACTER,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -55,7 +57,7 @@ export function verifyAddressDOGE(
   const prefix = validPrefix.includes(address[0]);
   if (!prefix)
     return {
-      status: AttestationResponseStatus.VALID,
+      status: AttestationResponseStatus.INVALID_ADDRESS_PREFIX,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -64,7 +66,7 @@ export function verifyAddressDOGE(
   //decoded length
   if (decodedAddress.length != 25)
     return {
-      status: AttestationResponseStatus.VALID,
+      status: AttestationResponseStatus.INVALID_DECODED_ADDRESS_LENGTH,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -72,14 +74,14 @@ export function verifyAddressDOGE(
   const checksum = base58Checksum(decodedAddress);
   if (!checksum)
     return {
-      status: AttestationResponseStatus.VALID,
+      status: AttestationResponseStatus.INVALID_ADDRESS_CHECKSUM,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
   //prefix in hex
   if (!validPrefixDecodedDec.includes(decodedAddress[0]))
     return {
-      status: AttestationResponseStatus.VALID,
+      status: AttestationResponseStatus.INVALID_ADDRESS_PREFIX,
       response: INVALID_ADDRESS_RESPONSE,
     };
   else {

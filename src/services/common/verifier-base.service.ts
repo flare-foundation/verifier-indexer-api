@@ -136,8 +136,9 @@ export abstract class BaseVerifierService<
       };
     }
     if (
-      response.status !== AttestationResponseStatus.VALID ||
-      !response.response
+      (response.status !== AttestationResponseStatus.VALID ||
+        !response.response) &&
+      this.attestationName !== 'AddressValidity'
     ) {
       return {
         status: response.status,
@@ -159,13 +160,16 @@ export abstract class BaseVerifierService<
 
   public async mic(request: Req): Promise<MicResponse> {
     const result = await this.verifyRequestInternal(request);
-    if (result.status !== AttestationResponseStatus.VALID) {
+    if (
+      result.status !== AttestationResponseStatus.VALID &&
+      this.attestationName !== 'AddressValidity'
+    ) {
       return new MicResponse({ status: result.status });
     }
     const response = result.response;
     if (!response) return new MicResponse({ status: result.status });
     return new MicResponse({
-      status: AttestationResponseStatus.VALID,
+      status: result.status,
       messageIntegrityCode: this.store.attestationResponseHash<Res>(
         response,
         MIC_SALT,
@@ -175,7 +179,10 @@ export abstract class BaseVerifierService<
 
   public async prepareRequest(request: Req): Promise<EncodedRequestResponse> {
     const result = await this.verifyRequestInternal(request);
-    if (result.status !== AttestationResponseStatus.VALID) {
+    if (
+      result.status !== AttestationResponseStatus.VALID &&
+      this.attestationName !== 'AddressValidity'
+    ) {
       return new EncodedRequestResponse({ status: result.status });
     }
     const response = result.response;
@@ -190,7 +197,7 @@ export abstract class BaseVerifierService<
     };
 
     return new EncodedRequestResponse({
-      status: AttestationResponseStatus.VALID,
+      status: result.status,
       abiEncodedRequest: this.store.encodeRequest(newRequest).toLowerCase(),
     });
   }

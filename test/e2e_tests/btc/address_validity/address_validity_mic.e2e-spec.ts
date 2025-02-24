@@ -44,7 +44,7 @@ describe('/AddressValidity/mic', () => {
     expect(response.body.status).to.be.equal('VALID');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
-  it('should get VALID for empty address', async () => {
+  it('should get INVALID for empty address', async () => {
     const payload = {
       attestationType:
         '0x4164647265737356616c69646974790000000000000000000000000000000000',
@@ -59,7 +59,9 @@ describe('/AddressValidity/mic', () => {
       .send(payload)
       .set('X-API-KEY', '12345')
       .expect(200);
-    expect(response.body.status).to.be.equal('VALID');
+
+    console.log(response.body);
+    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS TYPE');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
   it('should get abiEncodedRequest random address', async () => {
@@ -79,7 +81,8 @@ describe('/AddressValidity/mic', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('VALID');
+    console.log(response.body);
+    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
   it('should get abiEncodedRequest with no 0x in attestationType', async () => {

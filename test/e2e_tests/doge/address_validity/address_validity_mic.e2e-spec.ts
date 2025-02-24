@@ -59,7 +59,7 @@ describe('/AddressValidity/mic', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
   it('should get abiEncodedRequest random address', async () => {
@@ -79,7 +79,7 @@ describe('/AddressValidity/mic', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
   it('should get abiEncodedRequest with no 0x in attestationType', async () => {

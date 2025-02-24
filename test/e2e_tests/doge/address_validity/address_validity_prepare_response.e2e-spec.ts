@@ -95,7 +95,7 @@ describe('/AddressValidity/prepareResponse', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
     const resp = response.body.response;
     expect(resp.attestationType).to.be.equal(
       '0x4164647265737356616c69646974790000000000000000000000000000000000',
@@ -129,7 +129,7 @@ describe('/AddressValidity/prepareResponse', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
     const resp = response.body.response;
     expect(resp.attestationType).to.be.equal(
       '0x4164647265737356616c69646974790000000000000000000000000000000000',

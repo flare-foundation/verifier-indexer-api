@@ -12,7 +12,6 @@ import { serializeBigInts } from '../external-libs/utils';
 import { verifyAddressBTC } from '../verification/address-validity/address-validity-btc';
 import { verifyAddressDOGE } from '../verification/address-validity/address-validity-doge';
 import { verifyAddressXRP } from '../verification/address-validity/address-validity-xrp';
-import { AttestationResponseStatus } from '../verification/response-status';
 import { VerificationResponse } from '../verification/response-status';
 import { BaseVerifierService } from './common/verifier-base.service';
 
@@ -34,9 +33,6 @@ abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
     );
 
     const status = result.status;
-    if (status != AttestationResponseStatus.VALID)
-      return Promise.resolve({ status });
-
     const response: AddressValidity_Response = serializeBigInts({
       attestationType: fixedRequest.attestationType,
       sourceId: fixedRequest.sourceId,
