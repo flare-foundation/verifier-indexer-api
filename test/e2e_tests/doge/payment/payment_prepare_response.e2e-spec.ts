@@ -98,7 +98,9 @@ describe('/Payment/prepareResponse', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID');
+    expect(response.body.status).to.be.equal(
+      'INVALID: INVALID INPUT OR OUTPUT OF THE TRANSACTION',
+    );
   });
   it('should get 400 for negative inUtxo', async () => {
     const payload = {

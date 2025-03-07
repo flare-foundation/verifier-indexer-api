@@ -474,4 +474,28 @@ describe('/Payment/mic', () => {
     expect(response.body.status).to.be.equal('VALID');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
+  it('should get no native payment', async () => {
+    const payload = {
+      attestationType:
+        '0x5061796d656e7400000000000000000000000000000000000000000000000000',
+      sourceId:
+        '0x7465737458525000000000000000000000000000000000000000000000000000',
+      requestBody: {
+        transactionId:
+          '14c6e5ba6fb9fefaac1e0853acdff74e0898c1a2d5e9572585d7774fb4ccdd01',
+        inUtxo: '0',
+        utxo: '0',
+      },
+    };
+    const response = await request(app.getHttpServer())
+      .post('/Payment/mic')
+      .send(payload)
+      .set('X-API-KEY', '12345')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(response.body.status).to.be.equal(
+      'INVALID: NOT NATIVE PAYMENT TRANSACTION',
+    );
+  });
 });

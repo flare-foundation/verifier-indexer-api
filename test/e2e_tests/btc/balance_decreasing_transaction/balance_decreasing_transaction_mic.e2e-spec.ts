@@ -301,4 +301,49 @@ describe('/BalanceDecreasingTransaction/mic', () => {
       .set('X-API-KEY', '12345')
       .expect(400);
   });
+  it('should get invalid - coinbase status', async () => {
+    const payload = {
+      attestationType:
+        '0x42616c616e636544656372656173696e675472616e73616374696f6e00000000',
+      sourceId:
+        '0x7465737442544300000000000000000000000000000000000000000000000000',
+      requestBody: {
+        transactionId:
+          '8eafe07f4cefe64ce55482ea6aa1f9a191778f286d57135cae30a4591467bf4d',
+        sourceAddressIndicator: standardAddressHash(
+          'mkgR3eqsvDdnVGJcW5Wxo8Cgywg3a5pbkB',
+        ),
+      },
+    };
+    const response = await request(app.getHttpServer())
+      .post('/BalanceDecreasingTransaction/mic')
+      .send(payload)
+      .set('X-API-KEY', '12345')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(response.body.status).to.be.equal('INVALID: COINBASE TRANSACTION');
+  });
+  it('should get invalid - invalid source address', async () => {
+    const payload = {
+      attestationType:
+        '0x42616c616e636544656372656173696e675472616e73616374696f6e00000000',
+      sourceId:
+        '0x7465737442544300000000000000000000000000000000000000000000000000',
+      requestBody: {
+        transactionId:
+          '7c511c2deeea412ecd77491ed8e6275aacb8c3f9dfc9ce19509781a75f8d3936',
+        sourceAddressIndicator:
+          '7c511c2deeea412ecd77491ed8e6275aacb8c3f9dfc9ce19509781a75f8d3936',
+      },
+    };
+    const response = await request(app.getHttpServer())
+      .post('/BalanceDecreasingTransaction/mic')
+      .send(payload)
+      .set('X-API-KEY', '12345')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(response.body.status).to.be.equal('INVALID: INVALID SOURCE ADDRESS');
+  });
 });

@@ -75,7 +75,6 @@ export function responsePayment<T extends TransactionBase<unknown>>(
     return { status: AttestationResponseStatus.INVALID };
   }
 
-  //TODO!!!!!!!!!!!!!!!!!!!
   const status = paymentSummary.status;
   if (status === PaymentSummaryStatus.Coinbase) {
     return { status: AttestationResponseStatus.COINBASE_TRANSACTION };
@@ -94,7 +93,7 @@ export function responsePayment<T extends TransactionBase<unknown>>(
   } else if (status === PaymentSummaryStatus.NoIntendedReceiveAmountAddress) {
     return { status: AttestationResponseStatus.NO_INTENDED_RECEIVING_ADDRESS };
   } else if (status !== PaymentSummaryStatus.Success) {
-    return { status: AttestationResponseStatus.INVALID };
+    return { status: AttestationResponseStatus.INVALID_UTXOS };
   }
 
   if (!paymentSummary.response) {

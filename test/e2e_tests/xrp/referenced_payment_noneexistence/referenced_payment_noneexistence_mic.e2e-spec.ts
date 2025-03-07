@@ -892,4 +892,36 @@ describe('/ReferencedPaymentNonexistence/mic', () => {
     expect(response.body.status).to.be.equal('VALID');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
+  it('should get abiEncodedRequest', async () => {
+    const payload = {
+      attestationType:
+        '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
+      sourceId:
+        '0x7465737458525000000000000000000000000000000000000000000000000000',
+      requestBody: {
+        minimalBlockNumber: '2882022',
+        deadlineBlockNumber: '2882130',
+        deadlineTimestamp: '1733476340',
+        destinationAddressHash: standardAddressHash(
+          'rw33QqCywPVJRqJTmL1UYHqKPCxNC7eT6T',
+        ),
+        amount: '5146300010',
+        standardPaymentReference:
+          '0000000000000000000000000000000000000000000000000000000000000000',
+        checkSourceAddresses: true,
+        sourceAddressesRoot:
+          '7006716ece630ed05048e9f87debac44c23292fbd9b022942321e9a78e4255cc',
+      },
+    };
+    const response = await request(app.getHttpServer())
+      .post('/ReferencedPaymentNonexistence/mic')
+      .send(payload)
+      .set('X-API-KEY', '12345')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(response.body.status).to.be.equal(
+      'INVALID: ZERO PAYMENT REFERENCE UNSUPPORTED',
+    );
+  });
 });

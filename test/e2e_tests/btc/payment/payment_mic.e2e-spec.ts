@@ -46,7 +46,9 @@ describe('/Payment/mic', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID');
+    expect(response.body.status).to.be.equal(
+      'INVALID: INVALID INPUT OR OUTPUT OF THE TRANSACTION',
+    );
   });
   it('should get 400 for negative inUtxo', async () => {
     const payload = {
@@ -457,6 +459,29 @@ describe('/Payment/mic', () => {
         '0x5061796d656e7400000000000000000000000000000000000000000000000000',
       sourceId:
         '0X7465737442544300000000000000000000000000000000000000000000000000',
+      requestBody: {
+        transactionId:
+          '783c249c9e84ebb91e350d15403a0d741f530b43361ace8042a736242e68fc06',
+        inUtxo: '0',
+        utxo: '0',
+      },
+    };
+    const response = await request(app.getHttpServer())
+      .post('/Payment/mic')
+      .send(payload)
+      .set('X-API-KEY', '12345')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.messageIntegrityCode.length).to.be.equal(66);
+  });
+  it('should get abiEncodedRequest', async () => {
+    const payload = {
+      attestationType:
+        '0x5061796d656e7400000000000000000000000000000000000000000000000000',
+      sourceId:
+        '0x7465737442544300000000000000000000000000000000000000000000000000',
       requestBody: {
         transactionId:
           '783c249c9e84ebb91e350d15403a0d741f530b43361ace8042a736242e68fc06',
