@@ -15,7 +15,7 @@ import {
 const R_B58_DICT = 'rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz';
 const base58 = base(R_B58_DICT);
 const classicAddressRegex =
-  /r[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{24,34}/;
+  /[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{24,34}/;
 const invalidCharacters =
   /[^rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]/;
 
@@ -48,15 +48,15 @@ export function verifyAddressXRP(
 
   const checksum = base58Checksum(decodedAddress);
 
-  if (!checksum)
+  if (decodedAddress[0] != 0)
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_CHECKSUM,
+      status: AttestationResponseStatus.INVALID_ADDRESS_VERSION,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
-  if (decodedAddress[0] != 0)
+  if (!checksum)
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_PREFIX,
+      status: AttestationResponseStatus.INVALID_ADDRESS_CHECKSUM,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
