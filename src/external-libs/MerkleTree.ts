@@ -39,7 +39,7 @@ export function singleHash(val: string) {
  * Helper function for constructing the commit hash used with StateConnector.sol contract
  * @param merkleRoot merkle root (`0x`-prefixed 32-byte hex string)
  * @param randomNumber secure random number (`0x`-prefixed 32-byte hex string)
- * @param address addres (`0x`-prefixed 20-byte hex string)
+ * @param address address (`0x`-prefixed 20-byte hex string)
  * @returns `0x`-prefixed 32-byte hex string (hash)
  */
 export function commitHash(
