@@ -49,7 +49,7 @@ import {
 /////////////////////////////////////////////////
 
 /**
- * Auxillary function for assembling attestation response for 'Payment' attestation type.
+ * Auxiliary function for assembling attestation response for 'Payment' attestation type.
  * @param dbTransaction
  * @param TransactionClass
  * @param request
@@ -108,6 +108,12 @@ export function responsePayment<T extends TransactionBase<unknown>>(
   if (!paymentSummary.response) {
     throw new Error('critical error: should always have response');
   }
+
+  // if there is more than one output to the receiving address, the payment is not valid.
+  if (!paymentSummary.response.toOne) {
+    return { status: VerificationStatus.NOT_CONFIRMED };
+  }
+
   const response = new Payment_Response({
     attestationType: request.attestationType,
     sourceId: request.sourceId,
@@ -177,7 +183,7 @@ export async function verifyPayment<T extends TransactionBase<unknown>>(
 }
 
 /**
- * Auxillary function for assembling attestation response for 'BalanceDecreasingTransaction' attestation type.
+ * Auxiliary function for assembling attestation response for 'BalanceDecreasingTransaction' attestation type.
  * @param dbTransaction
  * @param TransactionClass
  * @param sourceAddressIndicator
@@ -284,7 +290,7 @@ export async function verifyBalanceDecreasingTransaction<
 }
 
 /**
- * Auxillary function for assembling attestation response for 'ConfirmedBlockHeightExists' attestation type.
+ * Auxiliary function for assembling attestation response for 'ConfirmedBlockHeightExists' attestation type.
  * @param dbBlock
  * @param lowerQueryWindowBlock
  * @param numberOfConfirmations
@@ -362,7 +368,7 @@ export async function verifyConfirmedBlockHeightExists(
 }
 
 /**
- * Auxillary function for assembling attestation response for 'ConfirmedBlockHeightExists' attestation type.
+ * Auxiliary function for assembling attestation response for 'ConfirmedBlockHeightExists' attestation type.
  * @param dbTransactions
  * @param TransactionClass
  * @param firstOverflowBlock
@@ -421,6 +427,12 @@ export function responseReferencedPaymentNonExistence<
         if (!paymentSummary.response) {
           throw new Error('critical error: should always have response');
         }
+
+        if (!paymentSummary.response.toOne) {
+          // There is more than one output to the specified address, thus the payment is not valid.
+          break;
+        }
+
         if (
           paymentSummary.response.intendedReceivingAmount >=
           BigInt(request.requestBody.amount.toString())
@@ -558,7 +570,7 @@ export async function verifyReferencedPaymentNonExistence<
     };
   }
 
-  const nonexistanceResponse = responseReferencedPaymentNonExistence(
+  const nonexistenceResponse = responseReferencedPaymentNonExistence(
     dbTransactions,
     TransactionClass,
     firstOverflowBlock,
@@ -566,5 +578,5 @@ export async function verifyReferencedPaymentNonExistence<
     request,
   );
 
-  return nonexistanceResponse;
+  return nonexistenceResponse;
 }
