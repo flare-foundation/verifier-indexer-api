@@ -7,6 +7,9 @@ export default tseslint.config(
   eslint.configs.recommended,
   // linting with type information
   tseslint.configs.recommendedTypeChecked,
+  {
+    ignores: ['eslint.config.mjs'],
+  },
   // tells parser how to find the tsconfig
   {
     languageOptions: {
