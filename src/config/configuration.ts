@@ -128,7 +128,7 @@ export function extractVerifierType(): ChainType {
       return ChainType.WEB2;
     default:
       throw new Error(
-        `Wrong verifier type: '${process.env.VERIFIER_TYPE}' provide a valid verifier type: 'doge' | 'btc' | 'xrp'`,
+        `Wrong verifier type: '${process.env.VERIFIER_TYPE}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2'`,
       );
   }
 }
