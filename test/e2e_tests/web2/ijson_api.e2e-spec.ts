@@ -2,25 +2,24 @@ import { expect } from 'chai';
 import { ethers } from 'ethers';
 import * as request from 'supertest';
 import { app } from './helper';
-import { HTTP_METHOD } from '../../../src/verification/json-api/utils';
 
 describe('/JsonApi/prepareResponse', () => {
   it('should get right responseBody', async () => {
-    const payload = {
-      attestationType:
-        '0x494a736f6e417069000000000000000000000000000000000000000000000000',
-      sourceId:
-        '0x7465737457454232000000000000000000000000000000000000000000000000',
-      messageIntegrityCode:
-        '0x0000000000000000000000000000000000000000000000000000000000000000',
-      requestBody: {
-        url: 'https://jsonplaceholder.typicode.com/todos/1',
-        http_method: HTTP_METHOD.GET,
-        postprocess_jq: '.title',
-        abi_signature:
-          '{"internalType": "string","name": "title","type": "string"}',
-      },
+    const payload = 
+      {
+        "attestationType": "0x494a736f6e417069000000000000000000000000000000000000000000000000",
+        "sourceId": "0x5745423200000000000000000000000000000000000000000000000000000000",
+        "requestBody": {
+          "url": "https://jsonplaceholder.typicode.com/todos/1",
+          "http_method": "GET",
+          "headers": "{\"Content-Type\":\"application/json\"}",
+          "query_params": "{\"userId\":1}",
+          "body": "{\"userId\":1,\"completed\":false}",
+          "postprocess_jq": ".title",
+          "abi_signature": "{\"internalType\": \"string\",\"name\": \"title\",\"type\": \"string\"}"
+        }
     };
+
     const response = await request(app.getHttpServer())
       .post('/JsonApi/prepareResponse')
       .send(payload)
@@ -45,19 +44,17 @@ describe('/JsonApi/prepareResponse', () => {
 describe('/JsonApi/mic', () => {
   it('should get right responseBody', async () => {
     const payload = {
-      attestationType:
-        '0x494a736f6e417069000000000000000000000000000000000000000000000000',
-      sourceId:
-        '0x7465737457454232000000000000000000000000000000000000000000000000',
-      messageIntegrityCode:
-        '0x0000000000000000000000000000000000000000000000000000000000000000',
-      requestBody: {
-        url: 'https://jsonplaceholder.typicode.com/todos/1',
-        http_method: HTTP_METHOD.GET,
-        postprocess_jq: '.title',
-        abi_signature:
-          '{"internalType": "string","name": "title","type": "string"}',
-      },
+      "attestationType": "0x494a736f6e417069000000000000000000000000000000000000000000000000",
+      "sourceId": "0x5745423200000000000000000000000000000000000000000000000000000000",
+      "requestBody": {
+        "url": "https://jsonplaceholder.typicode.com/todos/1",
+        "http_method": "GET",
+        "headers": "{\"Content-Type\":\"application/json\"}",
+        "query_params": "{\"userId\":1}",
+        "body": "{\"userId\":1,\"completed\":false}",
+        "postprocess_jq": ".title",
+        "abi_signature": "{\"internalType\": \"string\",\"name\": \"title\",\"type\": \"string\"}"
+      }
     };
     const response = await request(app.getHttpServer())
       .post('/JsonApi/mic')
@@ -67,21 +64,21 @@ describe('/JsonApi/mic', () => {
       .expect('Content-Type', /json/);
 
     const attResponse = {
-      attestationType:
-        '0x494a736f6e417069000000000000000000000000000000000000000000000000',
-      sourceId:
-        '0x7465737457454232000000000000000000000000000000000000000000000000', // testWEB2
-      votingRound: '0',
-      lowestUsedTimestamp: '0',
-      requestBody: {
-        url: 'https://jsonplaceholder.typicode.com/todos/1',
-        http_method: HTTP_METHOD.GET,
-        postprocess_jq: '.title',
-        abi_signature:
-          '{"internalType": "string","name": "title","type": "string"}',
+      "attestationType": "0x494a736f6e417069000000000000000000000000000000000000000000000000",
+      "sourceId": "0x5745423200000000000000000000000000000000000000000000000000000000",
+      "votingRound": "0",
+      "lowestUsedTimestamp": "0",
+      "requestBody": {
+        "url": "https://jsonplaceholder.typicode.com/todos/1",
+        "http_method": "GET",
+        "headers": "{\"Content-Type\":\"application/json\"}",
+        "query_params": "{\"userId\":1}",
+        "body": "{\"userId\":1,\"completed\":false}",
+        "postprocess_jq": ".title",
+        "abi_signature": "{\"internalType\": \"string\",\"name\": \"title\",\"type\": \"string\"}"
       },
-      responseBody: {
-        abi_encoded_data:
+      "responseBody": {
+        "abi_encoded_data":
           '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001264656c65637475732061757420617574656d0000000000000000000000000000',
       },
     };
@@ -110,6 +107,21 @@ describe('/JsonApi/mic', () => {
             {
               internalType: 'string',
               name: 'http_method',
+              type: 'string',
+            },
+            {
+              "internalType": "string",
+              "name": "headers",
+              "type": "string"
+            },
+            {
+              internalType: 'string',
+              name: 'query_params',
+              type: 'string',
+            },
+            {
+              internalType: 'string',
+              name: 'body',
               type: 'string',
             },
             {

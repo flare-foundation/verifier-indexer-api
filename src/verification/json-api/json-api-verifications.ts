@@ -33,7 +33,6 @@ export async function verifyJsonApi(
 
   // TODO validate all inputs
   const isValidSourceUrl = isValidUrl(sourceUrl);
-  console.log("isValidSourceUrl", isValidSourceUrl)
   if (!isValidSourceUrl) {
     return verificationResponse(AttestationResponseStatus.INVALID_SOURCE_URL);
   }
