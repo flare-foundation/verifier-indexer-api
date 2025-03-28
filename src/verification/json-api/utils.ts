@@ -37,5 +37,5 @@ export function verificationResponse<T>(status: AttestationResponseStatus, respo
     return {
         status,
         response
-    }   
+    }
 }

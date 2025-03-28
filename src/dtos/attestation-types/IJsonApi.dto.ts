@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { plainToInstance, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   IsDefined,
   IsEnum,
@@ -12,7 +12,7 @@ import {
 } from 'class-validator';
 import { Is0xHex, IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../../verification/response-status';
-import { HTTP_METHOD } from 'src/verification/json-api/utils';
+import { HTTP_METHOD } from '../../verification/json-api/utils';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////

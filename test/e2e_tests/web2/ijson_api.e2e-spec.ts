@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'ethers';
 import * as request from 'supertest';
 import { app } from './helper';
+import { HTTP_METHOD } from '../../../src/verification/json-api/utils';
 
 describe('/JsonApi/prepareResponse', () => {
   it('should get right responseBody', async () => {
@@ -14,6 +15,7 @@ describe('/JsonApi/prepareResponse', () => {
         '0x0000000000000000000000000000000000000000000000000000000000000000',
       requestBody: {
         url: 'https://jsonplaceholder.typicode.com/todos/1',
+        http_method: HTTP_METHOD.GET,
         postprocess_jq: '.title',
         abi_signature:
           '{"internalType": "string","name": "title","type": "string"}',
@@ -51,6 +53,7 @@ describe('/JsonApi/mic', () => {
         '0x0000000000000000000000000000000000000000000000000000000000000000',
       requestBody: {
         url: 'https://jsonplaceholder.typicode.com/todos/1',
+        http_method: HTTP_METHOD.GET,
         postprocess_jq: '.title',
         abi_signature:
           '{"internalType": "string","name": "title","type": "string"}',
@@ -72,6 +75,7 @@ describe('/JsonApi/mic', () => {
       lowestUsedTimestamp: '0',
       requestBody: {
         url: 'https://jsonplaceholder.typicode.com/todos/1',
+        http_method: HTTP_METHOD.GET,
         postprocess_jq: '.title',
         abi_signature:
           '{"internalType": "string","name": "title","type": "string"}',
@@ -101,6 +105,11 @@ describe('/JsonApi/mic', () => {
             {
               internalType: 'string',
               name: 'url',
+              type: 'string',
+            },
+            {
+              internalType: 'string',
+              name: 'http_method',
               type: 'string',
             },
             {
