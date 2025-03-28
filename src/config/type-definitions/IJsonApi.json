@@ -1,8 +1,8 @@
 {
   "name": "IJsonApi",
-  "fullComment": " @custom:name IJsonApi\n @custom:supported WEB2\n @author Flare\n @notice An attestation request that fetches data from the given url and then edits the information with a\n jq transformation.\n @custom:verification  Data is fetched from an url `url`. The received data is then processed with jq as\n the `postprocessJq` states. The structure of the final json is written in the `abi_signature`.\n The response contains an abi encoding of the final data.\n @custom:lut `0xffffffffffffffff`\n @custom:lut-limit `0xffffffffffffffff`",
+  "fullComment": " @custom:name IJsonApi\n @custom:supported WEB2\n @author Flare\n @notice An attestation request that fetches data from the given url and then edits the information with a\n jq transformation.\n @custom:verification  Data is fetched from an url `url`. The received data is then processed with jq as\n the `postprocess_jq` states. The structure of the final json is written in the `abi_signature`.\n The response contains an abi encoding of the final data.\n @custom:lut `0xffffffffffffffff`\n @custom:lut-limit `0xffffffffffffffff`",
   "description": "An attestation request that fetches data from the given url and then edits the information with a\n jq transformation.",
-  "verification": "Data is fetched from an url `url`. The received data is then processed with jq as\n the `postprocessJq` states. The structure of the final json is written in the `abi_signature`.\n The response contains an abi encoding of the final data.\n ",
+  "verification": "Data is fetched from an url `url`. The received data is then processed with jq as\n the `postprocess_jq` states. The structure of the final json is written in the `abi_signature`.\n The response contains an abi encoding of the final data.\n ",
   "lut": "`0xffffffffffffffff`",
   "proof": {
     "name": "Proof",
@@ -105,10 +105,10 @@
   },
   "requestBody": {
     "name": "RequestBody",
-    "description": "Request body for Payment attestation type",
+    "description": "Request body for IJsonApi attestation type",
     "above": "",
     "below": "",
-    "fullComment": " @notice Request body for Payment attestation type\n @param url URL of the data source\n @param postprocessJq jq filter to postprocess the data\n @param abi_signature ABI signature of the data",
+    "fullComment": " @notice Request body for IJsonApi attestation type\n @param url URL of the data source\n @param postprocess_jq jq filter to postprocess the data\n @param abi_signature ABI signature of the data",
     "params": [
       {
         "name": "url",
@@ -117,7 +117,31 @@
         "comment": "URL of the data source"
       },
       {
-        "name": "postprocessJq",
+        "name": "http_method",
+        "type": "string",
+        "typeSimple": "string",
+        "comment": "HTTP method for fetching the data source"
+      },
+      {
+        "name": "headers",
+        "type": "string",
+        "typeSimple": "string",
+        "comment": "Optional headers for fetching the data source"
+      },
+      {
+        "name": "query_params",
+        "type": "string",
+        "typeSimple": "string",
+        "comment": "Optional query parameters for fetching the data source"
+      },
+      {
+        "name": "body",
+        "type": "string",
+        "typeSimple": "string",
+        "comment": "Optional body for fetching the data source"
+      },
+      {
+        "name": "postprocess_jq",
         "type": "string",
         "typeSimple": "string",
         "comment": "jq filter to postprocess the data"
@@ -132,10 +156,10 @@
   },
   "responseBody": {
     "name": "ResponseBody",
-    "description": "Response body for Payment attestation type",
+    "description": "Response body for IJsonApi attestation type",
     "above": "",
     "below": "",
-    "fullComment": " @notice Response body for Payment attestation type\n @param abi_encoded_data ABI encoded data",
+    "fullComment": " @notice Response body for IJsonApi attestation type\n @param abi_encoded_data ABI encoded data",
     "params": [
       {
         "name": "abi_encoded_data",
@@ -173,7 +197,27 @@
           },
           {
             "internalType": "string",
-            "name": "postprocessJq",
+            "name": "http_method",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "headers",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "query_params",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "body",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "postprocess_jq",
             "type": "string"
           },
           {
@@ -222,7 +266,27 @@
           },
           {
             "internalType": "string",
-            "name": "postprocessJq",
+            "name": "http_method",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "headers",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "query_params",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "body",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "postprocess_jq",
             "type": "string"
           },
           {
@@ -290,7 +354,27 @@
               },
               {
                 "internalType": "string",
-                "name": "postprocessJq",
+                "name": "http_method",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "headers",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "query_params",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "body",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "postprocess_jq",
                 "type": "string"
               },
               {

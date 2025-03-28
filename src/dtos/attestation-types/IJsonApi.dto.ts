@@ -1,15 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { plainToInstance, Type } from 'class-transformer';
 import {
   IsDefined,
+  IsEnum,
   IsNotEmptyObject,
   IsObject,
+  IsOptional,
   IsString,
   Validate,
   ValidateNested,
 } from 'class-validator';
 import { Is0xHex, IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../../verification/response-status';
+import { HTTP_METHOD } from 'src/verification/json-api/utils';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -57,6 +60,50 @@ export class IJsonApi_RequestBody {
   url: string;
 
   /**
+   * HTTP method to be used to fetch from URL source
+   */
+  @IsEnum(HTTP_METHOD) 
+  @ApiProperty({
+    description: `HTTP method to be used to fetch from URL source`,
+    example: 'GET',
+    enum: HTTP_METHOD
+  })
+  http_method: HTTP_METHOD;
+
+  /**
+   * Headers to be included to fetch from URL source
+   */
+  @IsOptional() // TODO handle optional properties on response
+  @IsString()
+  @ApiPropertyOptional({
+    description: `Headers to be included to fetch from URL source`,
+    example: '{"Content-Type":"application/json"}'
+  })
+  headers?: string;
+
+  /**
+   * Query parameters to be included to fetch from URL source. 
+   */
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({
+    description: `Query parameters to be included to fetch from URL source`,
+    example: '{"userId":1}'
+  })
+  query_params?: string
+
+  /**
+   * Request body to be included to fetch from URL source. 
+   */
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({
+    description: `Request body to be included to fetch from URL source`,
+    example: '{"userId":1,"completed":false}'
+  })
+  body?: string
+
+  /**
    * jq filter to postprocess the data
    */
   @IsString()
@@ -64,7 +111,7 @@ export class IJsonApi_RequestBody {
     description: `jq filter to postprocess the data`,
     example: '.',
   })
-  postprocessJq: string;
+  postprocess_jq: string;
 
   /**
    * ABI signature of the data

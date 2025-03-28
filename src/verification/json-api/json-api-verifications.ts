@@ -9,24 +9,8 @@ import {
 import { serializeBigInts } from '../../external-libs/utils';
 import { VerificationResponse } from '../response-status';
 import { AttestationResponseStatus } from './../response-status';
-
-interface BasicAuth {
-  basic: { username: string; password: string };
-}
-interface HeaderAuth {
-  header: { key: string; value: string };
-}
-interface QueryAuth {
-  query: { key: string; value: string };
-}
-
-// TODO!: Add urls and auth data to the map
-const authUrls = new Map<string, BasicAuth | HeaderAuth | QueryAuth>();
-// Use the base URL without the trailing .com, .org, or other domain suffixes.
-// Examples:
-// authUrls.set('https://example', { basic: { username: 'user', password: 'pass' }, });
-// authUrls.set('https://example', { header: { key: 'Auth', value: 'Bearer token' }, });
-// authUrls.set('https://example', { query: { key: 'key', value: 'token' }, });
+import axios, { AxiosResponse } from 'axios';
+import { isValidUrl, verificationResponse } from './utils';
 
 /**
  * `JsonApi` attestation type verification function
@@ -37,86 +21,72 @@ const authUrls = new Map<string, BasicAuth | HeaderAuth | QueryAuth>();
 export async function verifyJsonApi(
   request: IJsonApi_Request,
 ): Promise<VerificationResponse<IJsonApi_Response>> {
-  let url = request.requestBody.url;
-  const jqScheme = request.requestBody.postprocessJq;
-  const abiSign = JSON.parse(request.requestBody.abi_signature) as object;
 
-  const headers = new Headers();
-  const baseUrl = new URL(url).origin;
+  const requestBody = request.requestBody;
+  const sourceUrl = requestBody.url;
+  const sourceMethod = requestBody.http_method;
+  const sourceHeaders = requestBody.headers ? JSON.parse(requestBody.headers) : {};
+  const sourceQueryParams = requestBody.query_params ? JSON.parse(requestBody.query_params) : {};
+  const sourceBody =  requestBody.body ? JSON.parse(requestBody.body) : {};
+  const jqScheme = requestBody.postprocess_jq;
+  const abiSign = JSON.parse(requestBody.abi_signature);
 
-  if (authUrls.has(baseUrl)) {
-    const authData = authUrls.get(baseUrl);
-
-    if ('basic' in authData) {
-      headers.set(
-        'Authorization',
-        'Basic ' +
-          btoa(`${authData.basic.username}:${authData.basic.password}`),
-      );
-    }
-    if ('header' in authData) {
-      headers.set(authData.header.key, authData.header.value);
-    }
-    if ('query' in authData) {
-      const urlObj = new URL(url);
-      urlObj.searchParams.append(authData.query.key, authData.query.value);
-      url = urlObj.toString();
-    }
+  // TODO validate all inputs
+  const isValidSourceUrl = isValidUrl(sourceUrl);
+  console.log("isValidSourceUrl", isValidSourceUrl)
+  if (!isValidSourceUrl) {
+    return verificationResponse(AttestationResponseStatus.INVALID_SOURCE_URL);
   }
 
-  const requestURL = new globalThis.Request(url, {
-    method: 'GET',
-    headers: headers,
+  // Fetch data from user defined source
+  const sourceResponse: AxiosResponse<ArrayBuffer> = await axios({ // TODO catch any fetch error
+    url: sourceUrl,
+    method: sourceMethod,
+    headers: sourceHeaders,
+    params: sourceQueryParams,
+    data: sourceBody,
+    responseType: "arraybuffer", // prevent auto-parsing
+    maxContentLength: 1024 * 1024, // limit response to 1MB
+    timeout: 1000, // 1s
+    maxRedirects: 0, // block redirects
+    validateStatus: (status) => status >= 200 && status < 300
+  });
+  
+  // validate Content-Type Header
+  const contentType = sourceResponse.headers["content-type"];
+  if (!contentType || !contentType.includes("application/json")) {
+    return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE);
+  }
+
+  const responseDataStr = Buffer.from(sourceResponse.data).toString("utf-8");
+  // validate JSON structure
+  let responseJsonData;
+  try {
+    responseJsonData = JSON.parse(responseDataStr);
+  } catch {
+    return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_JSON);
+  }
+
+  const filteredData = await jq.run(jqScheme, responseJsonData, { input: 'json' }) as string; // TODO: as string + catch jq run error
+  const dataJq = JSON.parse(filteredData) as JsonInput;
+  const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
+    [abiSign as ethers.ParamType],
+    [dataJq],
+  );
+
+  const response = new IJsonApi_Response({
+    attestationType: request.attestationType,
+    sourceId: request.sourceId,
+    votingRound: '0',
+    lowestUsedTimestamp: '0',
+    requestBody: serializeBigInts(requestBody),
+    responseBody: new IJsonApi_ResponseBody({
+      abi_encoded_data: encodedData,
+    }),
   });
 
-  return fetch(requestURL)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error();
-      }
-      return response.json();
-    })
-    .catch(() => {
-      throw new Error(
-        AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR,
-      );
-    })
-    .then((data: JsonInput) => {
-      return jq.run(jqScheme, data, { input: 'json' });
-    })
-    .then((filteredData: string) => {
-      const dataJq = JSON.parse(filteredData) as JsonInput;
-      const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
-        [abiSign as ethers.ParamType],
-        [dataJq],
-      );
-
-      const response = new IJsonApi_Response({
-        attestationType: request.attestationType,
-        sourceId: request.sourceId,
-        votingRound: '0',
-        lowestUsedTimestamp: '0',
-        requestBody: serializeBigInts(request.requestBody),
-        responseBody: new IJsonApi_ResponseBody({
-          abi_encoded_data: encodedData,
-        }),
-      });
-
-      return {
-        status: AttestationResponseStatus.VALID,
-        response,
-      };
-    })
-    .catch((error: Error) => {
-      if (
-        error.message ===
-        AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR.toString()
-      ) {
-        return {
-          status: AttestationResponseStatus.INVALID_FETCH_OR_RESPONSE_ERROR,
-        };
-      } else {
-        return { status: AttestationResponseStatus.INVALID_JQ_PARSE_ERROR };
-      }
-    });
+  return {
+    status: AttestationResponseStatus.VALID,
+    response,
+  };
 }

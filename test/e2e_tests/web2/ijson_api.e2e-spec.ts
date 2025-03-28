@@ -14,7 +14,7 @@ describe('/JsonApi/prepareResponse', () => {
         '0x0000000000000000000000000000000000000000000000000000000000000000',
       requestBody: {
         url: 'https://jsonplaceholder.typicode.com/todos/1',
-        postprocessJq: '.title',
+        postprocess_jq: '.title',
         abi_signature:
           '{"internalType": "string","name": "title","type": "string"}',
       },
@@ -51,7 +51,7 @@ describe('/JsonApi/mic', () => {
         '0x0000000000000000000000000000000000000000000000000000000000000000',
       requestBody: {
         url: 'https://jsonplaceholder.typicode.com/todos/1',
-        postprocessJq: '.title',
+        postprocess_jq: '.title',
         abi_signature:
           '{"internalType": "string","name": "title","type": "string"}',
       },
@@ -72,7 +72,7 @@ describe('/JsonApi/mic', () => {
       lowestUsedTimestamp: '0',
       requestBody: {
         url: 'https://jsonplaceholder.typicode.com/todos/1',
-        postprocessJq: '.title',
+        postprocess_jq: '.title',
         abi_signature:
           '{"internalType": "string","name": "title","type": "string"}',
       },
@@ -105,7 +105,7 @@ describe('/JsonApi/mic', () => {
             },
             {
               internalType: 'string',
-              name: 'postprocessJq',
+              name: 'postprocess_jq',
               type: 'string',
             },
             {
