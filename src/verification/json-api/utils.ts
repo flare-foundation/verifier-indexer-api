@@ -1,5 +1,10 @@
 import { AttestationResponseStatus, VerificationResponse } from "../response-status";
 
+export const maxContentLength = 1024 * 1024; // 1MB
+export const maxTimeout = 1000; // 1s
+export const maxRedirects = 0;
+export const responseType = "arraybuffer"; // prevent auto-parsing
+
 /**
  * HTTP method enums
  */
@@ -38,4 +43,12 @@ export function verificationResponse<T>(status: AttestationResponseStatus, respo
         status,
         response
     }
+}
+
+export function tryParseJSON(input: string) {
+  try {
+      return JSON.parse(input);
+  } catch {
+      return null
+  }
 }

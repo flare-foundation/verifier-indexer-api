@@ -10,7 +10,7 @@ import { serializeBigInts } from '../../external-libs/utils';
 import { VerificationResponse } from '../response-status';
 import { AttestationResponseStatus } from './../response-status';
 import axios, { AxiosResponse } from 'axios';
-import { isValidUrl, verificationResponse } from './utils';
+import { isValidUrl, maxContentLength, maxRedirects, maxTimeout, responseType, tryParseJSON, verificationResponse } from './utils';
 
 /**
  * `JsonApi` attestation type verification function
@@ -24,54 +24,78 @@ export async function verifyJsonApi(
 
   const requestBody = request.requestBody;
   const sourceUrl = requestBody.url;
-  const sourceMethod = requestBody.http_method;
-  const sourceHeaders = requestBody.headers ? JSON.parse(requestBody.headers) : {};
-  const sourceQueryParams = requestBody.query_params ? JSON.parse(requestBody.query_params) : {};
-  const sourceBody =  requestBody.body ? JSON.parse(requestBody.body) : {};
-  const jqScheme = requestBody.postprocess_jq;
-  const abiSign = JSON.parse(requestBody.abi_signature);
-
-  // TODO validate all inputs
   const isValidSourceUrl = isValidUrl(sourceUrl);
   if (!isValidSourceUrl) {
     return verificationResponse(AttestationResponseStatus.INVALID_SOURCE_URL);
   }
+  const sourceMethod = requestBody.http_method;
+  const sourceHeaders = tryParseJSON(requestBody.headers);
+  if (!sourceHeaders) {
+    return verificationResponse(AttestationResponseStatus.INVALID_HEADERS);
+  }
+  const sourceQueryParams = tryParseJSON(requestBody.query_params);
+  if (!sourceQueryParams) {
+    return verificationResponse(AttestationResponseStatus.INVALID_QUERY_PARAMS);
+  }
+  const sourceBody =  tryParseJSON(requestBody.body);
+  if (!sourceBody) {
+    return verificationResponse(AttestationResponseStatus.INVALID_BODY);
+  }
+  const jqScheme = requestBody.postprocess_jq;
+  const abiSign = tryParseJSON(requestBody.abi_signature);
+  if (!abiSign) {
+    return verificationResponse(AttestationResponseStatus.INVALID_ABI_SIGNATURE);
+  }
 
   // Fetch data from user defined source
-  const sourceResponse: AxiosResponse<ArrayBuffer> = await axios({ // TODO catch any fetch error
-    url: sourceUrl,
-    method: sourceMethod,
-    headers: sourceHeaders,
-    params: sourceQueryParams,
-    data: sourceBody,
-    responseType: "arraybuffer", // prevent auto-parsing
-    maxContentLength: 1024 * 1024, // limit response to 1MB
-    timeout: 1000, // 1s
-    maxRedirects: 0, // block redirects
-    validateStatus: (status) => status >= 200 && status < 300
-  });
-  
-  // validate Content-Type Header
+  let sourceResponse: AxiosResponse<ArrayBuffer>;
+  try {
+    sourceResponse = await axios({ // TODO catch any fetch error
+      url: sourceUrl,
+      method: sourceMethod,
+      headers: sourceHeaders,
+      params: sourceQueryParams,
+      data: sourceBody,
+      responseType: responseType,
+      maxContentLength: maxContentLength, // limit response size
+      timeout: maxTimeout,
+      maxRedirects: maxRedirects, // limit redirects
+      validateStatus: (status) => status >= 200 && status < 300
+    });
+  } catch {
+    return verificationResponse(AttestationResponseStatus.INVALID_FETCH_ERROR)
+  }
+
+  // Validate Content-Type Header
   const contentType = sourceResponse.headers["content-type"];
   if (!contentType || !contentType.includes("application/json")) {
     return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE);
   }
 
-  const responseDataStr = Buffer.from(sourceResponse.data).toString("utf-8");
-  // validate JSON structure
-  let responseJsonData;
-  try {
-    responseJsonData = JSON.parse(responseDataStr);
-  } catch {
+  // Validate returned JSON structure
+  const responseJsonData = tryParseJSON(Buffer.from(sourceResponse.data).toString("utf-8"));
+  if (!responseJsonData) {
     return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_JSON);
   }
 
-  const filteredData = await jq.run(jqScheme, responseJsonData, { input: 'json' }) as string; // TODO: as string + catch jq run error
-  const dataJq = JSON.parse(filteredData) as JsonInput;
-  const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
-    [abiSign as ethers.ParamType],
-    [dataJq],
-  );
+  // Process the data with jq
+  let dataJq: JsonInput;
+  try {
+      const filteredData = await jq.run(jqScheme, responseJsonData, { input: "json" }) as string;
+      dataJq = JSON.parse(filteredData);
+  } catch (jqError) {
+      return verificationResponse(AttestationResponseStatus.INVALID_JQ_PARSE_ERROR);
+  }
+
+  let encodedData: string;
+  try {
+      encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
+          [abiSign as ethers.ParamType],
+          [dataJq],
+      );
+  } catch {
+      return verificationResponse(AttestationResponseStatus.INVALID_ENCODE_ERROR);
+  }
 
   const response = new IJsonApi_Response({
     attestationType: request.attestationType,

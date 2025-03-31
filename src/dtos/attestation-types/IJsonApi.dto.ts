@@ -5,7 +5,6 @@ import {
   IsEnum,
   IsNotEmptyObject,
   IsObject,
-  IsOptional,
   IsString,
   Validate,
   ValidateNested,
@@ -62,7 +61,7 @@ export class IJsonApi_RequestBody {
   /**
    * HTTP method to be used to fetch from URL source
    */
-  @IsEnum(HTTP_METHOD) 
+  @IsEnum(HTTP_METHOD)
   @ApiProperty({
     description: `HTTP method to be used to fetch from URL source`,
     example: 'GET',
@@ -73,35 +72,32 @@ export class IJsonApi_RequestBody {
   /**
    * Headers to be included to fetch from URL source
    */
-  @IsOptional() // TODO handle optional properties on response
   @IsString()
-  @ApiPropertyOptional({
-    description: `Headers to be included to fetch from URL source`,
+  @ApiProperty({
+    description: `Headers to be included to fetch from URL source. Use '{}' if not headers are needed.`,
     example: '{"Content-Type":"application/json"}'
   })
-  headers?: string;
+  headers: string;
 
   /**
-   * Query parameters to be included to fetch from URL source. 
+   * Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.
    */
-  @IsOptional()
   @IsString()
-  @ApiPropertyOptional({
-    description: `Query parameters to be included to fetch from URL source`,
+  @ApiProperty({
+    description: `Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.`,
     example: '{"userId":1}'
   })
-  query_params?: string
+  query_params: string
 
   /**
-   * Request body to be included to fetch from URL source. 
+   * Request body to be included to fetch from URL source. Use '{}' if no request body is required.
    */
-  @IsOptional()
   @IsString()
-  @ApiPropertyOptional({
-    description: `Request body to be included to fetch from URL source`,
+  @ApiProperty({
+    description: `Request body to be included to fetch from URL source. Use '{}' if no request body is required.`,
     example: '{"userId":1,"completed":false}'
   })
-  body?: string
+  body: string
 
   /**
    * jq filter to postprocess the data
