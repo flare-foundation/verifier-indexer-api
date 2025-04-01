@@ -47,11 +47,13 @@ make_db(){
   
   if [ "$VERIFIER_TYPE" == "all" ]; then
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_btc_testnet postgres_testing_db:/tmp/dbdumpbtc
+    docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_btc2_testnet postgres_testing_db:/tmp/dbdumpbtc2
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_doge_testnet postgres_testing_db:/tmp/dbdumpdoge
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_xrp_testnet postgres_testing_db:/tmp/dbdumpxrp
     _wait_for_pg_ready 
 
     _make_db btc
+    _make_db btc2
     _make_db doge
     _make_db xrp
   else
@@ -71,10 +73,12 @@ _make_db_ci(){
   echo Copying dumb to DB
 
   cp test/e2e_tests/db/db_btc_testnet /tmp/dbdumpbtc
+  cp test/e2e_tests/db/db_btc2_testnet /tmp/dbdumpbtc2
   cp test/e2e_tests/db/db_doge_testnet /tmp/dbdumpdoge
   cp test/e2e_tests/db/db_xrp_testnet /tmp/dbdumpxrp
   
   _make_db btc
+  _make_db btc2
   _make_db doge
   _make_db xrp
 }

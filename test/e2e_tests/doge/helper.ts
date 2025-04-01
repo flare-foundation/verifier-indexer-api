@@ -129,7 +129,7 @@ before(async () => {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors();
 
-  await app.listen(3121, '0.0.0.0');
+  await app.listen(3122, '0.0.0.0');
 });
 
 after(async () => {

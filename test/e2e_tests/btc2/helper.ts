@@ -41,7 +41,7 @@ function getConfig() {
   let database = 'db';
   const isCoverage = process.env.RUNNING_ALL_TESTS == 'true';
   if (isCoverage) {
-    database = 'dbbtc';
+    database = 'dbbtc2';
   }
 
   const db = {
@@ -129,7 +129,7 @@ before(async () => {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors();
 
-  await app.listen(3121, '0.0.0.0');
+  await app.listen(3124, '0.0.0.0');
 });
 
 after(async () => {

@@ -27,6 +27,7 @@ e2e_test:
     - YES=1 /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
     - apt -y install postgresql-client-17
     - curl -o test/e2e_tests/db/db_btc_testnet https://githubstatic.flare.center/db_btc_testnet 
+    - curl -o test/e2e_tests/db/db_btc2_testnet https://githubstatic.flare.center/db_btc2_testnet 
     - curl -o test/e2e_tests/db/db_doge_testnet https://githubstatic.flare.center/db_doge_testnet
     - curl -o test/e2e_tests/db/db_xrp_testnet https://githubstatic.flare.center/db_xrp_testnet 
   script:
