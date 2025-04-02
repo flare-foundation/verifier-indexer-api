@@ -1,6 +1,6 @@
 import { HTTP_METHOD } from 'src/verification/json-api/utils';
 
-export interface IJsonApiConfig {
+export interface IJsonApiConfig { // TODO check if all fields are needed
   securityConfig: IJsonApiSecurityConfig;
   sourceConfig: IJsonApiSourceConfig;
 }

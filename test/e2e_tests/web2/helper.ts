@@ -35,7 +35,7 @@ function getConfig() {
 
   const apiJsonDefaultConfig: IJsonApiConfig = {
     securityConfig: {
-      blockUrls: [],
+      blockHostnames: [],
       blockJq: [],
       blockJson: [],
       jqVersion: '1.7.1',
