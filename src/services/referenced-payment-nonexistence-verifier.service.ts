@@ -7,7 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityManager } from 'typeorm';
-import { ChainType, IConfig } from '../config/configuration';
+import { ChainType } from '../config/configuration';
 import {
   AttestationResponseDTO_ReferencedPaymentNonexistence_Response,
   ReferencedPaymentNonexistence_Request,
@@ -24,6 +24,7 @@ import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,
 } from './common/verifier-base.service';
+import { IConfig } from 'src/config/interfaces/common';
 
 abstract class BaseReferencedPaymentNonexistenceVerifierService extends BaseVerifierServiceWithIndexer<
   ReferencedPaymentNonexistence_Request,

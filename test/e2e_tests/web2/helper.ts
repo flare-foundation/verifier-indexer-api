@@ -12,29 +12,18 @@ import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
 import {
-  ChainType,
-  getDatabaseEntities,
-  IConfig,
-  VerifierServerConfig,
+  ChainType
 } from '../../../src/config/configuration';
 import { IJsonApiVerifierController } from '../../../src/controllers/ijson-api-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { IJsonApiVerifierService } from '../../../src/services/ijson-api-verifier.service';
+import { IJsonApiConfig } from 'src/config/interfaces/json-api';
+import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
 
 function getConfig() {
   const api_keys = process.env.API_KEYS?.split(',') || [''];
   const verifier_type = ChainType.WEB2;
   const isTestnet = process.env.TESTNET == 'true';
-
-  const db = {
-    database: process.env.DB_DATABASE || 'database',
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: parseInt(process.env.DB_PORT) || 8080,
-    username: process.env.DB_USERNAME || 'username',
-    password: process.env.DB_PASSWORD || 'password',
-  };
-
-  const entities = getDatabaseEntities(verifier_type);
 
   const verifierConfig: VerifierServerConfig = {
     verifierType: verifier_type,
@@ -44,19 +33,28 @@ function getConfig() {
     ),
   };
 
+  const apiJsonDefaultConfig: IJsonApiConfig = {
+    securityConfig: {
+      blockUrls: [],
+      blockJq: [],
+      blockJson: [],
+      jqVersion: '1.7.1',
+    },
+    sourceConfig: {
+      requiresApiKey: false,
+      allowedMethods: '*',
+      allowedEndPoints: '*',
+      maxResponseSize: 1024 * 1024,
+      maxTimeout: 1000,
+      maxRedirects: 0
+    },
+  };
+
   const config: IConfig = {
     port: parseInt(process.env.PORT || '3120'),
     api_keys,
+    verifierConfigOptions: apiJsonDefaultConfig,
     verifierConfig,
-    db: db,
-    typeOrmModuleOptions: {
-      ...db,
-      type: 'postgres',
-      entities: entities,
-      synchronize: false,
-      migrationsRun: false,
-      logging: false,
-    },
     isTestnet,
   };
   return config;

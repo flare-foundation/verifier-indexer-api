@@ -4,9 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   AttestationTypeOptions,
   ChainType,
-  IConfig,
   SourceNames,
-  VerifierServerConfig,
 } from '../../config/configuration';
 
 import { EntityManager } from 'typeorm';
@@ -30,6 +28,7 @@ import {
 } from '../../indexed-query-manager/UtxoIndexQueryManager';
 import { XrpIndexerQueryManager } from '../../indexed-query-manager/XrpIndexerQueryManager';
 import { AttestationResponseStatus } from '../../verification/response-status';
+import { IConfig, VerifierServerConfig } from 'src/config/interfaces/common';
 
 interface IVerificationServiceConfig {
   source: ChainType;

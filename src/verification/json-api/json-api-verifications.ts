@@ -10,7 +10,9 @@ import { serializeBigInts } from '../../external-libs/utils';
 import { VerificationResponse } from '../response-status';
 import { AttestationResponseStatus } from './../response-status';
 import axios, { AxiosResponse } from 'axios';
-import { isValidUrl, maxContentLength, maxRedirects, maxTimeout, responseType, tryParseJSON, verificationResponse } from './utils';
+import { isValidHttpMethod, isValidUrl, responseContentType, responseType, tryParseJSON, verificationResponse } from './utils';
+import { IJsonApiSecurityConfig, IJsonApiSourceConfig } from 'src/config/interfaces/json-api';
+import { Logger } from '@nestjs/common';
 
 /**
  * `JsonApi` attestation type verification function
@@ -20,15 +22,20 @@ import { isValidUrl, maxContentLength, maxRedirects, maxTimeout, responseType, t
  */
 export async function verifyJsonApi(
   request: IJsonApi_Request,
+  securityConfig: IJsonApiSecurityConfig,
+  sourceConfig: IJsonApiSourceConfig
 ): Promise<VerificationResponse<IJsonApi_Response>> {
 
   const requestBody = request.requestBody;
   const sourceUrl = requestBody.url;
-  const isValidSourceUrl = isValidUrl(sourceUrl);
+  const isValidSourceUrl = await isValidUrl(sourceUrl, securityConfig.blockHostnames);
   if (!isValidSourceUrl) {
     return verificationResponse(AttestationResponseStatus.INVALID_SOURCE_URL);
   }
   const sourceMethod = requestBody.http_method;
+  if (!isValidHttpMethod(sourceMethod, sourceConfig.allowedMethods)) {
+    return verificationResponse(AttestationResponseStatus.INVALID_HTTP_METHOD);
+  }
   const sourceHeaders = tryParseJSON(requestBody.headers);
   if (!sourceHeaders) {
     return verificationResponse(AttestationResponseStatus.INVALID_HEADERS);
@@ -50,25 +57,26 @@ export async function verifyJsonApi(
   // Fetch data from user defined source
   let sourceResponse: AxiosResponse<ArrayBuffer>;
   try {
-    sourceResponse = await axios({ // TODO catch any fetch error
+    sourceResponse = await axios({
       url: sourceUrl,
       method: sourceMethod,
       headers: sourceHeaders,
       params: sourceQueryParams,
       data: sourceBody,
       responseType: responseType,
-      maxContentLength: maxContentLength, // limit response size
-      timeout: maxTimeout,
-      maxRedirects: maxRedirects, // limit redirects
+      maxContentLength: sourceConfig.maxResponseSize, // limit response size
+      timeout: sourceConfig.maxTimeout,
+      maxRedirects: sourceConfig.maxRedirects, // limit redirects
       validateStatus: (status) => status >= 200 && status < 300
     });
-  } catch {
+  } catch (error) {
+    Logger.error(`Error fetching source response: ${error}`);
     return verificationResponse(AttestationResponseStatus.INVALID_FETCH_ERROR)
   }
 
   // Validate Content-Type Header
   const contentType = sourceResponse.headers["content-type"];
-  if (!contentType || !contentType.includes("application/json")) {
+  if (!contentType || !contentType.includes(responseContentType)) {
     return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE);
   }
 
@@ -83,7 +91,8 @@ export async function verifyJsonApi(
   try {
       const filteredData = await jq.run(jqScheme, responseJsonData, { input: "json" }) as string;
       dataJq = JSON.parse(filteredData);
-  } catch (jqError) {
+  } catch (error) {
+      Logger.error(`Error while jq parsing: ${error}`);
       return verificationResponse(AttestationResponseStatus.INVALID_JQ_PARSE_ERROR);
   }
 
@@ -93,7 +102,8 @@ export async function verifyJsonApi(
           [abiSign as ethers.ParamType],
           [dataJq],
       );
-  } catch {
+  } catch (error) {
+      Logger.error(`Error while encoding response: ${error}`);
       return verificationResponse(AttestationResponseStatus.INVALID_ENCODE_ERROR);
   }
 

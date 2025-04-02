@@ -7,7 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityManager } from 'typeorm';
-import { ChainType, IConfig } from '../config/configuration';
+import { ChainType } from '../config/configuration';
 import {
   AttestationResponseDTO_BalanceDecreasingTransaction_Response,
   BalanceDecreasingTransaction_Request,
@@ -25,6 +25,7 @@ import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,
 } from './common/verifier-base.service';
+import { IConfig } from 'src/config/interfaces/common';
 
 abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerifierServiceWithIndexer<
   BalanceDecreasingTransaction_Request,

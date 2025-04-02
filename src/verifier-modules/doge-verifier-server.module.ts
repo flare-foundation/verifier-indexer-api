@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiKeyStrategy } from '../auth/apikey.strategy';
 import { AuthModule } from '../auth/auth.module';
 import { AuthService } from '../auth/auth.service';
-import configuration, { IConfig } from '../config/configuration';
+import configuration from '../config/configuration';
 import { DOGEAddressValidityVerifierController } from '../controllers/address-validity-verifier.controller';
 import { DOGEBalanceDecreasingTransactionVerifierController } from '../controllers/balance-decreasing-transaction-verifier.controller';
 import { DOGEConfirmedBlockHeightExistsVerifierController } from '../controllers/confirmed-block-height-exists-verifier.controller';
@@ -19,6 +19,8 @@ import { DogeExternalIndexerEngineService } from '../services/indexer-services/u
 import { DOGEPaymentVerifierService } from '../services/payment-verifier.service';
 import { DOGEReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
+import { IndexerConfig } from 'src/config/interfaces/chain-indexer';
+import { IConfig } from 'src/config/interfaces/common';
 
 @Module({
   imports: [
@@ -28,8 +30,13 @@ import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (config: ConfigService<IConfig>) =>
-        config.get('typeOrmModuleOptions'),
+      useFactory: (config: ConfigService<IConfig>) => {
+        const verifierConfigOptions: IndexerConfig = config.get('verifierConfigOptions');
+        if (!verifierConfigOptions?.typeOrmModuleOptions) {
+          throw new Error("'typeOrmModuleOptions' is missing in the configuration");
+        }
+        return verifierConfigOptions.typeOrmModuleOptions;
+      },
       inject: [ConfigService],
     }),
     AuthModule,

@@ -2,7 +2,6 @@ import { unPrefix0x } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityManager } from 'typeorm';
-import { IConfig, VerifierServerConfig } from '../../config/configuration';
 import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
@@ -21,6 +20,7 @@ import {
 } from '../../entity/xrp-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
+import { IConfig, VerifierServerConfig } from 'src/config/interfaces/common';
 
 @Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {

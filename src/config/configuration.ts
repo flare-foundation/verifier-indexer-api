@@ -1,4 +1,3 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import {
   DBIndexerVersion,
   DBPruneSyncState,
@@ -15,79 +14,17 @@ import {
   DBXrpState,
   DBXrpTransaction,
 } from '../entity/xrp-entity-definitions';
-
-// export type VerifierTypeOptions = 'doge' | 'btc' | 'xrp';
-
-export interface IConfig {
-  // server port (PORT)
-  port: number;
-  // comma separated list of API keys (API_KEYS)
-  api_keys: string[];
-
-  db: DatabaseConfig;
-
-  verifierConfig: VerifierServerConfig;
-
-  typeOrmModuleOptions: TypeOrmModuleOptions;
-
-  isTestnet: boolean;
-}
-
-interface DatabaseConfig {
-  /**
-   * Database server address (host)
-   */
-  host: string; // "localhost";
-
-  /**
-   * Database name.
-   */
-  database: string; // "database";
-
-  /**
-   * Database server port number.
-   */
-  port: number; // 3306
-
-  /**
-   * Database user name.
-   */
-  username: string; //"username";
-
-  /**
-   * Database user password.
-   */
-  password: string; //"password";
-}
-
-export interface VerifierServerConfig {
-  verifierType: ChainType;
-
-  /**
-   * The page size for indexer API queries when listing outputs
-   */
-  indexerServerPageLimit: number;
-
-  /**
-   * The number of confirmations required for a transaction to be considered confirmed
-   */
-  numberOfConfirmations: number;
-}
+import { IJsonApiConfig } from './interfaces/json-api';
+import { IndexerConfig } from './interfaces/chain-indexer';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { apiJsonDefaultConfig } from './defaults/json_api_config';
+import { database, typeOrmModulePartialOptions } from './defaults/indexer_config';
+import { VerifierServerConfig, IConfig } from './interfaces/common';
 
 export default () => {
   const api_keys = process.env.API_KEYS?.split(',') || [''];
   const verifier_type = extractVerifierType();
   const isTestnet = process.env.TESTNET == 'true';
-
-  const db = {
-    database: process.env.DB_DATABASE || 'database',
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: parseInt(process.env.DB_PORT) || 8080,
-    username: process.env.DB_USERNAME || 'username',
-    password: process.env.DB_PASSWORD || 'password',
-  };
-
-  const entities = getDatabaseEntities(verifier_type);
 
   const verifierConfig: VerifierServerConfig = {
     verifierType: verifier_type,
@@ -100,16 +37,8 @@ export default () => {
   const config: IConfig = {
     port: parseInt(process.env.PORT || '3120'),
     api_keys,
+    verifierConfigOptions: getVerifierTypeConfigOptions(verifier_type),
     verifierConfig,
-    db: db,
-    typeOrmModuleOptions: {
-      ...db,
-      type: 'postgres',
-      entities: entities,
-      synchronize: false,
-      migrationsRun: false,
-      logging: false,
-    },
     isTestnet,
   };
   return config;
@@ -156,6 +85,27 @@ export function getDatabaseEntities(verifierType: ChainType) {
       ];
     case ChainType.WEB2:
       return [];
+    default:
+      throw new Error(`Unsupported verifier type: ${verifierType}`);
+  }
+}
+
+export function getVerifierTypeConfigOptions(
+  verifierType: ChainType,
+): IndexerConfig | IJsonApiConfig {
+  switch (verifierType) {
+    case ChainType.BTC:
+    case ChainType.DOGE:
+    case ChainType.XRP: {
+      const entities = getDatabaseEntities(verifierType);
+      const typeOrmModuleOptions: TypeOrmModuleOptions = {
+        ... typeOrmModulePartialOptions,
+        entities
+      };
+      return { db: database, typeOrmModuleOptions };
+    }
+    case ChainType.WEB2:
+      return apiJsonDefaultConfig;
     default:
       throw new Error(`Unsupported verifier type: ${verifierType}`);
   }

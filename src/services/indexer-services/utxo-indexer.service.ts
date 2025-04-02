@@ -10,8 +10,6 @@ import { ConfigService } from '@nestjs/config';
 import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
 import {
   ChainType,
-  IConfig,
-  VerifierServerConfig,
 } from '../../config/configuration';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
@@ -30,6 +28,7 @@ import {
 } from '../../entity/utxo-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
+import { IConfig, VerifierServerConfig } from 'src/config/interfaces/common';
 
 abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables

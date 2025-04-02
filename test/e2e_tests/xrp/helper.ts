@@ -8,15 +8,13 @@ import {
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
 import {
-  getDatabaseEntities,
-  IConfig,
-  VerifierServerConfig,
+  getDatabaseEntities
 } from '../../../src/config/configuration';
 import { XRPAddressValidityVerifierController } from '../../../src/controllers/address-validity-verifier.controller';
 import { XRPBalanceDecreasingTransactionVerifierController } from '../../../src/controllers/balance-decreasing-transaction-verifier.controller';
@@ -32,6 +30,8 @@ import { XRPConfirmedBlockHeightExistsVerifierService } from '../../../src/servi
 import { XrpExternalIndexerEngineService } from '../../../src/services/indexer-services/xrp-indexer.service';
 import { XRPPaymentVerifierService } from '../../../src/services/payment-verifier.service';
 import { XRPReferencedPaymentNonexistenceVerifierService } from '../../../src/services/referenced-payment-nonexistence-verifier.service';
+import { IndexerConfig } from 'src/config/interfaces/chain-indexer';
+import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
 
 function getConfig() {
   const api_keys = process.env.API_KEYS?.split(',') || [''];
@@ -66,14 +66,16 @@ function getConfig() {
     port: parseInt(process.env.PORT || '3120'),
     api_keys,
     verifierConfig,
-    db: db,
-    typeOrmModuleOptions: {
-      ...db,
-      type: 'postgres',
-      entities: entities,
-      synchronize: false,
-      migrationsRun: false,
-      logging: false,
+    verifierConfigOptions: {
+      db,
+      typeOrmModuleOptions: {
+        ...db,
+        type: 'postgres',
+        entities: entities,
+        synchronize: false,
+        migrationsRun: false,
+        logging: false,
+      },
     },
     isTestnet,
   };
@@ -88,8 +90,13 @@ function getConfig() {
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (config: ConfigService<IConfig>) =>
-        config.get('typeOrmModuleOptions'),
+      useFactory: (config: ConfigService<IConfig>) => {
+        const verifierConfigOptions: IndexerConfig = config.get('verifierConfigOptions');
+        if (!verifierConfigOptions?.typeOrmModuleOptions) {
+          throw new Error("'typeOrmModuleOptions' is missing in the configuration");
+        }
+        return verifierConfigOptions.typeOrmModuleOptions;
+      },
       inject: [ConfigService],
     }),
     AuthModule,

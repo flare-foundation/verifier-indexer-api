@@ -1,7 +1,6 @@
 import { ChainType } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IConfig } from '../config/configuration';
 import {
   AddressValidity_Request,
   AddressValidity_Response,
@@ -14,6 +13,7 @@ import { verifyAddressDOGE } from '../verification/address-validity/address-vali
 import { verifyAddressXRP } from '../verification/address-validity/address-validity-xrp';
 import { VerificationResponse } from '../verification/response-status';
 import { BaseVerifierService } from './common/verifier-base.service';
+import { IConfig } from 'src/config/interfaces/common';
 
 abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
   AddressValidity_Request,

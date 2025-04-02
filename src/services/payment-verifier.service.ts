@@ -7,7 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityManager } from 'typeorm';
-import { ChainType, IConfig } from '../config/configuration';
+import { ChainType } from '../config/configuration';
 import {
   AttestationResponseDTO_Payment_Response,
   Payment_Request,
@@ -25,6 +25,7 @@ import {
   BaseVerifierServiceWithIndexer,
   ITypeSpecificVerificationServiceConfig,
 } from './common/verifier-base.service';
+import { IConfig } from 'src/config/interfaces/common';
 
 abstract class BasePaymentVerifierService extends BaseVerifierServiceWithIndexer<
   Payment_Request,
