@@ -60,7 +60,7 @@ export async function isValidUrl(inputUrl: string, blockedHostnames: string[]): 
       return false;
     }
     // blocked hostnames
-    if (blockedHostnames.includes(parsedUrl.hostname)) {
+    if (blockedHostnames.some(blocked => parsedUrl.hostname === blocked || parsedUrl.hostname.endsWith(`.${blocked}`))) {
       Logger.warn(`URL rejected: blocked hostname included ${parsedUrl.hostname}`);
       return false;
     }
