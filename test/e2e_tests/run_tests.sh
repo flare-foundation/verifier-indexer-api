@@ -116,7 +116,7 @@ _run_all_tests(){
 
   if [ "$1" == "coverage" ]; then
     echo Running all tests with coverage
-    nyc mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/**/*.e2e-spec.ts"
+    nyc --reporter=html --reporter=text --reporter=text-summary --report-dir=coverage mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/**/*.e2e-spec.ts"
   else
     echo Running all tests
     mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/**/*.e2e-spec.ts"

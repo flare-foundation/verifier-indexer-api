@@ -9,7 +9,7 @@ export const apiJsonDefaultConfig: IJsonApiConfig = {
   },
   sourceConfig: {
     requiresApiKey: false,
-    allowedMethods: [],
+    allowedMethods: '*',
     allowedEndPoints: '*',
     maxResponseSize: 1024 * 1024,
     maxRedirects: 1,
