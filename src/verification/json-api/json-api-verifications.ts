@@ -23,7 +23,8 @@ import { Logger } from '@nestjs/common';
 export async function verifyJsonApi(
   request: IJsonApi_Request,
   securityConfig: IJsonApiSecurityConfig,
-  sourceConfig: IJsonApiSourceConfig
+  sourceConfig: IJsonApiSourceConfig,
+  userAgent: Headers
 ): Promise<VerificationResponse<IJsonApi_Response>> {
 
   const requestBody = request.requestBody;
@@ -40,6 +41,9 @@ export async function verifyJsonApi(
   if (!sourceHeaders) {
     return verificationResponse(AttestationResponseStatus.INVALID_HEADERS);
   }
+  // forward user-agent
+  sourceHeaders["User-Agent"] = userAgent;
+
   const sourceQueryParams = tryParseJSON(requestBody.query_params);
   if (!sourceQueryParams) {
     return verificationResponse(AttestationResponseStatus.INVALID_QUERY_PARAMS);
