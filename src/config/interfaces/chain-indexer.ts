@@ -1,4 +1,4 @@
-import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 export interface DatabaseConfig {
   /**
@@ -28,6 +28,6 @@ export interface DatabaseConfig {
 }
 
 export interface IndexerConfig {
-    db: DatabaseConfig;
-    typeOrmModuleOptions: TypeOrmModuleOptions;
+  db: DatabaseConfig;
+  typeOrmModuleOptions: TypeOrmModuleOptions;
 }

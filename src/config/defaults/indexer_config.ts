@@ -1,4 +1,4 @@
-import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 export const database = {
   database: process.env.DB_DATABASE || 'database',
@@ -8,7 +8,7 @@ export const database = {
   password: process.env.DB_PASSWORD || 'password',
 };
 export const typeOrmModulePartialOptions: TypeOrmModuleOptions = {
-  ... database,
+  ...database,
   type: 'postgres',
   synchronize: false,
   migrationsRun: false,

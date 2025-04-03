@@ -1,7 +1,14 @@
 import { expect } from 'chai';
 import { ethers } from 'ethers';
 import * as request from 'supertest';
-import { abiEncodedData, abiEncoding, api_key, app, attResponse, payload } from './helper';
+import {
+  abiEncodedData,
+  abiEncoding,
+  api_key,
+  app,
+  attResponse,
+  payload,
+} from './helper';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 
 describe('/JsonApi/prepareResponse', () => {
@@ -25,7 +32,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        url: "https://localhost:3000",
+        url: 'https://localhost:3000',
       },
     };
 
@@ -37,7 +44,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_SOURCE_URL);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_SOURCE_URL,
+    );
   });
 
   it('Should reject - private IP 2', async () => {
@@ -45,7 +54,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        url: "https://%31%32%37%2e0.0.1",
+        url: 'https://%31%32%37%2e0.0.1',
       },
     };
 
@@ -57,7 +66,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_SOURCE_URL);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_SOURCE_URL,
+    );
   });
 
   it('Should reject - blocked hostname', async () => {
@@ -65,7 +76,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        url: "https://www.google.com",
+        url: 'https://www.google.com',
       },
     };
 
@@ -77,7 +88,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_SOURCE_URL);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_SOURCE_URL,
+    );
   });
 
   it('Should reject - invalid url', async () => {
@@ -85,7 +98,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        url: "http://localhost:3000",
+        url: 'http://localhost:3000',
       },
     };
 
@@ -97,7 +110,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_SOURCE_URL);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_SOURCE_URL,
+    );
   });
 
   it('Should reject - fetch error', async () => {
@@ -105,7 +120,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        url: "https://stackoverflow.com",
+        url: 'https://stackoverflow.com',
       },
     };
 
@@ -117,7 +132,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_FETCH_ERROR);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_FETCH_ERROR,
+    );
   });
 
   it('Should reject - invalid http method', async () => {
@@ -125,7 +142,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        http_method: "POST"
+        http_method: 'POST',
       },
     };
 
@@ -137,7 +154,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_HTTP_METHOD);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_HTTP_METHOD,
+    );
   });
 
   it('Should reject - invalid headers', async () => {
@@ -145,7 +164,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        headers: "{\"Content-Type\":\"application/json\"",
+        headers: '{"Content-Type":"application/json"',
       },
     };
 
@@ -157,7 +176,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_HEADERS);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_HEADERS,
+    );
   });
 
   it('Should reject - invalid query params', async () => {
@@ -165,7 +186,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        query_params: "{",
+        query_params: '{',
       },
     };
 
@@ -177,7 +198,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_QUERY_PARAMS);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_QUERY_PARAMS,
+    );
   });
 
   it('Should reject - invalid body', async () => {
@@ -185,7 +208,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        body: "{",
+        body: '{',
       },
     };
 
@@ -197,7 +220,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_BODY);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_BODY,
+    );
   });
 
   it('Should reject - invalid abi signature', async () => {
@@ -205,7 +230,7 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        abi_signature: "{",
+        abi_signature: '{',
       },
     };
 
@@ -217,7 +242,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_ABI_SIGNATURE);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_ABI_SIGNATURE,
+    );
   });
 
   it('Should reject - invalid encode error', async () => {
@@ -225,7 +252,8 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        abi_signature: "{\"components\": [{\"internalType\": \"uint8\",\"name\": \"userId\",\"type\": \"uint8\"},{\"internalType\": \"uint8\",\"name\": \"id\",\"type\": \"uint8\"},{\"internalType\": \"string\",\"name\": \"title\",\"type\": \"string\"},{\"internalType\": \"bool\",\"name\": \"completed\",\"type\": \"bool\"}],\"name\": \"task\",\"type\": \"tuple\"}",
+        abi_signature:
+          '{"components": [{"internalType": "uint8","name": "userId","type": "uint8"},{"internalType": "uint8","name": "id","type": "uint8"},{"internalType": "string","name": "title","type": "string"},{"internalType": "bool","name": "completed","type": "bool"}],"name": "task","type": "tuple"}',
       },
     };
 
@@ -237,7 +265,9 @@ describe('/JsonApi/prepareResponse', () => {
       .expect('Content-Type', /json/);
 
     const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.INVALID_ENCODE_ERROR);
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_ENCODE_ERROR,
+    );
   });
 });
 

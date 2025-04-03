@@ -31,9 +31,13 @@ import { IConfig } from 'src/config/interfaces/common';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService<IConfig>) => {
-        const verifierConfigOptions: IndexerConfig = config.get('verifierConfigOptions');
+        const verifierConfigOptions: IndexerConfig = config.get(
+          'verifierConfigOptions',
+        );
         if (!verifierConfigOptions?.typeOrmModuleOptions) {
-          throw new Error("'typeOrmModuleOptions' is missing in the configuration");
+          throw new Error(
+            "'typeOrmModuleOptions' is missing in the configuration",
+          );
         }
         return verifierConfigOptions.typeOrmModuleOptions;
       },

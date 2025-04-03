@@ -11,9 +11,7 @@ import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
-import {
-  ChainType
-} from '../../../src/config/configuration';
+import { ChainType } from '../../../src/config/configuration';
 import { IJsonApiVerifierController } from '../../../src/controllers/ijson-api-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { IJsonApiVerifierService } from '../../../src/services/ijson-api-verifier.service';
@@ -35,7 +33,7 @@ function getConfig() {
 
   const apiJsonDefaultConfig: IJsonApiConfig = {
     securityConfig: {
-      blockHostnames: ["google.com"],
+      blockHostnames: ['google.com'],
       blockJq: [],
       blockJson: [],
       jqVersion: '1.7.1',
@@ -46,7 +44,7 @@ function getConfig() {
       allowedEndPoints: '*',
       maxResponseSize: 1024 * 1024,
       maxTimeout: 1000,
-      maxRedirects: 0
+      maxRedirects: 0,
     },
   };
 
@@ -93,36 +91,41 @@ after(async () => {
   await app.close();
 });
 
-
 // constants used in test
 const api_keys = process.env.API_KEYS?.split(',') || [''];
 export const api_key = api_keys[0];
 export const payload = {
-  attestationType: "0x494a736f6e417069000000000000000000000000000000000000000000000000",
-  sourceId: "0x7465737457454232000000000000000000000000000000000000000000000000",
+  attestationType:
+    '0x494a736f6e417069000000000000000000000000000000000000000000000000',
+  sourceId:
+    '0x7465737457454232000000000000000000000000000000000000000000000000',
   requestBody: {
-    url: "https://jsonplaceholder.typicode.com/todos/1",
-    http_method: "GET",
-    headers: "{\"Content-Type\":\"application/json\"}",
-    query_params: "{}",
-    body: "{}",
-    postprocess_jq: ".title",
-    abi_signature: "{\"internalType\": \"string\",\"name\": \"title\",\"type\": \"string\"}"
-  }
+    url: 'https://jsonplaceholder.typicode.com/todos/1',
+    http_method: 'GET',
+    headers: '{"Content-Type":"application/json"}',
+    query_params: '{}',
+    body: '{}',
+    postprocess_jq: '.title',
+    abi_signature:
+      '{"internalType": "string","name": "title","type": "string"}',
+  },
 };
 export const attResponse = {
-  attestationType: "0x494a736f6e417069000000000000000000000000000000000000000000000000",
-  sourceId: "0x7465737457454232000000000000000000000000000000000000000000000000",
-  votingRound: "0",
-  lowestUsedTimestamp: "0",
+  attestationType:
+    '0x494a736f6e417069000000000000000000000000000000000000000000000000',
+  sourceId:
+    '0x7465737457454232000000000000000000000000000000000000000000000000',
+  votingRound: '0',
+  lowestUsedTimestamp: '0',
   requestBody: {
-    url: "https://jsonplaceholder.typicode.com/todos/1",
-    http_method: "GET",
-    headers: "{\"Content-Type\":\"application/json\"}",
-    query_params: "{}",
-    body: "{}",
-    postprocess_jq: ".title",
-    abi_signature: "{\"internalType\": \"string\",\"name\": \"title\",\"type\": \"string\"}"
+    url: 'https://jsonplaceholder.typicode.com/todos/1',
+    http_method: 'GET',
+    headers: '{"Content-Type":"application/json"}',
+    query_params: '{}',
+    body: '{}',
+    postprocess_jq: '.title',
+    abi_signature:
+      '{"internalType": "string","name": "title","type": "string"}',
   },
   responseBody: {
     abi_encoded_data:
@@ -156,9 +159,9 @@ export const abiEncoding: unknown = {
           type: 'string',
         },
         {
-          "internalType": "string",
-          "name": "headers",
-          "type": "string"
+          internalType: 'string',
+          name: 'headers',
+          type: 'string',
         },
         {
           internalType: 'string',

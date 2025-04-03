@@ -9,7 +9,11 @@ import {
 import { serializeBigInts } from '../external-libs/utils';
 import { verifyJsonApi } from '../verification/json-api/json-api-verifications';
 import { BaseVerifierService } from './common/verifier-base.service';
-import { IJsonApiConfig, IJsonApiSecurityConfig, IJsonApiSourceConfig } from 'src/config/interfaces/json-api';
+import {
+  IJsonApiConfig,
+  IJsonApiSecurityConfig,
+  IJsonApiSourceConfig,
+} from 'src/config/interfaces/json-api';
 import { IConfig } from 'src/config/interfaces/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -19,7 +23,8 @@ export class IJsonApiVerifierService extends BaseVerifierService<
   IJsonApi_Request,
   IJsonApi_Response
 > {
-  constructor(protected configService: ConfigService<IConfig>,
+  constructor(
+    protected configService: ConfigService<IConfig>,
     @Inject(REQUEST) private readonly req: Request,
   ) {
     super(configService, {
@@ -31,12 +36,21 @@ export class IJsonApiVerifierService extends BaseVerifierService<
   async verifyRequest(
     fixedRequest: IJsonApi_Request,
   ): Promise<AttestationResponseDTO_IJsonApi_Response> {
-    const verifierConfigOptions: IJsonApiConfig = this.configService.get("verifierConfigOptions");
-    const securityConfig: IJsonApiSecurityConfig = verifierConfigOptions.securityConfig;
-    const sourceConfig: IJsonApiSourceConfig = verifierConfigOptions.sourceConfig;
+    const verifierConfigOptions: IJsonApiConfig = this.configService.get(
+      'verifierConfigOptions',
+    );
+    const securityConfig: IJsonApiSecurityConfig =
+      verifierConfigOptions.securityConfig;
+    const sourceConfig: IJsonApiSourceConfig =
+      verifierConfigOptions.sourceConfig;
 
-    const userAgent: string = this.req.headers['user-agent'] || "";
-    const result = await verifyJsonApi(fixedRequest, securityConfig, sourceConfig, userAgent);
+    const userAgent: string = this.req.headers['user-agent'] || '';
+    const result = await verifyJsonApi(
+      fixedRequest,
+      securityConfig,
+      sourceConfig,
+      userAgent,
+    );
 
     return serializeBigInts({
       status: result.status,

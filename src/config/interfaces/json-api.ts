@@ -1,6 +1,7 @@
 import { HTTP_METHOD } from 'src/verification/json-api/utils';
 
-export interface IJsonApiConfig { // TODO check if all fields are needed
+export interface IJsonApiConfig {
+  // TODO check if all fields are needed
   securityConfig: IJsonApiSecurityConfig;
   sourceConfig: IJsonApiSourceConfig;
 }
@@ -12,8 +13,8 @@ export interface IJsonApiSecurityConfig {
   jqVersion: string;
 }
 
-export type AllowedMethods = HTTP_METHOD[] | "*";
-export type AllowedEndPoints = string[] | "*";
+export type AllowedMethods = HTTP_METHOD[] | '*';
+export type AllowedEndPoints = string[] | '*';
 
 export interface IJsonApiSourceConfig {
   /**

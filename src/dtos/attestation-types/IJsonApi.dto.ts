@@ -65,7 +65,7 @@ export class IJsonApi_RequestBody {
   @ApiProperty({
     description: `HTTP method to be used to fetch from URL source`,
     example: 'GET',
-    enum: HTTP_METHOD
+    enum: HTTP_METHOD,
   })
   http_method: HTTP_METHOD;
 
@@ -75,7 +75,7 @@ export class IJsonApi_RequestBody {
   @IsString()
   @ApiProperty({
     description: `Headers to be included to fetch from URL source. Use '{}' if not headers are needed.`,
-    example: '{"Content-Type":"application/json"}'
+    example: '{"Content-Type":"application/json"}',
   })
   headers: string;
 
@@ -85,9 +85,9 @@ export class IJsonApi_RequestBody {
   @IsString()
   @ApiProperty({
     description: `Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.`,
-    example: '{"userId":1}'
+    example: '{"userId":1}',
   })
-  query_params: string
+  query_params: string;
 
   /**
    * Request body to be included to fetch from URL source. Use '{}' if no request body is required.
@@ -95,9 +95,9 @@ export class IJsonApi_RequestBody {
   @IsString()
   @ApiProperty({
     description: `Request body to be included to fetch from URL source. Use '{}' if no request body is required.`,
-    example: '{"userId":1,"completed":false}'
+    example: '{"userId":1,"completed":false}',
   })
-  body: string
+  body: string;
 
   /**
    * jq filter to postprocess the data

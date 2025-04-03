@@ -18,7 +18,10 @@ import { IJsonApiConfig } from './interfaces/json-api';
 import { IndexerConfig } from './interfaces/chain-indexer';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { apiJsonDefaultConfig } from './defaults/json_api_config';
-import { database, typeOrmModulePartialOptions } from './defaults/indexer_config';
+import {
+  database,
+  typeOrmModulePartialOptions,
+} from './defaults/indexer_config';
 import { VerifierServerConfig, IConfig } from './interfaces/common';
 
 export default () => {
@@ -99,8 +102,8 @@ export function getVerifierTypeConfigOptions(
     case ChainType.XRP: {
       const entities = getDatabaseEntities(verifierType);
       const typeOrmModuleOptions: TypeOrmModuleOptions = {
-        ... typeOrmModulePartialOptions,
-        entities
+        ...typeOrmModulePartialOptions,
+        entities,
       };
       return { db: database, typeOrmModuleOptions };
     }

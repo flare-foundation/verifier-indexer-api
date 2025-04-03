@@ -1,4 +1,4 @@
-import { IJsonApiConfig } from "../interfaces/json-api";
+import { IJsonApiConfig } from '../interfaces/json-api';
 
 export const apiJsonDefaultConfig: IJsonApiConfig = {
   securityConfig: {

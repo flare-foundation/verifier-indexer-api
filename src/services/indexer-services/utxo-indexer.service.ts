@@ -8,9 +8,7 @@ import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
 
 import { ConfigService } from '@nestjs/config';
 import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
-import {
-  ChainType,
-} from '../../config/configuration';
+import { ChainType } from '../../config/configuration';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';

@@ -41,7 +41,10 @@ const ipPrivate = [
  * @param blockedHostnames
  * @returns
  */
-export async function isValidUrl(inputUrl: string, blockedHostnames: string[]): Promise<boolean> {
+export async function isValidUrl(
+  inputUrl: string,
+  blockedHostnames: string[],
+): Promise<boolean> {
   try {
     const parsedUrl = new URL(inputUrl);
     // only https is allowed
@@ -56,21 +59,35 @@ export async function isValidUrl(inputUrl: string, blockedHostnames: string[]): 
     }
     // resolve hostname to IP address
     try {
-      const addresses = await dns.promises.lookup(parsedUrl.hostname, { all: true });
+      const addresses = await dns.promises.lookup(parsedUrl.hostname, {
+        all: true,
+      });
       for (const { address } of addresses) {
         // check if IP is private
         if (ipPrivate.some((regex) => regex.test(address))) {
-          Logger.warn(`URL rejected: blocked IP - ${address} resolved from ${parsedUrl.hostname}`);
+          Logger.warn(
+            `URL rejected: blocked IP - ${address} resolved from ${parsedUrl.hostname}`,
+          );
           return false;
         }
       }
     } catch (error) {
-      Logger.warn(`URL rejected: DNS resolution failed for ${parsedUrl.hostname}: ${error}`);
+      Logger.warn(
+        `URL rejected: DNS resolution failed for ${parsedUrl.hostname}: ${error}`,
+      );
       return false;
     }
     // blocked hostnames
-    if (blockedHostnames.some(blocked => parsedUrl.hostname === blocked || parsedUrl.hostname.endsWith(`.${blocked}`))) {
-      Logger.warn(`URL rejected: blocked hostname included ${parsedUrl.hostname}`);
+    if (
+      blockedHostnames.some(
+        (blocked) =>
+          parsedUrl.hostname === blocked ||
+          parsedUrl.hostname.endsWith(`.${blocked}`),
+      )
+    ) {
+      Logger.warn(
+        `URL rejected: blocked hostname included ${parsedUrl.hostname}`,
+      );
       return false;
     }
     return true;
@@ -85,7 +102,10 @@ export async function isValidUrl(inputUrl: string, blockedHostnames: string[]): 
  * @param response
  * @returns
  */
-export function verificationResponse<T>(status: AttestationResponseStatus, response?: T): VerificationResponse<T> {
+export function verificationResponse<T>(
+  status: AttestationResponseStatus,
+  response?: T,
+): VerificationResponse<T> {
   return {
     status,
     response,
@@ -114,7 +134,10 @@ export function tryParseJSON(input: string) {
  * @param allowedHttpMethods
  * @returns
  */
-export function isValidHttpMethod(httpMethod: HTTP_METHOD, allowedHttpMethods: AllowedMethods) {
+export function isValidHttpMethod(
+  httpMethod: HTTP_METHOD,
+  allowedHttpMethods: AllowedMethods,
+) {
   if (allowedHttpMethods === '*') {
     return true;
   }
@@ -126,7 +149,7 @@ export function isValidHttpMethod(httpMethod: HTTP_METHOD, allowedHttpMethods: A
  * @returns
  */
 export function isStringArray(data: unknown): data is string[] {
-  return Array.isArray(data) && data.every(item => typeof item === 'string');
+  return Array.isArray(data) && data.every((item) => typeof item === 'string');
 }
 
 /**
@@ -134,24 +157,33 @@ export function isStringArray(data: unknown): data is string[] {
  * @returns
  */
 export function isJson(data: unknown): data is Json {
-  if (typeof data === "string" || typeof data === "number" ||
-    typeof data === "boolean" || data === null) {
+  if (
+    typeof data === 'string' ||
+    typeof data === 'number' ||
+    typeof data === 'boolean' ||
+    data === null
+  ) {
     return true;
   }
   if (Array.isArray(data)) {
     return data.every(isJson);
   }
-  if (typeof data === "object" && data !== null) {
+  if (typeof data === 'object' && data !== null) {
     return Object.values(data).every(isJson);
   }
   return false;
 }
 
-export function isApplicationJsonContentType(contentType: AxiosHeaderValue): boolean {
-  if (typeof contentType === 'string' && contentType.includes(responseContentType)) {
+export function isApplicationJsonContentType(
+  contentType: AxiosHeaderValue,
+): boolean {
+  if (
+    typeof contentType === 'string' &&
+    contentType.includes(responseContentType)
+  ) {
     return true;
   } else if (Array.isArray(contentType)) {
-    if (contentType.some(type => type.includes(responseContentType))) {
+    if (contentType.some((type) => type.includes(responseContentType))) {
       return true;
     }
   } else {

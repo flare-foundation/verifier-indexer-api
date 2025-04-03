@@ -10,8 +10,20 @@ import { serializeBigInts } from '../../external-libs/utils';
 import { VerificationResponse } from '../response-status';
 import { AttestationResponseStatus } from './../response-status';
 import axios, { AxiosHeaderValue, AxiosResponse } from 'axios';
-import { isApplicationJsonContentType, isJson, isStringArray, isValidHttpMethod, isValidUrl, responseType, tryParseJSON, verificationResponse } from './utils';
-import { IJsonApiSecurityConfig, IJsonApiSourceConfig } from 'src/config/interfaces/json-api';
+import {
+  isApplicationJsonContentType,
+  isJson,
+  isStringArray,
+  isValidHttpMethod,
+  isValidUrl,
+  responseType,
+  tryParseJSON,
+  verificationResponse,
+} from './utils';
+import {
+  IJsonApiSecurityConfig,
+  IJsonApiSourceConfig,
+} from 'src/config/interfaces/json-api';
 import { Logger } from '@nestjs/common';
 
 /**
@@ -24,12 +36,14 @@ export async function verifyJsonApi(
   request: IJsonApi_Request,
   securityConfig: IJsonApiSecurityConfig,
   sourceConfig: IJsonApiSourceConfig,
-  userAgent: string
+  userAgent: string,
 ): Promise<VerificationResponse<IJsonApi_Response>> {
-
   const requestBody = request.requestBody;
   const sourceUrl = requestBody.url;
-  const isValidSourceUrl = await isValidUrl(sourceUrl, securityConfig.blockHostnames);
+  const isValidSourceUrl = await isValidUrl(
+    sourceUrl,
+    securityConfig.blockHostnames,
+  );
   if (!isValidSourceUrl) {
     return verificationResponse(AttestationResponseStatus.INVALID_SOURCE_URL);
   }
@@ -42,20 +56,22 @@ export async function verifyJsonApi(
     return verificationResponse(AttestationResponseStatus.INVALID_HEADERS);
   }
   // forward user-agent
-  sourceHeaders["User-Agent"] = userAgent;
+  sourceHeaders['User-Agent'] = userAgent;
 
   const sourceQueryParams = tryParseJSON(requestBody.query_params);
   if (!sourceQueryParams) {
     return verificationResponse(AttestationResponseStatus.INVALID_QUERY_PARAMS);
   }
-  const sourceBody =  tryParseJSON(requestBody.body);
+  const sourceBody = tryParseJSON(requestBody.body);
   if (!sourceBody) {
     return verificationResponse(AttestationResponseStatus.INVALID_BODY);
   }
   const jqScheme = requestBody.postprocess_jq;
   const abiSign = tryParseJSON(requestBody.abi_signature);
   if (!abiSign) {
-    return verificationResponse(AttestationResponseStatus.INVALID_ABI_SIGNATURE);
+    return verificationResponse(
+      AttestationResponseStatus.INVALID_ABI_SIGNATURE,
+    );
   }
 
   // fetch data from user defined source
@@ -71,23 +87,31 @@ export async function verifyJsonApi(
       maxContentLength: sourceConfig.maxResponseSize, // limit response size
       timeout: sourceConfig.maxTimeout,
       maxRedirects: sourceConfig.maxRedirects, // limit redirects
-      validateStatus: (status) => status >= 200 && status < 300
+      validateStatus: (status) => status >= 200 && status < 300,
     });
   } catch (error) {
     Logger.error(`Error fetching source response: ${error}`);
-    return verificationResponse(AttestationResponseStatus.INVALID_FETCH_ERROR)
+    return verificationResponse(AttestationResponseStatus.INVALID_FETCH_ERROR);
   }
 
   // validate content-type header
-  const contentType: AxiosHeaderValue = sourceResponse.headers["content-type"] as AxiosHeaderValue;
+  const contentType: AxiosHeaderValue = sourceResponse.headers[
+    'content-type'
+  ] as AxiosHeaderValue;
   if (!isApplicationJsonContentType(contentType)) {
-    return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE);
+    return verificationResponse(
+      AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE,
+    );
   }
 
   // validate returned JSON structure
-  const responseJsonData = tryParseJSON(Buffer.from(sourceResponse.data).toString("utf-8"));
+  const responseJsonData = tryParseJSON(
+    Buffer.from(sourceResponse.data).toString('utf-8'),
+  );
   if (!responseJsonData) {
-    return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_JSON);
+    return verificationResponse(
+      AttestationResponseStatus.INVALID_RESPONSE_JSON,
+    );
   }
 
   // process the data with jq
@@ -95,29 +119,39 @@ export async function verifyJsonApi(
   let filteredData: string;
   try {
     if (isStringArray(responseJsonData)) {
-      filteredData = await jq.run(jqScheme, JSON.stringify(responseJsonData), { input: "string", output: "string" }) as string;
+      filteredData = (await jq.run(jqScheme, JSON.stringify(responseJsonData), {
+        input: 'string',
+        output: 'string',
+      })) as string;
       dataJq = JSON.parse(filteredData) as unknown;
     } else if (isJson(responseJsonData)) {
-      filteredData = await jq.run(jqScheme, responseJsonData as Json, { input: "json", output: "string" }) as string;
+      filteredData = (await jq.run(jqScheme, responseJsonData as Json, {
+        input: 'json',
+        output: 'string',
+      })) as string;
       dataJq = JSON.parse(filteredData) as unknown;
     } else {
       Logger.warn(`Provided JSON is neither stringArray or Json type`);
-      return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_JSON);
+      return verificationResponse(
+        AttestationResponseStatus.INVALID_RESPONSE_JSON,
+      );
     }
   } catch (error) {
     Logger.error(`Error while jq parsing: ${error}`);
-    return verificationResponse(AttestationResponseStatus.INVALID_JQ_PARSE_ERROR);
+    return verificationResponse(
+      AttestationResponseStatus.INVALID_JQ_PARSE_ERROR,
+    );
   }
 
   let encodedData: string;
   try {
-      encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
-          [abiSign as ethers.ParamType],
-          [dataJq],
-      );
+    encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
+      [abiSign as ethers.ParamType],
+      [dataJq],
+    );
   } catch (error) {
-      Logger.error(`Error while encoding response: ${error}`);
-      return verificationResponse(AttestationResponseStatus.INVALID_ENCODE_ERROR);
+    Logger.error(`Error while encoding response: ${error}`);
+    return verificationResponse(AttestationResponseStatus.INVALID_ENCODE_ERROR);
   }
 
   const response = new IJsonApi_Response({

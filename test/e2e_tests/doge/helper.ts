@@ -13,9 +13,7 @@ import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
-import {
-  getDatabaseEntities
-} from '../../../src/config/configuration';
+import { getDatabaseEntities } from '../../../src/config/configuration';
 import { DOGEAddressValidityVerifierController } from '../../../src/controllers/address-validity-verifier.controller';
 import { DOGEBalanceDecreasingTransactionVerifierController } from '../../../src/controllers/balance-decreasing-transaction-verifier.controller';
 import { DOGEConfirmedBlockHeightExistsVerifierController } from '../../../src/controllers/confirmed-block-height-exists-verifier.controller';
@@ -91,9 +89,13 @@ function getConfig() {
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService<IConfig>) => {
-        const verifierConfigOptions: IndexerConfig = config.get('verifierConfigOptions');
+        const verifierConfigOptions: IndexerConfig = config.get(
+          'verifierConfigOptions',
+        );
         if (!verifierConfigOptions?.typeOrmModuleOptions) {
-          throw new Error("'typeOrmModuleOptions' is missing in the configuration");
+          throw new Error(
+            "'typeOrmModuleOptions' is missing in the configuration",
+          );
         }
         return verifierConfigOptions.typeOrmModuleOptions;
       },
