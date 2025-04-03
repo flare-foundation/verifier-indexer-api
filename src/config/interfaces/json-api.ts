@@ -1,16 +1,24 @@
 import { HTTP_METHOD } from 'src/verification/json-api/utils';
 
+// Additional fields may be added in the future if necessary.
 export interface IJsonApiConfig {
-  // TODO check if all fields are needed
   securityConfig: IJsonApiSecurityConfig;
   sourceConfig: IJsonApiSourceConfig;
 }
 
 export interface IJsonApiSecurityConfig {
+  /**
+   * List of hostnames that should not be fetched from.
+   */
   blockHostnames: string[];
+  /**
+   * List of words that are nor allowed to appear in JSON.
+   */
   blockJson: string[];
+  /**
+   * List of words that are nor allowed to appear in JQ filter.
+   */
   blockJq: string[];
-  jqVersion: string;
 }
 
 export type AllowedMethods = HTTP_METHOD[] | '*';

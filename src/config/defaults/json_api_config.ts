@@ -5,7 +5,6 @@ export const apiJsonDefaultConfig: IJsonApiConfig = {
     blockHostnames: [],
     blockJq: [],
     blockJson: [],
-    jqVersion: '1.7.1',
   },
   sourceConfig: {
     requiresApiKey: false,

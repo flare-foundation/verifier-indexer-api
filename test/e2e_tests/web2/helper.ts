@@ -36,7 +36,6 @@ function getConfig() {
       blockHostnames: ['google.com'],
       blockJq: [],
       blockJson: [],
-      jqVersion: '1.7.1',
     },
     sourceConfig: {
       requiresApiKey: false,
