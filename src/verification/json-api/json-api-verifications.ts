@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import * as jq from 'node-jq';
-import { JsonInput } from 'node-jq/lib/options';
+import { Json } from 'node-jq/lib/options';
 import {
   IJsonApi_Request,
   IJsonApi_Response,
@@ -9,8 +9,8 @@ import {
 import { serializeBigInts } from '../../external-libs/utils';
 import { VerificationResponse } from '../response-status';
 import { AttestationResponseStatus } from './../response-status';
-import axios, { AxiosResponse } from 'axios';
-import { isValidHttpMethod, isValidUrl, responseContentType, responseType, tryParseJSON, verificationResponse } from './utils';
+import axios, { AxiosHeaderValue, AxiosResponse } from 'axios';
+import { isApplicationJsonContentType, isJson, isStringArray, isValidHttpMethod, isValidUrl, responseType, tryParseJSON, verificationResponse } from './utils';
 import { IJsonApiSecurityConfig, IJsonApiSourceConfig } from 'src/config/interfaces/json-api';
 import { Logger } from '@nestjs/common';
 
@@ -24,7 +24,7 @@ export async function verifyJsonApi(
   request: IJsonApi_Request,
   securityConfig: IJsonApiSecurityConfig,
   sourceConfig: IJsonApiSourceConfig,
-  userAgent: Headers
+  userAgent: string
 ): Promise<VerificationResponse<IJsonApi_Response>> {
 
   const requestBody = request.requestBody;
@@ -58,7 +58,7 @@ export async function verifyJsonApi(
     return verificationResponse(AttestationResponseStatus.INVALID_ABI_SIGNATURE);
   }
 
-  // Fetch data from user defined source
+  // fetch data from user defined source
   let sourceResponse: AxiosResponse<ArrayBuffer>;
   try {
     sourceResponse = await axios({
@@ -78,26 +78,35 @@ export async function verifyJsonApi(
     return verificationResponse(AttestationResponseStatus.INVALID_FETCH_ERROR)
   }
 
-  // Validate Content-Type Header
-  const contentType = sourceResponse.headers["content-type"];
-  if (!contentType || !contentType.includes(responseContentType)) {
+  // validate content-type header
+  const contentType: AxiosHeaderValue = sourceResponse.headers["content-type"] as AxiosHeaderValue;
+  if (!isApplicationJsonContentType(contentType)) {
     return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE);
   }
 
-  // Validate returned JSON structure
+  // validate returned JSON structure
   const responseJsonData = tryParseJSON(Buffer.from(sourceResponse.data).toString("utf-8"));
   if (!responseJsonData) {
     return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_JSON);
   }
 
-  // Process the data with jq
-  let dataJq: JsonInput;
+  // process the data with jq
+  let dataJq: unknown;
+  let filteredData: string;
   try {
-      const filteredData = await jq.run(jqScheme, responseJsonData, { input: "json" }) as string;
-      dataJq = JSON.parse(filteredData);
+    if (isStringArray(responseJsonData)) {
+      filteredData = await jq.run(jqScheme, JSON.stringify(responseJsonData), { input: "string", output: "string" }) as string;
+      dataJq = JSON.parse(filteredData) as unknown;
+    } else if (isJson(responseJsonData)) {
+      filteredData = await jq.run(jqScheme, responseJsonData as Json, { input: "json", output: "string" }) as string;
+      dataJq = JSON.parse(filteredData) as unknown;
+    } else {
+      Logger.warn(`Provided JSON is neither stringArray or Json type`);
+      return verificationResponse(AttestationResponseStatus.INVALID_RESPONSE_JSON);
+    }
   } catch (error) {
-      Logger.error(`Error while jq parsing: ${error}`);
-      return verificationResponse(AttestationResponseStatus.INVALID_JQ_PARSE_ERROR);
+    Logger.error(`Error while jq parsing: ${error}`);
+    return verificationResponse(AttestationResponseStatus.INVALID_JQ_PARSE_ERROR);
   }
 
   let encodedData: string;

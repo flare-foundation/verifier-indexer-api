@@ -11,6 +11,8 @@ import { verifyJsonApi } from '../verification/json-api/json-api-verifications';
 import { BaseVerifierService } from './common/verifier-base.service';
 import { IJsonApiConfig, IJsonApiSecurityConfig, IJsonApiSourceConfig } from 'src/config/interfaces/json-api';
 import { IConfig } from 'src/config/interfaces/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
 @Injectable()
 export class IJsonApiVerifierService extends BaseVerifierService<
@@ -18,7 +20,7 @@ export class IJsonApiVerifierService extends BaseVerifierService<
   IJsonApi_Response
 > {
   constructor(protected configService: ConfigService<IConfig>,
-    @Inject('REQUEST') private readonly req: Request
+    @Inject(REQUEST) private readonly req: Request,
   ) {
     super(configService, {
       source: ChainType.WEB2,
@@ -33,7 +35,7 @@ export class IJsonApiVerifierService extends BaseVerifierService<
     const securityConfig: IJsonApiSecurityConfig = verifierConfigOptions.securityConfig;
     const sourceConfig: IJsonApiSourceConfig = verifierConfigOptions.sourceConfig;
 
-    const userAgent = this.req.headers["user-agent"] || "";
+    const userAgent: string = this.req.headers['user-agent'] || "";
     const result = await verifyJsonApi(fixedRequest, securityConfig, sourceConfig, userAgent);
 
     return serializeBigInts({

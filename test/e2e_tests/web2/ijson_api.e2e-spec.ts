@@ -5,7 +5,7 @@ import { abiEncodedData, abiEncoding, api_key, app, attResponse, payload } from 
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 
 describe('/JsonApi/prepareResponse', () => {
-  it('should get right responseBody', async () => {
+  it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
       .post('/JsonApi/prepareResponse')
       .send(payload)
@@ -242,7 +242,7 @@ describe('/JsonApi/prepareResponse', () => {
 });
 
 describe('/JsonApi/mic', () => {
-  it('should get right responseBody', async () => {
+  it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
       .post('/JsonApi/mic')
       .send(payload)

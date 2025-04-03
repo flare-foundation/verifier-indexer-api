@@ -5,6 +5,8 @@ import {
 } from '../response-status';
 import { Logger } from '@nestjs/common';
 import * as dns from 'dns';
+import { Json } from 'node-jq/lib/options';
+import { AxiosHeaderValue } from 'axios';
 
 export const responseType = 'arraybuffer'; // prevent auto-parsing
 export const responseContentType = 'application/json';
@@ -53,10 +55,17 @@ export async function isValidUrl(inputUrl: string, blockedHostnames: string[]): 
       return false;
     }
     // resolve hostname to IP address
-    const { address } = await dns.promises.lookup(parsedUrl.hostname);
-    // check if IP is private
-    if (ipPrivate.some((regex) => regex.test(address))) {
-      Logger.warn(`URL rejected: blocked IP - ${address} resolved from ${parsedUrl.hostname}`);
+    try {
+      const addresses = await dns.promises.lookup(parsedUrl.hostname, { all: true });
+      for (const { address } of addresses) {
+        // check if IP is private
+        if (ipPrivate.some((regex) => regex.test(address))) {
+          Logger.warn(`URL rejected: blocked IP - ${address} resolved from ${parsedUrl.hostname}`);
+          return false;
+        }
+      }
+    } catch (error) {
+      Logger.warn(`URL rejected: DNS resolution failed for ${parsedUrl.hostname}: ${error}`);
       return false;
     }
     // blocked hostnames
@@ -89,7 +98,11 @@ export function verificationResponse<T>(status: AttestationResponseStatus, respo
  */
 export function tryParseJSON(input: string) {
   try {
-    return JSON.parse(input);
+    const parsed = JSON.parse(input) as unknown;
+    if (typeof parsed === 'object') {
+      return parsed;
+    }
+    return null;
   } catch (error) {
     Logger.error(`Error while parsing JSON: ${error}`);
     return null;
@@ -97,13 +110,51 @@ export function tryParseJSON(input: string) {
 }
 
 /**
- * @param http_method
+ * @param httpMethod
  * @param allowedHttpMethods
  * @returns
  */
-export function isValidHttpMethod(http_method: HTTP_METHOD, allowedHttpMethods: AllowedMethods) {
+export function isValidHttpMethod(httpMethod: HTTP_METHOD, allowedHttpMethods: AllowedMethods) {
   if (allowedHttpMethods === '*') {
     return true;
   }
-  return allowedHttpMethods.includes(http_method);
+  return allowedHttpMethods.includes(httpMethod);
+}
+
+/**
+ * @param data
+ * @returns
+ */
+export function isStringArray(data: unknown): data is string[] {
+  return Array.isArray(data) && data.every(item => typeof item === 'string');
+}
+
+/**
+ * @param data
+ * @returns
+ */
+export function isJson(data: unknown): data is Json {
+  if (typeof data === "string" || typeof data === "number" ||
+    typeof data === "boolean" || data === null) {
+    return true;
+  }
+  if (Array.isArray(data)) {
+    return data.every(isJson);
+  }
+  if (typeof data === "object" && data !== null) {
+    return Object.values(data).every(isJson);
+  }
+  return false;
+}
+
+export function isApplicationJsonContentType(contentType: AxiosHeaderValue): boolean {
+  if (typeof contentType === 'string' && contentType.includes(responseContentType)) {
+    return true;
+  } else if (Array.isArray(contentType)) {
+    if (contentType.some(type => type.includes(responseContentType))) {
+      return true;
+    }
+  } else {
+    return false;
+  }
 }
