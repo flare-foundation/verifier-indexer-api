@@ -18,6 +18,7 @@ import { IJsonApiVerifierService } from '../../../src/services/ijson-api-verifie
 import { IJsonApiConfig } from 'src/config/interfaces/json-api';
 import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
 import { HTTP_METHOD } from '../../../src/verification/json-api/utils';
+import { apiJsonDefaultConfig } from '../../../src/config/defaults/json_api_config';
 
 function getConfig() {
   const verifier_type = ChainType.WEB2;
@@ -31,26 +32,22 @@ function getConfig() {
     ),
   };
 
-  const apiJsonDefaultConfig: IJsonApiConfig = {
+  const apiJsonTestConfig: IJsonApiConfig = {
+    ...apiJsonDefaultConfig,
     securityConfig: {
+      ...apiJsonDefaultConfig.securityConfig,
       blockHostnames: ['google.com'],
-      blockJq: [],
-      blockJson: [],
     },
     sourceConfig: {
-      requiresApiKey: false,
+      ...apiJsonDefaultConfig.sourceConfig,
       allowedMethods: [HTTP_METHOD.GET],
-      allowedEndPoints: '*',
-      maxResponseSize: 1024 * 1024,
-      maxTimeout: 1000,
-      maxRedirects: 0,
     },
   };
 
   const config: IConfig = {
     port: parseInt(process.env.PORT || '3120'),
     api_keys,
-    verifierConfigOptions: apiJsonDefaultConfig,
+    verifierConfigOptions: apiJsonTestConfig,
     verifierConfig,
     isTestnet,
   };
@@ -99,33 +96,20 @@ export const payload = {
   sourceId:
     '0x7465737457454232000000000000000000000000000000000000000000000000',
   requestBody: {
-    url: 'https://jsonplaceholder.typicode.com/todos/1',
+    url: 'https://jsonplaceholder.typicode.com/todos',
     http_method: 'GET',
     headers: '{"Content-Type":"application/json"}',
-    query_params: '{}',
+    query_params: '{"id": 1}',
     body: '{}',
-    postprocess_jq: '.title',
+    postprocess_jq: '.[0].title',
     abi_signature:
       '{"internalType": "string","name": "title","type": "string"}',
   },
 };
 export const attResponse = {
-  attestationType:
-    '0x494a736f6e417069000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x7465737457454232000000000000000000000000000000000000000000000000',
+  ...payload,
   votingRound: '0',
   lowestUsedTimestamp: '0',
-  requestBody: {
-    url: 'https://jsonplaceholder.typicode.com/todos/1',
-    http_method: 'GET',
-    headers: '{"Content-Type":"application/json"}',
-    query_params: '{}',
-    body: '{}',
-    postprocess_jq: '.title',
-    abi_signature:
-      '{"internalType": "string","name": "title","type": "string"}',
-  },
   responseBody: {
     abi_encoded_data:
       '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001264656c65637475732061757420617574656d0000000000000000000000000000',

@@ -8,9 +8,9 @@ import * as dns from 'dns';
 import { Json } from 'node-jq/lib/options';
 import { AxiosHeaderValue } from 'axios';
 
-export const responseType = 'arraybuffer'; // prevent auto-parsing
-export const responseContentType = 'application/json';
-
+export const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
+export const RESPONSE_CONTENT_TYPE_JSON = 'application/json';
+export const MAX_DEPTH_ONE = 1;
 /**
  * HTTP method enums
  */
@@ -44,8 +44,13 @@ const ipPrivate = [
 export async function isValidUrl(
   inputUrl: string,
   blockedHostnames: string[],
+  allowedUrlLength: number,
 ): Promise<boolean> {
   try {
+    if (inputUrl.length > allowedUrlLength) {
+      Logger.warn(`URL rejected: too long - ${inputUrl.length}`);
+      return false;
+    }
     const parsedUrl = new URL(inputUrl);
     // only https is allowed
     if (parsedUrl.protocol !== 'https:') {
@@ -116,7 +121,7 @@ export function verificationResponse<T>(
  * @param input
  * @returns
  */
-export function tryParseJSON(input: string) {
+export function tryParseJson(input: string): object {
   try {
     const parsed = JSON.parse(input) as unknown;
     if (typeof parsed === 'object') {
@@ -179,14 +184,98 @@ export function isApplicationJsonContentType(
 ): boolean {
   if (
     typeof contentType === 'string' &&
-    contentType.includes(responseContentType)
+    contentType.includes(RESPONSE_CONTENT_TYPE_JSON)
   ) {
     return true;
   } else if (Array.isArray(contentType)) {
-    if (contentType.some((type) => type.includes(responseContentType))) {
+    if (contentType.some((type) => type.includes(RESPONSE_CONTENT_TYPE_JSON))) {
       return true;
     }
   } else {
     return false;
+  }
+}
+
+export function checkJsonDepthAndKeys(
+  value: unknown,
+  depth: number,
+  totalKeys: number,
+  maxDepthAllowed: number,
+  maxKeysAllowed: number,
+  maxDepth: number = 0,
+): { isValid: boolean; maxDepth: number; totalKeys: number } {
+  if (depth > maxDepth) {
+    maxDepth = depth;
+  }
+  if (depth > maxDepthAllowed) {
+    Logger.warn(`Exceeded max depth: ${depth} > ${maxDepthAllowed}`);
+    return { isValid: false, maxDepth, totalKeys };
+  }
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const keys = Object.keys(value);
+    totalKeys += keys.length;
+    if (totalKeys > maxKeysAllowed) {
+      Logger.warn(`Exceeded max keys: ${totalKeys} > ${maxKeysAllowed}`);
+      return { isValid: false, maxDepth, totalKeys };
+    }
+    for (const key of keys) {
+      const result = checkJsonDepthAndKeys(
+        value[key],
+        depth + 1,
+        totalKeys,
+        maxDepthAllowed,
+        maxKeysAllowed,
+        maxDepth,
+      );
+      if (!result.isValid) {
+        return result;
+      }
+      totalKeys = result.totalKeys;
+      maxDepth = result.maxDepth;
+    }
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      maxDepth = Math.max(maxDepth, depth + 1);
+    }
+    for (const item of value) {
+      const result = checkJsonDepthAndKeys(
+        item,
+        depth + 1,
+        totalKeys,
+        maxDepthAllowed,
+        maxKeysAllowed,
+        maxDepth,
+      );
+      if (!result.isValid) {
+        return result;
+      }
+      totalKeys = result.totalKeys;
+      maxDepth = result.maxDepth;
+    }
+  }
+  return { isValid: true, maxDepth, totalKeys };
+}
+
+/**
+ * @param input
+ * @param maxDepth
+ * @param maxKeys
+ * @returns
+ */
+export function parseJsonWithDepthAndKeysValidation(
+  input: string,
+  maxDepth: number,
+  maxKeys: number,
+): object {
+  const parsed = tryParseJson(input);
+  if (!parsed) {
+    return null;
+  }
+  const checkedJson = checkJsonDepthAndKeys(parsed, 0, 0, maxDepth, maxKeys);
+  if (checkedJson.isValid) {
+    return parsed;
+  } else {
+    return null;
   }
 }

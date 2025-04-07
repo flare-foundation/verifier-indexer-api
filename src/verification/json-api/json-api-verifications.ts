@@ -11,13 +11,14 @@ import { VerificationResponse } from '../response-status';
 import { AttestationResponseStatus } from './../response-status';
 import axios, { AxiosHeaderValue, AxiosResponse } from 'axios';
 import {
+  DEFAULT_RESPONSE_TYPE,
   isApplicationJsonContentType,
   isJson,
   isStringArray,
   isValidHttpMethod,
   isValidUrl,
-  responseType,
-  tryParseJSON,
+  MAX_DEPTH_ONE,
+  parseJsonWithDepthAndKeysValidation,
   verificationResponse,
 } from './utils';
 import {
@@ -43,6 +44,7 @@ export async function verifyJsonApi(
   const isValidSourceUrl = await isValidUrl(
     sourceUrl,
     securityConfig.blockHostnames,
+    securityConfig.maxUrlLength,
   );
   if (!isValidSourceUrl) {
     return verificationResponse(AttestationResponseStatus.INVALID_SOURCE_URL);
@@ -51,23 +53,42 @@ export async function verifyJsonApi(
   if (!isValidHttpMethod(sourceMethod, sourceConfig.allowedMethods)) {
     return verificationResponse(AttestationResponseStatus.INVALID_HTTP_METHOD);
   }
-  const sourceHeaders = tryParseJSON(requestBody.headers);
+  const sourceHeaders = parseJsonWithDepthAndKeysValidation(
+    requestBody.headers,
+    MAX_DEPTH_ONE,
+    securityConfig.maxHeaders,
+  );
   if (!sourceHeaders) {
     return verificationResponse(AttestationResponseStatus.INVALID_HEADERS);
   }
   // forward user-agent
   sourceHeaders['User-Agent'] = userAgent;
 
-  const sourceQueryParams = tryParseJSON(requestBody.query_params);
+  const sourceQueryParams = parseJsonWithDepthAndKeysValidation(
+    requestBody.query_params,
+    MAX_DEPTH_ONE,
+    securityConfig.maxQueryParams,
+  );
   if (!sourceQueryParams) {
     return verificationResponse(AttestationResponseStatus.INVALID_QUERY_PARAMS);
   }
-  const sourceBody = tryParseJSON(requestBody.body);
+  const sourceBody = parseJsonWithDepthAndKeysValidation(
+    requestBody.body,
+    securityConfig.maxBodyJsonDepth,
+    securityConfig.maxBodyJsonKeys,
+  );
   if (!sourceBody) {
     return verificationResponse(AttestationResponseStatus.INVALID_BODY);
   }
   const jqScheme = requestBody.postprocess_jq;
-  const abiSign = tryParseJSON(requestBody.abi_signature);
+  if (jqScheme.length > securityConfig.maxJqFilterLength) {
+    return verificationResponse(AttestationResponseStatus.INVALID_JQ_FILTER);
+  }
+  const abiSign = parseJsonWithDepthAndKeysValidation(
+    requestBody.abi_signature,
+    securityConfig.maxBodyJsonDepth,
+    securityConfig.maxBodyJsonKeys,
+  ); // TODO its own
   if (!abiSign) {
     return verificationResponse(
       AttestationResponseStatus.INVALID_ABI_SIGNATURE,
@@ -83,10 +104,10 @@ export async function verifyJsonApi(
       headers: sourceHeaders,
       params: sourceQueryParams,
       data: sourceBody,
-      responseType: responseType,
-      maxContentLength: sourceConfig.maxResponseSize, // limit response size
-      timeout: sourceConfig.maxTimeout,
-      maxRedirects: sourceConfig.maxRedirects, // limit redirects
+      responseType: DEFAULT_RESPONSE_TYPE,
+      maxContentLength: securityConfig.maxResponseSize, // limit response size
+      timeout: securityConfig.maxResponseTimeout,
+      maxRedirects: securityConfig.maxRedirects, // limit redirects
       validateStatus: (status) => status >= 200 && status < 300,
     });
   } catch (error) {
@@ -105,8 +126,10 @@ export async function verifyJsonApi(
   }
 
   // validate returned JSON structure
-  const responseJsonData = tryParseJSON(
+  const responseJsonData = parseJsonWithDepthAndKeysValidation(
     Buffer.from(sourceResponse.data).toString('utf-8'),
+    securityConfig.maxBodyJsonDepth,
+    securityConfig.maxBodyJsonKeys,
   );
   if (!responseJsonData) {
     return verificationResponse(
