@@ -197,11 +197,11 @@ export function isApplicationJsonContentType(
 }
 
 export function checkJsonDepthAndKeys(
-  value: unknown,
-  depth: number,
-  totalKeys: number,
+  input: unknown,
   maxDepthAllowed: number,
   maxKeysAllowed: number,
+  depth: number = 0,
+  totalKeys: number = 0,
   maxDepth: number = 0,
 ): { isValid: boolean; maxDepth: number; totalKeys: number } {
   if (depth > maxDepth) {
@@ -211,8 +211,8 @@ export function checkJsonDepthAndKeys(
     Logger.warn(`Exceeded max depth: ${depth} > ${maxDepthAllowed}`);
     return { isValid: false, maxDepth, totalKeys };
   }
-  if (value && typeof value === 'object' && !Array.isArray(value)) {
-    const keys = Object.keys(value);
+  if (input && typeof input === 'object' && !Array.isArray(input)) {
+    const keys = Object.keys(input);
     totalKeys += keys.length;
     if (totalKeys > maxKeysAllowed) {
       Logger.warn(`Exceeded max keys: ${totalKeys} > ${maxKeysAllowed}`);
@@ -220,11 +220,11 @@ export function checkJsonDepthAndKeys(
     }
     for (const key of keys) {
       const result = checkJsonDepthAndKeys(
-        value[key],
-        depth + 1,
-        totalKeys,
+        input[key],
         maxDepthAllowed,
         maxKeysAllowed,
+        depth + 1,
+        totalKeys,
         maxDepth,
       );
       if (!result.isValid) {
@@ -234,17 +234,17 @@ export function checkJsonDepthAndKeys(
       maxDepth = result.maxDepth;
     }
   }
-  if (Array.isArray(value)) {
-    if (value.length === 0) {
+  if (Array.isArray(input)) {
+    if (input.length === 0) {
       maxDepth = Math.max(maxDepth, depth + 1);
     }
-    for (const item of value) {
+    for (const item of input) {
       const result = checkJsonDepthAndKeys(
         item,
-        depth + 1,
-        totalKeys,
         maxDepthAllowed,
         maxKeysAllowed,
+        depth + 1,
+        totalKeys,
         maxDepth,
       );
       if (!result.isValid) {
@@ -272,7 +272,7 @@ export function parseJsonWithDepthAndKeysValidation(
   if (!parsed) {
     return null;
   }
-  const checkedJson = checkJsonDepthAndKeys(parsed, 0, 0, maxDepth, maxKeys);
+  const checkedJson = checkJsonDepthAndKeys(parsed, maxDepth, maxKeys);
   if (checkedJson.isValid) {
     return parsed;
   } else {
