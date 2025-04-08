@@ -2,13 +2,12 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
-// import { VerifierBtcServerModule } from './verifier-btc-server.module';
 import { ChainType, extractVerifierType } from './config/configuration';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
 import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
 import { IJsonApiVerifierServerModule } from './verifier-modules/ijson-api-verifier-sever.module';
 import { XRPVerifierServerModule } from './verifier-modules/xrp-verifier-server.module';
-// import { VerifierXrpServerModule } from './verifier-xrp-server.module';
+import * as express from 'express';
 
 function moduleForDataSource():
   | typeof DogeVerifierServerModule
@@ -36,6 +35,8 @@ export async function runVerifierServer() {
   const logger = new Logger();
 
   app.use(helmet());
+  app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+  app.use(express.json({ limit: '1mb' }));
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors();
 

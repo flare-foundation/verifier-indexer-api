@@ -44,6 +44,7 @@ export class IJsonApiVerifierService extends BaseVerifierService<
     const sourceConfig: IJsonApiSourceConfig =
       verifierConfigOptions.sourceConfig;
 
+    // store user-agent if available
     const userAgent: string = this.req.headers['user-agent'] || '';
     const result = await verifyJsonApi(
       fixedRequest,

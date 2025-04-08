@@ -11,6 +11,7 @@ import { AxiosHeaderValue } from 'axios';
 export const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
 export const RESPONSE_CONTENT_TYPE_JSON = 'application/json';
 export const MAX_DEPTH_ONE = 1;
+
 /**
  * HTTP method enums
  */
