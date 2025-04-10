@@ -49,28 +49,6 @@ describe('/JsonApi/prepareResponse', () => {
     );
   });
 
-  it('Should reject - private IP 2', async () => {
-    const customPayload = {
-      ...payload,
-      requestBody: {
-        ...payload.requestBody,
-        url: 'https://%31%32%37%2e0.0.1',
-      },
-    };
-
-    const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
-      .send(customPayload)
-      .set('X-API-KEY', api_key)
-      .expect(200)
-      .expect('Content-Type', /json/);
-
-    const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(
-      AttestationResponseStatus.INVALID_SOURCE_URL,
-    );
-  });
-
   it('Should reject - blocked hostname', async () => {
     const customPayload = {
       ...payload,

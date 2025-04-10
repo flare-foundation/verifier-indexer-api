@@ -20,6 +20,18 @@ import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
 import { HTTP_METHOD } from '../../../src/verification/json-api/utils';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/json_api_config';
 
+export const apiJsonTestConfig: IJsonApiConfig = {
+  ...apiJsonDefaultConfig,
+  securityConfig: {
+    ...apiJsonDefaultConfig.securityConfig,
+    blockHostnames: ['google.com'],
+  },
+  sourceConfig: {
+    ...apiJsonDefaultConfig.sourceConfig,
+    allowedMethods: [HTTP_METHOD.GET],
+  },
+};
+
 function getConfig() {
   const verifier_type = ChainType.WEB2;
   const isTestnet = process.env.TESTNET == 'true';
@@ -30,18 +42,6 @@ function getConfig() {
     indexerServerPageLimit: parseInt(
       process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
     ),
-  };
-
-  const apiJsonTestConfig: IJsonApiConfig = {
-    ...apiJsonDefaultConfig,
-    securityConfig: {
-      ...apiJsonDefaultConfig.securityConfig,
-      blockHostnames: ['google.com'],
-    },
-    sourceConfig: {
-      ...apiJsonDefaultConfig.sourceConfig,
-      allowedMethods: [HTTP_METHOD.GET],
-    },
   };
 
   const config: IConfig = {
