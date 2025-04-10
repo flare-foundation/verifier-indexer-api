@@ -8,7 +8,7 @@ export const apiJsonDefaultConfig: IJsonApiConfig = {
     maxResponseSize: 1024 * 1024,
     maxRedirects: 1,
     maxResponseTimeout: 1000,
-    maxUrlLength: 2000,
+    maxUrlLength: 2084,
     maxHeaders: 50,
     maxQueryParams: 50,
     maxBodyJsonDepth: 10,

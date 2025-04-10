@@ -7,6 +7,7 @@ import { Logger } from '@nestjs/common';
 import * as dns from 'dns';
 import { Json } from 'node-jq/lib/options';
 import { AxiosHeaderValue } from 'axios';
+import { sanitizeUrl } from '@braintree/sanitize-url';
 
 export const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
 export const RESPONSE_CONTENT_TYPE_JSON = 'application/json';
@@ -46,22 +47,23 @@ export async function isValidUrl(
   inputUrl: string,
   blockedHostnames: string[],
   allowedUrlLength: number,
-): Promise<boolean> {
+): Promise<string | null> {
   try {
-    if (inputUrl.length > allowedUrlLength) {
-      Logger.warn(`URL rejected: too long - ${inputUrl.length}`);
-      return false;
+    const sanitizedInputUrl = sanitizeUrl(inputUrl);
+    if (sanitizedInputUrl.length > allowedUrlLength) {
+      Logger.warn(`URL rejected: too long - ${sanitizedInputUrl.length}`);
+      return null;
     }
-    const parsedUrl = new URL(inputUrl);
+    const parsedUrl = new URL(sanitizedInputUrl);
     // only https is allowed
     if (parsedUrl.protocol !== 'https:') {
       Logger.warn(`URL rejected: not 'https' protocol`);
-      return false;
+      return null;
     }
     // block URLs containing word 'url'
     if (parsedUrl.href.toLowerCase().includes('url')) {
       Logger.warn(`URL rejected: containing 'url'`);
-      return false;
+      return null;
     }
     // resolve hostname to IP address
     try {
@@ -74,14 +76,14 @@ export async function isValidUrl(
           Logger.warn(
             `URL rejected: blocked IP - ${address} resolved from ${parsedUrl.hostname}`,
           );
-          return false;
+          return null;
         }
       }
     } catch (error) {
       Logger.warn(
         `URL rejected: DNS resolution failed for ${parsedUrl.hostname}: ${error}`,
       );
-      return false;
+      return null;
     }
     // blocked hostnames
     if (
@@ -94,12 +96,14 @@ export async function isValidUrl(
       Logger.warn(
         `URL rejected: blocked hostname included ${parsedUrl.hostname}`,
       );
-      return false;
+      return null;
     }
-    return true;
+    const checkedUrl =
+      parsedUrl.protocol + parsedUrl.hostname + parsedUrl.pathname;
+    return checkedUrl;
   } catch (error) {
     Logger.error(`Error while validating URL: ${error}`);
-    return false;
+    return null;
   }
 }
 

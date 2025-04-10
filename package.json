@@ -24,6 +24,7 @@
     "test": "./test/e2e_tests/run_tests.sh "
   },
   "dependencies": {
+    "@braintree/sanitize-url": "^7.1.1",
     "@flarenetwork/mcc": "4.4.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",

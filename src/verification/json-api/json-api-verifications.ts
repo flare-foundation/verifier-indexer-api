@@ -41,12 +41,12 @@ export async function verifyJsonApi(
 ): Promise<VerificationResponse<IJsonApi_Response>> {
   const requestBody = request.requestBody;
   const sourceUrl = requestBody.url;
-  const isValidSourceUrl = await isValidUrl(
+  const validSourceUrl = await isValidUrl(
     sourceUrl,
     securityConfig.blockHostnames,
     securityConfig.maxUrlLength,
   );
-  if (!isValidSourceUrl) {
+  if (!validSourceUrl) {
     return verificationResponse(AttestationResponseStatus.INVALID_SOURCE_URL);
   }
   const sourceMethod = requestBody.http_method;
@@ -99,7 +99,7 @@ export async function verifyJsonApi(
   let sourceResponse: AxiosResponse<ArrayBuffer>;
   try {
     sourceResponse = await axios({
-      url: sourceUrl,
+      url: validSourceUrl,
       method: sourceMethod,
       headers: sourceHeaders,
       params: sourceQueryParams,
