@@ -3515,7 +3515,7 @@ jest-worker@^27.4.5:
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
 
-jq-wasm@^1.1.0-jq-1.7.1:
+jq-wasm@1.1.0-jq-1.7.1:
   version "1.1.0-jq-1.7.1"
   resolved "https://registry.yarnpkg.com/jq-wasm/-/jq-wasm-1.1.0-jq-1.7.1.tgz#1a6cd71c075f1c7a9787cd66e4c2b4ae559b4ba8"
   integrity sha512-hShGjnN88Qgmjg2oBSX4UpVh/soUF4cQc3Rhg3C6rkMzmobgzEloTST7Ld1HnUIyxPygU1Hh4uW4M7ExRhDxGQ==
