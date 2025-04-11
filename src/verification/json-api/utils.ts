@@ -1,4 +1,8 @@
-import { AllowedMethods } from 'src/config/interfaces/json-api';
+import {
+  AllowedMethods,
+  JqErrorMessage,
+  JqResultMessage,
+} from 'src/config/interfaces/json-api';
 import {
   AttestationResponseStatus,
   VerificationResponse,
@@ -7,10 +11,12 @@ import { Logger } from '@nestjs/common';
 import * as dns from 'dns';
 import { AxiosHeaderValue } from 'axios';
 import { sanitizeUrl } from '@braintree/sanitize-url';
+import { fork } from 'child_process';
 
 export const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
 export const RESPONSE_CONTENT_TYPE_JSON = 'application/json';
 export const MAX_DEPTH_ONE = 1;
+export const JQ_TIMEOUT_ERROR_MESSAGE = 'jq process exceeded timeout';
 
 /**
  * HTTP method enums
@@ -280,6 +286,45 @@ export function parseJsonWithDepthAndKeysValidation(
   if (checkedJson.isValid) {
     return parsed;
   } else {
+    return null;
+  }
+}
+
+export async function runJqSeparately(
+  jsonData: object,
+  jqScheme: string,
+  timeoutMs: number = 500,
+): Promise<object> {
+  const processPromise = new Promise<object>((resolve, reject) => {
+    const jqChildProcess = fork('./dist/verification/json-api/jq-process.js');
+    jqChildProcess.send({ jsonData, jqScheme });
+
+    jqChildProcess.on(
+      'message',
+      (message: JqResultMessage | JqErrorMessage) => {
+        if (message.status === 'success') {
+          resolve(message.result);
+        } else {
+          reject(new Error(message.error));
+        }
+      },
+    );
+
+    const timeout = setTimeout(() => {
+      jqChildProcess.kill();
+      reject(new Error(JQ_TIMEOUT_ERROR_MESSAGE));
+    }, timeoutMs);
+
+    jqChildProcess.on('exit', () => {
+      clearTimeout(timeout);
+    });
+  });
+
+  try {
+    const dataJq = await processPromise;
+    return dataJq;
+  } catch (error) {
+    Logger.error(`Error during jq process: ${error}`);
     return null;
   }
 }

@@ -79,3 +79,18 @@ export interface IJsonApiSourceConfig {
    */
   authentication?: { [key: string]: unknown };
 }
+
+export interface JqMessage {
+  jsonData: object;
+  jqScheme: string;
+}
+
+export interface JqResultMessage {
+  status: 'success';
+  result: object;
+}
+
+export interface JqErrorMessage {
+  status: 'error';
+  error: string;
+}

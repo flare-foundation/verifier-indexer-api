@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import * as jq from 'jq-wasm';
 import {
   IJsonApi_Request,
   IJsonApi_Response,
@@ -18,6 +17,7 @@ import {
   isValidUrl,
   MAX_DEPTH_ONE,
   parseJsonWithDepthAndKeysValidation,
+  runJqSeparately,
   verificationResponse,
 } from './utils';
 import {
@@ -140,7 +140,7 @@ export async function verifyJsonApi(
   let dataJq: object;
   try {
     if (isStringArray(responseJsonData) || isJson(responseJsonData)) {
-      dataJq = await jq.json(responseJsonData, jqScheme);
+      dataJq = await runJqSeparately(responseJsonData, jqScheme);
       if (!dataJq) {
         Logger.error(`Error while jq parsing: no data returned`);
         return verificationResponse(
