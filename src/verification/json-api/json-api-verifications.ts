@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
-import * as jq from 'node-jq';
-import { Json } from 'node-jq/lib/options';
+import * as jq from 'jq-wasm';
 import {
   IJsonApi_Request,
   IJsonApi_Response,
@@ -138,21 +137,16 @@ export async function verifyJsonApi(
   }
 
   // process the data with jq
-  let dataJq: unknown;
-  let filteredData: string;
+  let dataJq: object;
   try {
-    if (isStringArray(responseJsonData)) {
-      filteredData = (await jq.run(jqScheme, JSON.stringify(responseJsonData), {
-        input: 'string',
-        output: 'string',
-      })) as string;
-      dataJq = JSON.parse(filteredData) as unknown;
-    } else if (isJson(responseJsonData)) {
-      filteredData = (await jq.run(jqScheme, responseJsonData as Json, {
-        input: 'json',
-        output: 'string',
-      })) as string;
-      dataJq = JSON.parse(filteredData) as unknown;
+    if (isStringArray(responseJsonData) || isJson(responseJsonData)) {
+      dataJq = await jq.json(responseJsonData, jqScheme);
+      if (!dataJq) {
+        Logger.error(`Error while jq parsing: no data returned`);
+        return verificationResponse(
+          AttestationResponseStatus.INVALID_JQ_PARSE_ERROR,
+        );
+      }
     } else {
       Logger.warn(`Provided JSON is neither stringArray or Json type`);
       return verificationResponse(

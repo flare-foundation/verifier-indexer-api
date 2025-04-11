@@ -1,6 +1,7 @@
 import { apiJsonTestConfig } from './helper';
 import { isValidUrl } from '../../../src/verification/json-api/utils';
 import { expect } from 'chai';
+import * as jqw from 'jq-wasm';
 
 describe('URL checker', () => {
   it('Should reject - private IP 1', async () => {

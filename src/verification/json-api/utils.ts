@@ -5,7 +5,6 @@ import {
 } from '../response-status';
 import { Logger } from '@nestjs/common';
 import * as dns from 'dns';
-import { Json } from 'node-jq/lib/options';
 import { AxiosHeaderValue } from 'axios';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 
@@ -166,7 +165,7 @@ export function isStringArray(data: unknown): data is string[] {
  * @param data
  * @returns
  */
-export function isJson(data: unknown): data is Json {
+export function isJson(data: unknown): boolean {
   if (
     typeof data === 'string' ||
     typeof data === 'number' ||
