@@ -14,6 +14,7 @@ export const apiJsonDefaultConfig: IJsonApiConfig = {
     maxBodyJsonDepth: 10,
     maxBodyJsonKeys: 5000,
     maxJqFilterLength: 5000,
+    jqTimeout: 500,
   },
   sourceConfig: {
     requiresApiKey: false,

@@ -140,7 +140,11 @@ export async function verifyJsonApi(
   let dataJq: object;
   try {
     if (isStringArray(responseJsonData) || isJson(responseJsonData)) {
-      dataJq = await runJqSeparately(responseJsonData, jqScheme);
+      dataJq = await runJqSeparately(
+        responseJsonData,
+        jqScheme,
+        securityConfig.jqTimeout,
+      );
       if (!dataJq) {
         Logger.error(`Error while jq parsing: no data returned`);
         return verificationResponse(

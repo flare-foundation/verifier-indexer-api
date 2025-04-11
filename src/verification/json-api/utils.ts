@@ -293,7 +293,7 @@ export function parseJsonWithDepthAndKeysValidation(
 export async function runJqSeparately(
   jsonData: object,
   jqScheme: string,
-  timeoutMs: number = 500,
+  timeoutMs: number,
 ): Promise<object> {
   const processPromise = new Promise<object>((resolve, reject) => {
     const jqChildProcess = fork('./dist/verification/json-api/jq-process.js');

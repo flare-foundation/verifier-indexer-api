@@ -1,24 +1,21 @@
 import { expect } from 'chai';
 import * as jq from 'jq-wasm';
-import {
-  JQ_TIMEOUT_ERROR_MESSAGE,
-  runJqSeparately,
-} from '../../../src/verification/json-api/utils';
+import { runJqSeparately } from '../../../src/verification/json-api/utils';
 
-function logMemoryUsage(tag: string) {}
+const jqProcessTimeoutMs = 300;
 
 describe('jq checker', () => {
   it('Should reject 1', async () => {
     const json = {};
     const jqFilter = 'def loop: loop; loop';
-    const res = await runJqSeparately(json, jqFilter);
+    const res = await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
     expect(res).to.be.null;
   });
 
   it('Should reject 2', async () => {
     const json = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const jqFilter = 'reduce range(1; 10000000) as $i (0; . + ($i * $i))';
-    const res = await runJqSeparately(json, jqFilter);
+    const res = await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
     expect(res).to.be.null;
   });
 
@@ -26,14 +23,14 @@ describe('jq checker', () => {
     const json = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const jqFilter =
       'reduce range(1; 10000000) as $i ({a: 1, b: 1}; {a: .b, b: (.a + .b)})';
-    const res = await runJqSeparately(json, jqFilter);
+    const res = await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
     expect(res).to.be.null;
   });
 
   it('Should reject 4', async () => {
     const json = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const jqFilter = 'range(1; 10000000) | reduce . as $item (0; . + $item)';
-    const res = await runJqSeparately(json, jqFilter);
+    const res = await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
     expect(res).to.be.null;
   });
 
@@ -47,8 +44,7 @@ describe('jq checker', () => {
     };
     const jqFilter =
       '.data[] | {a: .a, b: .b, c: (.a + .b), d: range(1; 1000000)}';
-    await runJqSeparately(json, jqFilter);
-    const res = await runJqSeparately(json, jqFilter);
+    const res = await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
     expect(res).to.be.null;
   });
 

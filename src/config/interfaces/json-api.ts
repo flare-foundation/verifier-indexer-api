@@ -55,6 +55,10 @@ export interface IJsonApiSecurityConfig {
    * Maximum allowed length of the JQ filter.
    */
   maxJqFilterLength: number;
+  /**
+   * Maximum time (in milliseconds) to wait for a jq process to finish
+   */
+  jqTimeout: number;
 }
 
 export type AllowedMethods = HTTP_METHOD[] | '*';
