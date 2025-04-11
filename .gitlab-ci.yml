@@ -9,6 +9,9 @@ build:
     - yarn install --frozen-lockfile
   script:
     - yarn build
+  artifacts:
+    paths:
+      - dist/
 
 e2e_test:
   stage: test
