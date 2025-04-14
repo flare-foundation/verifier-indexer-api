@@ -66,7 +66,7 @@ export async function isValidUrl(
       return null;
     }
     // block URLs containing word 'url'
-    if (parsedUrl.href.toLowerCase().includes('url')) {
+    if (parsedUrl.href.toLowerCase().includes('url')) { //TODO add other suspicious words
       Logger.warn(`URL rejected: containing 'url'`);
       return null;
     }

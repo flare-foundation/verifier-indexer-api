@@ -140,7 +140,7 @@ export async function verifyJsonApi(
   let dataJq: object;
   try {
     if (isStringArray(responseJsonData) || isJson(responseJsonData)) {
-      dataJq = await runJqSeparately(
+      dataJq = await runJqSeparately( // TODO validate jq Json output (depth, keys, ...)
         responseJsonData,
         jqScheme,
         securityConfig.jqTimeout,
@@ -166,7 +166,7 @@ export async function verifyJsonApi(
 
   let encodedData: string;
   try {
-    encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
+    encodedData = ethers.AbiCoder.defaultAbiCoder().encode( // TODO separate execution like jq to prevent dos
       [abiSign as ethers.ParamType],
       [dataJq],
     );
