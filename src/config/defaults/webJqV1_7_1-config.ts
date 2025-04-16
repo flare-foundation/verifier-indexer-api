@@ -1,6 +1,6 @@
-import { IJsonApiConfig } from '../interfaces/json-api';
+import { WebJqV1_7_1Config } from '../interfaces/webJqV1_7_1';
 
-export const apiJsonDefaultConfig: IJsonApiConfig = {
+export const apiJsonDefaultConfig: WebJqV1_7_1Config = {
   securityConfig: {
     blockHostnames: [],
     blockJq: [],

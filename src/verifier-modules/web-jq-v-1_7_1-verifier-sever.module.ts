@@ -4,9 +4,9 @@ import { ApiKeyStrategy } from '../auth/apikey.strategy';
 import { AuthModule } from '../auth/auth.module';
 import { AuthService } from '../auth/auth.service';
 import configuration from '../config/configuration';
-import { IJsonApiVerifierController } from '../controllers/ijson-api-verifier.controller';
+import { WebJqV1_7_1VerifierController } from '../controllers/web-jq-v-1_7_1-verifier.controller';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
-import { IJsonApiVerifierService } from '../services/ijson-api-verifier.service';
+import { WebJqV1_7_1VerifierService } from '../services/web-jq-v-1_7_1-verifier.service';
 
 @Module({
   imports: [
@@ -16,10 +16,10 @@ import { IJsonApiVerifierService } from '../services/ijson-api-verifier.service'
     }),
     AuthModule,
   ],
-  controllers: [IJsonApiVerifierController],
-  providers: [ApiKeyStrategy, AuthService, IJsonApiVerifierService],
+  controllers: [WebJqV1_7_1VerifierController],
+  providers: [ApiKeyStrategy, AuthService, WebJqV1_7_1VerifierService],
 })
-export class IJsonApiVerifierServerModule implements NestModule {
+export class WebJqV1_7_1VerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }

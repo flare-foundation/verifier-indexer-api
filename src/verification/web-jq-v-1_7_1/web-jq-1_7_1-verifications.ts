@@ -1,12 +1,12 @@
 import { ethers } from 'ethers';
 import {
-  IJsonApi_Request,
-  IJsonApi_Response,
-  IJsonApi_ResponseBody,
-} from '../../dtos/attestation-types/IJsonApi.dto';
+  WebJqV1_7_1_Request,
+  WebJqV1_7_1_Response,
+  WebJqV1_7_1_ResponseBody,
+} from '../../dtos/attestation-types/WebJqV1_7_1.dto';
 import { serializeBigInts } from '../../external-libs/utils';
 import { VerificationResponse } from '../response-status';
-import { AttestationResponseStatus } from './../response-status';
+import { AttestationResponseStatus } from '../response-status';
 import axios, { AxiosHeaderValue, AxiosResponse } from 'axios';
 import {
   DEFAULT_RESPONSE_TYPE,
@@ -21,23 +21,23 @@ import {
   verificationResponse,
 } from './utils';
 import {
-  IJsonApiSecurityConfig,
-  IJsonApiSourceConfig,
-} from 'src/config/interfaces/json-api';
+  WebJqV1_7_1SecurityConfig,
+  WebJqV1_7_1SourceConfig,
+} from 'src/config/interfaces/webJqV1_7_1';
 import { Logger } from '@nestjs/common';
 
 /**
- * `JsonApi` attestation type verification function
+ * `WebJqV1_7_1` attestation type verification function
  * @param request attestation request
  * @returns Verification response: object containing status and attestation response
  * @category Verifiers
  */
-export async function verifyJsonApi(
-  request: IJsonApi_Request,
-  securityConfig: IJsonApiSecurityConfig,
-  sourceConfig: IJsonApiSourceConfig,
+export async function verifyWebJqV1_7_1(
+  request: WebJqV1_7_1_Request,
+  securityConfig: WebJqV1_7_1SecurityConfig,
+  sourceConfig: WebJqV1_7_1SourceConfig,
   userAgent: string,
-): Promise<VerificationResponse<IJsonApi_Response>> {
+): Promise<VerificationResponse<WebJqV1_7_1_Response>> {
   const requestBody = request.requestBody;
   const sourceUrl = requestBody.url;
   const validSourceUrl = await isValidUrl(
@@ -48,7 +48,7 @@ export async function verifyJsonApi(
   if (!validSourceUrl) {
     return verificationResponse(AttestationResponseStatus.INVALID_SOURCE_URL);
   }
-  const sourceMethod = requestBody.http_method;
+  const sourceMethod = requestBody.httpMethod;
   if (!isValidHttpMethod(sourceMethod, sourceConfig.allowedMethods)) {
     return verificationResponse(AttestationResponseStatus.INVALID_HTTP_METHOD);
   }
@@ -64,7 +64,7 @@ export async function verifyJsonApi(
   sourceHeaders['User-Agent'] = userAgent;
 
   const sourceQueryParams = parseJsonWithDepthAndKeysValidation(
-    requestBody.query_params,
+    requestBody.queryParams,
     MAX_DEPTH_ONE,
     securityConfig.maxQueryParams,
   );
@@ -79,12 +79,12 @@ export async function verifyJsonApi(
   if (!sourceBody) {
     return verificationResponse(AttestationResponseStatus.INVALID_BODY);
   }
-  const jqScheme = requestBody.postprocess_jq;
+  const jqScheme = requestBody.postProcessJq;
   if (jqScheme.length > securityConfig.maxJqFilterLength) {
     return verificationResponse(AttestationResponseStatus.INVALID_JQ_FILTER);
   }
   const abiSign = parseJsonWithDepthAndKeysValidation(
-    requestBody.abi_signature,
+    requestBody.abiSignature,
     securityConfig.maxBodyJsonDepth,
     securityConfig.maxBodyJsonKeys,
   ); // TODO its own
@@ -175,14 +175,14 @@ export async function verifyJsonApi(
     return verificationResponse(AttestationResponseStatus.INVALID_ENCODE_ERROR);
   }
 
-  const response = new IJsonApi_Response({
+  const response = new WebJqV1_7_1_Response({
     attestationType: request.attestationType,
     sourceId: request.sourceId,
     votingRound: '0',
     lowestUsedTimestamp: '0',
     requestBody: serializeBigInts(requestBody),
-    responseBody: new IJsonApi_ResponseBody({
-      abi_encoded_data: encodedData,
+    responseBody: new WebJqV1_7_1_ResponseBody({
+      abiEncodedData: encodedData,
     }),
   });
 

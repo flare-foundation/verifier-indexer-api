@@ -11,10 +11,10 @@ import {
 } from './helper';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 
-describe('/JsonApi/prepareResponse', () => {
+describe('/WebJqV1_7_1/prepareResponse', () => {
   it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(payload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -22,7 +22,7 @@ describe('/JsonApi/prepareResponse', () => {
 
     const responseBody = response.body;
     expect(responseBody.status).to.be.equal(AttestationResponseStatus.VALID);
-    expect(responseBody.response.responseBody.abi_encoded_data).to.be.equal(
+    expect(responseBody.response.responseBody.abiEncodedData).to.be.equal(
       abiEncodedData,
     );
   });
@@ -37,7 +37,7 @@ describe('/JsonApi/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -59,7 +59,7 @@ describe('/JsonApi/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -81,7 +81,7 @@ describe('/JsonApi/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -103,7 +103,7 @@ describe('/JsonApi/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -120,12 +120,12 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        http_method: 'POST',
+        httpMethod: 'POST',
       },
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -147,7 +147,7 @@ describe('/JsonApi/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(malformedPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -164,12 +164,12 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        query_params: '{',
+        queryParams: '{',
       },
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(malformedPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -191,7 +191,7 @@ describe('/JsonApi/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(malformedPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -208,12 +208,12 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        abi_signature: '{',
+        abiSignature: '{',
       },
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(malformedPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -230,13 +230,13 @@ describe('/JsonApi/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        abi_signature:
+        abiSignature:
           '{"components": [{"internalType": "uint8","name": "userId","type": "uint8"},{"internalType": "uint8","name": "id","type": "uint8"},{"internalType": "string","name": "title","type": "string"},{"internalType": "bool","name": "completed","type": "bool"}],"name": "task","type": "tuple"}',
       },
     };
 
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/prepareResponse')
+      .post('/WebJqV1_7_1/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -249,10 +249,10 @@ describe('/JsonApi/prepareResponse', () => {
   });
 });
 
-describe('/JsonApi/mic', () => {
+describe('/WebJqV1_7_1/mic', () => {
   it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
-      .post('/JsonApi/mic')
+      .post('/WebJqV1_7_1/mic')
       .send(payload)
       .set('X-API-KEY', api_key)
       .expect(200)

@@ -12,15 +12,15 @@ import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
 import { ChainType } from '../../../src/config/configuration';
-import { IJsonApiVerifierController } from '../../../src/controllers/ijson-api-verifier.controller';
+import { WebJqV1_7_1VerifierController } from '../../../src/controllers/web-jq-v-1_7_1-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
-import { IJsonApiVerifierService } from '../../../src/services/ijson-api-verifier.service';
-import { IJsonApiConfig } from 'src/config/interfaces/json-api';
+import { WebJqV1_7_1VerifierService } from '../../../src/services/web-jq-v-1_7_1-verifier.service';
+import { WebJqV1_7_1Config } from 'src/config/interfaces/webJqV1_7_1';
 import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
-import { HTTP_METHOD } from '../../../src/verification/json-api/utils';
-import { apiJsonDefaultConfig } from '../../../src/config/defaults/json_api_config';
+import { HTTP_METHOD } from '../../../src/verification/web-jq-v-1_7_1/utils';
+import { apiJsonDefaultConfig } from '../../../src/config/defaults/webJqV1_7_1-config';
 
-export const apiJsonTestConfig: IJsonApiConfig = {
+export const apiJsonTestConfig: WebJqV1_7_1Config = {
   ...apiJsonDefaultConfig,
   securityConfig: {
     ...apiJsonDefaultConfig.securityConfig,
@@ -62,10 +62,10 @@ function getConfig() {
     }),
     AuthModule,
   ],
-  controllers: [IJsonApiVerifierController],
-  providers: [ApiKeyStrategy, AuthService, IJsonApiVerifierService],
+  controllers: [WebJqV1_7_1VerifierController],
+  providers: [ApiKeyStrategy, AuthService, WebJqV1_7_1VerifierService],
 })
-export class IJsonApiVerifierServerModule implements NestModule {
+export class WebJqV1_7_1VerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
@@ -74,7 +74,7 @@ export class IJsonApiVerifierServerModule implements NestModule {
 export let app: INestApplication;
 
 before(async () => {
-  app = await NestFactory.create(IJsonApiVerifierServerModule);
+  app = await NestFactory.create(WebJqV1_7_1VerifierServerModule);
 
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -92,17 +92,17 @@ const api_keys = process.env.API_KEYS?.split(',') || [''];
 export const api_key = api_keys[0];
 export const payload = {
   attestationType:
-    '0x494a736f6e417069000000000000000000000000000000000000000000000000',
+    '0x5765624a7156315f375f31000000000000000000000000000000000000000000',
   sourceId:
     '0x7465737457454232000000000000000000000000000000000000000000000000',
   requestBody: {
     url: 'https://jsonplaceholder.typicode.com/todos',
-    http_method: 'GET',
+    httpMethod: 'GET',
     headers: '{"Content-Type":"application/json"}',
-    query_params: '{"id": 1}',
+    queryParams: '{"id": 1}',
     body: '{}',
-    postprocess_jq: '.[0].title',
-    abi_signature:
+    postProcessJq: '.[0].title',
+    abiSignature:
       '{"internalType": "string","name": "title","type": "string"}',
   },
 };
@@ -111,7 +111,7 @@ export const attResponse = {
   votingRound: '0',
   lowestUsedTimestamp: '0',
   responseBody: {
-    abi_encoded_data:
+    abiEncodedData:
       '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001264656c65637475732061757420617574656d0000000000000000000000000000',
   },
 };
@@ -138,7 +138,7 @@ export const abiEncoding: unknown = {
         },
         {
           internalType: 'string',
-          name: 'http_method',
+          name: 'httpMethod',
           type: 'string',
         },
         {
@@ -148,7 +148,7 @@ export const abiEncoding: unknown = {
         },
         {
           internalType: 'string',
-          name: 'query_params',
+          name: 'queryParams',
           type: 'string',
         },
         {
@@ -158,16 +158,16 @@ export const abiEncoding: unknown = {
         },
         {
           internalType: 'string',
-          name: 'postprocess_jq',
+          name: 'postProcessJq',
           type: 'string',
         },
         {
           internalType: 'string',
-          name: 'abi_signature',
+          name: 'abiSignature',
           type: 'string',
         },
       ],
-      internalType: 'struct IJsonApi.RequestBody',
+      internalType: 'struct WebJqV1_7_1.RequestBody',
       name: 'requestBody',
       type: 'tuple',
     },
@@ -175,16 +175,16 @@ export const abiEncoding: unknown = {
       components: [
         {
           internalType: 'bytes',
-          name: 'abi_encoded_data',
+          name: 'abiEncodedData',
           type: 'bytes',
         },
       ],
-      internalType: 'struct IJsonApi.ResponseBody',
+      internalType: 'struct WebJqV1_7_1.ResponseBody',
       name: 'responseBody',
       type: 'tuple',
     },
   ],
-  internalType: 'struct IJsonApi.Response',
+  internalType: 'struct WebJqV1_7_1.Response',
   name: '_response',
   type: 'tuple',
 };

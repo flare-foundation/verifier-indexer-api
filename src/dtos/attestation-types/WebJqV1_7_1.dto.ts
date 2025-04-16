@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { Is0xHex, IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../../verification/response-status';
-import { HTTP_METHOD } from '../../verification/json-api/utils';
+import { HTTP_METHOD } from '../../verification/web-jq-v-1_7_1/utils';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -20,18 +20,18 @@ import { HTTP_METHOD } from '../../verification/json-api/utils';
 /**
  * Attestation response for specific attestation type (flattened)
  */
-export class AttestationResponseDTO_IJsonApi_Response {
-  constructor(params: Required<AttestationResponseDTO_IJsonApi_Response>) {
+export class AttestationResponseDTO_WebJqV1_7_1_Response {
+  constructor(params: Required<AttestationResponseDTO_WebJqV1_7_1_Response>) {
     Object.assign(this, params);
   }
 
   status: AttestationResponseStatus;
 
-  response?: IJsonApi_Response;
+  response?: WebJqV1_7_1_Response;
 }
 
-export class IJsonApi_ResponseBody {
-  constructor(params: Required<IJsonApi_ResponseBody>) {
+export class WebJqV1_7_1_ResponseBody {
+  constructor(params: Required<WebJqV1_7_1_ResponseBody>) {
     Object.assign(this, params);
   }
 
@@ -40,11 +40,11 @@ export class IJsonApi_ResponseBody {
    */
   @Validate(Is0xHex)
   @ApiProperty({ description: `ABI encoded data`, example: '0x1234abcd' })
-  abi_encoded_data: string;
+  abiEncodedData: string;
 }
 
-export class IJsonApi_RequestBody {
-  constructor(params: Required<IJsonApi_RequestBody>) {
+export class WebJqV1_7_1_RequestBody {
+  constructor(params: Required<WebJqV1_7_1_RequestBody>) {
     Object.assign(this, params);
   }
 
@@ -54,7 +54,7 @@ export class IJsonApi_RequestBody {
   @IsString()
   @ApiProperty({
     description: `URL of the data source`,
-    example: 'https://jsonplaceholder.typicode.com/todos/1',
+    example: 'https://jsonplaceholder.typicode.com/todos',
   })
   url: string;
 
@@ -67,7 +67,7 @@ export class IJsonApi_RequestBody {
     example: 'GET',
     enum: HTTP_METHOD,
   })
-  http_method: HTTP_METHOD;
+  httpMethod: HTTP_METHOD;
 
   /**
    * Headers to be included to fetch from URL source
@@ -85,9 +85,9 @@ export class IJsonApi_RequestBody {
   @IsString()
   @ApiProperty({
     description: `Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.`,
-    example: '{"userId":1}',
+    example: '{"id": 1}',
   })
-  query_params: string;
+  queryParams: string;
 
   /**
    * Request body to be included to fetch from URL source. Use '{}' if no request body is required.
@@ -95,19 +95,19 @@ export class IJsonApi_RequestBody {
   @IsString()
   @ApiProperty({
     description: `Request body to be included to fetch from URL source. Use '{}' if no request body is required.`,
-    example: '{"userId":1,"completed":false}',
+    example: '{}',
   })
   body: string;
 
   /**
-   * jq filter to postprocess the data
+   * jq filter used to post-process the JSON response from the URL
    */
   @IsString()
   @ApiProperty({
-    description: `jq filter to postprocess the data`,
-    example: '.',
+    description: `jq filter used to post-process the JSON response from the URL`,
+    example: '.[0]',
   })
-  postprocess_jq: string;
+  postProcessJq: string;
 
   /**
    * ABI signature of the data
@@ -118,11 +118,11 @@ export class IJsonApi_RequestBody {
     example:
       '{"components": [{"internalType": "uint8","name": "userId","type": "uint8"},{"internalType": "uint8","name": "id","type": "uint8"},{"internalType": "string","name": "title","type": "string"},{"internalType": "bool","name": "completed","type": "bool"}],"name": "task","type": "tuple"}',
   })
-  abi_signature: string;
+  abiSignature: string;
 }
 
-export class IJsonApi_Request {
-  constructor(params: Required<IJsonApi_Request>) {
+export class WebJqV1_7_1_Request {
+  constructor(params: Required<WebJqV1_7_1_Request>) {
     Object.assign(this, params);
   }
 
@@ -133,7 +133,7 @@ export class IJsonApi_Request {
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
-      '0x494a736f6e417069000000000000000000000000000000000000000000000000',
+      '0x5765624a7156315f375f31000000000000000000000000000000000000000000',
   })
   attestationType: string;
 
@@ -152,18 +152,18 @@ export class IJsonApi_Request {
    * Data defining the request. Type (struct) and interpretation is determined
    */
   @ValidateNested()
-  @Type(() => IJsonApi_RequestBody)
+  @Type(() => WebJqV1_7_1_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
     description: `Data defining the request. Type (struct) and interpretation is determined`,
   })
-  requestBody: IJsonApi_RequestBody;
+  requestBody: WebJqV1_7_1_RequestBody;
 }
 
-export class IJsonApi_Response {
-  constructor(params: Required<IJsonApi_Response>) {
+export class WebJqV1_7_1_Response {
+  constructor(params: Required<WebJqV1_7_1_Response>) {
     Object.assign(this, params);
   }
 
@@ -213,29 +213,29 @@ export class IJsonApi_Response {
    * Extracted from the request.
    */
   @ValidateNested()
-  @Type(() => IJsonApi_RequestBody)
+  @Type(() => WebJqV1_7_1_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Extracted from the request.` })
-  requestBody: IJsonApi_RequestBody;
+  requestBody: WebJqV1_7_1_RequestBody;
 
   /**
    * Data defining the response. The verification rules for the construction
    */
   @ValidateNested()
-  @Type(() => IJsonApi_ResponseBody)
+  @Type(() => WebJqV1_7_1_ResponseBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
     description: `Data defining the response. The verification rules for the construction`,
   })
-  responseBody: IJsonApi_ResponseBody;
+  responseBody: WebJqV1_7_1_ResponseBody;
 }
 
-export class IJsonApi_Proof {
-  constructor(params: Required<IJsonApi_Proof>) {
+export class WebJqV1_7_1_Proof {
+  constructor(params: Required<WebJqV1_7_1_Proof>) {
     Object.assign(this, params);
   }
 
@@ -255,10 +255,10 @@ export class IJsonApi_Proof {
    * Attestation response.
    */
   @ValidateNested()
-  @Type(() => IJsonApi_Response)
+  @Type(() => WebJqV1_7_1_Response)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Attestation response.` })
-  data: IJsonApi_Response;
+  data: WebJqV1_7_1_Response;
 }

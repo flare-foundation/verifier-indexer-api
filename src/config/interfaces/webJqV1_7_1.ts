@@ -1,22 +1,22 @@
-import { HTTP_METHOD } from 'src/verification/json-api/utils';
+import { HTTP_METHOD } from 'src/verification/web-jq-v-1_7_1/utils';
 
 // Additional fields may be added in the future if necessary.
-export interface IJsonApiConfig {
-  securityConfig: IJsonApiSecurityConfig;
-  sourceConfig: IJsonApiSourceConfig;
+export interface WebJqV1_7_1Config {
+  securityConfig: WebJqV1_7_1SecurityConfig;
+  sourceConfig: WebJqV1_7_1SourceConfig;
 }
 
-export interface IJsonApiSecurityConfig {
+export interface WebJqV1_7_1SecurityConfig {
   /**
    * List of hostnames that should not be fetched from.
    */
   blockHostnames: string[];
   /**
-   * List of words that are nor allowed to appear in JSON.
+   * List of words that are not allowed to appear in JSON.
    */
   blockJson: string[];
   /**
-   * List of words that are nor allowed to appear in JQ filter.
+   * List of words that are not allowed to appear in jq filter.
    */
   blockJq: string[];
   /**
@@ -52,7 +52,7 @@ export interface IJsonApiSecurityConfig {
    */
   maxBodyJsonKeys: number;
   /**
-   * Maximum allowed length of the JQ filter.
+   * Maximum allowed length of the jq filter.
    */
   maxJqFilterLength: number;
   /**
@@ -64,7 +64,7 @@ export interface IJsonApiSecurityConfig {
 export type AllowedMethods = HTTP_METHOD[] | '*';
 export type AllowedEndPoints = string[] | '*';
 
-export interface IJsonApiSourceConfig {
+export interface WebJqV1_7_1SourceConfig {
   /**
    * Indicates whether an API key is required to access the source.
    */

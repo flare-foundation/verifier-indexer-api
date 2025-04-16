@@ -3,7 +3,7 @@ import {
   JqErrorMessage,
   JqMessage,
   JqResultMessage,
-} from 'src/config/interfaces/json-api';
+} from 'src/config/interfaces/webJqV1_7_1';
 
 async function handleJqMessage(message: JqMessage): Promise<void> {
   try {

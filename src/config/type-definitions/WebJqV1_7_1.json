@@ -1,8 +1,8 @@
 {
-  "name": "IJsonApi",
-  "fullComment": " @custom:name IJsonApi\n @custom:supported WEB2\n @author Flare\n @notice An attestation request that fetches data from the given url and then edits the information with a\n jq transformation.\n @custom:verification  Data is fetched from an url `url`. The received data is then processed with jq as\n the `postprocess_jq` states. The structure of the final json is written in the `abi_signature`.\n The response contains an abi encoding of the final data.\n @custom:lut `0xffffffffffffffff`\n @custom:lut-limit `0xffffffffffffffff`",
-  "description": "An attestation request that fetches data from the given url and then edits the information with a\n jq transformation.",
-  "verification": "Data is fetched from an url `url`. The received data is then processed with jq as\n the `postprocess_jq` states. The structure of the final json is written in the `abi_signature`.\n The response contains an abi encoding of the final data.\n ",
+  "name": "WebJq1.7.1",
+  "fullComment": " @custom:name WebJqV1_7_1\n @custom:supported WEB2\n @author Flare\n @notice An attestation request that fetches JSON data from the given URL,\n applies a jq filter to transform the returned result, and returns the structured data as ABI encoded data.\n @custom:verification  Data is fetched from an URL `url`. The received data is then processed with jq as\n the `postProcessJq` states. The structure of the final JSON is written in the `abiSignature`.\n The response contains an abi encoding of the final data.\n @custom:lut `0xffffffffffffffff`\n @custom:lut-limit `0xffffffffffffffff`",
+  "description": "An attestation request that fetches data from the given URL and then edits the information with a\n jq transformation.",
+  "verification": "Data is fetched from an URL `url`. The received data is then processed with jq as\n the `postProcessJq` states. The structure of the final JSON is written in the `abiSignature`.\n The response contains an abi encoding of the final data.\n ",
   "lut": "`0xffffffffffffffff`",
   "proof": {
     "name": "Proof",
@@ -19,7 +19,7 @@
       },
       {
         "name": "data",
-        "type": "struct IJsonApi.Response",
+        "type": "struct WebJqV1_7_1.Response",
         "typeSimple": "Response",
         "comment": "Attestation response."
       }
@@ -52,7 +52,7 @@
       },
       {
         "name": "requestBody",
-        "type": "struct IJsonApi.RequestBody",
+        "type": "struct WebJqV1_7_1.RequestBody",
         "typeSimple": "RequestBody",
         "comment": "Data defining the request. Type (struct) and interpretation is determined"
       }
@@ -91,13 +91,13 @@
       },
       {
         "name": "requestBody",
-        "type": "struct IJsonApi.RequestBody",
+        "type": "struct WebJqV1_7_1.RequestBody",
         "typeSimple": "RequestBody",
         "comment": "Extracted from the request."
       },
       {
         "name": "responseBody",
-        "type": "struct IJsonApi.ResponseBody",
+        "type": "struct WebJqV1_7_1.ResponseBody",
         "typeSimple": "ResponseBody",
         "comment": "Data defining the response. The verification rules for the construction"
       }
@@ -105,10 +105,10 @@
   },
   "requestBody": {
     "name": "RequestBody",
-    "description": "Request body for IJsonApi attestation type",
+    "description": "Request body for WebJqV1_7_1 attestation type",
     "above": "",
     "below": "",
-    "fullComment": " @notice Request body for IJsonApi attestation type\n @param url URL of the data source\n @param postprocess_jq jq filter to postprocess the data\n @param abi_signature ABI signature of the data",
+    "fullComment": " @notice Request body for WebJqV1_7_1 attestation type\n @param url URL of the data source\n @param httpMethod HTTP method to be used to fetch from URL source\n @param headers Headers to be included to fetch from URL source. Use '{}' if not headers are needed.\n @param queryParams Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.\n @param body Request body to be included to fetch from URL source. Use '{}' if no request body is required.\n @param postProcessJq jq filter to post-process the data\n @param abiSignature ABI signature of the data",
     "params": [
       {
         "name": "url",
@@ -117,7 +117,7 @@
         "comment": "URL of the data source"
       },
       {
-        "name": "http_method",
+        "name": "httpMethod",
         "type": "string",
         "typeSimple": "string",
         "comment": "HTTP method for fetching the data source"
@@ -126,28 +126,28 @@
         "name": "headers",
         "type": "string",
         "typeSimple": "string",
-        "comment": "Optional headers for fetching the data source"
+        "comment": "Headers to be included to fetch from URL source. Use '{}' if not headers are needed."
       },
       {
-        "name": "query_params",
+        "name": "queryParams",
         "type": "string",
         "typeSimple": "string",
-        "comment": "Optional query parameters for fetching the data source"
+        "comment": "Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed."
       },
       {
         "name": "body",
         "type": "string",
         "typeSimple": "string",
-        "comment": "Optional body for fetching the data source"
+        "comment": "Request body to be included to fetch from URL source. Use '{}' if no request body is required."
       },
       {
-        "name": "postprocess_jq",
+        "name": "postProcessJq",
         "type": "string",
         "typeSimple": "string",
-        "comment": "jq filter to postprocess the data"
+        "comment": "jq filter to post-process the data"
       },
       {
-        "name": "abi_signature",
+        "name": "abiSignature",
         "type": "string",
         "typeSimple": "string",
         "comment": "ABI signature of the data"
@@ -156,13 +156,13 @@
   },
   "responseBody": {
     "name": "ResponseBody",
-    "description": "Response body for IJsonApi attestation type",
+    "description": "Response body for WebJqV1_7_1 attestation type",
     "above": "",
     "below": "",
-    "fullComment": " @notice Response body for IJsonApi attestation type\n @param abi_encoded_data ABI encoded data",
+    "fullComment": " @notice Response body for WebJqV1_7_1 attestation type\n @param abiEncodedData ABI encoded data",
     "params": [
       {
-        "name": "abi_encoded_data",
+        "name": "abiEncodedData",
         "type": "bytes",
         "typeSimple": "bytes",
         "comment": "ABI encoded data"
@@ -197,7 +197,7 @@
           },
           {
             "internalType": "string",
-            "name": "http_method",
+            "name": "httpMethod",
             "type": "string"
           },
           {
@@ -207,7 +207,7 @@
           },
           {
             "internalType": "string",
-            "name": "query_params",
+            "name": "queryParams",
             "type": "string"
           },
           {
@@ -217,21 +217,21 @@
           },
           {
             "internalType": "string",
-            "name": "postprocess_jq",
+            "name": "postProcessJq",
             "type": "string"
           },
           {
             "internalType": "string",
-            "name": "abi_signature",
+            "name": "abiSignature",
             "type": "string"
           }
         ],
-        "internalType": "struct IJsonApi.RequestBody",
+        "internalType": "struct WebJqV1_7_1.RequestBody",
         "name": "requestBody",
         "type": "tuple"
       }
     ],
-    "internalType": "struct IJsonApi.Request",
+    "internalType": "struct WebJqV1_7_1.Request",
     "name": "_request",
     "type": "tuple"
   },
@@ -266,7 +266,7 @@
           },
           {
             "internalType": "string",
-            "name": "http_method",
+            "name": "httpMethod",
             "type": "string"
           },
           {
@@ -276,7 +276,7 @@
           },
           {
             "internalType": "string",
-            "name": "query_params",
+            "name": "queryParams",
             "type": "string"
           },
           {
@@ -286,16 +286,16 @@
           },
           {
             "internalType": "string",
-            "name": "postprocess_jq",
+            "name": "postProcessJq",
             "type": "string"
           },
           {
             "internalType": "string",
-            "name": "abi_signature",
+            "name": "abiSignature",
             "type": "string"
           }
         ],
-        "internalType": "struct IJsonApi.RequestBody",
+        "internalType": "struct WebJqV1_7_1.RequestBody",
         "name": "requestBody",
         "type": "tuple"
       },
@@ -303,16 +303,16 @@
         "components": [
           {
             "internalType": "bytes",
-            "name": "abi_encoded_data",
+            "name": "abiEncodedData",
             "type": "bytes"
           }
         ],
-        "internalType": "struct IJsonApi.ResponseBody",
+        "internalType": "struct WebJqV1_7_1.ResponseBody",
         "name": "responseBody",
         "type": "tuple"
       }
     ],
-    "internalType": "struct IJsonApi.Response",
+    "internalType": "struct WebJqV1_7_1.Response",
     "name": "_response",
     "type": "tuple"
   },
@@ -354,7 +354,7 @@
               },
               {
                 "internalType": "string",
-                "name": "http_method",
+                "name": "httpMethod",
                 "type": "string"
               },
               {
@@ -364,7 +364,7 @@
               },
               {
                 "internalType": "string",
-                "name": "query_params",
+                "name": "queryParams",
                 "type": "string"
               },
               {
@@ -374,16 +374,16 @@
               },
               {
                 "internalType": "string",
-                "name": "postprocess_jq",
+                "name": "postProcessJq",
                 "type": "string"
               },
               {
                 "internalType": "string",
-                "name": "abi_signature",
+                "name": "abiSignature",
                 "type": "string"
               }
             ],
-            "internalType": "struct IJsonApi.RequestBody",
+            "internalType": "struct WebJqV1_7_1.RequestBody",
             "name": "requestBody",
             "type": "tuple"
           },
@@ -391,21 +391,21 @@
             "components": [
               {
                 "internalType": "bytes",
-                "name": "abi_encoded_data",
+                "name": "abiEncodedData",
                 "type": "bytes"
               }
             ],
-            "internalType": "struct IJsonApi.ResponseBody",
+            "internalType": "struct WebJqV1_7_1.ResponseBody",
             "name": "responseBody",
             "type": "tuple"
           }
         ],
-        "internalType": "struct IJsonApi.Response",
+        "internalType": "struct WebJqV1_7_1.Response",
         "name": "data",
         "type": "tuple"
       }
     ],
-    "internalType": "struct IJsonApi.Proof",
+    "internalType": "struct WebJqV1_7_1.Proof",
     "name": "_proof",
     "type": "tuple"
   }
