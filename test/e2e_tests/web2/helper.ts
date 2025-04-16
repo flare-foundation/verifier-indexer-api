@@ -102,8 +102,7 @@ export const payload = {
     queryParams: '{"id": 1}',
     body: '{}',
     postProcessJq: '.[0].title',
-    abiSignature:
-      '{"internalType": "string","name": "title","type": "string"}',
+    abiSignature: '{"internalType": "string","name": "title","type": "string"}',
   },
 };
 export const attResponse = {

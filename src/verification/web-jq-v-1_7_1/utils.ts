@@ -66,7 +66,8 @@ export async function isValidUrl(
       return null;
     }
     // block URLs containing word 'url'
-    if (parsedUrl.href.toLowerCase().includes('url')) { //TODO add other suspicious words
+    if (parsedUrl.href.toLowerCase().includes('url')) {
+      //TODO add other suspicious words
       Logger.warn(`URL rejected: containing 'url'`);
       return null;
     }
@@ -296,7 +297,9 @@ export async function runJqSeparately(
   timeoutMs: number,
 ): Promise<object> {
   const processPromise = new Promise<object>((resolve, reject) => {
-    const jqChildProcess = fork('./dist/verification/web-jq-v-1_7_1/jq-process.js');
+    const jqChildProcess = fork(
+      './dist/verification/web-jq-v-1_7_1/jq-process.js',
+    );
     jqChildProcess.send({ jsonData, jqScheme });
 
     jqChildProcess.on(
