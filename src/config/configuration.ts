@@ -49,6 +49,7 @@ export default () => {
 
 export function extractVerifierType(): ChainType {
   const verifierType = process.env.VERIFIER_TYPE?.toLowerCase();
+  console.log();
   switch (verifierType) {
     case 'doge':
       return ChainType.DOGE;
@@ -56,11 +57,11 @@ export function extractVerifierType(): ChainType {
       return ChainType.BTC;
     case 'xrp':
       return ChainType.XRP;
-    case 'web2':
-      return ChainType.WEB2;
+    case 'public_web_2':
+      return ChainType.PublicWeb2;
     default:
       throw new Error(
-        `Wrong verifier type: '${process.env.VERIFIER_TYPE}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2'`,
+        `Wrong verifier type: '${process.env.VERIFIER_TYPE}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'public_web_2'`,
       );
   }
 }
@@ -86,7 +87,7 @@ export function getDatabaseEntities(verifierType: ChainType) {
         DBXrpState,
         DBXrpIndexerVersion,
       ];
-    case ChainType.WEB2:
+    case ChainType.PublicWeb2:
       return [];
     default:
       throw new Error(`Unsupported verifier type: ${verifierType}`);
@@ -107,14 +108,14 @@ export function getVerifierTypeConfigOptions(
       };
       return { db: database, typeOrmModuleOptions };
     }
-    case ChainType.WEB2:
+    case ChainType.PublicWeb2:
       return apiJsonDefaultConfig;
     default:
       throw new Error(`Unsupported verifier type: ${verifierType}`);
   }
 }
 
-export type SourceNames = 'DOGE' | 'BTC' | 'XRP' | 'WEB2';
+export type SourceNames = 'DOGE' | 'BTC' | 'XRP' | 'PublicWeb2';
 export type AttestationTypeOptions =
   | 'AddressValidity'
   | 'BalanceDecreasingTransaction'
@@ -128,6 +129,6 @@ export enum ChainType {
   BTC = 0,
   DOGE = 2,
   XRP = 3,
-  WEB2 = 4,
+  PublicWeb2 = 4,
   // ... make sure IDs are the same as in Flare node
 }

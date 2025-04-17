@@ -33,7 +33,7 @@ export const apiJsonTestConfig: Web2JsonConfig = {
 };
 
 function getConfig() {
-  const verifier_type = ChainType.WEB2;
+  const verifier_type = ChainType.PublicWeb2;
   const isTestnet = process.env.TESTNET == 'true';
 
   const verifierConfig: VerifierServerConfig = {
@@ -94,7 +94,7 @@ export const payload = {
   attestationType:
     '0x576562324a736f6e000000000000000000000000000000000000000000000000',
   sourceId:
-    '0x7465737457454232000000000000000000000000000000000000000000000000',
+    '0x746573745075626c696357656232000000000000000000000000000000000000',
   requestBody: {
     url: 'https://jsonplaceholder.typicode.com/todos',
     httpMethod: 'GET',

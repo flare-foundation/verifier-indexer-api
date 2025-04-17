@@ -240,8 +240,8 @@ function getSourceName(source: ChainType): SourceNames {
       return 'BTC';
     case ChainType.XRP:
       return 'XRP';
-    case ChainType.WEB2:
-      return 'WEB2';
+    case ChainType.PublicWeb2:
+      return 'PublicWeb2';
     default:
       throw new Error(`Unsupported source chain, ${source}`);
   }

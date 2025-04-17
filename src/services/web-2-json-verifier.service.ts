@@ -28,7 +28,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
     @Inject(REQUEST) private readonly req: Request,
   ) {
     super(configService, {
-      source: ChainType.WEB2,
+      source: ChainType.PublicWeb2,
       attestationName: 'Web2Json',
     });
   }
