@@ -1,5 +1,5 @@
 import { apiJsonTestConfig } from './helper';
-import { isValidUrl } from '../../../src/verification/web-jq-v-1_7_1/utils';
+import { isValidUrl } from '../../../src/verification/web-2-json/utils';
 import { expect } from 'chai';
 import * as jqw from 'jq-wasm';
 

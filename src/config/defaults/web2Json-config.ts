@@ -1,6 +1,6 @@
-import { WebJqV1_7_1Config } from '../interfaces/webJqV1_7_1';
+import { Web2JsonConfig } from '../interfaces/web2Json';
 
-export const apiJsonDefaultConfig: WebJqV1_7_1Config = {
+export const apiJsonDefaultConfig: Web2JsonConfig = {
   securityConfig: {
     blockHostnames: [],
     blockJq: [],

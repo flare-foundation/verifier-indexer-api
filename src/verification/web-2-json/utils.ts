@@ -2,7 +2,7 @@ import {
   AllowedMethods,
   JqErrorMessage,
   JqResultMessage,
-} from 'src/config/interfaces/webJqV1_7_1';
+} from 'src/config/interfaces/Web2Json';
 import {
   AttestationResponseStatus,
   VerificationResponse,
@@ -297,9 +297,7 @@ export async function runJqSeparately(
   timeoutMs: number,
 ): Promise<object> {
   const processPromise = new Promise<object>((resolve, reject) => {
-    const jqChildProcess = fork(
-      './dist/verification/web-jq-v-1_7_1/jq-process.js',
-    );
+    const jqChildProcess = fork('./dist/verification/web-2-json/jq-process.js');
     jqChildProcess.send({ jsonData, jqScheme });
 
     jqChildProcess.on(

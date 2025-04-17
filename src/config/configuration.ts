@@ -14,10 +14,10 @@ import {
   DBXrpState,
   DBXrpTransaction,
 } from '../entity/xrp-entity-definitions';
-import { WebJqV1_7_1Config } from './interfaces/webJqV1_7_1';
+import { Web2JsonConfig } from './interfaces/Web2Json';
 import { IndexerConfig } from './interfaces/chain-indexer';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { apiJsonDefaultConfig } from './defaults/webJqV1_7_1-config';
+import { apiJsonDefaultConfig } from './defaults/Web2Json-config';
 import {
   database,
   typeOrmModulePartialOptions,
@@ -95,7 +95,7 @@ export function getDatabaseEntities(verifierType: ChainType) {
 
 export function getVerifierTypeConfigOptions(
   verifierType: ChainType,
-): IndexerConfig | WebJqV1_7_1Config {
+): IndexerConfig | Web2JsonConfig {
   switch (verifierType) {
     case ChainType.BTC:
     case ChainType.DOGE:
@@ -121,7 +121,7 @@ export type AttestationTypeOptions =
   | 'ConfirmedBlockHeightExists'
   | 'Payment'
   | 'ReferencedPaymentNonexistence'
-  | 'WebJqV1_7_1';
+  | 'Web2Json';
 
 export enum ChainType {
   invalid = -1,

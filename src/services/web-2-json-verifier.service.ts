@@ -2,26 +2,26 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ChainType } from '../config/configuration';
 import {
-  AttestationResponseDTO_WebJqV1_7_1_Response,
-  WebJqV1_7_1_Request,
-  WebJqV1_7_1_Response,
-} from '../dtos/attestation-types/WebJqV1_7_1.dto';
+  AttestationResponseDTO_Web2Json_Response,
+  Web2Json_Request,
+  Web2Json_Response,
+} from '../dtos/attestation-types/Web2Json.dto';
 import { serializeBigInts } from '../external-libs/utils';
-import { verifyWebJqV1_7_1 } from '../verification/web-jq-v-1_7_1/web-jq-1_7_1-verifications';
+import { verifyWeb2Json } from '../verification/web-2-json/web-2-json-verifications';
 import { BaseVerifierService } from './common/verifier-base.service';
 import {
-  WebJqV1_7_1Config,
-  WebJqV1_7_1SecurityConfig,
-  WebJqV1_7_1SourceConfig,
-} from 'src/config/interfaces/webJqV1_7_1';
+  Web2JsonConfig,
+  Web2JsonSecurityConfig,
+  Web2JsonSourceConfig,
+} from 'src/config/interfaces/Web2Json';
 import { IConfig } from 'src/config/interfaces/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 
 @Injectable()
-export class WebJqV1_7_1VerifierService extends BaseVerifierService<
-  WebJqV1_7_1_Request,
-  WebJqV1_7_1_Response
+export class Web2JsonVerifierService extends BaseVerifierService<
+  Web2Json_Request,
+  Web2Json_Response
 > {
   constructor(
     protected configService: ConfigService<IConfig>,
@@ -29,24 +29,24 @@ export class WebJqV1_7_1VerifierService extends BaseVerifierService<
   ) {
     super(configService, {
       source: ChainType.WEB2,
-      attestationName: 'WebJqV1_7_1',
+      attestationName: 'Web2Json',
     });
   }
 
   async verifyRequest(
-    fixedRequest: WebJqV1_7_1_Request,
-  ): Promise<AttestationResponseDTO_WebJqV1_7_1_Response> {
-    const verifierConfigOptions: WebJqV1_7_1Config = this.configService.get(
+    fixedRequest: Web2Json_Request,
+  ): Promise<AttestationResponseDTO_Web2Json_Response> {
+    const verifierConfigOptions: Web2JsonConfig = this.configService.get(
       'verifierConfigOptions',
     );
-    const securityConfig: WebJqV1_7_1SecurityConfig =
+    const securityConfig: Web2JsonSecurityConfig =
       verifierConfigOptions.securityConfig;
-    const sourceConfig: WebJqV1_7_1SourceConfig =
+    const sourceConfig: Web2JsonSourceConfig =
       verifierConfigOptions.sourceConfig;
 
     // store user-agent if available
     const userAgent: string = this.req.headers['user-agent'] || '';
-    const result = await verifyWebJqV1_7_1(
+    const result = await verifyWeb2Json(
       fixedRequest,
       securityConfig,
       sourceConfig,

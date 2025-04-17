@@ -1,5 +1,5 @@
 import { ChainType } from '../configuration';
-import { WebJqV1_7_1Config } from './webJqV1_7_1';
+import { Web2JsonConfig } from './Web2Json';
 import { IndexerConfig } from './chain-indexer';
 
 export interface IConfig {
@@ -8,7 +8,7 @@ export interface IConfig {
   // comma separated list of API keys (API_KEYS)
   api_keys: string[];
 
-  verifierConfigOptions: IndexerConfig | WebJqV1_7_1Config;
+  verifierConfigOptions: IndexerConfig | Web2JsonConfig;
 
   verifierConfig: VerifierServerConfig;
 

@@ -1,12 +1,12 @@
-import { HTTP_METHOD } from 'src/verification/web-jq-v-1_7_1/utils';
+import { HTTP_METHOD } from 'src/verification/web-2-json/utils';
 
 // Additional fields may be added in the future if necessary.
-export interface WebJqV1_7_1Config {
-  securityConfig: WebJqV1_7_1SecurityConfig;
-  sourceConfig: WebJqV1_7_1SourceConfig;
+export interface Web2JsonConfig {
+  securityConfig: Web2JsonSecurityConfig;
+  sourceConfig: Web2JsonSourceConfig;
 }
 
-export interface WebJqV1_7_1SecurityConfig {
+export interface Web2JsonSecurityConfig {
   /**
    * List of hostnames that should not be fetched from.
    */
@@ -64,7 +64,7 @@ export interface WebJqV1_7_1SecurityConfig {
 export type AllowedMethods = HTTP_METHOD[] | '*';
 export type AllowedEndPoints = string[] | '*';
 
-export interface WebJqV1_7_1SourceConfig {
+export interface Web2JsonSourceConfig {
   /**
    * Indicates whether an API key is required to access the source.
    */

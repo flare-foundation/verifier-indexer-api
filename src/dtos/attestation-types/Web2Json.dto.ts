@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { Is0xHex, IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../../verification/response-status';
-import { HTTP_METHOD } from '../../verification/web-jq-v-1_7_1/utils';
+import { HTTP_METHOD } from '../../verification/web-2-json/utils';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -20,18 +20,18 @@ import { HTTP_METHOD } from '../../verification/web-jq-v-1_7_1/utils';
 /**
  * Attestation response for specific attestation type (flattened)
  */
-export class AttestationResponseDTO_WebJqV1_7_1_Response {
-  constructor(params: Required<AttestationResponseDTO_WebJqV1_7_1_Response>) {
+export class AttestationResponseDTO_Web2Json_Response {
+  constructor(params: Required<AttestationResponseDTO_Web2Json_Response>) {
     Object.assign(this, params);
   }
 
   status: AttestationResponseStatus;
 
-  response?: WebJqV1_7_1_Response;
+  response?: Web2Json_Response;
 }
 
-export class WebJqV1_7_1_ResponseBody {
-  constructor(params: Required<WebJqV1_7_1_ResponseBody>) {
+export class Web2Json_ResponseBody {
+  constructor(params: Required<Web2Json_ResponseBody>) {
     Object.assign(this, params);
   }
 
@@ -43,8 +43,8 @@ export class WebJqV1_7_1_ResponseBody {
   abiEncodedData: string;
 }
 
-export class WebJqV1_7_1_RequestBody {
-  constructor(params: Required<WebJqV1_7_1_RequestBody>) {
+export class Web2Json_RequestBody {
+  constructor(params: Required<Web2Json_RequestBody>) {
     Object.assign(this, params);
   }
 
@@ -121,8 +121,8 @@ export class WebJqV1_7_1_RequestBody {
   abiSignature: string;
 }
 
-export class WebJqV1_7_1_Request {
-  constructor(params: Required<WebJqV1_7_1_Request>) {
+export class Web2Json_Request {
+  constructor(params: Required<Web2Json_Request>) {
     Object.assign(this, params);
   }
 
@@ -133,7 +133,7 @@ export class WebJqV1_7_1_Request {
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
-      '0x5765624a7156315f375f31000000000000000000000000000000000000000000',
+      '0x576562324a736f6e000000000000000000000000000000000000000000000000',
   })
   attestationType: string;
 
@@ -152,18 +152,18 @@ export class WebJqV1_7_1_Request {
    * Data defining the request. Type (struct) and interpretation is determined
    */
   @ValidateNested()
-  @Type(() => WebJqV1_7_1_RequestBody)
+  @Type(() => Web2Json_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
     description: `Data defining the request. Type (struct) and interpretation is determined`,
   })
-  requestBody: WebJqV1_7_1_RequestBody;
+  requestBody: Web2Json_RequestBody;
 }
 
-export class WebJqV1_7_1_Response {
-  constructor(params: Required<WebJqV1_7_1_Response>) {
+export class Web2Json_Response {
+  constructor(params: Required<Web2Json_Response>) {
     Object.assign(this, params);
   }
 
@@ -213,29 +213,29 @@ export class WebJqV1_7_1_Response {
    * Extracted from the request.
    */
   @ValidateNested()
-  @Type(() => WebJqV1_7_1_RequestBody)
+  @Type(() => Web2Json_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Extracted from the request.` })
-  requestBody: WebJqV1_7_1_RequestBody;
+  requestBody: Web2Json_RequestBody;
 
   /**
    * Data defining the response. The verification rules for the construction
    */
   @ValidateNested()
-  @Type(() => WebJqV1_7_1_ResponseBody)
+  @Type(() => Web2Json_ResponseBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
     description: `Data defining the response. The verification rules for the construction`,
   })
-  responseBody: WebJqV1_7_1_ResponseBody;
+  responseBody: Web2Json_ResponseBody;
 }
 
-export class WebJqV1_7_1_Proof {
-  constructor(params: Required<WebJqV1_7_1_Proof>) {
+export class Web2Json_Proof {
+  constructor(params: Required<Web2Json_Proof>) {
     Object.assign(this, params);
   }
 
@@ -255,10 +255,10 @@ export class WebJqV1_7_1_Proof {
    * Attestation response.
    */
   @ValidateNested()
-  @Type(() => WebJqV1_7_1_Response)
+  @Type(() => Web2Json_Response)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Attestation response.` })
-  data: WebJqV1_7_1_Response;
+  data: Web2Json_Response;
 }

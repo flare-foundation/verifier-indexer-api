@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as jq from 'jq-wasm';
-import { runJqSeparately } from '../../../src/verification/web-jq-v-1_7_1/utils';
+import { runJqSeparately } from '../../../src/verification/web-2-json/utils';
 
 const jqProcessTimeoutMs = 300;
 

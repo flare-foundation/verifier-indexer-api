@@ -11,10 +11,10 @@ import {
 } from './helper';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 
-describe('/WebJqV1_7_1/prepareResponse', () => {
+describe('/Web2Json/prepareResponse', () => {
   it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(payload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -37,7 +37,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -59,7 +59,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -81,7 +81,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -103,7 +103,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -125,7 +125,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -147,7 +147,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(malformedPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -169,7 +169,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(malformedPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -191,7 +191,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(malformedPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -213,7 +213,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(malformedPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -236,7 +236,7 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/prepareResponse')
+      .post('/Web2Json/prepareResponse')
       .send(customPayload)
       .set('X-API-KEY', api_key)
       .expect(200)
@@ -249,10 +249,10 @@ describe('/WebJqV1_7_1/prepareResponse', () => {
   });
 });
 
-describe('/WebJqV1_7_1/mic', () => {
+describe('/Web2Json/mic', () => {
   it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
-      .post('/WebJqV1_7_1/mic')
+      .post('/Web2Json/mic')
       .send(payload)
       .set('X-API-KEY', api_key)
       .expect(200)

@@ -1,6 +1,6 @@
 {
-  "name": "WebJqV1_7_1",
-  "fullComment": " @custom:name WebJqV1_7_1\n @custom:supported WEB2\n @author Flare\n @notice An attestation request that fetches JSON data from the given URL,\n applies a jq filter to transform the returned result, and returns the structured data as ABI encoded data.\n @custom:verification  Data is fetched from an URL `url`. The received data is then processed with jq as\n the `postProcessJq` states. The structure of the final JSON is written in the `abiSignature`.\n The response contains an abi encoding of the final data.\n @custom:lut `0xffffffffffffffff`\n @custom:lut-limit `0xffffffffffffffff`",
+  "name": "Web2Json",
+  "fullComment": " @custom:name Web2Json\n @custom:supported WEB2\n @author Flare\n @notice An attestation request that fetches JSON data from the given URL,\n applies a jq filter to transform the returned result, and returns the structured data as ABI encoded data.\n @custom:verification  Data is fetched from an URL `url`. The received data is then processed with jq as\n the `postProcessJq` states. The structure of the final JSON is written in the `abiSignature`.\n The response contains an abi encoding of the final data.\n @custom:lut `0xffffffffffffffff`\n @custom:lut-limit `0xffffffffffffffff`",
   "description": "An attestation request that fetches data from the given URL and then edits the information with a\n jq transformation.",
   "verification": "Data is fetched from an URL `url`. The received data is then processed with jq as\n the `postProcessJq` states. The structure of the final JSON is written in the `abiSignature`.\n The response contains an abi encoding of the final data.\n ",
   "lut": "`0xffffffffffffffff`",
@@ -19,7 +19,7 @@
       },
       {
         "name": "data",
-        "type": "struct WebJqV1_7_1.Response",
+        "type": "struct Web2Json.Response",
         "typeSimple": "Response",
         "comment": "Attestation response."
       }
@@ -52,7 +52,7 @@
       },
       {
         "name": "requestBody",
-        "type": "struct WebJqV1_7_1.RequestBody",
+        "type": "struct Web2Json.RequestBody",
         "typeSimple": "RequestBody",
         "comment": "Data defining the request. Type (struct) and interpretation is determined"
       }
@@ -91,13 +91,13 @@
       },
       {
         "name": "requestBody",
-        "type": "struct WebJqV1_7_1.RequestBody",
+        "type": "struct Web2Json.RequestBody",
         "typeSimple": "RequestBody",
         "comment": "Extracted from the request."
       },
       {
         "name": "responseBody",
-        "type": "struct WebJqV1_7_1.ResponseBody",
+        "type": "struct Web2Json.ResponseBody",
         "typeSimple": "ResponseBody",
         "comment": "Data defining the response. The verification rules for the construction"
       }
@@ -105,10 +105,10 @@
   },
   "requestBody": {
     "name": "RequestBody",
-    "description": "Request body for WebJqV1_7_1 attestation type",
+    "description": "Request body for Web2Json attestation type",
     "above": "",
     "below": "",
-    "fullComment": " @notice Request body for WebJqV1_7_1 attestation type\n @param url URL of the data source\n @param httpMethod HTTP method to be used to fetch from URL source\n @param headers Headers to be included to fetch from URL source. Use '{}' if not headers are needed.\n @param queryParams Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.\n @param body Request body to be included to fetch from URL source. Use '{}' if no request body is required.\n @param postProcessJq jq filter to post-process the data\n @param abiSignature ABI signature of the data",
+    "fullComment": " @notice Request body for Web2Json attestation type\n @param url URL of the data source\n @param httpMethod HTTP method to be used to fetch from URL source\n @param headers Headers to be included to fetch from URL source. Use '{}' if not headers are needed.\n @param queryParams Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.\n @param body Request body to be included to fetch from URL source. Use '{}' if no request body is required.\n @param postProcessJq jq filter to post-process the data\n @param abiSignature ABI signature of the data",
     "params": [
       {
         "name": "url",
@@ -156,10 +156,10 @@
   },
   "responseBody": {
     "name": "ResponseBody",
-    "description": "Response body for WebJqV1_7_1 attestation type",
+    "description": "Response body for Web2Json attestation type",
     "above": "",
     "below": "",
-    "fullComment": " @notice Response body for WebJqV1_7_1 attestation type\n @param abiEncodedData ABI encoded data",
+    "fullComment": " @notice Response body for Web2Json attestation type\n @param abiEncodedData ABI encoded data",
     "params": [
       {
         "name": "abiEncodedData",
@@ -226,12 +226,12 @@
             "type": "string"
           }
         ],
-        "internalType": "struct WebJqV1_7_1.RequestBody",
+        "internalType": "struct Web2Json.RequestBody",
         "name": "requestBody",
         "type": "tuple"
       }
     ],
-    "internalType": "struct WebJqV1_7_1.Request",
+    "internalType": "struct Web2Json.Request",
     "name": "_request",
     "type": "tuple"
   },
@@ -295,7 +295,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct WebJqV1_7_1.RequestBody",
+        "internalType": "struct Web2Json.RequestBody",
         "name": "requestBody",
         "type": "tuple"
       },
@@ -307,12 +307,12 @@
             "type": "bytes"
           }
         ],
-        "internalType": "struct WebJqV1_7_1.ResponseBody",
+        "internalType": "struct Web2Json.ResponseBody",
         "name": "responseBody",
         "type": "tuple"
       }
     ],
-    "internalType": "struct WebJqV1_7_1.Response",
+    "internalType": "struct Web2Json.Response",
     "name": "_response",
     "type": "tuple"
   },
@@ -383,7 +383,7 @@
                 "type": "string"
               }
             ],
-            "internalType": "struct WebJqV1_7_1.RequestBody",
+            "internalType": "struct Web2Json.RequestBody",
             "name": "requestBody",
             "type": "tuple"
           },
@@ -395,17 +395,17 @@
                 "type": "bytes"
               }
             ],
-            "internalType": "struct WebJqV1_7_1.ResponseBody",
+            "internalType": "struct Web2Json.ResponseBody",
             "name": "responseBody",
             "type": "tuple"
           }
         ],
-        "internalType": "struct WebJqV1_7_1.Response",
+        "internalType": "struct Web2Json.Response",
         "name": "data",
         "type": "tuple"
       }
     ],
-    "internalType": "struct WebJqV1_7_1.Proof",
+    "internalType": "struct Web2Json.Proof",
     "name": "_proof",
     "type": "tuple"
   }

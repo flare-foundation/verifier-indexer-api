@@ -1,9 +1,9 @@
 import { ethers } from 'ethers';
 import {
-  WebJqV1_7_1_Request,
-  WebJqV1_7_1_Response,
-  WebJqV1_7_1_ResponseBody,
-} from '../../dtos/attestation-types/WebJqV1_7_1.dto';
+  Web2Json_Request,
+  Web2Json_Response,
+  Web2Json_ResponseBody,
+} from '../../dtos/attestation-types/Web2Json.dto';
 import { serializeBigInts } from '../../external-libs/utils';
 import { VerificationResponse } from '../response-status';
 import { AttestationResponseStatus } from '../response-status';
@@ -21,23 +21,23 @@ import {
   verificationResponse,
 } from './utils';
 import {
-  WebJqV1_7_1SecurityConfig,
-  WebJqV1_7_1SourceConfig,
-} from 'src/config/interfaces/webJqV1_7_1';
+  Web2JsonSecurityConfig,
+  Web2JsonSourceConfig,
+} from 'src/config/interfaces/Web2Json';
 import { Logger } from '@nestjs/common';
 
 /**
- * `WebJqV1_7_1` attestation type verification function
+ * `Web2Json` attestation type verification function
  * @param request attestation request
  * @returns Verification response: object containing status and attestation response
  * @category Verifiers
  */
-export async function verifyWebJqV1_7_1(
-  request: WebJqV1_7_1_Request,
-  securityConfig: WebJqV1_7_1SecurityConfig,
-  sourceConfig: WebJqV1_7_1SourceConfig,
+export async function verifyWeb2Json(
+  request: Web2Json_Request,
+  securityConfig: Web2JsonSecurityConfig,
+  sourceConfig: Web2JsonSourceConfig,
   userAgent: string,
-): Promise<VerificationResponse<WebJqV1_7_1_Response>> {
+): Promise<VerificationResponse<Web2Json_Response>> {
   const requestBody = request.requestBody;
   const sourceUrl = requestBody.url;
   const validSourceUrl = await isValidUrl(
@@ -176,13 +176,13 @@ export async function verifyWebJqV1_7_1(
     return verificationResponse(AttestationResponseStatus.INVALID_ENCODE_ERROR);
   }
 
-  const response = new WebJqV1_7_1_Response({
+  const response = new Web2Json_Response({
     attestationType: request.attestationType,
     sourceId: request.sourceId,
     votingRound: '0',
     lowestUsedTimestamp: '0',
     requestBody: serializeBigInts(requestBody),
-    responseBody: new WebJqV1_7_1_ResponseBody({
+    responseBody: new Web2Json_ResponseBody({
       abiEncodedData: encodedData,
     }),
   });

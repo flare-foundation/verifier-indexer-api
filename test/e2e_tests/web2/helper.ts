@@ -12,15 +12,15 @@ import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
 import { ChainType } from '../../../src/config/configuration';
-import { WebJqV1_7_1VerifierController } from '../../../src/controllers/web-jq-v-1_7_1-verifier.controller';
+import { Web2JsonVerifierController } from '../../../src/controllers/web-2-json-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
-import { WebJqV1_7_1VerifierService } from '../../../src/services/web-jq-v-1_7_1-verifier.service';
-import { WebJqV1_7_1Config } from 'src/config/interfaces/webJqV1_7_1';
+import { Web2JsonVerifierService } from '../../../src/services/web-2-json-verifier.service';
+import { Web2JsonConfig } from 'src/config/interfaces/Web2Json';
 import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
-import { HTTP_METHOD } from '../../../src/verification/web-jq-v-1_7_1/utils';
-import { apiJsonDefaultConfig } from '../../../src/config/defaults/webJqV1_7_1-config';
+import { HTTP_METHOD } from '../../../src/verification/web-2-json/utils';
+import { apiJsonDefaultConfig } from '../../../src/config/defaults/Web2Json-config';
 
-export const apiJsonTestConfig: WebJqV1_7_1Config = {
+export const apiJsonTestConfig: Web2JsonConfig = {
   ...apiJsonDefaultConfig,
   securityConfig: {
     ...apiJsonDefaultConfig.securityConfig,
@@ -62,10 +62,10 @@ function getConfig() {
     }),
     AuthModule,
   ],
-  controllers: [WebJqV1_7_1VerifierController],
-  providers: [ApiKeyStrategy, AuthService, WebJqV1_7_1VerifierService],
+  controllers: [Web2JsonVerifierController],
+  providers: [ApiKeyStrategy, AuthService, Web2JsonVerifierService],
 })
-export class WebJqV1_7_1VerifierServerModule implements NestModule {
+export class Web2JsonVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
@@ -74,7 +74,7 @@ export class WebJqV1_7_1VerifierServerModule implements NestModule {
 export let app: INestApplication;
 
 before(async () => {
-  app = await NestFactory.create(WebJqV1_7_1VerifierServerModule);
+  app = await NestFactory.create(Web2JsonVerifierServerModule);
 
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -92,7 +92,7 @@ const api_keys = process.env.API_KEYS?.split(',') || [''];
 export const api_key = api_keys[0];
 export const payload = {
   attestationType:
-    '0x5765624a7156315f375f31000000000000000000000000000000000000000000',
+    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
   sourceId:
     '0x7465737457454232000000000000000000000000000000000000000000000000',
   requestBody: {
@@ -166,7 +166,7 @@ export const abiEncoding: unknown = {
           type: 'string',
         },
       ],
-      internalType: 'struct WebJqV1_7_1.RequestBody',
+      internalType: 'struct Web2Json.RequestBody',
       name: 'requestBody',
       type: 'tuple',
     },
@@ -178,12 +178,12 @@ export const abiEncoding: unknown = {
           type: 'bytes',
         },
       ],
-      internalType: 'struct WebJqV1_7_1.ResponseBody',
+      internalType: 'struct Web2Json.ResponseBody',
       name: 'responseBody',
       type: 'tuple',
     },
   ],
-  internalType: 'struct WebJqV1_7_1.Response',
+  internalType: 'struct Web2Json.Response',
   name: '_response',
   type: 'tuple',
 };
