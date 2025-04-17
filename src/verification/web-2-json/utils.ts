@@ -2,7 +2,7 @@ import {
   AllowedMethods,
   JqErrorMessage,
   JqResultMessage,
-} from 'src/config/interfaces/Web2Json';
+} from 'src/config/interfaces/web2Json';
 import {
   AttestationResponseStatus,
   VerificationResponse,

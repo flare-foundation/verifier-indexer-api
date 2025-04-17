@@ -1,5 +1,5 @@
 import { ChainType } from '../configuration';
-import { Web2JsonConfig } from './Web2Json';
+import { Web2JsonConfig } from './web2Json';
 import { IndexerConfig } from './chain-indexer';
 
 export interface IConfig {

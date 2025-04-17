@@ -14,10 +14,10 @@ import {
   DBXrpState,
   DBXrpTransaction,
 } from '../entity/xrp-entity-definitions';
-import { Web2JsonConfig } from './interfaces/Web2Json';
+import { Web2JsonConfig } from './interfaces/web2Json';
 import { IndexerConfig } from './interfaces/chain-indexer';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { apiJsonDefaultConfig } from './defaults/Web2Json-config';
+import { apiJsonDefaultConfig } from './defaults/web2Json-config';
 import {
   database,
   typeOrmModulePartialOptions,

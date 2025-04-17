@@ -23,7 +23,7 @@ import {
 import {
   Web2JsonSecurityConfig,
   Web2JsonSourceConfig,
-} from 'src/config/interfaces/Web2Json';
+} from 'src/config/interfaces/web2Json';
 import { Logger } from '@nestjs/common';
 
 /**

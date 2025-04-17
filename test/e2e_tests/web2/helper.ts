@@ -15,10 +15,10 @@ import { ChainType } from '../../../src/config/configuration';
 import { Web2JsonVerifierController } from '../../../src/controllers/web-2-json-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { Web2JsonVerifierService } from '../../../src/services/web-2-json-verifier.service';
-import { Web2JsonConfig } from 'src/config/interfaces/Web2Json';
+import { Web2JsonConfig } from 'src/config/interfaces/web2Json';
 import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
 import { HTTP_METHOD } from '../../../src/verification/web-2-json/utils';
-import { apiJsonDefaultConfig } from '../../../src/config/defaults/Web2Json-config';
+import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
 
 export const apiJsonTestConfig: Web2JsonConfig = {
   ...apiJsonDefaultConfig,
