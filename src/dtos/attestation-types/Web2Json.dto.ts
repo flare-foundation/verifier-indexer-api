@@ -144,7 +144,7 @@ export class Web2Json_Request {
   @ApiProperty({
     description: `ID of the data source.`,
     example:
-      '0x5745423200000000000000000000000000000000000000000000000000000000',
+      '0x5075626c69635765623200000000000000000000000000000000000000000000',
   })
   sourceId: string;
 
@@ -185,7 +185,7 @@ export class Web2Json_Response {
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
-      '0x5745423200000000000000000000000000000000000000000000000000000000',
+      '0x5075626c69635765623200000000000000000000000000000000000000000000',
   })
   sourceId: string;
 
