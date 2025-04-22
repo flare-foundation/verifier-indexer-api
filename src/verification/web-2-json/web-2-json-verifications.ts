@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import {
   Web2Json_Request,
   Web2Json_Response,
@@ -10,21 +9,26 @@ import { AttestationResponseStatus } from '../response-status';
 import axios, { AxiosHeaderValue, AxiosResponse } from 'axios';
 import {
   DEFAULT_RESPONSE_TYPE,
+  ENCODE_TIMEOUT_ERROR_MESSAGE,
   isApplicationJsonContentType,
   isJson,
   isStringArray,
   isValidHttpMethod,
   isValidUrl,
+  JQ_TIMEOUT_ERROR_MESSAGE,
   MAX_DEPTH_ONE,
   parseJsonWithDepthAndKeysValidation,
-  runJqSeparately,
   verificationResponse,
 } from './utils';
 import {
+  EncodeResultMessage,
+  ErrorMessage,
+  JqResultMessage,
   Web2JsonSecurityConfig,
   Web2JsonSourceConfig,
 } from 'src/config/interfaces/web2Json';
 import { Logger } from '@nestjs/common';
+import { fork } from 'child_process';
 
 /**
  * `Web2Json` attestation type verification function
@@ -40,6 +44,7 @@ export async function verifyWeb2Json(
 ): Promise<VerificationResponse<Web2Json_Response>> {
   const requestBody = request.requestBody;
   const sourceUrl = requestBody.url;
+  // validate url
   const validSourceUrl = await isValidUrl(
     sourceUrl,
     securityConfig.blockHostnames,
@@ -48,10 +53,12 @@ export async function verifyWeb2Json(
   if (!validSourceUrl) {
     return verificationResponse(AttestationResponseStatus.INVALID_SOURCE_URL);
   }
+  // validate HTTP method
   const sourceMethod = requestBody.httpMethod;
   if (!isValidHttpMethod(sourceMethod, sourceConfig.allowedMethods)) {
     return verificationResponse(AttestationResponseStatus.INVALID_HTTP_METHOD);
   }
+  // validate headers
   const sourceHeaders = parseJsonWithDepthAndKeysValidation(
     requestBody.headers,
     MAX_DEPTH_ONE,
@@ -62,7 +69,7 @@ export async function verifyWeb2Json(
   }
   // forward user-agent
   sourceHeaders['User-Agent'] = userAgent;
-
+  // validate query params
   const sourceQueryParams = parseJsonWithDepthAndKeysValidation(
     requestBody.queryParams,
     MAX_DEPTH_ONE,
@@ -71,6 +78,7 @@ export async function verifyWeb2Json(
   if (!sourceQueryParams) {
     return verificationResponse(AttestationResponseStatus.INVALID_QUERY_PARAMS);
   }
+  // validate body
   const sourceBody = parseJsonWithDepthAndKeysValidation(
     requestBody.body,
     securityConfig.maxBodyJsonDepth,
@@ -79,15 +87,17 @@ export async function verifyWeb2Json(
   if (!sourceBody) {
     return verificationResponse(AttestationResponseStatus.INVALID_BODY);
   }
+  // validate jq filter
   const jqScheme = requestBody.postProcessJq;
   if (jqScheme.length > securityConfig.maxJqFilterLength) {
     return verificationResponse(AttestationResponseStatus.INVALID_JQ_FILTER);
   }
+  // validate ABI signature
   const abiSign = parseJsonWithDepthAndKeysValidation(
     requestBody.abiSignature,
     securityConfig.maxBodyJsonDepth,
     securityConfig.maxBodyJsonKeys,
-  ); // TODO its own
+  );
   if (!abiSign) {
     return verificationResponse(
       AttestationResponseStatus.INVALID_ABI_SIGNATURE,
@@ -166,13 +176,19 @@ export async function verifyWeb2Json(
 
   let encodedData: string;
   try {
-    encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
-      // TODO separate execution like jq to prevent dos
-      [abiSign as ethers.ParamType],
-      [dataJq],
+    encodedData = await runEncodeSeparately(
+      abiSign,
+      dataJq,
+      securityConfig.encodeTimeout,
     );
+    if (!encodedData) {
+      Logger.error(`Error while encoding: no data returned`);
+      return verificationResponse(
+        AttestationResponseStatus.INVALID_ENCODE_ERROR,
+      );
+    }
   } catch (error) {
-    Logger.error(`Error while encoding response: ${error}`);
+    Logger.error(`Error while encoding: ${error}`);
     return verificationResponse(AttestationResponseStatus.INVALID_ENCODE_ERROR);
   }
 
@@ -191,4 +207,81 @@ export async function verifyWeb2Json(
     status: AttestationResponseStatus.VALID,
     response,
   };
+}
+
+export async function runJqSeparately(
+  jsonData: object,
+  jqScheme: string,
+  timeoutMs: number,
+): Promise<object> {
+  const processPromise = new Promise<object>((resolve, reject) => {
+    const jqChildProcess = fork('./dist/verification/web-2-json/jq-process.js');
+    jqChildProcess.send({ jsonData, jqScheme });
+
+    jqChildProcess.on('message', (message: JqResultMessage | ErrorMessage) => {
+      if (message.status === 'success') {
+        resolve(message.result);
+      } else {
+        reject(new Error(message.error));
+      }
+    });
+
+    const timeout = setTimeout(() => {
+      jqChildProcess.kill();
+      reject(new Error(JQ_TIMEOUT_ERROR_MESSAGE));
+    }, timeoutMs);
+
+    jqChildProcess.on('exit', () => {
+      clearTimeout(timeout);
+    });
+  });
+
+  try {
+    const dataJq = await processPromise;
+    return dataJq;
+  } catch (error) {
+    Logger.error(`Error during jq process: ${error}`);
+    return null;
+  }
+}
+
+export async function runEncodeSeparately(
+  abiSignature: object,
+  jqPostProcessData: object | string,
+  timeoutMs: number,
+): Promise<string | null> {
+  const processPromise = new Promise<string>((resolve, reject) => {
+    const encodeChildProcess = fork(
+      './dist/verification/web-2-json/encode-process.js',
+    );
+    encodeChildProcess.send({ abiSignature, jqPostProcessData });
+
+    encodeChildProcess.on(
+      'message',
+      (message: EncodeResultMessage | ErrorMessage) => {
+        if (message.status === 'success') {
+          resolve(message.result);
+        } else {
+          reject(new Error(message.error));
+        }
+      },
+    );
+
+    const timeout = setTimeout(() => {
+      encodeChildProcess.kill();
+      reject(new Error(ENCODE_TIMEOUT_ERROR_MESSAGE));
+    }, timeoutMs);
+
+    encodeChildProcess.on('exit', () => {
+      clearTimeout(timeout);
+    });
+  });
+
+  try {
+    const encodedData = await processPromise;
+    return encodedData;
+  } catch (error) {
+    Logger.error(`Error during encode process: ${error}`);
+    return null;
+  }
 }

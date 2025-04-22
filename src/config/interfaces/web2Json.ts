@@ -59,6 +59,10 @@ export interface Web2JsonSecurityConfig {
    * Maximum time (in milliseconds) to wait for a jq process to finish
    */
   jqTimeout: number;
+  /**
+   * Maximum time (in milliseconds) to wait for a encode process to finish
+   */
+  encodeTimeout: number;
 }
 
 export type AllowedMethods = HTTP_METHOD[] | '*';
@@ -94,7 +98,17 @@ export interface JqResultMessage {
   result: object;
 }
 
-export interface JqErrorMessage {
+export interface ErrorMessage {
   status: 'error';
   error: string;
+}
+
+export interface EncodeMessage {
+  abiSignature: object;
+  jqPostProcessData: object;
+}
+
+export interface EncodeResultMessage {
+  status: 'success';
+  result: string;
 }

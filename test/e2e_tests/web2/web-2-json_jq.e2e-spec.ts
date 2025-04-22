@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import * as jq from 'jq-wasm';
-import { runJqSeparately } from '../../../src/verification/web-2-json/utils';
+import { runJqSeparately } from '../../../src/verification/web-2-json/web-2-json-verifications';
 
-const jqProcessTimeoutMs = 300;
+const jqProcessTimeoutMs = 500;
 
 describe('jq checker', () => {
   it('Should reject 1', async () => {

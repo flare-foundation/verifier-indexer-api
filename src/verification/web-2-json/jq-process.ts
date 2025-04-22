@@ -1,6 +1,6 @@
 import * as jq from 'jq-wasm';
 import {
-  JqErrorMessage,
+  ErrorMessage,
   JqMessage,
   JqResultMessage,
 } from 'src/config/interfaces/web2Json';
@@ -14,7 +14,7 @@ async function handleJqMessage(message: JqMessage): Promise<void> {
     };
     process.send(response);
   } catch (error) {
-    const errorResponse: JqErrorMessage = {
+    const errorResponse: ErrorMessage = {
       status: 'error',
       error: error instanceof Error ? error.message : String(error),
     };

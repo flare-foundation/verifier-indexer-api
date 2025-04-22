@@ -247,6 +247,30 @@ describe('/Web2Json/prepareResponse', () => {
       AttestationResponseStatus.INVALID_ENCODE_ERROR,
     );
   });
+
+  it('Should reject - invalid response content type', async () => {
+    const customPayload = {
+      ...payload,
+      requestBody: {
+        ...payload.requestBody,
+        url: 'https://images.dog.ceo/breeds/terrier-dandie/n02096437_1129.jpg',
+        queryParams: '{}',
+        body: '{}',
+      },
+    };
+
+    const response = await request(app.getHttpServer())
+      .post('/Web2Json/prepareResponse')
+      .send(customPayload)
+      .set('X-API-KEY', api_key)
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    const responseBody = response.body;
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE,
+    );
+  });
 });
 
 describe('/Web2Json/mic', () => {

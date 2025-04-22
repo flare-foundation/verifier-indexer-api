@@ -49,7 +49,6 @@ export default () => {
 
 export function extractVerifierType(): ChainType {
   const verifierType = process.env.VERIFIER_TYPE?.toLowerCase();
-  console.log();
   switch (verifierType) {
     case 'doge':
       return ChainType.DOGE;
