@@ -136,7 +136,7 @@ export async function verifyWeb2Json(
   }
   // validate returned JSON structure
   const responseJsonData = tryParseJson(
-    Buffer.from(sourceResponse.data).toString('utf-8')
+    Buffer.from(sourceResponse.data).toString('utf-8'),
   );
   if (!responseJsonData) {
     return verificationResponse(

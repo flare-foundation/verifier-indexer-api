@@ -1,15 +1,21 @@
-import { ethers } from 'ethers';
+import { ethers, ParamType } from 'ethers';
 import {
   ErrorMessage,
   EncodeMessage,
   EncodeResultMessage,
 } from 'src/config/interfaces/web2Json';
+import { isStringArray } from './utils';
 
 function handleEncodeMessage(message: EncodeMessage): void {
   try {
-    const parsed = Array.isArray(message.abiSignature)
-      ? message.abiSignature.map((t) => ethers.ParamType.from(t))
-      : [ethers.ParamType.from(message.abiSignature)];
+    let parsed: string[] | ParamType[];
+    if (isStringArray(message.abiSignature)) {
+      parsed = message.abiSignature.map((t) => ethers.ParamType.from(t));
+    } else if (Array.isArray(message.abiSignature)) {
+      parsed = message.abiSignature;
+    } else {
+      parsed = [ethers.ParamType.from(message.abiSignature)];
+    }
     const result = ethers.AbiCoder.defaultAbiCoder().encode(parsed, [
       message.jqPostProcessData,
     ]);
