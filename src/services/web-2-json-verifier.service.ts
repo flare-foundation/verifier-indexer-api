@@ -45,7 +45,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
       verifierConfigOptions.sourceConfig;
 
     // store user-agent if available
-    const userAgent: string = this.req.headers['user-agent'] || '';
+    const userAgent: string = this.req.headers['user-agent'] || undefined;
     const result = await verifyWeb2Json(
       fixedRequest,
       securityConfig,

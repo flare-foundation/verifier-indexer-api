@@ -18,6 +18,7 @@ import {
   JQ_TIMEOUT_ERROR_MESSAGE,
   MAX_DEPTH_ONE,
   parseJsonWithDepthAndKeysValidation,
+  tryParseJson,
   verificationResponse,
 } from './utils';
 import {
@@ -40,7 +41,7 @@ export async function verifyWeb2Json(
   request: Web2Json_Request,
   securityConfig: Web2JsonSecurityConfig,
   sourceConfig: Web2JsonSourceConfig,
-  userAgent: string,
+  userAgent: string | undefined,
 ): Promise<VerificationResponse<Web2Json_Response>> {
   const requestBody = request.requestBody;
   const sourceUrl = requestBody.url;
@@ -68,7 +69,9 @@ export async function verifyWeb2Json(
     return verificationResponse(AttestationResponseStatus.INVALID_HEADERS);
   }
   // forward user-agent
-  sourceHeaders['User-Agent'] = userAgent;
+  if (userAgent) {
+    sourceHeaders['User-Agent'] = userAgent;
+  }
   // validate query params
   const sourceQueryParams = parseJsonWithDepthAndKeysValidation(
     requestBody.queryParams,
@@ -103,7 +106,6 @@ export async function verifyWeb2Json(
       AttestationResponseStatus.INVALID_ABI_SIGNATURE,
     );
   }
-
   // fetch data from user defined source
   let sourceResponse: AxiosResponse<ArrayBuffer>;
   try {
@@ -123,7 +125,6 @@ export async function verifyWeb2Json(
     Logger.error(`Error fetching source response: ${error}`);
     return verificationResponse(AttestationResponseStatus.INVALID_FETCH_ERROR);
   }
-
   // validate content-type header
   const contentType: AxiosHeaderValue = sourceResponse.headers[
     'content-type'
@@ -133,19 +134,15 @@ export async function verifyWeb2Json(
       AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE,
     );
   }
-
   // validate returned JSON structure
-  const responseJsonData = parseJsonWithDepthAndKeysValidation(
-    Buffer.from(sourceResponse.data).toString('utf-8'),
-    securityConfig.maxBodyJsonDepth,
-    securityConfig.maxBodyJsonKeys,
+  const responseJsonData = tryParseJson(
+    Buffer.from(sourceResponse.data).toString('utf-8')
   );
   if (!responseJsonData) {
     return verificationResponse(
       AttestationResponseStatus.INVALID_RESPONSE_JSON,
     );
   }
-
   // process the data with jq
   let dataJq: object;
   try {
@@ -173,7 +170,7 @@ export async function verifyWeb2Json(
       AttestationResponseStatus.INVALID_JQ_PARSE_ERROR,
     );
   }
-
+  // encode
   let encodedData: string;
   try {
     encodedData = await runEncodeSeparately(
@@ -191,7 +188,7 @@ export async function verifyWeb2Json(
     Logger.error(`Error while encoding: ${error}`);
     return verificationResponse(AttestationResponseStatus.INVALID_ENCODE_ERROR);
   }
-
+  // final response
   const response = new Web2Json_Response({
     attestationType: request.attestationType,
     sourceId: request.sourceId,
