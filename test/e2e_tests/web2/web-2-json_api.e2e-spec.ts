@@ -8,6 +8,9 @@ import {
   app,
   attResponse,
   payload,
+  payload2,
+  payload3,
+  payload4,
 } from './helper';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 
@@ -25,6 +28,42 @@ describe('/Web2Json/prepareResponse', () => {
     expect(responseBody.response.responseBody.abiEncodedData).to.be.equal(
       abiEncodedData,
     );
+  });
+
+  it('Should get right responseBody 2', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/Web2Json/prepareResponse')
+      .send(payload2)
+      .set('X-API-KEY', api_key)
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    const responseBody = response.body;
+    expect(responseBody.status).to.be.equal(AttestationResponseStatus.VALID);
+  });
+
+  it('Should get right responseBody 3', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/Web2Json/prepareResponse')
+      .send(payload3)
+      .set('X-API-KEY', api_key)
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    const responseBody = response.body;
+    expect(responseBody.status).to.be.equal(AttestationResponseStatus.VALID);
+  });
+
+  it('Should get right responseBody 4', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/Web2Json/prepareResponse')
+      .send(payload4)
+      .set('X-API-KEY', api_key)
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    const responseBody = response.body;
+    expect(responseBody.status).to.be.equal(AttestationResponseStatus.VALID);
   });
 
   it('Should reject - private IP', async () => {
@@ -95,10 +134,10 @@ describe('/Web2Json/prepareResponse', () => {
 
   it('Should reject - fetch error', async () => {
     const customPayload = {
-      ...payload,
+      ...payload3,
       requestBody: {
-        ...payload.requestBody,
-        url: 'https://stackoverflow.com',
+        ...payload3.requestBody,
+        queryParams: '{}',
       },
     };
 

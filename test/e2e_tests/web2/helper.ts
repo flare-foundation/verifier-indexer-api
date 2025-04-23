@@ -105,6 +105,122 @@ export const payload = {
     abiSignature: '{"internalType": "string","name": "title","type": "string"}',
   },
 };
+export const payload2 = {
+  attestationType:
+    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
+  sourceId:
+    '0x746573745075626c696357656232000000000000000000000000000000000000',
+  requestBody: {
+    url: 'https://jsonplaceholder.typicode.com/todos',
+    httpMethod: 'GET',
+    headers: '{"Content-Type":"application/json"}',
+    queryParams: '{"userId": 1}',
+    body: '{}',
+    postProcessJq: '.[0:3]',
+    abiSignature: `[
+        {
+          "internalType": "tuple[]",
+          "type": "tuple[]",
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "userId",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "id",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "internalType": "bool",
+              "name": "completed",
+              "type": "bool"
+            }
+          ]
+        }
+      ]
+    `,
+  },
+};
+export const payload3 = {
+  attestationType:
+    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
+  sourceId:
+    '0x746573745075626c696357656232000000000000000000000000000000000000',
+  requestBody: {
+    url: 'https://newsapi.org/v2/everything',
+    httpMethod: 'GET',
+    headers: '{}',
+    queryParams:
+      '{"q": "pocket", "from": "2025-03-23", "to": "2025-03-23", "sortBy": "publishedAt", "apiKey": "447e924482f6459994cc77c1ea2dfd7e"}',
+    body: '{}',
+    postProcessJq: `[
+          .articles[] | {
+            source: {
+              id: (if .source.id == null then "" else .source.id end), 
+              name: .source.name
+            },
+            author: (if .author == null then "" else .author end),
+            title: .title,
+            description: (if .description == null then "" else .description end),
+            url: .url,
+            urlToImage: (if .urlToImage == null then "" else .urlToImage end),
+            publishedAt: (.publishedAt | fromdateiso8601),
+            content: .content
+          }
+        ]`,
+    abiSignature: `[
+        {
+          "type": "tuple[]",
+          "components": [
+            {
+              "type": "tuple",
+              "name": "source",
+              "components": [
+                { "type": "string", "name": "id" },
+                { "type": "string", "name": "name" }
+              ]
+            },
+            { "type": "string", "name": "author" },
+            { "type": "string", "name": "title" },
+            { "type": "string", "name": "description" },
+            { "type": "string", "name": "url" },
+            { "type": "string", "name": "urlToImage" },
+            { "type": "uint256", "name": "publishedAt" },
+            { "type": "string", "name": "content" }
+          ]
+        }
+      ]
+    `,
+  },
+};
+export const payload4 = {
+  attestationType:
+    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
+  sourceId:
+    '0x746573745075626c696357656232000000000000000000000000000000000000',
+  requestBody: {
+    url: 'https://restcountries.com/v3.1/independent',
+    httpMethod: 'GET',
+    headers: '{}',
+    queryParams: '{"status": true, "fields": "languages,capital"}',
+    body: '{}',
+    postProcessJq: `.[] | .capital[]`,
+    abiSignature: `[
+        {
+          "type": "string[]",
+          "name": "capitals"
+        }
+      ]
+    `,
+  },
+};
 export const attResponse = {
   ...payload,
   votingRound: '0',
