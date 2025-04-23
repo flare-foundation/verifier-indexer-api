@@ -96,11 +96,7 @@ export async function verifyWeb2Json(
     return verificationResponse(AttestationResponseStatus.INVALID_JQ_FILTER);
   }
   // validate ABI signature
-  const abiSign = parseJsonWithDepthAndKeysValidation(
-    requestBody.abiSignature,
-    securityConfig.maxBodyJsonDepth,
-    securityConfig.maxBodyJsonKeys,
-  );
+  const abiSign = tryParseJson(requestBody.abiSignature);
   if (!abiSign) {
     return verificationResponse(
       AttestationResponseStatus.INVALID_ABI_SIGNATURE,
@@ -212,7 +208,11 @@ export async function runJqSeparately(
   timeoutMs: number,
 ): Promise<object> {
   const processPromise = new Promise<object>((resolve, reject) => {
-    const jqChildProcess = fork('./dist/verification/web-2-json/jq-process.js');
+    const jqChildProcess = fork(
+      './dist/verification/web-2-json/jq-process.js',
+      [],
+      { stdio: ['ignore', 'ignore', 'ignore', 'ipc'] },
+    );
     jqChildProcess.send({ jsonData, jqScheme });
 
     jqChildProcess.on('message', (message: JqResultMessage | ErrorMessage) => {
@@ -250,6 +250,8 @@ export async function runEncodeSeparately(
   const processPromise = new Promise<string>((resolve, reject) => {
     const encodeChildProcess = fork(
       './dist/verification/web-2-json/encode-process.js',
+      [],
+      { stdio: ['ignore', 'ignore', 'ignore', 'ipc'] },
     );
     encodeChildProcess.send({ abiSignature, jqPostProcessData });
 
