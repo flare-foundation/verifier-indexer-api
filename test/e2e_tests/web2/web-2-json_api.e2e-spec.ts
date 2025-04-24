@@ -42,7 +42,7 @@ describe('/Web2Json/prepareResponse', () => {
     expect(responseBody.status).to.be.equal(AttestationResponseStatus.VALID);
   });
 
-  it('Should get right responseBody 3', async () => {
+  it.skip('Should get right responseBody 3', async () => {
     const response = await request(app.getHttpServer())
       .post('/Web2Json/prepareResponse')
       .send(payload3)

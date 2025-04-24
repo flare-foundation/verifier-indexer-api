@@ -1,10 +1,10 @@
 import { ethers, ParamType } from 'ethers';
 import {
-  ErrorMessage,
+  ProcessErrorMessage,
   EncodeMessage,
-  EncodeResultMessage,
+  ProcessResultMessage,
 } from 'src/config/interfaces/web2Json';
-import { isStringArray } from './utils';
+import { isEncodeMessage, isStringArray } from './utils';
 
 function handleEncodeMessage(message: EncodeMessage): void {
   try {
@@ -19,13 +19,13 @@ function handleEncodeMessage(message: EncodeMessage): void {
     const result = ethers.AbiCoder.defaultAbiCoder().encode(parsed, [
       message.jqPostProcessData,
     ]);
-    const response: EncodeResultMessage = {
+    const response: ProcessResultMessage<object | string> = {
       status: 'success',
       result,
     };
     process.send(response);
   } catch (error) {
-    const errorResponse: ErrorMessage = {
+    const errorResponse: ProcessErrorMessage = {
       status: 'error',
       error: error instanceof Error ? error.message : String(error),
     };
@@ -34,5 +34,13 @@ function handleEncodeMessage(message: EncodeMessage): void {
 }
 
 process.on('message', (message: EncodeMessage) => {
+  if (!isEncodeMessage(message)) {
+    const errorResponse: ProcessErrorMessage = {
+      status: 'error',
+      error: 'Invalid message structure',
+    };
+    process.send(errorResponse);
+    return;
+  }
   handleEncodeMessage(message);
 });

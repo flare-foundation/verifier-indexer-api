@@ -92,23 +92,17 @@ export interface JqMessage {
   jsonData: object;
   jqScheme: string;
 }
-
-export interface JqResultMessage {
-  status: 'success';
-  result: object;
+export interface EncodeMessage {
+  abiSignature: object;
+  jqPostProcessData: object | string;
 }
-
-export interface ErrorMessage {
+export interface ProcessErrorMessage {
   status: 'error';
   error: string;
 }
 
-export interface EncodeMessage {
-  abiSignature: object;
-  jqPostProcessData: object;
-}
-
-export interface EncodeResultMessage {
+export type ProcessMessage = Record<string, unknown>;
+export interface ProcessResultMessage<T> {
   status: 'success';
-  result: string;
+  result: T;
 }

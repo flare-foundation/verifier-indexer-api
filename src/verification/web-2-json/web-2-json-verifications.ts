@@ -18,18 +18,15 @@ import {
   JQ_TIMEOUT_ERROR_MESSAGE,
   MAX_DEPTH_ONE,
   parseJsonWithDepthAndKeysValidation,
+  runChildProcess,
   tryParseJson,
   verificationResponse,
 } from './utils';
 import {
-  EncodeResultMessage,
-  ErrorMessage,
-  JqResultMessage,
   Web2JsonSecurityConfig,
   Web2JsonSourceConfig,
 } from 'src/config/interfaces/web2Json';
 import { Logger } from '@nestjs/common';
-import { fork } from 'child_process';
 
 /**
  * `Web2Json` attestation type verification function
@@ -202,85 +199,28 @@ export async function verifyWeb2Json(
   };
 }
 
-export async function runJqSeparately(
+export function runJqSeparately(
   jsonData: object,
   jqScheme: string,
   timeoutMs: number,
-): Promise<object> {
-  const processPromise = new Promise<object>((resolve, reject) => {
-    const jqChildProcess = fork(
-      './dist/verification/web-2-json/jq-process.js',
-      [],
-      { stdio: ['ignore', 'ignore', 'ignore', 'ipc'] },
-    );
-    jqChildProcess.send({ jsonData, jqScheme });
-
-    jqChildProcess.on('message', (message: JqResultMessage | ErrorMessage) => {
-      if (message.status === 'success') {
-        resolve(message.result);
-      } else {
-        reject(new Error(message.error));
-      }
-    });
-
-    const timeout = setTimeout(() => {
-      jqChildProcess.kill();
-      reject(new Error(JQ_TIMEOUT_ERROR_MESSAGE));
-    }, timeoutMs);
-
-    jqChildProcess.on('exit', () => {
-      clearTimeout(timeout);
-    });
-  });
-
-  try {
-    const dataJq = await processPromise;
-    return dataJq;
-  } catch (error) {
-    Logger.error(`Error during jq process: ${error}`);
-    return null;
-  }
+) {
+  return runChildProcess<object>(
+    './dist/verification/web-2-json/jq-process.js',
+    { jsonData, jqScheme },
+    timeoutMs,
+    JQ_TIMEOUT_ERROR_MESSAGE,
+  );
 }
 
-export async function runEncodeSeparately(
+export function runEncodeSeparately(
   abiSignature: object,
   jqPostProcessData: object | string,
   timeoutMs: number,
-): Promise<string | null> {
-  const processPromise = new Promise<string>((resolve, reject) => {
-    const encodeChildProcess = fork(
-      './dist/verification/web-2-json/encode-process.js',
-      [],
-      { stdio: ['ignore', 'ignore', 'ignore', 'ipc'] },
-    );
-    encodeChildProcess.send({ abiSignature, jqPostProcessData });
-
-    encodeChildProcess.on(
-      'message',
-      (message: EncodeResultMessage | ErrorMessage) => {
-        if (message.status === 'success') {
-          resolve(message.result);
-        } else {
-          reject(new Error(message.error));
-        }
-      },
-    );
-
-    const timeout = setTimeout(() => {
-      encodeChildProcess.kill();
-      reject(new Error(ENCODE_TIMEOUT_ERROR_MESSAGE));
-    }, timeoutMs);
-
-    encodeChildProcess.on('exit', () => {
-      clearTimeout(timeout);
-    });
-  });
-
-  try {
-    const encodedData = await processPromise;
-    return encodedData;
-  } catch (error) {
-    Logger.error(`Error during encode process: ${error}`);
-    return null;
-  }
+) {
+  return runChildProcess<string>(
+    './dist/verification/web-2-json/encode-process.js',
+    { abiSignature, jqPostProcessData },
+    timeoutMs,
+    ENCODE_TIMEOUT_ERROR_MESSAGE,
+  );
 }

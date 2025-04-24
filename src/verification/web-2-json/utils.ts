@@ -1,4 +1,11 @@
-import { AllowedMethods } from 'src/config/interfaces/web2Json';
+import {
+  AllowedMethods,
+  EncodeMessage,
+  JqMessage,
+  ProcessErrorMessage,
+  ProcessMessage,
+  ProcessResultMessage,
+} from 'src/config/interfaces/web2Json';
 import {
   AttestationResponseStatus,
   VerificationResponse,
@@ -7,6 +14,7 @@ import { Logger } from '@nestjs/common';
 import * as dns from 'dns';
 import { AxiosHeaderValue } from 'axios';
 import { sanitizeUrl } from '@braintree/sanitize-url';
+import { fork } from 'child_process';
 
 export const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
 export const RESPONSE_CONTENT_TYPE_JSON = 'application/json';
@@ -285,4 +293,92 @@ export function parseJsonWithDepthAndKeysValidation(
   } else {
     return null;
   }
+}
+
+export async function runChildProcess<T>(
+  scriptPath: string,
+  payload: ProcessMessage,
+  timeoutMs: number,
+  timeoutErrorMessage: string,
+): Promise<T | null> {
+  if (scriptPath.includes('jq-process.js') && !isJqMessage(payload)) {
+    Logger.warn('Invalid message format for jq process');
+    return null;
+  }
+
+  if (scriptPath.includes('encode-process.js') && !isEncodeMessage(payload)) {
+    Logger.warn('Invalid message format for encode process');
+    return null;
+  }
+
+  const processPromise = new Promise<T>((resolve, reject) => {
+    const child = fork(scriptPath, [], {
+      stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+    });
+
+    child.send(payload);
+
+    child.once(
+      'message',
+      (message: ProcessResultMessage<T> | ProcessErrorMessage) => {
+        if (message.status === 'success') {
+          resolve(message.result);
+        } else {
+          reject(new Error(message.error));
+        }
+      },
+    );
+
+    const timeout = setTimeout(() => {
+      child.kill();
+      reject(new Error(timeoutErrorMessage));
+    }, timeoutMs);
+
+    child.once('exit', (code, signal) => {
+      clearTimeout(timeout);
+      if (code !== 0 && code !== null) {
+        reject(new Error(`Child process exited with code ${code}`));
+      }
+    });
+  });
+
+  try {
+    return await processPromise;
+  } catch (error) {
+    Logger.error(`Error during child process (${scriptPath}): ${error}`);
+    return null;
+  }
+}
+
+export function isJqMessage(message: unknown): message is JqMessage {
+  if (
+    typeof message === 'object' &&
+    message !== null &&
+    'jsonData' in message &&
+    'jqScheme' in message
+  ) {
+    const { jsonData, jqScheme } = message as Record<string, unknown>;
+    return typeof jsonData === 'object' && typeof jqScheme === 'string';
+  }
+  return false;
+}
+
+export function isEncodeMessage(message: unknown): message is EncodeMessage {
+  if (
+    typeof message === 'object' &&
+    message !== null &&
+    'abiSignature' in message &&
+    'jqPostProcessData' in message
+  ) {
+    const { abiSignature, jqPostProcessData } = message as Record<
+      string,
+      unknown
+    >;
+    return (
+      typeof abiSignature === 'object' &&
+      (typeof jqPostProcessData === 'string' ||
+        typeof jqPostProcessData === 'object')
+    );
+  }
+  return false;
 }
