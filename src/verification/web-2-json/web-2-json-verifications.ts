@@ -31,6 +31,9 @@ import { Logger } from '@nestjs/common';
 /**
  * `Web2Json` attestation type verification function
  * @param request attestation request
+ * @param securityConfig
+ * @param sourceConfig
+ * @param userAgent
  * @returns Verification response: object containing status and attestation response
  * @category Verifiers
  */
@@ -145,7 +148,7 @@ export async function verifyWeb2Json(
         jqScheme,
         securityConfig.jqTimeout,
       );
-      if (!dataJq) {
+      if (dataJq === undefined || dataJq === null) {
         Logger.error(`Error while jq parsing: no data returned`);
         return verificationResponse(
           AttestationResponseStatus.INVALID_JQ_PARSE_ERROR,
