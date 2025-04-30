@@ -89,7 +89,6 @@ describe('jq checker', () => {
     const json = {};
     const jqFilter = 'def boom: . + [boom]; boom';
     const res = await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-    console.log(res);
     expect(res).to.be.null;
   });
 

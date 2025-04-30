@@ -80,7 +80,7 @@ before(async () => {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors();
 
-  await app.listen(3123, '0.0.0.0');
+  await app.listen(3125, '0.0.0.0');
 });
 
 after(async () => {
@@ -154,11 +154,32 @@ export const payload3 = {
   sourceId:
     '0x746573745075626c696357656232000000000000000000000000000000000000',
   requestBody: {
+    url: 'https://restcountries.com/v3.1/independent',
+    httpMethod: 'GET',
+    headers: '{}',
+    queryParams: '{"status": true, "fields": "languages,capital"}',
+    body: '{}',
+    postProcessJq: `.[] | .capital[]`,
+    abiSignature: `[
+        {
+          "type": "string[]",
+          "name": "capitals"
+        }
+      ]
+    `,
+  },
+};
+export const payload4 = {
+  attestationType:
+    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
+  sourceId:
+    '0x746573745075626c696357656232000000000000000000000000000000000000',
+  requestBody: {
     url: 'https://newsapi.org/v2/everything',
     httpMethod: 'GET',
     headers: '{}',
     queryParams:
-      '{"q": "pocket", "from": "2025-03-23", "to": "2025-03-23", "sortBy": "publishedAt", "apiKey": "447e924482f6459994cc77c1ea2dfd7e"}',
+      '{"q": "pocket", "from": "2025-03-23", "to": "2025-03-23", "sortBy": "publishedAt"}',
     body: '{}',
     postProcessJq: `[
           .articles[] | {
@@ -195,27 +216,6 @@ export const payload3 = {
             { "type": "uint256", "name": "publishedAt" },
             { "type": "string", "name": "content" }
           ]
-        }
-      ]
-    `,
-  },
-};
-export const payload4 = {
-  attestationType:
-    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x746573745075626c696357656232000000000000000000000000000000000000',
-  requestBody: {
-    url: 'https://restcountries.com/v3.1/independent',
-    httpMethod: 'GET',
-    headers: '{}',
-    queryParams: '{"status": true, "fields": "languages,capital"}',
-    body: '{}',
-    postProcessJq: `.[] | .capital[]`,
-    abiSignature: `[
-        {
-          "type": "string[]",
-          "name": "capitals"
         }
       ]
     `,

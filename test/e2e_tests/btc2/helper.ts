@@ -13,11 +13,11 @@ import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
+import { getDatabaseEntities } from '../../../src/config/configuration';
 import {
-  getDatabaseEntities,
   IConfig,
   VerifierServerConfig,
-} from '../../../src/config/configuration';
+} from '../../../src/config/interfaces/common';
 import { BTCAddressValidityVerifierController } from '../../../src/controllers/address-validity-verifier.controller';
 import { BTCBalanceDecreasingTransactionVerifierController } from '../../../src/controllers/balance-decreasing-transaction-verifier.controller';
 import { BTCConfirmedBlockHeightExistsVerifierController } from '../../../src/controllers/confirmed-block-height-exists-verifier.controller';
@@ -32,6 +32,7 @@ import { BTCConfirmedBlockHeightExistsVerifierService } from '../../../src/servi
 import { BtcExternalIndexerEngineService } from '../../../src/services/indexer-services/utxo-indexer.service';
 import { BTCPaymentVerifierService } from '../../../src/services/payment-verifier.service';
 import { BTCReferencedPaymentNonexistenceVerifierService } from '../../../src/services/referenced-payment-nonexistence-verifier.service';
+import { IndexerConfig } from '../../../src/config/interfaces/chain-indexer';
 
 function getConfig() {
   const api_keys = process.env.API_KEYS?.split(',') || [''];
@@ -66,14 +67,16 @@ function getConfig() {
     port: parseInt(process.env.PORT || '3120'),
     api_keys,
     verifierConfig,
-    db: db,
-    typeOrmModuleOptions: {
-      ...db,
-      type: 'postgres',
-      entities: entities,
-      synchronize: false,
-      migrationsRun: false,
-      logging: false,
+    verifierConfigOptions: {
+      db,
+      typeOrmModuleOptions: {
+        ...db,
+        type: 'postgres',
+        entities: entities,
+        synchronize: false,
+        migrationsRun: false,
+        logging: false,
+      },
     },
     isTestnet,
   };
@@ -88,8 +91,17 @@ function getConfig() {
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (config: ConfigService<IConfig>) =>
-        config.get('typeOrmModuleOptions'),
+      useFactory: (config: ConfigService<IConfig>) => {
+        const verifierConfigOptions: IndexerConfig = config.get(
+          'verifierConfigOptions',
+        );
+        if (!verifierConfigOptions?.typeOrmModuleOptions) {
+          throw new Error(
+            "'typeOrmModuleOptions' is missing in the configuration",
+          );
+        }
+        return verifierConfigOptions.typeOrmModuleOptions;
+      },
       inject: [ConfigService],
     }),
     AuthModule,

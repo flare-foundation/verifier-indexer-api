@@ -42,22 +42,10 @@ describe('/Web2Json/prepareResponse', () => {
     expect(responseBody.status).to.be.equal(AttestationResponseStatus.VALID);
   });
 
-  it.skip('Should get right responseBody 3', async () => {
+  it('Should get right responseBody ', async () => {
     const response = await request(app.getHttpServer())
       .post('/Web2Json/prepareResponse')
       .send(payload3)
-      .set('X-API-KEY', api_key)
-      .expect(200)
-      .expect('Content-Type', /json/);
-
-    const responseBody = response.body;
-    expect(responseBody.status).to.be.equal(AttestationResponseStatus.VALID);
-  });
-
-  it('Should get right responseBody 4', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/Web2Json/prepareResponse')
-      .send(payload4)
       .set('X-API-KEY', api_key)
       .expect(200)
       .expect('Content-Type', /json/);
@@ -133,17 +121,9 @@ describe('/Web2Json/prepareResponse', () => {
   });
 
   it('Should reject - fetch error', async () => {
-    const customPayload = {
-      ...payload3,
-      requestBody: {
-        ...payload3.requestBody,
-        queryParams: '{}',
-      },
-    };
-
     const response = await request(app.getHttpServer())
       .post('/Web2Json/prepareResponse')
-      .send(customPayload)
+      .send(payload4)
       .set('X-API-KEY', api_key)
       .expect(200)
       .expect('Content-Type', /json/);
