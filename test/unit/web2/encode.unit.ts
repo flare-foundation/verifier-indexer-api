@@ -1,9 +1,10 @@
+import { isEncodeMessage } from '../../../src/verification/web-2-json/utils';
 import { runEncodeSeparately } from '../../../src/verification/web-2-json/web-2-json-verifications';
 import { expect } from 'chai';
 
 const jqProcessTimeoutMs = 500;
 
-describe('Encoder checker', () => {
+describe('Encoder unit tests', () => {
   it('encode 1', async () => {
     const types = Array(100_000).fill('string');
     const values = types.map(() => 'x'.repeat(100));
@@ -150,5 +151,23 @@ describe('Encoder checker', () => {
       jqProcessTimeoutMs,
     );
     expect(encodedData).to.be.null;
+  });
+
+  it('Should reject - invalid format', () => {
+    const input = null;
+    const input2 = 'not an object';
+    const input3 = {};
+    const input4 = 42;
+    const input5 = { abiSignature: {} };
+    const input6 = { abiSignature: 'not-object', jqPostProcessData: {} };
+    const input7 = { abiSignature: 123, jqPostProcessData: 'data' };
+    const input8 = { abiSignature: {}, jqPostProcessData: 123 };
+    expect(isEncodeMessage(input)).to.be.false;
+    expect(isEncodeMessage(input2)).to.be.false;
+    expect(isEncodeMessage(input3)).to.be.false;
+    expect(isEncodeMessage(input4)).to.be.false;
+    expect(isEncodeMessage(input5)).to.be.false;
+    expect(isEncodeMessage(input6)).to.be.false;
+    expect(isEncodeMessage(input7)).to.be.false;
   });
 });

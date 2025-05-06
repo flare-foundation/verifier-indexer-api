@@ -312,6 +312,27 @@ describe('/Web2Json/prepareResponse', () => {
       AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE,
     );
   });
+
+  it('Should reject - encoding failed', async () => {
+    const customPayload = {
+      ...payload,
+      requestBody: {
+        ...payload.requestBody,
+        abiSignature: '{"type":"tuple(uint256,,string)"}',
+      },
+    };
+    const response = await request(app.getHttpServer())
+      .post('/Web2Json/prepareResponse')
+      .send(customPayload)
+      .set('X-API-KEY', api_key)
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    const responseBody = response.body;
+    expect(responseBody.status).to.be.equal(
+      AttestationResponseStatus.INVALID_ENCODE_ERROR,
+    );
+  });
 });
 
 describe('/Web2Json/mic', () => {

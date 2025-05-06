@@ -21,7 +21,7 @@
     "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "-----Testing-----": "echo \"Testing scripts\"",
-    "test": "./test/e2e_tests/run_tests.sh "
+    "test": "./test/run_tests.sh "
   },
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.1",

@@ -86,8 +86,6 @@ export function getDatabaseEntities(verifierType: ChainType) {
         DBXrpState,
         DBXrpIndexerVersion,
       ];
-    case ChainType.PublicWeb2:
-      return [];
     default:
       throw new Error(`Unsupported verifier type: ${verifierType}`);
   }

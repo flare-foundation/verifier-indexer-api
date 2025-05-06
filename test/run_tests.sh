@@ -73,7 +73,7 @@ make_db(){
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_doge_testnet postgres_testing_db:/tmp/dbdumpdoge
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_xrp_testnet postgres_testing_db:/tmp/dbdumpxrp
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_xrp2_testnet postgres_testing_db:/tmp/dbdumpxrp2
-    _wait_for_pg_ready 
+    _wait_for_pg_ready
 
     _make_db btc
     _make_db btc2
@@ -101,7 +101,7 @@ _make_db_ci(){
   cp test/e2e_tests/db/db_doge_testnet /tmp/dbdumpdoge
   cp test/e2e_tests/db/db_xrp_testnet /tmp/dbdumpxrp
   cp test/e2e_tests/db/db_xrp2_testnet /tmp/dbdumpxrp2
-  
+
   _make_db btc
   _make_db btc2
   _make_db doge
@@ -116,10 +116,10 @@ _run_all_tests(){
 
   if [ "$1" == "coverage" ]; then
     echo Running all tests with coverage
-    nyc --reporter=html --reporter=text --reporter=text-summary --report-dir=coverage mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/**/*.e2e-spec.ts"
+    nyc --reporter=html --reporter=text --reporter=text-summary --report-dir=coverage mocha --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
   else
     echo Running all tests
-    mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/**/*.e2e-spec.ts"
+    mocha --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
   fi
 }
 
@@ -134,11 +134,11 @@ show_help() {
 Usage: yarn test COMMAND ARGUMENT
 
 Commands:
-  run               Run e2e tests (create DBs for all verifier types, run tests, delete DBs)   
-  coverage          Run e2e tests with coverage (create DBs for all verifier types, run tests with coverage, delete DBs)
+  run               Run tests (create DBs for all verifier types, run tests, delete DBs)
+  coverage          Run tests with coverage (create DBs for all verifier types, run tests with coverage, delete DBs)
   make_db <type>    Create mock DB for a verifier type, <type> can be 'btc', 'doge' or 'xrp'.
-  delete_db         Delete mock DB    
-  download          Download all DB dumps                     
+  delete_db         Delete mock DB
+  download          Download all DB dumps
 "
 }
 

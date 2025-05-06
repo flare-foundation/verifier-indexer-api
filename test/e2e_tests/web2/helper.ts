@@ -98,7 +98,8 @@ export const payload = {
   requestBody: {
     url: 'https://jsonplaceholder.typicode.com/todos',
     httpMethod: 'GET',
-    headers: '{"Content-Type":"application/json","User-Agent":"MyApp-1.0"}',
+    headers:
+      '{"Content-Type":"application/json","User-Agent":"MySuperDuperApp"}',
     queryParams: '{"id": 1}',
     body: '{}',
     postProcessJq: '.[0].title',

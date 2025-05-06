@@ -139,7 +139,7 @@ export function verificationResponse<T>(
 export function tryParseJson(input: string): object {
   try {
     const parsed = JSON.parse(input) as unknown;
-    if (typeof parsed === 'object') {
+    if (parsed !== null && typeof parsed === 'object') {
       return parsed;
     }
     return null;
@@ -202,13 +202,13 @@ export function isApplicationJsonContentType(
     contentType.includes(RESPONSE_CONTENT_TYPE_JSON)
   ) {
     return true;
-  } else if (Array.isArray(contentType)) {
+  }
+  if (Array.isArray(contentType)) {
     if (contentType.some((type) => type.includes(RESPONSE_CONTENT_TYPE_JSON))) {
       return true;
     }
-  } else {
-    return false;
   }
+  return false;
 }
 
 export function checkJsonDepthAndKeys(
@@ -301,6 +301,14 @@ export async function runChildProcess<T>(
   timeoutMs: number,
   timeoutErrorMessage: string,
 ): Promise<T | null> {
+  if (
+    !scriptPath.includes('jq-process.js') &&
+    !scriptPath.includes('encode-process.js')
+  ) {
+    Logger.warn(`Unsupported script: ${scriptPath}`);
+    return null;
+  }
+
   if (scriptPath.includes('jq-process.js') && !isJqMessage(payload)) {
     Logger.warn('Invalid message format for jq process');
     return null;
@@ -330,7 +338,7 @@ export async function runChildProcess<T>(
     );
 
     const timeout = setTimeout(() => {
-      child.kill();
+      child.kill('SIGKILL');
       reject(new Error(timeoutErrorMessage));
     }, timeoutMs);
 
