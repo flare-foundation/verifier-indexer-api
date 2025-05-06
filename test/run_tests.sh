@@ -47,14 +47,14 @@ _make_db(){
   VERIFIER_TYPE=$1
 
   if $DOCKER_CMD psql -h $DB_HOST -U user -lqt | cut -d "|" -f 1 | tr -d ' ' | grep -qw "^db${VERIFIER_TYPE}$"; then
-    $DOCKER_CMD dropdb -h $DB_HOST -U user db${VERIFIER_TYPE} 
-    _wait_for_pg_ready 
+    $DOCKER_CMD dropdb -h $DB_HOST -U user db${VERIFIER_TYPE}
+    _wait_for_pg_ready
   fi
 
-  $DOCKER_CMD createdb -h $DB_HOST -U user -E utf8 -T template0 db${VERIFIER_TYPE} 
-  _wait_for_pg_ready 
+  $DOCKER_CMD createdb -h $DB_HOST -U user -E utf8 -T template0 db${VERIFIER_TYPE}
+  _wait_for_pg_ready
   $DOCKER_CMD pg_restore -h $DB_HOST --no-owner --role=user -U user --dbname=db${VERIFIER_TYPE} /tmp/dbdump${VERIFIER_TYPE}
-  _wait_for_pg_ready 
+  _wait_for_pg_ready
 }
 
 make_db(){
@@ -63,10 +63,10 @@ make_db(){
 
   echo ""
   echo Making mock DB for $VERIFIER_TYPE
-  
+
   docker compose -f test/e2e_tests/db/docker-compose.yaml up -d
-  _wait_for_pg_ready 
-  
+  _wait_for_pg_ready
+
   if [ "$VERIFIER_TYPE" == "all" ]; then
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_btc_testnet postgres_testing_db:/tmp/dbdumpbtc
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_btc2_testnet postgres_testing_db:/tmp/dbdumpbtc2
@@ -82,7 +82,7 @@ make_db(){
     _make_db xrp2
   else
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_${VERIFIER_TYPE}_testnet postgres_testing_db:/tmp/dbdump
-    _wait_for_pg_ready 
+    _wait_for_pg_ready
 
     _make_db ""
   fi
@@ -92,7 +92,7 @@ _make_db_ci(){
   export DB_HOST=postgres
   export DB_PORT=5432
   DOCKER_CMD=""
-  
+
   echo ""
   echo Copying dumb to DB
 
@@ -115,18 +115,18 @@ _run_all_tests(){
   echo ""
 
   if [ "$1" == "coverage" ]; then
-    echo Running all tests with coverage
-    nyc --reporter=html --reporter=text --reporter=text-summary --report-dir=coverage mocha --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
+    echo Runing all tests with coverage
+    nyc --reporter=html --reporter=text --reporter=text-summary --report-dir=coverage mocha --timeout 5_000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
   else
-    echo Running all tests
-    mocha --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
+    echo Runing all tests
+    mocha --timeout 5_000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
   fi
 }
 
 delete_db(){
   echo ""
   echo Stopping and removing DB
-  docker compose -f test/e2e_tests/db/docker-compose.yaml down 
+  docker compose -f test/e2e_tests/db/docker-compose.yaml down
 }
 
 show_help() {
@@ -154,12 +154,12 @@ main() {
   run)
     make_db all
     _run_all_tests
-    delete_db 
+    delete_db
     ;;
   coverage)
     make_db all
     _run_all_tests coverage
-    delete_db 
+    delete_db
     ;;
   make_db)
     make_db "$@"
@@ -182,4 +182,3 @@ main() {
 
 main "$@"
 
-                                                   

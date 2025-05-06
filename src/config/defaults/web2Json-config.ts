@@ -6,7 +6,7 @@ export const apiJsonDefaultConfig: Web2JsonConfig = {
     blockJq: [],
     blockJson: [],
     maxResponseSize: 1024 * 1024,
-    maxRedirects: 1,
+    maxRedirects: 0,
     maxResponseTimeout: 1_000,
     maxUrlLength: 2_000,
     maxHeaders: 15,

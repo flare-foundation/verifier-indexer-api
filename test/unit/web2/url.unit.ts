@@ -63,9 +63,45 @@ describe('URL unit tests', () => {
     expect(checkedUrl).to.be.null;
   });
 
-  it('Should reject - too long url', async () => {
-    const input =
-      'https://example.com/search?q=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+  it('Should reject - private IP 6', async () => {
+    const input = 'https://localhost:3000';
+    const checkedUrl = await isValidUrl(
+      input,
+      [],
+      apiJsonTestConfig.securityConfig.maxUrlLength,
+    );
+    expect(checkedUrl).to.be.null;
+  });
+
+  it('Should reject - private IP 7', async () => {
+    const input = 'https://0x7f000001';
+    const checkedUrl = await isValidUrl(
+      input,
+      [],
+      apiJsonTestConfig.securityConfig.maxUrlLength,
+    );
+    expect(checkedUrl).to.be.null;
+  });
+
+  it('Should reject - too long input url', async () => {
+    const longQueryValue = 'a'.repeat(
+      apiJsonTestConfig.securityConfig.maxUrlLength,
+    );
+    const input = `https://example.com/search?q=${longQueryValue}`;
+    const checkedUrl = await isValidUrl(
+      input,
+      [],
+      apiJsonTestConfig.securityConfig.maxUrlLength,
+    );
+    expect(checkedUrl).to.be.null;
+  });
+
+  it('Should reject URL - too long url after sanitization', async () => {
+    const base = 'https://example.com/search?q=hello world&q=';
+    const neededChars =
+      apiJsonTestConfig.securityConfig.maxUrlLength - 1 - base.length;
+    const longQueryValue = 'a'.repeat(neededChars);
+    const input = `${base}${longQueryValue}`;
     const checkedUrl = await isValidUrl(
       input,
       [],
@@ -86,6 +122,16 @@ describe('URL unit tests', () => {
 
   it('Should reject - invalidation error', async () => {
     const input = 'https://[invalid-url';
+    const checkedUrl = await isValidUrl(
+      input,
+      [],
+      apiJsonTestConfig.securityConfig.maxUrlLength,
+    );
+    expect(checkedUrl).to.be.null;
+  });
+
+  it('Should reject - contains suspicious word "url"', async () => {
+    const input = 'https://example.com/badurl?next=redirect';
     const checkedUrl = await isValidUrl(
       input,
       [],
