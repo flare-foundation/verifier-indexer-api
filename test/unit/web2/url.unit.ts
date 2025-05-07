@@ -3,7 +3,7 @@ import { isValidUrl } from '../../../src/verification/web-2-json/utils';
 import { expect } from 'chai';
 
 describe('URL unit tests', () => {
-  it('Should reject - private IP 1', async () => {
+  it('Should reject - encoded IPv4 localhost', async () => {
     const input = 'https://%31%32%37%2e0.0.1';
     const checkedUrl = await isValidUrl(
       input,
@@ -13,7 +13,7 @@ describe('URL unit tests', () => {
     expect(checkedUrl).to.be.null;
   });
 
-  it('Should reject - private IP 2', async () => {
+  it('Should reject - mixed octal and hex IPv4', async () => {
     const input = 'https://0177.0.0.0x1    /halo';
     const checkedUrl = await isValidUrl(
       input,
@@ -23,7 +23,7 @@ describe('URL unit tests', () => {
     expect(checkedUrl).to.be.null;
   });
 
-  it('Should reject - private IP 3', async () => {
+  it('Should reject - hex IPv4', async () => {
     const input = 'https://0x7f.0x0.0x0.0x1';
     const checkedUrl = await isValidUrl(
       input,
@@ -33,7 +33,7 @@ describe('URL unit tests', () => {
     expect(checkedUrl).to.be.null;
   });
 
-  it('Should reject - private IP 4', async () => {
+  it('Should reject - octal IPv4', async () => {
     const input = 'https://0177.0.0.01';
     const checkedUrl = await isValidUrl(
       input,
@@ -43,7 +43,7 @@ describe('URL unit tests', () => {
     expect(checkedUrl).to.be.null;
   });
 
-  it('Should reject - private IP 5', async () => {
+  it('Should reject - mixed base IPv4', async () => {
     const input = 'https://0177.0.0.0x1';
     const checkedUrl = await isValidUrl(
       input,
@@ -53,7 +53,7 @@ describe('URL unit tests', () => {
     expect(checkedUrl).to.be.null;
   });
 
-  it('Should reject - private IP 6', async () => {
+  it('Should reject - localhost', async () => {
     const input = 'https://localhost:3000';
     const checkedUrl = await isValidUrl(
       input,
@@ -63,18 +63,28 @@ describe('URL unit tests', () => {
     expect(checkedUrl).to.be.null;
   });
 
-  it('Should reject - private IP 6', async () => {
-    const input = 'https://localhost:3000';
-    const checkedUrl = await isValidUrl(
-      input,
-      [],
-      apiJsonTestConfig.securityConfig.maxUrlLength,
-    );
-    expect(checkedUrl).to.be.null;
-  });
-
-  it('Should reject - private IP 7', async () => {
+  it('Should reject - integer IPv4', async () => {
     const input = 'https://0x7f000001';
+    const checkedUrl = await isValidUrl(
+      input,
+      [],
+      apiJsonTestConfig.securityConfig.maxUrlLength,
+    );
+    expect(checkedUrl).to.be.null;
+  });
+
+  it('Should reject - IPv6-mapped IPv4', async () => {
+    const input = 'https://::ffff:127.0.0.1';
+    const checkedUrl = await isValidUrl(
+      input,
+      [],
+      apiJsonTestConfig.securityConfig.maxUrlLength,
+    );
+    expect(checkedUrl).to.be.null;
+  });
+
+  it('Should reject - IPv6 localhost', async () => {
+    const input = 'https://::1';
     const checkedUrl = await isValidUrl(
       input,
       [],
