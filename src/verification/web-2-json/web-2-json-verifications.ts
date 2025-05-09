@@ -11,6 +11,7 @@ import {
   DEFAULT_RESPONSE_TYPE,
   ENCODE_TIMEOUT_ERROR_MESSAGE,
   isApplicationJsonContentType,
+  isEmptyObject,
   isJson,
   isStringArray,
   isValidHttpMethod,
@@ -109,8 +110,8 @@ export async function verifyWeb2Json(
       url: validSourceUrl,
       method: sourceMethod,
       headers: sourceHeaders,
-      params: sourceQueryParams,
-      data: sourceBody,
+      params: isEmptyObject(sourceQueryParams) ? undefined : sourceQueryParams,
+      data: isEmptyObject(sourceBody) ? undefined : sourceBody,
       responseType: DEFAULT_RESPONSE_TYPE,
       maxContentLength: securityConfig.maxResponseSize, // limit response size
       timeout: securityConfig.maxResponseTimeout,

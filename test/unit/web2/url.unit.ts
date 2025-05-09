@@ -139,14 +139,4 @@ describe('URL unit tests', () => {
     );
     expect(checkedUrl).to.be.null;
   });
-
-  it('Should reject - contains suspicious word "url"', async () => {
-    const input = 'https://example.com/badurl?next=redirect';
-    const checkedUrl = await isValidUrl(
-      input,
-      [],
-      apiJsonTestConfig.securityConfig.maxUrlLength,
-    );
-    expect(checkedUrl).to.be.null;
-  });
 });

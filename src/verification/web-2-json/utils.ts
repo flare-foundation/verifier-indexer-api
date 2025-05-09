@@ -46,19 +46,6 @@ const ipPrivate = [
   /^fe80:/, // link-local
 ];
 
-const suspiciousSubstrings = [
-  'url',
-  'redirect',
-  'token',
-  'auth',
-  'callback',
-  'returnurl',
-  'evil',
-  'admin',
-  '@',
-  'passwd',
-];
-
 /**
  * Validate source URL
  * @param inputUrl
@@ -88,16 +75,6 @@ export async function isValidUrl(
     // only https is allowed
     if (parsedUrl.protocol !== 'https:') {
       Logger.warn(`URL rejected: not 'https' protocol (${sanitizedInputUrl})`);
-      return null;
-    }
-    // block URLs containing suspicious words
-    const matchedSuspicious = suspiciousSubstrings.find((s) =>
-      parsedUrl.href.toLowerCase().includes(s),
-    );
-    if (matchedSuspicious) {
-      Logger.warn(
-        `URL rejected: contains suspicious substring "${matchedSuspicious}" in (${sanitizedInputUrl})`,
-      );
       return null;
     }
     // resolve hostname to IP address
@@ -318,6 +295,10 @@ export function parseJsonWithDepthAndKeysValidation(
   } else {
     return null;
   }
+}
+
+export function isEmptyObject(obj: unknown): boolean {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
 
 export async function runChildProcess<T>(
