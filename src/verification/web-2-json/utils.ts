@@ -50,11 +50,14 @@ const ipPrivate = [
  * Validate source URL
  * @param inputUrl
  * @param blockedHostnames
+ * @param allowedHostnames
+ * @param allowedUrlLength
  * @returns
  */
 export async function isValidUrl(
   inputUrl: string,
   blockedHostnames: string[],
+  allowedHostnames: string[],
   allowedUrlLength: number,
 ): Promise<string | null> {
   try {
@@ -77,6 +80,34 @@ export async function isValidUrl(
       Logger.warn(`URL rejected: not 'https' protocol (${sanitizedInputUrl})`);
       return null;
     }
+    const normalizedHostname = parsedUrl.hostname.toLowerCase();
+    // blocked hostnames
+    if (
+      blockedHostnames.some(
+        (blocked) =>
+          normalizedHostname === blocked ||
+          normalizedHostname.endsWith(`.${blocked}`),
+      )
+    ) {
+      Logger.warn(
+        `URL rejected: blocked hostname included ${parsedUrl.hostname}`,
+      );
+      return null;
+    }
+    // allowed hostnames check
+    if (
+      allowedHostnames.length > 0 &&
+      !allowedHostnames.some(
+        (allowed) =>
+          normalizedHostname === allowed ||
+          normalizedHostname.endsWith(`.${allowed}`),
+      )
+    ) {
+      Logger.warn(
+        `URL rejected: hostname not in allowed list (${parsedUrl.hostname})`,
+      );
+      return null;
+    }
     // resolve hostname to IP address
     try {
       const addresses = await dns.promises.lookup(parsedUrl.hostname, {
@@ -97,21 +128,8 @@ export async function isValidUrl(
       );
       return null;
     }
-    // blocked hostnames
-    if (
-      blockedHostnames.some(
-        (blocked) =>
-          parsedUrl.hostname === blocked ||
-          parsedUrl.hostname.endsWith(`.${blocked}`),
-      )
-    ) {
-      Logger.warn(
-        `URL rejected: blocked hostname included ${parsedUrl.hostname}`,
-      );
-      return null;
-    }
     const checkedUrl =
-      parsedUrl.protocol + parsedUrl.hostname + parsedUrl.pathname;
+      parsedUrl.protocol + '//' + parsedUrl.hostname + parsedUrl.pathname;
     return checkedUrl;
   } catch (error) {
     Logger.error(`Error while validating URL: ${error}`);

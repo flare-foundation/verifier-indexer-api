@@ -12,13 +12,9 @@ export interface Web2JsonSecurityConfig {
    */
   blockHostnames: string[];
   /**
-   * List of words that are not allowed to appear in JSON.
+   * List of hostnames that are allowed to be fetched from. An empty array [] means no restrictions (all hostnames are allowed).
    */
-  blockJson: string[];
-  /**
-   * List of words that are not allowed to appear in jq filter.
-   */
-  blockJq: string[];
+  allowedHostnames: string[];
   /**
    * Maximum allowed response size in bytes.
    */

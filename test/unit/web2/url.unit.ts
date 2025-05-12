@@ -8,6 +8,7 @@ describe('URL unit tests', () => {
     const checkedUrl = await isValidUrl(
       input,
       [],
+      [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
     expect(checkedUrl).to.be.null;
@@ -17,6 +18,7 @@ describe('URL unit tests', () => {
     const input = 'https://0177.0.0.0x1    /halo';
     const checkedUrl = await isValidUrl(
       input,
+      [],
       [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
@@ -28,6 +30,7 @@ describe('URL unit tests', () => {
     const checkedUrl = await isValidUrl(
       input,
       [],
+      [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
     expect(checkedUrl).to.be.null;
@@ -37,6 +40,7 @@ describe('URL unit tests', () => {
     const input = 'https://0177.0.0.01';
     const checkedUrl = await isValidUrl(
       input,
+      [],
       [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
@@ -48,6 +52,7 @@ describe('URL unit tests', () => {
     const checkedUrl = await isValidUrl(
       input,
       [],
+      [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
     expect(checkedUrl).to.be.null;
@@ -57,6 +62,7 @@ describe('URL unit tests', () => {
     const input = 'https://localhost:3000';
     const checkedUrl = await isValidUrl(
       input,
+      [],
       [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
@@ -68,6 +74,7 @@ describe('URL unit tests', () => {
     const checkedUrl = await isValidUrl(
       input,
       [],
+      [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
     expect(checkedUrl).to.be.null;
@@ -78,6 +85,7 @@ describe('URL unit tests', () => {
     const checkedUrl = await isValidUrl(
       input,
       [],
+      [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
     expect(checkedUrl).to.be.null;
@@ -87,6 +95,7 @@ describe('URL unit tests', () => {
     const input = 'https://::1';
     const checkedUrl = await isValidUrl(
       input,
+      [],
       [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
@@ -100,6 +109,7 @@ describe('URL unit tests', () => {
     const input = `https://example.com/search?q=${longQueryValue}`;
     const checkedUrl = await isValidUrl(
       input,
+      [],
       [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
@@ -115,6 +125,7 @@ describe('URL unit tests', () => {
     const checkedUrl = await isValidUrl(
       input,
       [],
+      [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
     expect(checkedUrl).to.be.null;
@@ -124,6 +135,7 @@ describe('URL unit tests', () => {
     const input = 'https://nonexistent1234abcdef.tld';
     const checkedUrl = await isValidUrl(
       input,
+      [],
       [],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
@@ -135,6 +147,29 @@ describe('URL unit tests', () => {
     const checkedUrl = await isValidUrl(
       input,
       [],
+      [],
+      apiJsonTestConfig.securityConfig.maxUrlLength,
+    );
+    expect(checkedUrl).to.be.null;
+  });
+
+  it('Should not reject - allowed hostname', async () => {
+    const input = 'https://www.Google.com/';
+    const checkedUrl = await isValidUrl(
+      input,
+      [],
+      ['google.com'],
+      apiJsonTestConfig.securityConfig.maxUrlLength,
+    );
+    expect(checkedUrl).to.eq(input.toLocaleLowerCase());
+  });
+
+  it('Should reject - not allowed hostname', async () => {
+    const input = 'https://www.Google.com/';
+    const checkedUrl = await isValidUrl(
+      input,
+      [],
+      ['bing.com'],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
     expect(checkedUrl).to.be.null;

@@ -3,8 +3,7 @@ import { Web2JsonConfig } from '../interfaces/web2Json';
 export const apiJsonDefaultConfig: Web2JsonConfig = {
   securityConfig: {
     blockHostnames: [],
-    blockJq: [],
-    blockJson: [],
+    allowedHostnames: [],
     maxResponseSize: 1024 * 1024,
     maxRedirects: 0,
     maxResponseTimeout: 1_000,

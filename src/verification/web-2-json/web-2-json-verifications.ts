@@ -50,6 +50,7 @@ export async function verifyWeb2Json(
   const validSourceUrl = await isValidUrl(
     sourceUrl,
     securityConfig.blockHostnames,
+    securityConfig.allowedHostnames,
     securityConfig.maxUrlLength,
   );
   if (!validSourceUrl) {
