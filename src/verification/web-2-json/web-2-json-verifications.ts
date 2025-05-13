@@ -27,7 +27,7 @@ import {
   Web2JsonSecurityConfig,
   Web2JsonSourceConfig,
   Web2JsonValidationError,
-} from '../../../src/config/interfaces/web2Json';
+} from '../../config/interfaces/web2Json';
 import { Logger } from '@nestjs/common';
 
 /**
@@ -59,7 +59,7 @@ export async function verifyWeb2Json(
     const sourceMethod = requestBody.httpMethod;
     validateHttpMethod(sourceMethod, sourceConfig.allowedMethods);
     // validate headers
-    const sourceHeaders = parseJsonWithDepthAndKeysValidation(
+    let sourceHeaders = parseJsonWithDepthAndKeysValidation(
       requestBody.headers,
       MAX_DEPTH_ONE,
       securityConfig.maxHeaders,
@@ -67,6 +67,9 @@ export async function verifyWeb2Json(
     );
     // forward user-agent
     if (userAgent) {
+      if (!sourceHeaders) { // initialize sourceHeaders if it's undefined
+        sourceHeaders = {};
+      }
       sourceHeaders['User-Agent'] = userAgent;
     }
     // validate query params
