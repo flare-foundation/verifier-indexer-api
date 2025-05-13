@@ -101,7 +101,7 @@ export const payload = {
     headers:
       '{"Content-Type":"application/json","User-Agent":"MySuperDuperApp"}',
     queryParams: '{"id": 1}',
-    body: '{}',
+    body: '',
     postProcessJq: '.[0].title',
     abiSignature: '{"internalType": "string","name": "title","type": "string"}',
   },
@@ -116,7 +116,7 @@ export const payload2 = {
     httpMethod: 'GET',
     headers: '{"Content-Type":"application/json"}',
     queryParams: '{"userId": 1}',
-    body: '{}',
+    body: '',
     postProcessJq: '.[0:3]',
     abiSignature: `[
         {
@@ -157,9 +157,9 @@ export const payload3 = {
   requestBody: {
     url: 'https://restcountries.com/v3.1/independent',
     httpMethod: 'GET',
-    headers: '{}',
+    headers: '',
     queryParams: '{"status": true, "fields": "languages,capital"}',
-    body: '{}',
+    body: '',
     postProcessJq: `.[] | .capital[]`,
     abiSignature: `[
         {
@@ -178,10 +178,10 @@ export const payload4 = {
   requestBody: {
     url: 'https://newsapi.org/v2/everything',
     httpMethod: 'GET',
-    headers: '{}',
+    headers: '',
     queryParams:
       '{"q": "pocket", "from": "2025-03-23", "to": "2025-03-23", "sortBy": "publishedAt"}',
-    body: '{}',
+    body: '',
     postProcessJq: `[
           .articles[] | {
             source: {

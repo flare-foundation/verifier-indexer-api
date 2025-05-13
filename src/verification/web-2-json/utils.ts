@@ -1,16 +1,17 @@
 import {
   AllowedMethods,
   EncodeMessage,
+  PrivateIPError,
   JqMessage,
   ProcessErrorMessage,
   ProcessMessage,
   ProcessResultMessage,
-} from 'src/config/interfaces/web2Json';
+  Web2JsonValidationError,
+} from '../../config/interfaces/web2Json';
 import {
   AttestationResponseStatus,
   VerificationResponse,
 } from '../response-status';
-import { Logger } from '@nestjs/common';
 import * as dns from 'dns';
 import { AxiosHeaderValue } from 'axios';
 import { sanitizeUrl } from '@braintree/sanitize-url';
@@ -59,26 +60,21 @@ export async function isValidUrl(
   blockedHostnames: string[],
   allowedHostnames: string[],
   allowedUrlLength: number,
-): Promise<string | null> {
+): Promise<string> {
   try {
     if (inputUrl.length > allowedUrlLength) {
-      Logger.warn(
-        `URL rejected: input too long before sanitization - ${inputUrl.length} (${inputUrl})`,
-      );
-      return null;
+      throw new Error(`URL too long before sanitization: ${inputUrl.length}`);
     }
     const sanitizedInputUrl = sanitizeUrl(inputUrl);
     if (sanitizedInputUrl.length > allowedUrlLength) {
-      Logger.warn(
-        `URL rejected: too long after sanitization - ${sanitizedInputUrl.length} (${sanitizedInputUrl})`,
+      throw new Error(
+        `URL too long after sanitization: ${sanitizedInputUrl.length}`,
       );
-      return null;
     }
     const parsedUrl = new URL(sanitizedInputUrl);
     // only https is allowed
     if (parsedUrl.protocol !== 'https:') {
-      Logger.warn(`URL rejected: not 'https' protocol (${sanitizedInputUrl})`);
-      return null;
+      throw new Error(`Invalid protocol: ${parsedUrl.protocol}`);
     }
     const normalizedHostname = parsedUrl.hostname.toLowerCase();
     // blocked hostnames
@@ -89,10 +85,7 @@ export async function isValidUrl(
           normalizedHostname.endsWith(`.${blocked}`),
       )
     ) {
-      Logger.warn(
-        `URL rejected: blocked hostname included ${parsedUrl.hostname}`,
-      );
-      return null;
+      throw new Error(`Blocked hostname: ${parsedUrl.hostname}`);
     }
     // allowed hostnames check
     if (
@@ -103,10 +96,7 @@ export async function isValidUrl(
           normalizedHostname.endsWith(`.${allowed}`),
       )
     ) {
-      Logger.warn(
-        `URL rejected: hostname not in allowed list (${parsedUrl.hostname})`,
-      );
-      return null;
+      throw new Error(`Hostname not in allowed list: ${parsedUrl.hostname}`);
     }
     // resolve hostname to IP address
     try {
@@ -116,24 +106,27 @@ export async function isValidUrl(
       for (const { address } of addresses) {
         // check if IP is private
         if (ipPrivate.some((regex) => regex.test(address))) {
-          Logger.warn(
-            `URL rejected: blocked IP - ${address} resolved from ${parsedUrl.hostname}`,
+          throw new PrivateIPError(
+            `Blocked IP: ${address} from ${parsedUrl.hostname}`,
           );
-          return null;
         }
       }
     } catch (error) {
-      Logger.warn(
-        `URL rejected: DNS resolution failed for ${parsedUrl.hostname}: ${error}`,
+      if (error instanceof PrivateIPError) {
+        throw error;
+      }
+      throw new Error(
+        `DNS resolution failed for ${parsedUrl.hostname}: ${error}`,
       );
-      return null;
     }
     const checkedUrl =
       parsedUrl.protocol + '//' + parsedUrl.hostname + parsedUrl.pathname;
     return checkedUrl;
   } catch (error) {
-    Logger.error(`Error while validating URL: ${error}`);
-    return null;
+    throw new Web2JsonValidationError(
+      AttestationResponseStatus.INVALID_SOURCE_URL,
+      `Error while validating URL: ${error}`,
+    );
   }
 }
 
@@ -154,18 +147,41 @@ export function verificationResponse<T>(
 
 /**
  * @param input
+ * @param errorStatus
  * @returns
  */
-export function tryParseJson(input: string): object {
+export function parseJsonExpectingObject(
+  input: string,
+  errorStatus: AttestationResponseStatus,
+): object {
   try {
     const parsed = JSON.parse(input) as unknown;
     if (parsed !== null && typeof parsed === 'object') {
       return parsed;
     }
-    return null;
+    throw new Error('Parsed value is not an object');
   } catch (error) {
-    Logger.error(`Error while parsing JSON: ${error}`);
-    return null;
+    throw new Web2JsonValidationError(errorStatus, `Invalid JSON: ${error}`);
+  }
+}
+
+/**
+ * @param input
+ * @returns
+ */
+export function validateResponseContentData(input: string): object | string {
+  try {
+    const parsed = JSON.parse(input) as unknown;
+    // jq-wasm accepts objects or strings
+    if (typeof parsed === 'object' || typeof parsed === 'string') {
+      return parsed;
+    }
+    throw new Error('Provided JSON is neither stringArray or Json type');
+  } catch (error) {
+    throw new Web2JsonValidationError(
+      AttestationResponseStatus.INVALID_RESPONSE_JSON,
+      `Invalid JSON: ${error}`,
+    );
   }
 }
 
@@ -174,14 +190,34 @@ export function tryParseJson(input: string): object {
  * @param allowedHttpMethods
  * @returns
  */
-export function isValidHttpMethod(
+export function validateHttpMethod(
   httpMethod: HTTP_METHOD,
   allowedHttpMethods: AllowedMethods,
-) {
-  if (allowedHttpMethods === '*') {
-    return true;
+): void {
+  if (allowedHttpMethods === '*' || allowedHttpMethods.includes(httpMethod)) {
+    return;
   }
-  return allowedHttpMethods.includes(httpMethod);
+  throw new Web2JsonValidationError(
+    AttestationResponseStatus.INVALID_HTTP_METHOD,
+    httpMethod,
+  );
+}
+
+/**
+ * @param jqFilter
+ * @param maxLength
+ * @returns
+ */
+export function validateJqFilterLength(
+  jqFilter: string,
+  maxLength: number,
+): void {
+  if (jqFilter.length > maxLength) {
+    throw new Web2JsonValidationError(
+      AttestationResponseStatus.INVALID_JQ_FILTER,
+      `Invalid jq filter: exceeds max allowed length ${jqFilter.length} > ${maxLength}`,
+    );
+  }
 }
 
 /**
@@ -193,44 +229,38 @@ export function isStringArray(data: unknown): data is string[] {
 }
 
 /**
- * @param data
+ * @param contentType
  * @returns
  */
-export function isJson(data: unknown): boolean {
-  if (
-    typeof data === 'string' ||
-    typeof data === 'number' ||
-    typeof data === 'boolean' ||
-    data === null
-  ) {
-    return true;
-  }
-  if (Array.isArray(data)) {
-    return data.every(isJson);
-  }
-  if (typeof data === 'object' && data !== null) {
-    return Object.values(data).every(isJson);
-  }
-  return false;
-}
-
-export function isApplicationJsonContentType(
+export function validateApplicationJsonContentType(
   contentType: AxiosHeaderValue,
-): boolean {
+): void {
   if (
     typeof contentType === 'string' &&
     contentType.includes(RESPONSE_CONTENT_TYPE_JSON)
   ) {
-    return true;
+    return;
   }
   if (Array.isArray(contentType)) {
     if (contentType.some((type) => type.includes(RESPONSE_CONTENT_TYPE_JSON))) {
-      return true;
+      return;
     }
   }
-  return false;
+  throw new Web2JsonValidationError(
+    AttestationResponseStatus.INVALID_RESPONSE_CONTENT_TYPE,
+    `Invalid response content type`,
+  );
 }
 
+/**
+ * @param input
+ * @param maxDepthAllowed
+ * @param maxKeysAllowed
+ * @param depth
+ * @param totalKeys
+ * @param maxDepth
+ * @returns
+ */
 export function checkJsonDepthAndKeys(
   input: unknown,
   maxDepthAllowed: number,
@@ -238,20 +268,33 @@ export function checkJsonDepthAndKeys(
   depth: number = 0,
   totalKeys: number = 0,
   maxDepth: number = 0,
-): { isValid: boolean; maxDepth: number; totalKeys: number } {
+): {
+  isValid: boolean;
+  maxDepth: number;
+  totalKeys: number;
+  errorMessage?: string;
+} {
   if (depth > maxDepth) {
     maxDepth = depth;
   }
   if (depth > maxDepthAllowed) {
-    Logger.warn(`Exceeded max depth: ${depth} > ${maxDepthAllowed}`);
-    return { isValid: false, maxDepth, totalKeys };
+    return {
+      isValid: false,
+      maxDepth,
+      totalKeys,
+      errorMessage: `Exceeded max depth: ${depth} > ${maxDepthAllowed}`,
+    };
   }
   if (input && typeof input === 'object' && !Array.isArray(input)) {
     const keys = Object.keys(input);
     totalKeys += keys.length;
     if (totalKeys > maxKeysAllowed) {
-      Logger.warn(`Exceeded max keys: ${totalKeys} > ${maxKeysAllowed}`);
-      return { isValid: false, maxDepth, totalKeys };
+      return {
+        isValid: false,
+        maxDepth,
+        totalKeys,
+        errorMessage: `Exceeded max keys: ${totalKeys} > ${maxKeysAllowed}`,
+      };
     }
     for (const key of keys) {
       const result = checkJsonDepthAndKeys(
@@ -296,51 +339,52 @@ export function checkJsonDepthAndKeys(
  * @param input
  * @param maxDepth
  * @param maxKeys
+ * @param errorStatus
  * @returns
  */
 export function parseJsonWithDepthAndKeysValidation(
   input: string,
   maxDepth: number,
   maxKeys: number,
-): object {
-  const parsed = tryParseJson(input);
-  if (!parsed) {
-    return null;
+  errorStatus: AttestationResponseStatus,
+): object | undefined {
+  if (input === '') {
+    return undefined;
   }
+  const parsed = parseJsonExpectingObject(input, errorStatus);
   const checkedJson = checkJsonDepthAndKeys(parsed, maxDepth, maxKeys);
   if (checkedJson.isValid) {
     return parsed;
-  } else {
-    return null;
   }
+  throw new Web2JsonValidationError(errorStatus, checkedJson.errorMessage);
 }
 
-export function isEmptyObject(obj: unknown): boolean {
-  return Object.keys(obj).length === 0 && obj.constructor === Object;
-}
-
+/**
+ * @param scriptPath
+ * @param payload
+ * @param timeoutMs
+ * @param timeoutErrorMessage
+ * @returns
+ */
 export async function runChildProcess<T>(
   scriptPath: string,
   payload: ProcessMessage,
   timeoutMs: number,
   timeoutErrorMessage: string,
-): Promise<T | null> {
+): Promise<T> {
   if (
     !scriptPath.includes('jq-process.js') &&
     !scriptPath.includes('encode-process.js')
   ) {
-    Logger.warn(`Unsupported script: ${scriptPath}`);
-    return null;
+    throw new Error(`Unsupported script path: ${scriptPath}`);
   }
 
   if (scriptPath.includes('jq-process.js') && !isJqMessage(payload)) {
-    Logger.warn('Invalid message format for jq process');
-    return null;
+    throw new Error('Invalid message format for jq process');
   }
 
   if (scriptPath.includes('encode-process.js') && !isEncodeMessage(payload)) {
-    Logger.warn('Invalid message format for encode process');
-    return null;
+    throw new Error('Invalid message format for encode process');
   }
 
   const processPromise = new Promise<T>((resolve, reject) => {
@@ -366,7 +410,7 @@ export async function runChildProcess<T>(
       reject(new Error(timeoutErrorMessage));
     }, timeoutMs);
 
-    child.once('exit', (code, signal) => {
+    child.once('exit', (code) => {
       clearTimeout(timeout);
       if (code !== 0 && code !== null) {
         reject(new Error(`Child process exited with code ${code}`));
@@ -377,11 +421,14 @@ export async function runChildProcess<T>(
   try {
     return await processPromise;
   } catch (error) {
-    Logger.error(`Error during child process (${scriptPath}): ${error}`);
-    return null;
+    throw new Error(`Error during child process (${scriptPath}): ${error}`);
   }
 }
 
+/**
+ * @param message
+ * @returns
+ */
 export function isJqMessage(message: unknown): message is JqMessage {
   if (
     typeof message === 'object' &&
@@ -390,11 +437,18 @@ export function isJqMessage(message: unknown): message is JqMessage {
     'jqScheme' in message
   ) {
     const { jsonData, jqScheme } = message as Record<string, unknown>;
-    return typeof jsonData === 'object' && typeof jqScheme === 'string';
+    return (
+      (typeof jsonData === 'object' || typeof jsonData === 'string') &&
+      typeof jqScheme === 'string'
+    );
   }
   return false;
 }
 
+/**
+ * @param message
+ * @returns
+ */
 export function isEncodeMessage(message: unknown): message is EncodeMessage {
   if (
     typeof message === 'object' &&

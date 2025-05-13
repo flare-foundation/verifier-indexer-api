@@ -1,3 +1,4 @@
+import { AttestationResponseStatus } from 'src/verification/response-status';
 import { HTTP_METHOD } from 'src/verification/web-2-json/utils';
 
 // Additional fields may be added in the future if necessary.
@@ -85,7 +86,7 @@ export interface Web2JsonSourceConfig {
 }
 
 export interface JqMessage {
-  jsonData: object;
+  jsonData: object | string;
   jqScheme: string;
 }
 export interface EncodeMessage {
@@ -101,4 +102,15 @@ export type ProcessMessage = Record<string, unknown>;
 export interface ProcessResultMessage<T> {
   status: 'success';
   result: T;
+}
+
+export class PrivateIPError extends Error {}
+export class Web2JsonValidationError extends Error {
+  constructor(
+    public readonly attestationResponseStatus: AttestationResponseStatus,
+    message?: string,
+  ) {
+    super(message || attestationResponseStatus);
+    this.name = 'Web2JsonValidationError';
+  }
 }

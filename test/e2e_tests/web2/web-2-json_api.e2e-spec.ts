@@ -295,8 +295,8 @@ describe('/Web2Json/prepareResponse', () => {
       requestBody: {
         ...payload.requestBody,
         url: 'https://images.dog.ceo/breeds/terrier-dandie/n02096437_1129.jpg',
-        queryParams: '{}',
-        body: '{}',
+        queryParams: '',
+        body: '',
       },
     };
 

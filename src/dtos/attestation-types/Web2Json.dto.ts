@@ -74,28 +74,28 @@ export class Web2Json_RequestBody {
    */
   @IsString()
   @ApiProperty({
-    description: `Headers to be included to fetch from URL source. Use '{}' if not headers are needed.`,
+    description: `Headers to be included to fetch from URL source. Use '' if not headers are needed.`,
     example: '{"Content-Type":"application/json"}',
   })
   headers: string;
 
   /**
-   * Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.
+   * Query parameters to be included to fetch from URL source. Use '' if no query parameters are needed.
    */
   @IsString()
   @ApiProperty({
-    description: `Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.`,
+    description: `Query parameters to be included to fetch from URL source. Use '' if no query parameters are needed.`,
     example: '{"id": 1}',
   })
   queryParams: string;
 
   /**
-   * Request body to be included to fetch from URL source. Use '{}' if no request body is required.
+   * Request body to be included to fetch from URL source. Use '' if no request body is required.
    */
   @IsString()
   @ApiProperty({
-    description: `Request body to be included to fetch from URL source. Use '{}' if no request body is required.`,
-    example: '{}',
+    description: `Request body to be included to fetch from URL source. Use '' if no request body is required.`,
+    example: '',
   })
   body: string;
 

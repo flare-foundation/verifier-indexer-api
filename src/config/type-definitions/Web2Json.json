@@ -108,7 +108,7 @@
     "description": "Request body for Web2Json attestation type",
     "above": "",
     "below": "",
-    "fullComment": " @notice Request body for Web2Json attestation type\n @param url URL of the data source\n @param httpMethod HTTP method to be used to fetch from URL source\n @param headers Headers to be included to fetch from URL source. Use '{}' if not headers are needed.\n @param queryParams Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.\n @param body Request body to be included to fetch from URL source. Use '{}' if no request body is required.\n @param postProcessJq jq filter to post-process the data\n @param abiSignature ABI signature of the data",
+    "fullComment": " @notice Request body for Web2Json attestation type\n @param url URL of the data source\n @param httpMethod HTTP method to be used to fetch from URL source\n @param headers Headers to be included to fetch from URL source. Use '' if not headers are needed.\n @param queryParams Query parameters to be included to fetch from URL source. Use '' if no query parameters are needed.\n @param body Request body to be included to fetch from URL source. Use '' if no request body is required.\n @param postProcessJq jq filter to post-process the data\n @param abiSignature ABI signature of the data",
     "params": [
       {
         "name": "url",
@@ -126,19 +126,19 @@
         "name": "headers",
         "type": "string",
         "typeSimple": "string",
-        "comment": "Headers to be included to fetch from URL source. Use '{}' if not headers are needed."
+        "comment": "Headers to be included to fetch from URL source. Use '' if not headers are needed."
       },
       {
         "name": "queryParams",
         "type": "string",
         "typeSimple": "string",
-        "comment": "Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed."
+        "comment": "Query parameters to be included to fetch from URL source. Use '' if no query parameters are needed."
       },
       {
         "name": "body",
         "type": "string",
         "typeSimple": "string",
-        "comment": "Request body to be included to fetch from URL source. Use '{}' if no request body is required."
+        "comment": "Request body to be included to fetch from URL source. Use '' if no request body is required."
       },
       {
         "name": "postProcessJq",
