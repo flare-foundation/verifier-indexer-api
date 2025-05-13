@@ -34,6 +34,7 @@ export enum HTTP_METHOD {
   DELETE = 'DELETE',
 }
 
+// list of private IP address patterns to check against
 const ipPrivate = [
   /^127\./, // 127.0.0.0 – 127.255.255.255 loopback
   /^0\.0\.0\.0$/,
@@ -48,12 +49,14 @@ const ipPrivate = [
 ];
 
 /**
- * Validate source URL
+ * Validates input URL against allowed protocols, hostnames, and length.
+ * Also performs DNS resolution and checks for private IP addresses.
+ *
  * @param inputUrl
  * @param blockedHostnames
  * @param allowedHostnames
  * @param allowedUrlLength
- * @returns
+ * @returns Validated URL or throws an error
  */
 export async function isValidUrl(
   inputUrl: string,
@@ -62,6 +65,7 @@ export async function isValidUrl(
   allowedUrlLength: number,
 ): Promise<string> {
   try {
+    // check URL length before and after sanitization
     if (inputUrl.length > allowedUrlLength) {
       throw new Error(`URL too long before sanitization: ${inputUrl.length}`);
     }
@@ -77,7 +81,7 @@ export async function isValidUrl(
       throw new Error(`Invalid protocol: ${parsedUrl.protocol}`);
     }
     const normalizedHostname = parsedUrl.hostname.toLowerCase();
-    // blocked hostnames
+    // check if hostname is blocked
     if (
       blockedHostnames.some(
         (blocked) =>
@@ -87,7 +91,7 @@ export async function isValidUrl(
     ) {
       throw new Error(`Blocked hostname: ${parsedUrl.hostname}`);
     }
-    // allowed hostnames check
+    // ensure hostname is allowed
     if (
       allowedHostnames.length > 0 &&
       !allowedHostnames.some(
@@ -98,7 +102,7 @@ export async function isValidUrl(
     ) {
       throw new Error(`Hostname not in allowed list: ${parsedUrl.hostname}`);
     }
-    // resolve hostname to IP address
+    // perform DNS resolution and check for private IP addresses
     try {
       const addresses = await dns.promises.lookup(parsedUrl.hostname, {
         all: true,
@@ -131,6 +135,8 @@ export async function isValidUrl(
 }
 
 /**
+ * Creates a standardized response for verification.
+ *
  * @param status
  * @param response
  * @returns
@@ -146,6 +152,8 @@ export function verificationResponse<T>(
 }
 
 /**
+ * Parses JSON input and expects it to be an object. Throws an error if not.
+ *
  * @param input
  * @param errorStatus
  * @returns
@@ -253,6 +261,8 @@ export function validateApplicationJsonContentType(
 }
 
 /**
+ * Validates the depth and the number of keys in a JSON object.
+ *
  * @param input
  * @param maxDepthAllowed
  * @param maxKeysAllowed
@@ -336,6 +346,8 @@ export function checkJsonDepthAndKeys(
 }
 
 /**
+ * Parses JSON input while also validating its depth and key count.
+ *
  * @param input
  * @param maxDepth
  * @param maxKeys
@@ -360,11 +372,14 @@ export function parseJsonWithDepthAndKeysValidation(
 }
 
 /**
- * @param scriptPath
- * @param payload
- * @param timeoutMs
- * @param timeoutErrorMessage
- * @returns
+ * Spawns a child Node.js process to perform a computation with a given payload.
+ * Validates the message format and ensures proper timeout and error handling.
+ *
+ * @param scriptPath - Path to the worker script (must be jq-process.js or encode-process.js)
+ * @param payload - Message payload to send to the child process
+ * @param timeoutMs - Maximum allowed execution time in milliseconds
+ * @param timeoutErrorMessage - Error message for timeout scenarios
+ * @returns Result from the child process
  */
 export async function runChildProcess<T>(
   scriptPath: string,
@@ -372,28 +387,29 @@ export async function runChildProcess<T>(
   timeoutMs: number,
   timeoutErrorMessage: string,
 ): Promise<T> {
+  // validate supported script
   if (
     !scriptPath.includes('jq-process.js') &&
     !scriptPath.includes('encode-process.js')
   ) {
     throw new Error(`Unsupported script path: ${scriptPath}`);
   }
-
+  // validate payload structure based on script
   if (scriptPath.includes('jq-process.js') && !isJqMessage(payload)) {
     throw new Error('Invalid message format for jq process');
   }
-
   if (scriptPath.includes('encode-process.js') && !isEncodeMessage(payload)) {
     throw new Error('Invalid message format for encode process');
   }
 
+  // run the child process
   const processPromise = new Promise<T>((resolve, reject) => {
     const child = fork(scriptPath, [], {
       stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
     });
-
+    // send payload to child process
     child.send(payload);
-
+    // handle message from child process
     child.once(
       'message',
       (message: ProcessResultMessage<T> | ProcessErrorMessage) => {
@@ -404,12 +420,12 @@ export async function runChildProcess<T>(
         }
       },
     );
-
+    // set timeout for child process
     const timeout = setTimeout(() => {
       child.kill('SIGKILL');
       reject(new Error(timeoutErrorMessage));
     }, timeoutMs);
-
+    // clear timeout if child exits
     child.once('exit', (code) => {
       clearTimeout(timeout);
       if (code !== 0 && code !== null) {

@@ -185,16 +185,19 @@ export async function fetchData(
 }
 
 /**
- * @param jsonData
- * @param jqScheme
- * @param timeoutMs
- * @returns
+ * Executes a JQ transformation in a separate process.
+ * Throws if parsing fails or times out.
+ *
+ * @param jsonData - JSON data to be transformed
+ * @param jqScheme - jq filter to apply
+ * @param timeoutMs - Timeout for subprocess in milliseconds
+ * @returns Transformed data as object
  */
 export async function runJqSeparately(
   jsonData: object | string,
   jqScheme: string,
   timeoutMs: number,
-) {
+): Promise<object> {
   try {
     const dataJq = await runChildProcess<object>(
       './dist/verification/web-2-json/jq-process.js',
@@ -212,16 +215,19 @@ export async function runJqSeparately(
 }
 
 /**
- * @param abiSignature
- * @param jqPostProcessData
- * @param timeoutMs
- * @returns
+ * Runs the encoding step in a separate child process.
+ * Throws if encoding fails or times out.
+ *
+ * @param abiSignature - ABI signature definition
+ * @param jqPostProcessData - Data to be encoded
+ * @param timeoutMs - Timeout for subprocess in milliseconds
+ * @returns ABI-encoded data as string
  */
 export async function runEncodeSeparately(
   abiSignature: object,
   jqPostProcessData: object | string,
   timeoutMs: number,
-) {
+): Promise<string> {
   try {
     const encodedData = await runChildProcess<string>(
       './dist/verification/web-2-json/encode-process.js',
