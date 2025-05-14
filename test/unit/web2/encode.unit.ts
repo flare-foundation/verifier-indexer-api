@@ -6,8 +6,8 @@ const jqProcessTimeoutMs = 500;
 
 describe('Encoder unit tests', () => {
   it('Should reject - types/values length mismatch', async () => {
-    const types = Array(100_000).fill('string');
-    const values = types.map(() => 'x'.repeat(100));
+    const types = Array(100).fill('string');
+    const values = Array(99).fill('x'.repeat(10));
     try {
       await runEncodeSeparately(types, values, jqProcessTimeoutMs);
       throw new Error('Expected error not thrown');
