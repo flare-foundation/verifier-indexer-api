@@ -67,7 +67,8 @@ export async function verifyWeb2Json(
     );
     // forward user-agent
     if (userAgent) {
-      if (!sourceHeaders) { // initialize sourceHeaders if it's undefined
+      if (!sourceHeaders) {
+        // initialize sourceHeaders if it's undefined
         sourceHeaders = {};
       }
       sourceHeaders['User-Agent'] = userAgent;
