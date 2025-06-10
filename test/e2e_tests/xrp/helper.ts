@@ -13,7 +13,10 @@ import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
-import { getDatabaseEntities } from '../../../src/config/configuration';
+import {
+  getApiKeys,
+  getDatabaseEntities,
+} from '../../../src/config/configuration';
 import { XRPAddressValidityVerifierController } from '../../../src/controllers/address-validity-verifier.controller';
 import { XRPBalanceDecreasingTransactionVerifierController } from '../../../src/controllers/balance-decreasing-transaction-verifier.controller';
 import { XRPConfirmedBlockHeightExistsVerifierController } from '../../../src/controllers/confirmed-block-height-exists-verifier.controller';
@@ -32,7 +35,7 @@ import { IndexerConfig } from 'src/config/interfaces/chain-indexer';
 import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
 
 function getConfig() {
-  const api_keys = process.env.API_KEYS?.split(',') || [''];
+  const api_keys = getApiKeys();
   const verifier_type = ChainType.XRP;
   const isTestnet = process.env.TESTNET == 'true';
 

@@ -13,7 +13,10 @@ import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
-import { getDatabaseEntities } from '../../../src/config/configuration';
+import {
+  getApiKeys,
+  getDatabaseEntities,
+} from '../../../src/config/configuration';
 import {
   IConfig,
   VerifierServerConfig,
@@ -35,7 +38,7 @@ import { BTCReferencedPaymentNonexistenceVerifierService } from '../../../src/se
 import { IndexerConfig } from '../../../src/config/interfaces/chain-indexer';
 
 function getConfig() {
-  const api_keys = process.env.API_KEYS?.split(',') || [''];
+  const api_keys = getApiKeys();
   const verifier_type = ChainType.BTC;
   const isTestnet = process.env.TESTNET == 'true';
 

@@ -11,7 +11,7 @@ import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
-import { ChainType } from '../../../src/config/configuration';
+import { ChainType, getApiKeys } from '../../../src/config/configuration';
 import { Web2JsonVerifierController } from '../../../src/controllers/web-2-json-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { Web2JsonVerifierService } from '../../../src/services/web-2-json-verifier.service';
@@ -88,7 +88,7 @@ after(async () => {
 });
 
 // constants used in test
-const api_keys = process.env.API_KEYS?.split(',') || [''];
+const api_keys = getApiKeys();
 export const api_key = api_keys[0];
 export const payload = {
   attestationType:

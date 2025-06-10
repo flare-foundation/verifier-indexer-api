@@ -25,7 +25,7 @@ import {
 import { VerifierServerConfig, IConfig } from './interfaces/common';
 
 export default () => {
-  const api_keys = process.env.API_KEYS?.split(',') || [''];
+  const api_keys = getApiKeys();
   const verifier_type = extractVerifierType();
   const isTestnet = process.env.TESTNET == 'true';
 
@@ -46,6 +46,21 @@ export default () => {
   };
   return config;
 };
+
+export function getApiKeys(): string[] {
+  const raw = process.env.API_KEYS;
+  if (!raw || raw.trim() === '') {
+    throw new Error('API_KEYS must be set');
+  }
+  const apiKeys = raw
+    .split(',')
+    .map((key) => key.trim())
+    .filter((key) => key.length > 0);
+  if (apiKeys.length === 0) {
+    throw new Error('API_KEYS contains an empty value');
+  }
+  return apiKeys;
+}
 
 export function extractVerifierType(): ChainType {
   const verifierType = process.env.VERIFIER_TYPE?.toLowerCase();
