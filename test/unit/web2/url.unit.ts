@@ -221,7 +221,7 @@ describe('URL unit tests', () => {
       ['google.com'],
       apiJsonTestConfig.securityConfig.maxUrlLength,
     );
-    expect(checkedUrl).to.eq(input.toLocaleLowerCase());
+    expect(checkedUrl.url).to.eq(input.toLocaleLowerCase());
   });
 
   it('Should reject - not allowed hostname', async () => {

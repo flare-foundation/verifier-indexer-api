@@ -7,6 +7,7 @@ import {
   ProcessMessage,
   ProcessResultMessage,
   Web2JsonValidationError,
+  CheckedUrl,
 } from '../../config/interfaces/web2Json';
 import {
   AttestationResponseStatus,
@@ -63,8 +64,13 @@ export async function isValidUrl(
   blockedHostnames: string[],
   allowedHostnames: string[],
   allowedUrlLength: number,
-): Promise<string> {
+): Promise<CheckedUrl> {
   try {
+    const checkedUrl: CheckedUrl = {
+      hostname: '',
+      url: '',
+      lookUpAddresses: [],
+    };
     // check URL length before and after sanitization
     if (inputUrl.length > allowedUrlLength) {
       throw new Error(`URL too long before sanitization: ${inputUrl.length}`);
@@ -115,6 +121,7 @@ export async function isValidUrl(
           );
         }
       }
+      checkedUrl.lookUpAddresses = addresses;
     } catch (error) {
       if (error instanceof PrivateIPError) {
         throw error;
@@ -123,8 +130,17 @@ export async function isValidUrl(
         `DNS resolution failed for ${parsedUrl.hostname}: ${error}`,
       );
     }
-    const checkedUrl =
+    checkedUrl.url =
       parsedUrl.protocol + '//' + parsedUrl.hostname + parsedUrl.pathname;
+    checkedUrl.hostname = parsedUrl.hostname;
+    if (
+      !checkedUrl.hostname ||
+      !checkedUrl.url ||
+      !checkedUrl.lookUpAddresses ||
+      checkedUrl.lookUpAddresses.length === 0
+    ) {
+      throw new Error('Missing data in CheckedUrl');
+    }
     return checkedUrl;
   } catch (error) {
     throw new Web2JsonValidationError(

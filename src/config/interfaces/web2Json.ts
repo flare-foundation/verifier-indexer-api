@@ -1,5 +1,6 @@
 import { AttestationResponseStatus } from 'src/verification/response-status';
 import { HTTP_METHOD } from 'src/verification/web-2-json/utils';
+import * as dns from 'dns';
 
 // Additional fields may be added in the future if necessary.
 export interface Web2JsonConfig {
@@ -113,4 +114,10 @@ export class Web2JsonValidationError extends Error {
     super(message || attestationResponseStatus);
     this.name = 'Web2JsonValidationError';
   }
+}
+
+export interface CheckedUrl {
+  hostname: string;
+  lookUpAddresses: dns.LookupAddress[];
+  url: string;
 }

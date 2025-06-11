@@ -24,11 +24,13 @@ import {
   verificationResponse,
 } from './utils';
 import {
+  CheckedUrl,
   Web2JsonSecurityConfig,
   Web2JsonSourceConfig,
   Web2JsonValidationError,
 } from '../../config/interfaces/web2Json';
 import { Logger } from '@nestjs/common';
+import * as https from 'https';
 
 /**
  * `Web2Json` attestation type verification function
@@ -159,7 +161,7 @@ export async function verifyWeb2Json(
  * @returns
  */
 export async function fetchData(
-  validSourceUrl: string,
+  validSourceUrl: CheckedUrl,
   sourceMethod: HTTP_METHOD,
   sourceHeaders: object | undefined,
   sourceQueryParams: object | undefined,
@@ -167,8 +169,17 @@ export async function fetchData(
   securityConfig: Web2JsonSecurityConfig,
 ): Promise<AxiosResponse<ArrayBuffer>> {
   try {
+    // force lookup to resolve into lookup addresses from 'isValidUrl'
+    const httpsAgent = new https.Agent({
+      lookup: (hostname, options, callback) => {
+        callback(null, validSourceUrl.lookUpAddresses);
+      },
+      servername: validSourceUrl.hostname,
+      rejectUnauthorized: true,
+      timeout: securityConfig.maxResponseTimeout,
+    });
     const sourceResponse = await axios({
-      url: validSourceUrl,
+      url: validSourceUrl.url,
       method: sourceMethod,
       headers: sourceHeaders,
       params: sourceQueryParams,
@@ -178,6 +189,7 @@ export async function fetchData(
       timeout: securityConfig.maxResponseTimeout,
       maxRedirects: securityConfig.maxRedirects, // limit redirects
       validateStatus: (status) => status >= 200 && status < 300,
+      httpsAgent,
     });
     return sourceResponse;
   } catch (error) {
