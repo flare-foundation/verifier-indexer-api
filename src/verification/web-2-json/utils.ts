@@ -8,6 +8,7 @@ import {
   ProcessResultMessage,
   Web2JsonValidationError,
   CheckedUrl,
+  DNSTimeoutError,
 } from '../../config/interfaces/web2Json';
 import {
   AttestationResponseStatus,
@@ -23,6 +24,7 @@ export const RESPONSE_CONTENT_TYPE_JSON = 'application/json';
 export const MAX_DEPTH_ONE = 1;
 export const JQ_TIMEOUT_ERROR_MESSAGE = 'jq process exceeded timeout';
 export const ENCODE_TIMEOUT_ERROR_MESSAGE = 'Encode process exceeded timeout';
+export const DNS_LOOKUP_TIMEOUT_MS = 2_000;
 
 /**
  * HTTP method enums
@@ -110,9 +112,7 @@ export async function isValidUrl(
     }
     // perform DNS resolution and check for private IP addresses
     try {
-      const addresses = await dns.promises.lookup(parsedUrl.hostname, {
-        all: true,
-      });
+      const addresses = await dnsLookupWithTimeout(parsedUrl.hostname);
       for (const { address } of addresses) {
         // check if IP is private
         if (ipPrivate.some((regex) => regex.test(address))) {
@@ -124,6 +124,9 @@ export async function isValidUrl(
       checkedUrl.lookUpAddresses = addresses;
     } catch (error) {
       if (error instanceof PrivateIPError) {
+        throw error;
+      }
+      if (error instanceof DNSTimeoutError) {
         throw error;
       }
       throw new Error(
@@ -499,4 +502,59 @@ export function isEncodeMessage(message: unknown): message is EncodeMessage {
     );
   }
   return false;
+}
+
+/**
+ * @param hostname
+ * @returns
+ */
+async function dnsLookupWithTimeout(
+  hostname: string,
+): Promise<dns.LookupAddress[]> {
+  try {
+    return await withTimeout(
+      dns.promises.lookup(hostname, { all: true }),
+      DNS_LOOKUP_TIMEOUT_MS,
+    );
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (('code' in error &&
+        (error as { code?: string }).code !== undefined &&
+        ((error as { code: string }).code === 'ETIMEOUT' ||
+          (error as { code: string }).code === 'EAI_AGAIN')) ||
+        error.message.includes('timed out after'))
+    ) {
+      throw new DNSTimeoutError(`DNS query timed out for ${hostname}`);
+    }
+
+    throw error;
+  }
+}
+
+/**
+ * @param promise promise to wrap
+ * @param ms
+ * @returns
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`Operation timed out after ${ms}ms`));
+    }, ms);
+
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        if (err instanceof Error) {
+          reject(err);
+        } else {
+          reject(new Error(String(err)));
+        }
+      });
+  });
 }

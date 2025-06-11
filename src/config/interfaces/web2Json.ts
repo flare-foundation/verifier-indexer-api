@@ -106,6 +106,9 @@ export interface ProcessResultMessage<T> {
 }
 
 export class PrivateIPError extends Error {}
+
+export class DNSTimeoutError extends Error {}
+
 export class Web2JsonValidationError extends Error {
   constructor(
     public readonly attestationResponseStatus: AttestationResponseStatus,
