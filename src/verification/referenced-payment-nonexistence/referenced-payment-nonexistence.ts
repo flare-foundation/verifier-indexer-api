@@ -116,7 +116,7 @@ export function responseReferencedPaymentNonExistence<
     lowestUsedTimestamp: lowerBoundaryBlock.timestamp.toString(),
     requestBody: serializeBigInts(request.requestBody),
     responseBody: new ReferencedPaymentNonexistence_ResponseBody({
-      minimalBlockTimestamp: lowerBoundaryBlock.blockNumber.toString(),
+      minimalBlockTimestamp: lowerBoundaryBlock.timestamp.toString(),
       firstOverflowBlockNumber: firstOverflowBlock.blockNumber.toString(),
       firstOverflowBlockTimestamp: firstOverflowBlock.timestamp.toString(),
     }),
