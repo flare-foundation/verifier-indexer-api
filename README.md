@@ -40,13 +40,14 @@ $ yarn run start:dev
 
 ## Testing with postgresql dump
 
-Download the database instances from the following links:
+Download the database instances from the following links and move them to `/e2e_tests/db/`:
 
-- [BTC Testnet Database](https://githubstatic.flare.center/db_btc_testnet)
-- [DOGE Testnet Database](https://githubstatic.flare.center/db_doge_testnet)
-- [XRP Testnet Database](https://githubstatic.flare.center/db_xrp_testnet)
+- [BTC Testnet Database](https://githubstatic.flare.center/db_btc_testnet) as `db_btc_testnet`
+- [BTC2 Testnet Database](https://githubstatic.flare.center/db_btc2_testnet) as `db_btc2_testnet`
+- [DOGE Testnet Database](https://githubstatic.flare.center/db_doge_testnet) as `db_doge_testnet`
+- [XRP Testnet Database](https://githubstatic.flare.center/db_xrp_testnet) as `db_xrp_testnet`
 
-Move these database dumps to the `/e2e_tests/db/` directory. Currently, all databases are on testnets.
+Currently, all databases are from testnets.
 
 ### Option 1: Running Tests Against a Database Instance
 

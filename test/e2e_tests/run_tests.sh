@@ -89,17 +89,17 @@ _run_all_tests(){
   echo ""
 
   if [ "$1" == "coverage" ]; then
-    echo Runing all tests with coverage
+    echo Running all tests with coverage
     nyc mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/**/*.e2e-spec.ts"
   else
-    echo Runing all tests
+    echo Running all tests
     mocha -r ts-node/register --require source-map-support/register "test/e2e_tests/**/*.e2e-spec.ts"
   fi
 }
 
 delete_db(){
   echo ""
-  echo Stoping and removing DB
+  echo Stopping and removing DB
   docker compose -f test/e2e_tests/db/docker-compose.yaml down 
 }
 
