@@ -70,7 +70,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('75488');
+    ).to.be.equal('1743506760');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('75490');

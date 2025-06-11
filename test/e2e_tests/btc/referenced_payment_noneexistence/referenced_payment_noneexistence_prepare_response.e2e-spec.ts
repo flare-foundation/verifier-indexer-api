@@ -68,7 +68,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
+    ).to.be.equal('1732779896');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('3490156');
@@ -227,7 +227,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
+    ).to.be.equal('1732779896');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('3490156');
@@ -300,7 +300,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
+    ).to.be.equal('1732779896');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('3490156');
@@ -896,7 +896,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
+    ).to.be.equal('1732779896');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('3490156');
@@ -969,7 +969,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
+    ).to.be.equal('1732779896');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('3490156');
@@ -1042,7 +1042,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
+    ).to.be.equal('1732779896');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('3490156');
@@ -1115,7 +1115,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
+    ).to.be.equal('1732779896');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('3490156');
@@ -1188,7 +1188,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
+    ).to.be.equal('1732779896');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('3490156');
@@ -1261,7 +1261,7 @@ describe('/ReferencedPaymentNonexistence/prepareResponse', () => {
     );
     expect(
       response.body.response.responseBody.minimalBlockTimestamp,
-    ).to.be.equal('3490151');
+    ).to.be.equal('1732779896');
     expect(
       response.body.response.responseBody.firstOverflowBlockNumber,
     ).to.be.equal('3490156');
