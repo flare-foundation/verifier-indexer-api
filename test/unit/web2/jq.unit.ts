@@ -1,7 +1,10 @@
-import { expect } from 'chai';
+import { expect, use } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import * as jq from 'jq-wasm';
 import { runJqSeparately } from '../../../src/verification/web-2-json/web-2-json-verifications';
 import { isJqMessage } from '../../../src/verification/web-2-json/utils';
+
+use(chaiAsPromised);
 
 const jqProcessTimeoutMs = 500;
 
@@ -9,46 +12,34 @@ describe('jq unit tests', () => {
   it('Should reject - infinite recursion', async () => {
     const json = {};
     const jqFilter = 'def loop: loop; loop';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('jq process exceeded timeout');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('jq process exceeded timeout');
   });
 
   it('Should reject - heavy computation', async () => {
     const json = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const jqFilter = 'reduce range(1; 10000000) as $i (0; . + ($i * $i))';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('jq process exceeded timeout');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('jq process exceeded timeout');
   });
 
   it('Should reject - Fibonacci-like object mutation over a huge range', async () => {
     const json = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const jqFilter =
       'reduce range(1; 10000000) as $i ({a: 1, b: 1}; {a: .b, b: (.a + .b)})';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('jq process exceeded timeout');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('jq process exceeded timeout');
   });
 
   it('Should reject - generate massive output', async () => {
     const json = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const jqFilter = 'range(1; 10000000) | reduce . as $item (0; . + $item)';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('jq process exceeded timeout');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('jq process exceeded timeout');
   });
 
   it('Should reject - huge per-item output', async () => {
@@ -61,60 +52,43 @@ describe('jq unit tests', () => {
     };
     const jqFilter =
       '.data[] | {a: .a, b: .b, c: (.a + .b), d: range(1; 1000000)}';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('jq process exceeded timeout');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('jq process exceeded timeout');
   });
 
   it('Should reject - deeply nested JSON', async () => {
     const json = JSON.parse('{"a":'.repeat(1000) + '"end"' + '}'.repeat(1000));
     const jqFilter = '.a';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('Exceeds depth limit for parsing');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('Exceeds depth limit for parsing');
   });
 
   it('Should reject - include external module', async () => {
     const json = {};
     const jqFilter = 'include "some_unwanted_module"';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('syntax error, unexpected end of file');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('syntax error, unexpected end of file');
   });
 
   it('Should reject - generate massive result', async () => {
     const json = {};
     const jqFilter = '["a"] * 1000000';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include(
-        'array (["a"]) and number (1000000) cannot be multiplied',
-      );
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith(
+      'array (["a"]) and number (1000000) cannot be multiplied',
+    );
   });
 
   it('Should reject - malformed jq', async () => {
     const json = {};
     const jqFilter = 'if true then "ok" else "bad"';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include(
-        'error: syntax error, unexpected end of file',
-      );
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('error: syntax error, unexpected end of file');
   });
 
   it('Should succeed - github issues', async () => {
@@ -129,12 +103,9 @@ describe('jq unit tests', () => {
   it('Should reject - recursion', async () => {
     const json = {};
     const jqFilter = 'def boom: . + [boom]; boom';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('Aborted().');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('Aborted().');
   });
 
   it('Should reject - file access', async () => {
@@ -147,34 +118,25 @@ describe('jq unit tests', () => {
   it('Should reject - system command', async () => {
     const json = {};
     const jqFilter = 'system("ls")';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('system/1 is not defined');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('system/1 is not defined');
   });
 
   it('Should reject - eval command', async () => {
     const json = {};
     const jqFilter = 'eval("2 + 2")';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('eval/1 is not defined');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('eval/1 is not defined');
   });
 
   it('Should reject - @sh', async () => {
     const json = { input: '$(ls)' };
     const jqFilter = '@sh';
-    try {
-      await runJqSeparately(json, jqFilter, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('can not be escaped for shell');
-    }
+    await expect(
+      runJqSeparately(json, jqFilter, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('can not be escaped for shell');
   });
 
   it('Should reject - unauthorized file access in jq process', async () => {

@@ -1,6 +1,9 @@
 import { isEncodeMessage } from '../../../src/verification/web-2-json/utils';
 import { runEncodeSeparately } from '../../../src/verification/web-2-json/web-2-json-verifications';
-import { expect } from 'chai';
+import { expect, use } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+
+use(chaiAsPromised);
 
 const jqProcessTimeoutMs = 500;
 
@@ -8,34 +11,25 @@ describe('Encoder unit tests', () => {
   it('Should reject - types/values length mismatch', async () => {
     const types = Array(100).fill('string');
     const values = Array(99).fill('x'.repeat(10));
-    try {
-      await runEncodeSeparately(types, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('types/values length mismatch');
-    }
+    await expect(
+      runEncodeSeparately(types, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('types/values length mismatch');
   });
 
   it('Should reject - invalid type', async () => {
     const types = ['tuple(uint256)'];
     const values = ['this is not a tuple'];
-    try {
-      await runEncodeSeparately(types, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('invalid BigNumberish string');
-    }
+    await expect(
+      runEncodeSeparately(types, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('invalid BigNumberish string');
   });
 
   it('Should reject - invalid type 2', async () => {
     const abiSignature = { internalType: 'uint', name: 'age', type: 'uint' };
     const values = [];
-    try {
-      await runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('invalid BigNumberish value');
-    }
+    await expect(
+      runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('invalid BigNumberish value');
   });
 
   it('Should reject - invalid type 3', async () => {
@@ -45,12 +39,9 @@ describe('Encoder unit tests', () => {
       type: 'mapping',
     };
     const values = [];
-    try {
-      await runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('invalid type');
-    }
+    await expect(
+      runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('invalid type');
   });
 
   it('Should reject - invalid type 4', async () => {
@@ -60,12 +51,9 @@ describe('Encoder unit tests', () => {
       type: 'invalid',
     };
     const values = [];
-    try {
-      await runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('invalid type');
-    }
+    await expect(
+      runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('invalid type');
   });
 
   it('Should reject - invalid value', async () => {
@@ -77,34 +65,25 @@ describe('Encoder unit tests', () => {
     const types = [nestedType];
     const deepArray = [[[42]]];
     const values = [deepArray];
-    try {
-      await runEncodeSeparately(types, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('expected array value');
-    }
+    await expect(
+      runEncodeSeparately(types, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('expected array value');
   });
 
   it('Should reject - timeout triggered (large bytes)', async () => {
     const types = ['bytes'];
     const values = ['0x' + 'ff'.repeat(100_000_000)];
-    try {
-      await runEncodeSeparately(types, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('Encode process exceeded timeout');
-    }
+    await expect(
+      runEncodeSeparately(types, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('Encode process exceeded timeout');
   });
 
   it('Should reject - timeout triggered (large uint256 array)', async () => {
     const types = ['uint256[]'];
     const values = [Array(10_000_000).fill(42)];
-    try {
-      await runEncodeSeparately(types, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('Encode process exceeded timeout');
-    }
+    await expect(
+      runEncodeSeparately(types, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('Encode process exceeded timeout');
   });
 
   it('Should reject - error in child process (invalid tuple)', async () => {
@@ -114,12 +93,9 @@ describe('Encoder unit tests', () => {
       type: 'tuple',
     };
     const values = [];
-    try {
-      await runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('Error during child process');
-    }
+    await expect(
+      runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('Error during child process');
   });
 
   it('Should reject - error in child process (missing value in tuple)', async () => {
@@ -129,12 +105,9 @@ describe('Encoder unit tests', () => {
       type: 'tuple',
     };
     const values = [];
-    try {
-      await runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('Error during child process');
-    }
+    await expect(
+      runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('Error during child process');
   });
 
   it('Should reject - error in child process (deep nested tuple)', async () => {
@@ -145,12 +118,9 @@ describe('Encoder unit tests', () => {
       type: 'tuple',
     };
     const values = [];
-    try {
-      await runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('Error during child process');
-    }
+    await expect(
+      runEncodeSeparately(abiSignature, values, jqProcessTimeoutMs),
+    ).to.be.rejectedWith('Error during child process');
   });
 
   it('Should reject - invalid format', () => {
@@ -169,5 +139,6 @@ describe('Encoder unit tests', () => {
     expect(isEncodeMessage(input5)).to.be.false;
     expect(isEncodeMessage(input6)).to.be.false;
     expect(isEncodeMessage(input7)).to.be.false;
+    expect(isEncodeMessage(input8)).to.be.false;
   });
 });

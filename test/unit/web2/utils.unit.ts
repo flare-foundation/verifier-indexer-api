@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import { expect, use } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import {
   checkJsonDepthAndKeys,
   HTTP_METHOD,
@@ -11,16 +12,15 @@ import {
 } from '../../../src/verification/web-2-json/utils';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 
+use(chaiAsPromised);
+
 describe('Utils unit tests', () => {
   it('Should reject - not "object" in "parseJsonExpectingObject"', () => {
     const inputs = ['null', '42', 'true', '"string"'];
     for (const input of inputs) {
-      try {
-        parseJsonExpectingObject(input, AttestationResponseStatus.INVALID);
-        throw new Error(`Expected error not thrown for input: ${input}`);
-      } catch (err) {
-        expect(err.message).to.include('Parsed value is not an object');
-      }
+      expect(() =>
+        parseJsonExpectingObject(input, AttestationResponseStatus.INVALID),
+      ).to.throw('Parsed value is not an object');
     }
   });
 
@@ -129,26 +129,18 @@ describe('Utils unit tests', () => {
     const timeoutMs = 1;
     const timeoutErrorMessage = 'Error';
     const input = {};
-    try {
-      await runChildProcess(scriptPath0, input, timeoutMs, timeoutErrorMessage);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include('Invalid message format for jq process');
-    }
-    try {
-      await runChildProcess(scriptPath1, input, timeoutMs, timeoutErrorMessage);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include(
-        'Invalid message format for encode process',
-      );
-    }
-    try {
-      await runChildProcess(scriptPath2, input, timeoutMs, timeoutErrorMessage);
-      throw new Error('Expected error not thrown');
-    } catch (err) {
-      expect(err.message).to.include(`Unsupported script path: ${scriptPath2}`);
-    }
+
+    await expect(
+      runChildProcess(scriptPath0, input, timeoutMs, timeoutErrorMessage),
+    ).to.be.rejectedWith('Invalid message format for jq process');
+
+    await expect(
+      runChildProcess(scriptPath1, input, timeoutMs, timeoutErrorMessage),
+    ).to.be.rejectedWith('Invalid message format for encode process');
+
+    await expect(
+      runChildProcess(scriptPath2, input, timeoutMs, timeoutErrorMessage),
+    ).to.be.rejectedWith(`Unsupported script path: ${scriptPath2}`);
   });
 
   it('Should return true for string array', () => {
