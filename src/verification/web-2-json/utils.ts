@@ -425,6 +425,7 @@ export async function runChildProcess<T>(
   const processPromise = new Promise<T>((resolve, reject) => {
     const child = fork(scriptPath, [], {
       stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+      execArgv: ['--max-old-space-size=64'], // limit memory to 64 MB
     });
     // send payload to child process
     child.send(payload);
