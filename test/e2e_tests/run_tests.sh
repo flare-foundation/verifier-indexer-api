@@ -14,6 +14,25 @@ export INDEXER_SERVER_PAGE_LIMIT=100
 export PORT=3100
 export API_KEYS=12345
 
+_download_db_dumps() {
+  BASE_DOWNLOAD_URL="https://githubstatic.flare.center"
+  DB_DIR="test/e2e_tests/db"
+  mkdir -p "$DB_DIR"
+
+  echo "Downloading BTC Testnet Database..."
+  curl -L -o "$DB_DIR/db_btc_testnet" $BASE_DOWNLOAD_URL/db_btc_testnet
+
+  echo "Downloading BTC2 Testnet Database..."
+  curl -L -o "$DB_DIR/db_btc2_testnet" $BASE_DOWNLOAD_URL/db_btc2_testnet
+
+  echo "Downloading DOGE Testnet Database..."
+  curl -L -o "$DB_DIR/db_doge_testnet" $BASE_DOWNLOAD_URL/db_doge_testnet
+
+  echo "Downloading XRP Testnet Database..."
+  curl -L -o "$DB_DIR/db_xrp_testnet" $BASE_DOWNLOAD_URL/db_xrp_testnet
+
+  echo "All testnet database dumps downloaded"
+}
 
 _wait_for_pg_ready() {
   until $DOCKER_CMD pg_isready -h $DB_HOST -p 5432 1> /dev/null; do
@@ -143,6 +162,9 @@ main() {
   ci)
     _make_db_ci &&
     _run_all_tests
+    ;;
+  download)
+    _download_db_dumps
     ;;
   *)
     show_help

@@ -263,10 +263,10 @@
   dependencies:
     levn "^0.4.1"
 
-"@flarenetwork/mcc@4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@flarenetwork/mcc/-/mcc-4.3.0.tgz#0dd41ec2967f6975ba8af29c8f1243e69f01e8db"
-  integrity sha512-WQ0fCGGaAlx+1G5nAXSKemwekmX6Suefr4Szrvjs/vKKzRBbT64nbFxrVtU7Uxxu/+64tZknNPNyidfrWSiACw==
+"@flarenetwork/mcc@4.4.0-rc.0":
+  version "4.4.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@flarenetwork/mcc/-/mcc-4.4.0-rc.0.tgz#b106e739fe5da3415c8e9bd0cd7615ff73ab8d82"
+  integrity sha512-vLO/C3JZkwIXQCoNdH/XWv0tieb5IBtg57s3/edqSvQn8vsBfP9M5oOaDwCFFhpfPxva9qqKRMOsr/h00rK2NQ==
   dependencies:
     axios "^1.6.7"
     axios-retry "^3.9.1"

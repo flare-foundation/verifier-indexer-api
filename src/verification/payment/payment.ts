@@ -62,8 +62,8 @@ export function responsePayment<T extends TransactionBase<unknown>>(
   }
 
   // We assume that a transaction cannot have more than Number.MAX_SAFE_INTEGER utxo inputs or outputs.
-  const inUtxoNumber = parseInt(BigInt(request.requestBody.inUtxo).toString());
-  const utxoNumber = parseInt(BigInt(request.requestBody.utxo).toString());
+  const inUtxoNumber = BigInt(request.requestBody.inUtxo);
+  const utxoNumber = BigInt(request.requestBody.utxo);
 
   let paymentSummary: PaymentSummaryResponse;
   try {
