@@ -24,7 +24,7 @@
     "test": "./test/e2e_tests/run_tests.sh "
   },
   "dependencies": {
-    "@flarenetwork/mcc": "4.4.0-rc.0",
+    "@flarenetwork/mcc": "4.4.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
