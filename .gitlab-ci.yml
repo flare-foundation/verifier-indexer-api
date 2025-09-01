@@ -30,6 +30,7 @@ e2e_test:
     - curl -o test/e2e_tests/db/db_btc2_testnet https://githubstatic.flare.center/db_btc2_testnet 
     - curl -o test/e2e_tests/db/db_doge_testnet https://githubstatic.flare.center/db_doge_testnet
     - curl -o test/e2e_tests/db/db_xrp_testnet https://githubstatic.flare.center/db_xrp_testnet 
+    - curl -o test/e2e_tests/db/db_xrp2_testnet https://githubstatic.flare.center/db_xrp2_testnet 
   script:
     - yarn test ci
 

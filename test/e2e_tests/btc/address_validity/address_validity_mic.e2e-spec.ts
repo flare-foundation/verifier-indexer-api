@@ -60,7 +60,6 @@ describe('/AddressValidity/mic', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    console.log(response.body);
     expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS TYPE');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
@@ -81,7 +80,6 @@ describe('/AddressValidity/mic', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    console.log(response.body);
     expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });

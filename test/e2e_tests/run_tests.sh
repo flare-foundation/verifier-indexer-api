@@ -31,6 +31,9 @@ _download_db_dumps() {
   echo "Downloading XRP Testnet Database..."
   curl -L -o "$DB_DIR/db_xrp_testnet" $BASE_DOWNLOAD_URL/db_xrp_testnet
 
+  echo "Downloading XRP2 Testnet Database..."
+  curl -L -o "$DB_DIR/db_xrp2_testnet" $BASE_DOWNLOAD_URL/db_xrp2_testnet
+
   echo "All testnet database dumps downloaded"
 }
 
@@ -69,12 +72,14 @@ make_db(){
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_btc2_testnet postgres_testing_db:/tmp/dbdumpbtc2
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_doge_testnet postgres_testing_db:/tmp/dbdumpdoge
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_xrp_testnet postgres_testing_db:/tmp/dbdumpxrp
+    docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_xrp2_testnet postgres_testing_db:/tmp/dbdumpxrp2
     _wait_for_pg_ready 
 
     _make_db btc
     _make_db btc2
     _make_db doge
     _make_db xrp
+    _make_db xrp2
   else
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_${VERIFIER_TYPE}_testnet postgres_testing_db:/tmp/dbdump
     _wait_for_pg_ready 
@@ -95,11 +100,13 @@ _make_db_ci(){
   cp test/e2e_tests/db/db_btc2_testnet /tmp/dbdumpbtc2
   cp test/e2e_tests/db/db_doge_testnet /tmp/dbdumpdoge
   cp test/e2e_tests/db/db_xrp_testnet /tmp/dbdumpxrp
+  cp test/e2e_tests/db/db_xrp2_testnet /tmp/dbdumpxrp2
   
   _make_db btc
   _make_db btc2
   _make_db doge
   _make_db xrp
+  _make_db xrp2
 }
 
 _run_all_tests(){
@@ -130,7 +137,8 @@ Commands:
   run               Run e2e tests (create DBs for all verifier types, run tests, delete DBs)   
   coverage          Run e2e tests with coverage (create DBs for all verifier types, run tests with coverage, delete DBs)
   make_db <type>    Create mock DB for a verifier type, <type> can be 'btc', 'doge' or 'xrp'.
-  delete_db         Delete mock DB                            
+  delete_db         Delete mock DB    
+  download          Download all DB dumps                     
 "
 }
 

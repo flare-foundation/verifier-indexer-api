@@ -46,6 +46,13 @@ Download the database instances from the following links and move them to `/e2e_
 - [BTC2 Testnet Database](https://githubstatic.flare.center/db_btc2_testnet) as `db_btc2_testnet`
 - [DOGE Testnet Database](https://githubstatic.flare.center/db_doge_testnet) as `db_doge_testnet`
 - [XRP Testnet Database](https://githubstatic.flare.center/db_xrp_testnet) as `db_xrp_testnet`
+- [XRP2 Testnet Database](https://githubstatic.flare.center/db_xrp2_testnet) as `db_xrp2_testnet`
+
+or simply run
+
+```bash
+yarn test download
+```
 
 Currently, all databases are from testnets.
 
