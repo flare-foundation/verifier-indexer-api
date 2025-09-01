@@ -109,6 +109,14 @@ export function responseReferencedPaymentNonExistence<
     }
   }
 
+  // TODO: Remove me after Mon Sept 08 2025
+  // Hard fork if
+  let minBlockTs = lowerBoundaryBlock.blockNumber.toString();
+  const now = Math.round(Date.now() / 1000);
+  if (now > 1757314800) {
+    minBlockTs = lowerBoundaryBlock.timestamp.toString();
+  }
+
   const response = new ReferencedPaymentNonexistence_Response({
     attestationType: request.attestationType,
     sourceId: request.sourceId,
@@ -116,7 +124,7 @@ export function responseReferencedPaymentNonExistence<
     lowestUsedTimestamp: lowerBoundaryBlock.timestamp.toString(),
     requestBody: serializeBigInts(request.requestBody),
     responseBody: new ReferencedPaymentNonexistence_ResponseBody({
-      minimalBlockTimestamp: lowerBoundaryBlock.timestamp.toString(),
+      minimalBlockTimestamp: minBlockTs,
       firstOverflowBlockNumber: firstOverflowBlock.blockNumber.toString(),
       firstOverflowBlockTimestamp: firstOverflowBlock.timestamp.toString(),
     }),
