@@ -17,6 +17,7 @@ import {
 import { IConfig } from 'src/config/interfaces/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
+import { ThreadPoolService } from '../verification/web-2-json/thread-pool.service';
 
 @Injectable()
 export class Web2JsonVerifierService extends BaseVerifierService<
@@ -26,6 +27,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
   constructor(
     protected configService: ConfigService<IConfig>,
     @Inject(REQUEST) private readonly req: Request,
+    private readonly threadPoolService: ThreadPoolService,
   ) {
     super(configService, {
       source: ChainType.PublicWeb2,
@@ -51,6 +53,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
       securityConfig,
       sourceConfig,
       userAgent,
+      this.threadPoolService, // Pass thread pool for optimized processing
     );
 
     return serializeBigInts({

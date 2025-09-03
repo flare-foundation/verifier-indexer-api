@@ -1,11 +1,6 @@
-import {
-  Web2Json_Request,
-  Web2Json_Response,
-  Web2Json_ResponseBody,
-} from '../../dtos/attestation-types/Web2Json.dto';
+import { Web2Json_Request, Web2Json_Response, Web2Json_ResponseBody, } from '../../dtos/attestation-types/Web2Json.dto';
 import { serializeBigInts } from '../../external-libs/utils';
-import { VerificationResponse } from '../response-status';
-import { AttestationResponseStatus } from '../response-status';
+import { AttestationResponseStatus, VerificationResponse } from '../response-status';
 import axios, { AxiosHeaderValue, AxiosResponse } from 'axios';
 import {
   DEFAULT_RESPONSE_TYPE,
@@ -16,6 +11,7 @@ import {
   MAX_DEPTH_ONE,
   parseJsonExpectingObject,
   parseJsonWithDepthAndKeysValidation,
+  runAtomicJqAndEncode,
   runChildProcess,
   validateApplicationJsonContentType,
   validateHttpMethod,
@@ -38,6 +34,7 @@ import * as https from 'https';
  * @param securityConfig
  * @param sourceConfig
  * @param userAgent
+ * @param threadPool - Thread pool service for atomic jq+encoding operations
  * @returns Verification response: object containing status and attestation response
  * @category Verifiers
  */
@@ -46,6 +43,7 @@ export async function verifyWeb2Json(
   securityConfig: Web2JsonSecurityConfig,
   sourceConfig: Web2JsonSourceConfig,
   userAgent: string | undefined,
+  threadPool?: any, // Optional thread pool for optimization
 ): Promise<VerificationResponse<Web2Json_Response>> {
   try {
     const requestBody = request.requestBody;
@@ -115,18 +113,15 @@ export async function verifyWeb2Json(
     const responseJsonData = validateResponseContentData(
       Buffer.from(sourceResponse.data).toString('utf-8'),
     );
-    // process the data with jq
-    const dataJq = await runJqSeparately(
+
+    const encodedData = await runAtomicJqAndEncode(
       responseJsonData,
       jqScheme,
-      securityConfig.jqTimeout,
-    );
-    // encode
-    const encodedData = await runEncodeSeparately(
       abiSign,
-      dataJq,
-      securityConfig.encodeTimeout,
+      Math.max(securityConfig.jqTimeout, securityConfig.encodeTimeout),
+      threadPool,
     );
+
     // final response
     const response = new Web2Json_Response({
       attestationType: request.attestationType,

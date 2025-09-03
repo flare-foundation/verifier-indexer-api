@@ -462,6 +462,36 @@ export async function runChildProcess<T>(
 }
 
 /**
+ * Executes JQ transformation followed by ABI encoding atomically using a thread pool.
+ * This is much more efficient than spawning separate child processes for each step.
+ *
+ * @param jsonData - JSON data to be transformed
+ * @param jqScheme - jq filter to apply
+ * @param abiSignature - ABI signature for encoding
+ * @param timeoutMs - Timeout for the entire atomic operation in milliseconds
+ * @param threadPool - Thread pool service instance
+ * @returns Object containing both JQ result and encoded data
+ */
+export async function runAtomicJqAndEncode(
+  jsonData: object | string,
+  jqScheme: string,
+  abiSignature: object,
+  timeoutMs: number,
+  threadPool: any, // Import type will be resolved at runtime
+): Promise<string> {
+  try {
+   return await threadPool.executeAtomicTask(
+      jsonData,
+      jqScheme,
+      abiSignature,
+      timeoutMs,
+    );
+  } catch (error) {
+    throw new Error(`Error during atomic jq+encode processing: ${error}`);
+  }
+}
+
+/**
  * @param message
  * @returns
  */

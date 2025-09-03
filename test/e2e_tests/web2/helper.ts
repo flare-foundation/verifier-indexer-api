@@ -19,6 +19,7 @@ import { Web2JsonConfig } from 'src/config/interfaces/web2Json';
 import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
 import { HTTP_METHOD } from '../../../src/verification/web-2-json/utils';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
+import { ThreadPoolService } from '../../../src/verification/web-2-json/thread-pool.service';
 
 export const apiJsonTestConfig: Web2JsonConfig = {
   ...apiJsonDefaultConfig,
@@ -63,7 +64,7 @@ function getConfig() {
     AuthModule,
   ],
   controllers: [Web2JsonVerifierController],
-  providers: [ApiKeyStrategy, AuthService, Web2JsonVerifierService],
+  providers: [ApiKeyStrategy, AuthService, Web2JsonVerifierService, ThreadPoolService],
 })
 export class Web2JsonVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

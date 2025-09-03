@@ -7,6 +7,7 @@ import configuration from '../config/configuration';
 import { Web2JsonVerifierController } from '../controllers/web-2-json-verifier.controller';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 import { Web2JsonVerifierService } from '../services/web-2-json-verifier.service';
+import { ThreadPoolService } from '../verification/web-2-json/thread-pool.service';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { Web2JsonVerifierService } from '../services/web-2-json-verifier.service
     AuthModule,
   ],
   controllers: [Web2JsonVerifierController],
-  providers: [ApiKeyStrategy, AuthService, Web2JsonVerifierService],
+  providers: [ApiKeyStrategy, AuthService, Web2JsonVerifierService, ThreadPoolService],
 })
 export class Web2JsonVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
