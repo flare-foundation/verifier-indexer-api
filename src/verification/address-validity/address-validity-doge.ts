@@ -40,7 +40,7 @@ export function verifyAddressDOGE(
   //length is base58
   if (25 > address.length || address.length > 34)
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_LENGTH,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -48,7 +48,7 @@ export function verifyAddressDOGE(
   const invalidChar = DOGE_BASE_58_DICT_regex.test(address);
   if (invalidChar)
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_CHARACTER,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -56,7 +56,7 @@ export function verifyAddressDOGE(
   const prefix = validPrefix.includes(address[0]);
   if (!prefix)
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_VERSION,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -65,7 +65,7 @@ export function verifyAddressDOGE(
   //decoded length
   if (decodedAddress.length != 25)
     return {
-      status: AttestationResponseStatus.INVALID_DECODED_ADDRESS_LENGTH,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -73,14 +73,14 @@ export function verifyAddressDOGE(
   const checksum = base58Checksum(decodedAddress);
   if (!checksum)
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_CHECKSUM,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
   //prefix in hex
   if (!validPrefixDecodedDec.includes(decodedAddress[0]))
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_VERSION,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
   else {

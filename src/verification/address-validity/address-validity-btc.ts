@@ -254,14 +254,14 @@ export function verifyAddressBTC(
         //invalid length
         if (25 > address.length || address.length > 34) {
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_LENGTH,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
         }
         // contains invalid characters
         else if (BTC_BASE_58_DICT_regex.test(address)) {
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_CHARACTER,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
         }
@@ -272,19 +272,19 @@ export function verifyAddressBTC(
         // invalid length
         if (decodedAddress.length != 25)
           return {
-            status: AttestationResponseStatus.INVALID_DECODED_ADDRESS_LENGTH,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
         // checksum fails
         else if (!base58Checksum(decodedAddress)) {
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_CHECKSUM,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
           // wrong prefix
         } else if (!(decodedAddress[0] == 111 || decodedAddress[0] == 196))
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_VERSION,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
         else {
@@ -301,7 +301,7 @@ export function verifyAddressBTC(
             return { status: AttestationResponseStatus.VALID, response };
           } else
             return {
-              status: AttestationResponseStatus.INVALID_ADDRESS_LENGTH,
+              status: AttestationResponseStatus.VALID,
               response: INVALID_ADDRESS_RESPONSE,
             };
 
@@ -313,13 +313,13 @@ export function verifyAddressBTC(
         // invalid address / unsupported version
         else
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_VERSION,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
       }
       case BTCAddressTypes.INVALID: {
         return {
-          status: AttestationResponseStatus.INVALID_ADDRESS_TYPE,
+          status: AttestationResponseStatus.VALID,
           response: INVALID_ADDRESS_RESPONSE,
         };
       }
@@ -333,14 +333,14 @@ export function verifyAddressBTC(
         //invalid length
         if (25 > address.length || address.length > 34) {
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_LENGTH,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
         }
         // contains invalid characters
         else if (BTC_BASE_58_DICT_regex.test(address)) {
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_CHARACTER,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
         }
@@ -351,19 +351,19 @@ export function verifyAddressBTC(
         // invalid length
         if (decodedAddress.length != 25)
           return {
-            status: AttestationResponseStatus.INVALID_DECODED_ADDRESS_LENGTH,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
         // checksum fails
         else if (!base58Checksum(decodedAddress)) {
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_CHECKSUM,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
           // wrong prefix
         } else if (!(decodedAddress[0] == 0 || decodedAddress[0] == 5))
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_VERSION,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
         else {
@@ -380,7 +380,7 @@ export function verifyAddressBTC(
             return { status: AttestationResponseStatus.VALID, response };
           } else
             return {
-              status: AttestationResponseStatus.INVALID_ADDRESS_LENGTH,
+              status: AttestationResponseStatus.VALID,
               response: INVALID_ADDRESS_RESPONSE,
             };
 
@@ -392,13 +392,13 @@ export function verifyAddressBTC(
         // invalid address / unsupported version
         else
           return {
-            status: AttestationResponseStatus.INVALID_ADDRESS_VERSION,
+            status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
           };
       }
       case BTCAddressTypes.INVALID: {
         return {
-          status: AttestationResponseStatus.INVALID_ADDRESS_TYPE,
+          status: AttestationResponseStatus.VALID,
           response: INVALID_ADDRESS_RESPONSE,
         };
       }

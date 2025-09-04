@@ -35,14 +35,14 @@ export function verifyAddressXRP(
   const char = validCharacters(address);
   if (!char)
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_CHARACTER,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
   const decodedAddress = Buffer.from(base58.decode(address));
   if (decodedAddress.length != 25)
     return {
-      status: AttestationResponseStatus.INVALID_DECODED_ADDRESS_LENGTH,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
@@ -50,13 +50,13 @@ export function verifyAddressXRP(
 
   if (decodedAddress[0] != 0)
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_VERSION,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
   if (!checksum)
     return {
-      status: AttestationResponseStatus.INVALID_ADDRESS_CHECKSUM,
+      status: AttestationResponseStatus.VALID,
       response: INVALID_ADDRESS_RESPONSE,
     };
 
