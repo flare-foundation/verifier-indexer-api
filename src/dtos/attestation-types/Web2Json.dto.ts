@@ -1,17 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsDefined,
-  IsEnum,
-  IsNotEmptyObject,
-  IsObject,
-  IsString,
-  Validate,
-  ValidateNested,
-} from 'class-validator';
+import { IsDefined, IsEnum, IsNotEmptyObject, IsObject, IsString, Validate, ValidateNested, } from 'class-validator';
 import { Is0xHex, IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../../verification/response-status';
-import { HTTP_METHOD } from '../../verification/web-2-json/utils';
+import { HTTP_METHOD } from '../../config/interfaces/web2Json';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////

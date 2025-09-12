@@ -1,41 +1,39 @@
-import { Web2Json_Request, Web2Json_Response, Web2Json_ResponseBody, } from '../../dtos/attestation-types/Web2Json.dto';
+import {
+  Web2Json_Request,
+  Web2Json_Response,
+  Web2Json_ResponseBody,
+} from '../../dtos/attestation-types/Web2Json.dto';
 import { serializeBigInts } from '../../external-libs/utils';
-import { AttestationResponseStatus, VerificationResponse } from '../response-status';
-import axios, { AxiosHeaderValue, AxiosResponse } from 'axios';
 import {
-  DEFAULT_RESPONSE_TYPE,
-  ENCODE_TIMEOUT_ERROR_MESSAGE,
+  AttestationResponseStatus,
+  VerificationResponse,
+} from '../response-status';
+import axios, { AxiosResponse } from 'axios';
+import { Web2JsonValidationError } from './utils';
+import {
   HTTP_METHOD,
-  isValidUrl,
-  JQ_TIMEOUT_ERROR_MESSAGE,
-  MAX_DEPTH_ONE,
-  parseJsonExpectingObject,
-  parseJsonWithDepthAndKeysValidation,
-  runAtomicJqAndEncode,
-  runChildProcess,
-  validateApplicationJsonContentType,
-  validateHttpMethod,
-  validateJqFilterLength,
-  validateResponseContentData,
-  verificationResponse,
-} from './utils';
-import {
-  CheckedUrl,
   Web2JsonSecurityConfig,
   Web2JsonSourceConfig,
-  Web2JsonValidationError,
 } from '../../config/interfaces/web2Json';
-import { Logger } from '@nestjs/common';
 import * as https from 'https';
+import { ThreadPoolService } from './thread-pool.service';
+import { CheckedUrl } from './validate-url';
+import { parseAndValidateResponse } from './validate-response';
+import { parseAndValidateRequest } from './validate-request';
+
+const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
 
 /**
- * `Web2Json` attestation type verification function
- * @param request attestation request
- * @param securityConfig
- * @param sourceConfig
- * @param userAgent
- * @param threadPool - Thread pool service for atomic jq+encoding operations
- * @returns Verification response: object containing status and attestation response
+ * Verifies `Web2Json` attestation type requests:
+ * 1. Validates request parameters
+ * 2. Performs HTTP request to fetch JSON data
+ * 3. Validates fetched JSON data
+ * 4. Applies jq filter to the JSON data
+ * 5. Encodes the filtered data using provided ABI signature
+ *
+ * Steps 4 and 5 are handled on worker threads to avoid blocking the verifier
+ * in case of malicious or long-running jq filters or ABI encoding.
+ *
  * @category Verifiers
  */
 export async function verifyWeb2Json(
@@ -43,92 +41,38 @@ export async function verifyWeb2Json(
   securityConfig: Web2JsonSecurityConfig,
   sourceConfig: Web2JsonSourceConfig,
   userAgent: string | undefined,
-  threadPool?: any, // Optional thread pool for optimization
+  workerPool: ThreadPoolService,
 ): Promise<VerificationResponse<Web2Json_Response>> {
   try {
-    const requestBody = request.requestBody;
-    const sourceUrl = requestBody.url;
-    // validate url
-    const validSourceUrl = await isValidUrl(
-      sourceUrl,
-      securityConfig.blockHostnames,
-      securityConfig.allowedHostnames,
-      securityConfig.maxUrlLength,
+    const parsedRequest = await parseAndValidateRequest(
+      request,
+      securityConfig,
+      sourceConfig,
+      userAgent,
     );
-    // validate HTTP method
-    const sourceMethod = requestBody.httpMethod;
-    validateHttpMethod(sourceMethod, sourceConfig.allowedMethods);
-    // validate headers
-    let sourceHeaders = parseJsonWithDepthAndKeysValidation(
-      requestBody.headers,
-      MAX_DEPTH_ONE,
-      securityConfig.maxHeaders,
-      AttestationResponseStatus.INVALID_HEADERS,
-    );
-    // forward user-agent
-    if (userAgent) {
-      if (!sourceHeaders) {
-        // initialize sourceHeaders if it's undefined
-        sourceHeaders = {};
-      }
-      sourceHeaders['User-Agent'] = userAgent;
-    }
-    // validate query params
-    const sourceQueryParams = parseJsonWithDepthAndKeysValidation(
-      requestBody.queryParams,
-      MAX_DEPTH_ONE,
-      securityConfig.maxQueryParams,
-      AttestationResponseStatus.INVALID_QUERY_PARAMS,
-    );
-    // validate body
-    const sourceBody = parseJsonWithDepthAndKeysValidation(
-      requestBody.body,
-      securityConfig.maxBodyJsonDepth,
-      securityConfig.maxBodyJsonKeys,
-      AttestationResponseStatus.INVALID_BODY,
-    );
-    // validate jq filter
-    const jqScheme = requestBody.postProcessJq;
-    validateJqFilterLength(jqScheme, securityConfig.maxJqFilterLength);
-    // validate ABI signature
-    const abiSign = parseJsonExpectingObject(
-      requestBody.abiSignature,
-      AttestationResponseStatus.INVALID_ABI_SIGNATURE,
-    );
-    // fetch data from user defined source
-    const sourceResponse = await fetchData(
-      validSourceUrl,
-      sourceMethod,
-      sourceHeaders,
-      sourceQueryParams,
-      sourceBody,
+
+    const sourceResponse = await executeRequest(
+      parsedRequest.validSourceUrl,
+      parsedRequest.sourceMethod,
+      parsedRequest.sourceHeaders,
+      parsedRequest.sourceQueryParams,
+      parsedRequest.sourceBody,
       securityConfig,
     );
-    // validate content-type header
-    const contentType: AxiosHeaderValue = sourceResponse.headers[
-      'content-type'
-    ] as AxiosHeaderValue;
-    validateApplicationJsonContentType(contentType);
-    // validate returned JSON structure
-    const responseJsonData = validateResponseContentData(
-      Buffer.from(sourceResponse.data).toString('utf-8'),
-    );
+    const responseJsonData = parseAndValidateResponse(sourceResponse);
 
-    const encodedData = await runAtomicJqAndEncode(
+    const encodedData = await workerPool.processTask(
       responseJsonData,
-      jqScheme,
-      abiSign,
-      Math.max(securityConfig.jqTimeout, securityConfig.encodeTimeout),
-      threadPool,
+      parsedRequest.jqScheme,
+      parsedRequest.abiSign,
     );
 
-    // final response
     const response = new Web2Json_Response({
       attestationType: request.attestationType,
       sourceId: request.sourceId,
       votingRound: '0',
       lowestUsedTimestamp: '0',
-      requestBody: serializeBigInts(requestBody),
+      requestBody: serializeBigInts(request.requestBody),
       responseBody: new Web2Json_ResponseBody({
         abiEncodedData: encodedData,
       }),
@@ -138,24 +82,14 @@ export async function verifyWeb2Json(
       response,
     };
   } catch (error) {
-    Logger.error(`${error}`);
     if (error instanceof Web2JsonValidationError) {
-      return verificationResponse(error.attestationResponseStatus);
+      return { status: error.attestationResponseStatus };
     }
-    return verificationResponse(AttestationResponseStatus.UNKNOWN_ERROR);
+    return { status: AttestationResponseStatus.UNKNOWN_ERROR };
   }
 }
 
-/**
- * @param validSourceUrl
- * @param sourceMethod
- * @param sourceHeaders
- * @param sourceQueryParams
- * @param sourceBody
- * @param securityConfig
- * @returns
- */
-export async function fetchData(
+async function executeRequest(
   validSourceUrl: CheckedUrl,
   sourceMethod: HTTP_METHOD,
   sourceHeaders: object | undefined,
@@ -171,9 +105,10 @@ export async function fetchData(
       },
       servername: validSourceUrl.hostname,
       rejectUnauthorized: true,
-      timeout: securityConfig.maxResponseTimeout,
+      timeout: securityConfig.requestTimeoutMs,
     });
-    const sourceResponse = await axios({
+
+    return await axios({
       url: validSourceUrl.url,
       method: sourceMethod,
       headers: sourceHeaders,
@@ -181,76 +116,15 @@ export async function fetchData(
       data: sourceBody,
       responseType: DEFAULT_RESPONSE_TYPE,
       maxContentLength: securityConfig.maxResponseSize, // limit response size
-      timeout: securityConfig.maxResponseTimeout,
+      timeout: securityConfig.requestTimeoutMs,
       maxRedirects: securityConfig.maxRedirects, // limit redirects
       validateStatus: (status) => status >= 200 && status < 300,
       httpsAgent,
     });
-    return sourceResponse;
   } catch (error) {
     throw new Web2JsonValidationError(
       AttestationResponseStatus.INVALID_FETCH_ERROR,
       `Error fetching source response: ${error}`,
-    );
-  }
-}
-
-/**
- * Executes a JQ transformation in a separate process.
- * Throws if parsing fails or times out.
- *
- * @param jsonData - JSON data to be transformed
- * @param jqScheme - jq filter to apply
- * @param timeoutMs - Timeout for subprocess in milliseconds
- * @returns Transformed data as object
- */
-export async function runJqSeparately(
-  jsonData: object | string,
-  jqScheme: string,
-  timeoutMs: number,
-): Promise<object> {
-  try {
-    const dataJq = await runChildProcess<object>(
-      './dist/verification/web-2-json/jq-process.js',
-      { jsonData, jqScheme },
-      timeoutMs,
-      JQ_TIMEOUT_ERROR_MESSAGE,
-    );
-    return dataJq;
-  } catch (error) {
-    throw new Web2JsonValidationError(
-      AttestationResponseStatus.INVALID_JQ_PARSE_ERROR,
-      `Error while jq parsing: ${error}`,
-    );
-  }
-}
-
-/**
- * Runs the encoding step in a separate child process.
- * Throws if encoding fails or times out.
- *
- * @param abiSignature - ABI signature definition
- * @param jqPostProcessData - Data to be encoded
- * @param timeoutMs - Timeout for subprocess in milliseconds
- * @returns ABI-encoded data as string
- */
-export async function runEncodeSeparately(
-  abiSignature: object,
-  jqPostProcessData: object | string,
-  timeoutMs: number,
-): Promise<string> {
-  try {
-    const encodedData = await runChildProcess<string>(
-      './dist/verification/web-2-json/encode-process.js',
-      { abiSignature, jqPostProcessData },
-      timeoutMs,
-      ENCODE_TIMEOUT_ERROR_MESSAGE,
-    );
-    return encodedData;
-  } catch (error) {
-    throw new Web2JsonValidationError(
-      AttestationResponseStatus.INVALID_ENCODE_ERROR,
-      `Error while encoding: ${error}`,
     );
   }
 }

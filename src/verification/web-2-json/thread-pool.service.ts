@@ -7,28 +7,37 @@ import {
 } from '@nestjs/common';
 import { Task, TaskResponse } from './worker';
 import * as os from 'os';
+import { AttestationResponseStatus } from '../response-status';
+import { Web2JsonValidationError } from './utils';
 
 interface QueuedTask {
   task: Task;
   resolve: (value: string) => void;
   reject: (error: Error) => void;
-  timeout: NodeJS.Timeout;
-  timeoutMs: number; // Store timeout for worker termination
 }
 
+/**
+ * Manages a pool of worker threads that handle applying jq filters and ABI encoding to Web2Json response JSON data.
+ * This prevents blocking the main thread in case of malicious or long-running jq filters or ABI encoding.
+ */
 @Injectable()
 export class ThreadPoolService implements OnModuleInit, OnModuleDestroy {
   private workers: Worker[] = [];
   private availableWorkers: Worker[] = [];
   private taskQueue: QueuedTask[] = [];
-  private readonly logger = new Logger(ThreadPoolService.name);
-  private readonly poolSize: number;
-  private readonly workerPath: string;
 
-  constructor() {
-    this.poolSize = Math.min(4, os.cpus().length); // Use up to 4 workers or CPU count
-    this.logger.log("Starting thread pool service with pool size: " + this.poolSize);
-    this.workerPath = "./dist/verification/web-2-json/worker.js";
+  private readonly logger = new Logger(ThreadPoolService.name);
+  private readonly workerPath: string;
+  private idCounter = 1;
+
+  constructor(
+    private taskTimeoutMs: number,
+    private poolSize: number = os.cpus().length,
+  ) {
+    this.logger.log(
+      'Starting thread pool service with pool size: ' + this.poolSize,
+    );
+    this.workerPath = './dist/verification/web-2-json/worker.js';
   }
 
   onModuleInit() {
@@ -50,10 +59,10 @@ export class ThreadPoolService implements OnModuleInit, OnModuleDestroy {
   }
 
   private createWorker(): Worker {
-    const id = this.workers.length + 1;
+    const id = this.idCounter++;
     const worker = new Worker(this.workerPath, {
       workerData: { id: `worker-${id}` },
-      resourceLimits: { maxOldGenerationSizeMb: 128 }, // Set memory limit (example: 128MB)
+      resourceLimits: { maxOldGenerationSizeMb: 128 }, // Limit memory to prevent memory-bomb attacks
     });
 
     worker.on('error', (error) => {
@@ -63,7 +72,7 @@ export class ThreadPoolService implements OnModuleInit, OnModuleDestroy {
 
     worker.on('exit', (code) => {
       if (code !== 0) {
-        this.logger.warn(`Worker ${id} exited with code ${code}`);
+        this.logger.log(`Worker ${id} exited with code ${code}`);
       }
       this.handleWorkerExit(worker);
     });
@@ -75,58 +84,33 @@ export class ThreadPoolService implements OnModuleInit, OnModuleDestroy {
   }
 
   private handleWorkerExit(worker: Worker): void {
-    // Remove from both arrays
     this.workers = this.workers.filter((w) => w !== worker);
     this.availableWorkers = this.availableWorkers.filter((w) => w !== worker);
 
-    // Create a new worker to maintain pool size
     if (this.workers.length < this.poolSize) {
       this.createWorker();
     }
   }
 
-  public async executeAtomicTask(
+  public async processTask(
     jsonData: object | string,
     jqScheme: string,
     abiSignature: object,
-    timeoutMs: number,
   ): Promise<string> {
+    const taskId = `task-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const task: Task = {
+      id: taskId,
+      jsonData: jsonData,
+      jqScheme,
+      abiSignature,
+    };
+
     return new Promise<string>((resolve, reject) => {
-      // Use timeout plus some buffer for overall task timeout
-      const overallTimeoutMs = timeoutMs + 1000;
-      let timeoutOccurred = false;
-
-      const timeout = setTimeout(() => {
-        timeoutOccurred = true;
-        reject(new Error('Atomic process exceeded overall timeout'));
-      }, overallTimeoutMs);
-
-      const taskId = `task-${Date.now()}-${Math.random()}`;
-      const atomicTask: Task = {
-        id: taskId,
-        jsonData,
-        jqScheme,
-        abiSignature: abiSignature as string | string[],
-      };
-
       const queuedTask: QueuedTask = {
-        task: atomicTask,
-        resolve: (value) => {
-          if (!timeoutOccurred) {
-            clearTimeout(timeout);
-            resolve(value);
-          }
-        },
-        reject: (error) => {
-          if (!timeoutOccurred) {
-            clearTimeout(timeout);
-            reject(error);
-          }
-        },
-        timeout,
-        timeoutMs, // Store timeout for worker termination
+        task,
+        resolve,
+        reject,
       };
-
       this.taskQueue.push(queuedTask);
       this.processQueue();
     });
@@ -146,27 +130,54 @@ export class ThreadPoolService implements OnModuleInit, OnModuleDestroy {
   private executeTaskOnWorker(worker: Worker, queuedTask: QueuedTask): void {
     let isTaskCompleted = false;
 
+    const terminateWorker = () => {
+      if (isTaskCompleted) return;
+      isTaskCompleted = true;
+
+      this.logger.log(`Task timeout occurred, terminating worker`);
+
+      worker.off('message', messageHandler);
+      worker.off('error', errorHandler);
+
+      worker.terminate().catch((terminateError) => {
+        this.logger.error('Error terminating worker:', terminateError);
+      });
+
+      this.handleWorkerExit(worker);
+
+      queuedTask.reject(
+        new Web2JsonValidationError(
+          AttestationResponseStatus.PROCESSING_TIMEOUT,
+          'Filtering and encoding JSON timed out',
+        ),
+      );
+
+      this.processQueue();
+    };
+
+    const workerTimeout = setTimeout(terminateWorker, this.taskTimeoutMs);
+
     const messageHandler = (response: TaskResponse) => {
       if (isTaskCompleted) return;
-      if (response.id !== queuedTask.task.id) return; // Ensure we're handling the right task
+      if (response.id !== queuedTask.task.id) {
+        this.logger.error('Mismatched task ID in worker response');
+        return;
+      }
 
       isTaskCompleted = true;
 
       worker.off('message', messageHandler);
       worker.off('error', errorHandler);
-      clearTimeout(queuedTask.timeout);
+      clearTimeout(workerTimeout);
 
-      // Return worker to available pool
       this.availableWorkers.push(worker);
 
       if (response.success && response.result) {
-        // Since we removed jqResult from response, we need to provide it for compatibility
         queuedTask.resolve(response.result);
       } else {
-        queuedTask.reject(new Error(response.error || 'Unknown worker error'));
+        queuedTask.reject(response.error);
       }
 
-      // Process next task in queue
       this.processQueue();
     };
 
@@ -174,46 +185,16 @@ export class ThreadPoolService implements OnModuleInit, OnModuleDestroy {
       if (isTaskCompleted) return;
       isTaskCompleted = true;
 
+      this.logger.error('Unexpected worker error:', error);
+
       worker.off('message', messageHandler);
       worker.off('error', errorHandler);
-      clearTimeout(queuedTask.timeout);
+      clearTimeout(workerTimeout);
 
       queuedTask.reject(error);
       this.handleWorkerExit(worker);
       this.processQueue();
     };
-
-    // Override the task timeout to kill the worker thread when timeout occurs
-    const originalTimeout = queuedTask.timeout;
-    clearTimeout(originalTimeout);
-
-    const timeoutHandler = () => {
-      if (isTaskCompleted) return;
-      isTaskCompleted = true;
-
-      this.logger.warn('Task timeout occurred, terminating worker thread');
-
-      worker.off('message', messageHandler);
-      worker.off('error', errorHandler);
-
-      // Terminate the worker thread to kill any dangling processes
-      worker.terminate().catch((terminateError) => {
-        this.logger.error('Error terminating worker:', terminateError);
-      });
-
-      // Remove from available workers and create a new one
-      this.handleWorkerExit(worker);
-
-      queuedTask.reject(
-        new Error('Atomic process exceeded timeout and worker was terminated'),
-      );
-
-      // Process next task in queue
-      this.processQueue();
-    };
-
-    const newTimeout = setTimeout(timeoutHandler, queuedTask.timeoutMs + 500);
-    queuedTask.timeout = newTimeout;
 
     worker.on('message', messageHandler);
     worker.on('error', errorHandler);
@@ -221,17 +202,14 @@ export class ThreadPoolService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async shutdown(): Promise<void> {
-    // Clear any pending tasks
     this.taskQueue.forEach((queuedTask) => {
-      clearTimeout(queuedTask.timeout);
       queuedTask.reject(new Error('Thread pool is shutting down'));
     });
     this.taskQueue = [];
 
-    // Terminate all workers
-    const terminationPromises = this.workers.map(async (worker) => {
-      return worker.terminate();
-    });
+    const terminationPromises = this.workers.map(async (worker) =>
+      worker.terminate(),
+    );
 
     await Promise.allSettled(terminationPromises);
     this.workers = [];

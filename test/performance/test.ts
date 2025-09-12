@@ -1,26 +1,48 @@
 import { performance } from 'perf_hooks';
 import * as request from 'supertest';
-import {
-  api_key,
-  payload,
-} from '../e2e_tests/web2/helper';
+import { api_key, payload, payload2, payload3 } from '../e2e_tests/web2/helper';
 import { AttestationResponseStatus } from '../../src/verification/response-status';
 
 const WEB2J_URL = process.env.WEB2J_URL || 'http://localhost:3000/web2j'; // Adjust as needed
-const NUM_REQUESTS = 500;
+const NUM_REQUESTS = 100;
+
+
+export const maliciousPayload = {
+  attestationType:
+    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
+  sourceId:
+    '0x746573745075626c696357656232000000000000000000000000000000000000',
+  requestBody: {
+    url: 'https://restcountries.com/v3.1/independent',
+    httpMethod: 'GET',
+    headers: '',
+    queryParams: '{"status": true, "fields": "languages,capital"}',
+    body: '',
+    postProcessJq: '.[0].title' ,
+    abiSignature: `[
+        {
+          "type": "uint256[1000000][1000000]",
+          "name": "capitals"
+        }
+      ]`,
+  },
+};
+
+const PAYLOADS = [payload, payload2, payload3, maliciousPayload];
 
 describe('/Web2Json/prepareResponse', () => {
   it('should run performance test', async function () {
     this.timeout(0); // Set timeout to unlimited
-    const EXTERNAL_URL = 'http://127.0.0.1:3100/Web2Json/prepareResponse';
+    const EXTERNAL_URL = 'http://127.0.0.1:3125/Web2Json/prepareResponse';
     console.log(`Sending ${NUM_REQUESTS} requests to ${EXTERNAL_URL}...`);
     const start = performance.now();
 
     const requests = Array.from({ length: NUM_REQUESTS }, async (_, i) => {
       try {
+
         const response = await request(EXTERNAL_URL)
           .post('')
-          .send(payload)
+          .send(PAYLOADS[i % PAYLOADS.length])
           .set('X-API-KEY', api_key)
           .expect(200)
           .expect('Content-Type', /json/);
@@ -32,11 +54,10 @@ describe('/Web2Json/prepareResponse', () => {
             `Request ${i + 1} failed with status: ${responseBody.status}`,
           );
 
-        } else {
-          console.log("Response", responseBody)
         }
         return { isValid, response };
       } catch (error) {
+        console.error("Error on request", i + 1, error);
         return { isValid: false, error };
       }
     });

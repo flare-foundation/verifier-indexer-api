@@ -1,41 +1,57 @@
 import { ethers, ParamType } from 'ethers';
-import { isStringArray } from './utils';
+import { isStringArray, Web2JsonValidationError } from './utils';
 import * as jq from 'jq-wasm';
 import { parentPort } from 'worker_threads';
+import { AttestationResponseStatus } from '../response-status';
+import { Logger } from '@nestjs/common';
 
 export interface Task {
   id: string;
   jsonData: object | string;
   jqScheme: string;
-  abiSignature: string | string[] | ParamType[];
+  abiSignature: object;
 }
 
 export interface TaskResponse {
   id: string;
   success: boolean;
   result?: string;
-  error?: string;
+  error?: Web2JsonValidationError;
 }
 
-async function processTask(task: Task): Promise<void> {
+export async function processTask(task: Task): Promise<void> {
   const response: TaskResponse = {
     id: task.id,
     success: false,
   };
 
+  let jqResult: object | object[];
   try {
-    // Step 1: Apply JQ filter
-    const jqResult = await jq.json(task.jsonData, task.jqScheme);
-
-    // Step 2: ABI encode the result
-    const encodedData = abiEncode(jqResult, task.abiSignature);
-
-    response.success = true;
-    response.result = encodedData;
+    jqResult = await jq.json(task.jsonData, task.jqScheme);
+    Logger.log('JQ result:', jqResult);
   } catch (error) {
-    response.error = error instanceof Error ? error.message : String(error);
+    response.error = new Web2JsonValidationError(
+      AttestationResponseStatus.INVALID_JQ_PARSE_ERROR,
+      error instanceof Error ? error.message : String(error),
+    );
+    parentPort?.postMessage(response);
+    return;
   }
 
+  let encodedData: string;
+  try {
+    encodedData = abiEncode(jqResult, task.abiSignature);
+  } catch (error) {
+    response.error = new Web2JsonValidationError(
+      AttestationResponseStatus.INVALID_ENCODE_ERROR,
+      error instanceof Error ? error.message : String(error),
+    );
+    parentPort?.postMessage(response);
+    return;
+  }
+
+  response.success = true;
+  response.result = encodedData;
   parentPort?.postMessage(response);
 }
 
@@ -43,10 +59,7 @@ async function processTask(task: Task): Promise<void> {
  * Handles ABI encoding using the provided ABI signature and data.
  * Converts the ABI signature to ParamType and encodes the input using ethers.js.
  */
-function abiEncode(
-  data: object | string,
-  abiSignature: string | string[] | ParamType[],
-): string {
+function abiEncode(data: object | string, abiSignature: object): string {
   let parsed: string[] | ParamType[];
   // parse the ABI signature depending on its type
   if (isStringArray(abiSignature as unknown)) {

@@ -5,7 +5,7 @@ import {
   NestModule,
   ValidationPipe,
 } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
@@ -17,9 +17,9 @@ import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { Web2JsonVerifierService } from '../../../src/services/web-2-json-verifier.service';
 import { Web2JsonConfig } from 'src/config/interfaces/web2Json';
 import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
-import { HTTP_METHOD } from '../../../src/verification/web-2-json/utils';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
 import { ThreadPoolService } from '../../../src/verification/web-2-json/thread-pool.service';
+import { HTTP_METHOD } from '../../../src/verification/web-2-json/validate-url';
 
 export const apiJsonTestConfig: Web2JsonConfig = {
   ...apiJsonDefaultConfig,
@@ -64,7 +64,16 @@ function getConfig() {
     AuthModule,
   ],
   controllers: [Web2JsonVerifierController],
-  providers: [ApiKeyStrategy, AuthService, Web2JsonVerifierService, ThreadPoolService],
+  providers: [ApiKeyStrategy, AuthService, Web2JsonVerifierService, {
+    provide: ThreadPoolService,
+    useFactory: (configService: ConfigService<IConfig>) => {
+      const config: Web2JsonConfig = configService.get(
+        'verifierConfigOptions',
+      );
+      return new ThreadPoolService(config.securityConfig.processingTimeoutMs);
+    },
+    inject: [ConfigService],
+  }],
 })
 export class Web2JsonVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
