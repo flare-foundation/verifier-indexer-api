@@ -19,7 +19,7 @@ export interface TaskResponse {
   error?: Web2JsonValidationError;
 }
 
-export async function processTask(task: Task): Promise<void> {
+async function processTask(task: Task): Promise<void> {
   const response: TaskResponse = {
     id: task.id,
     success: false,
@@ -59,7 +59,7 @@ export async function processTask(task: Task): Promise<void> {
  * Handles ABI encoding using the provided ABI signature and data.
  * Converts the ABI signature to ParamType and encodes the input using ethers.js.
  */
-function abiEncode(data: object | string, abiSignature: object): string {
+export function abiEncode(data: object | string, abiSignature: object): string {
   let parsed: string[] | ParamType[];
   // parse the ABI signature depending on its type
   if (isStringArray(abiSignature as unknown)) {
