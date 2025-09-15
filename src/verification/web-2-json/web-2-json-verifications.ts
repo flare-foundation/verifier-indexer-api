@@ -31,7 +31,7 @@ const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
  * 4. Applies jq filter to the JSON data
  * 5. Encodes the filtered data using provided ABI signature
  *
- * Steps 4 and 5 are handled on worker threads to avoid blocking the verifier
+ * Steps 4 and 5 are handled by a child process pool to avoid blocking the verifier
  * in case of malicious or long-running jq filters or ABI encoding.
  *
  * @category Verifiers
@@ -61,7 +61,7 @@ export async function verifyWeb2Json(
     );
     const responseJsonData = parseAndValidateResponse(sourceResponse);
 
-    const encodedData = await workerPool.processTask(
+    const encodedData = await workerPool.filterAndEncodeData(
       responseJsonData,
       parsedRequest.jqScheme,
       parsedRequest.abiSign,

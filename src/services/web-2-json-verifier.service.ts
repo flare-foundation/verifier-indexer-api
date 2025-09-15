@@ -26,7 +26,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
 > {
   constructor(
     protected configService: ConfigService<IConfig>,
-    private readonly threadPoolService: ProcessPoolService,
+    private readonly processPool: ProcessPoolService,
     @Inject(REQUEST) private readonly req: Request,
   ) {
     super(configService, {
@@ -53,7 +53,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
       securityConfig,
       sourceConfig,
       userAgent,
-      this.threadPoolService,
+      this.processPool,
     );
 
     return serializeBigInts({

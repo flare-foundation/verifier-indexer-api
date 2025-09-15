@@ -2,44 +2,44 @@ import { abiEncode } from './utils';
 import * as jq from 'jq-wasm';
 import { AttestationResponseStatus } from '../response-status';
 
-export interface Task {
+export interface ProcessRequestMessage {
   id: string;
   jsonData: object | string;
   jqScheme: string;
   abiSignature: object;
 }
 
-interface SerializedError {
+interface ProcessErrorMessage {
   attestationResponseStatus: AttestationResponseStatus;
   message: string;
 }
 
-export interface TaskResponse {
+export interface ProcessResultMessage {
   id: string;
   success: boolean;
   result?: string;
-  error?: SerializedError;
+  error?: ProcessErrorMessage;
 }
 
 function buildError(
   status: AttestationResponseStatus,
   err: unknown,
-): SerializedError {
+): ProcessErrorMessage {
   return {
     attestationResponseStatus: status,
     message: err instanceof Error ? err.message : String(err),
   };
 }
 
-async function processTask(task: Task): Promise<TaskResponse> {
+async function execute(request: ProcessRequestMessage): Promise<ProcessResultMessage> {
   try {
-    const jqResult = await jq.json(task.jsonData, task.jqScheme);
+    const jqResult = await jq.json(request.jsonData, request.jqScheme);
     try {
-      const encoded = abiEncode(jqResult, task.abiSignature);
-      return { id: task.id, success: true, result: encoded };
+      const encoded = abiEncode(jqResult, request.abiSignature);
+      return { id: request.id, success: true, result: encoded };
     } catch (encodeErr) {
       return {
-        id: task.id,
+        id: request.id,
         success: false,
         error: buildError(
           AttestationResponseStatus.INVALID_ENCODE_ERROR,
@@ -49,7 +49,7 @@ async function processTask(task: Task): Promise<TaskResponse> {
     }
   } catch (jqErr) {
     return {
-      id: task.id,
+      id: request.id,
       success: false,
       error: buildError(
         AttestationResponseStatus.INVALID_JQ_PARSE_ERROR,
@@ -59,12 +59,12 @@ async function processTask(task: Task): Promise<TaskResponse> {
   }
 }
 
-process.on('message', (task: Task) => {
-  processTask(task)
-    .then((r) => process.send(r))
+process.on('message', (request: ProcessRequestMessage) => {
+  execute(request)
+    .then((response) => process.send(response))
     .catch((unhandled) => {
       process.send({
-        id: task?.id || 'unknown',
+        id: request?.id || 'unknown',
         success: false,
         error: buildError(AttestationResponseStatus.UNKNOWN_ERROR, unhandled),
       });

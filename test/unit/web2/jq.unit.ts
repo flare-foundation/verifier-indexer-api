@@ -58,28 +58,28 @@ describe('jq unit tests', () => {
         '{"a":'.repeat(1000) + '"end"' + '}'.repeat(1000),
       );
       const jqFilter = '.a';
-      await expect(pool.processTask(json, jqFilter, {})).to.be.rejectedWith(
+      await expect(pool.filterAndEncodeData(json, jqFilter, {})).to.be.rejectedWith(
         'Exceeds depth limit for parsing',
       );
     });
     it('Should reject - include external module', async () => {
       const json = {};
       const jqFilter = 'include "some_unwanted_module"';
-      await expect(pool.processTask(json, jqFilter, {})).to.be.rejectedWith(
+      await expect(pool.filterAndEncodeData(json, jqFilter, {})).to.be.rejectedWith(
         'syntax error, unexpected end of file',
       );
     });
     it('Should reject - invalid multiplication', async () => {
       const json = {};
       const jqFilter = '["a"] * 1000000';
-      await expect(pool.processTask(json, jqFilter, {})).to.be.rejectedWith(
+      await expect(pool.filterAndEncodeData(json, jqFilter, {})).to.be.rejectedWith(
         'array (["a"]) and number (1000000) cannot be multiplied',
       );
     });
     it('Should reject - malformed jq', async () => {
       const json = {};
       const jqFilter = 'if true then "ok" else "bad"';
-      await expect(pool.processTask(json, jqFilter, {})).to.be.rejectedWith(
+      await expect(pool.filterAndEncodeData(json, jqFilter, {})).to.be.rejectedWith(
         'error: syntax error, unexpected end of file',
       );
     });
@@ -88,7 +88,7 @@ describe('jq unit tests', () => {
       // Valid filter, but computationally expensive
       const jqFilter = '.arr | map(. + 1)';
       validateJqFilter(jqFilter, maxJqFilterLength);
-      await expect(pool.processTask(json, jqFilter, {})).to.be.rejectedWith(
+      await expect(pool.filterAndEncodeData(json, jqFilter, {})).to.be.rejectedWith(
         'Filtering and encoding JSON timed out',
       );
     });

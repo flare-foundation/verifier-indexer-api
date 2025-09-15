@@ -1,5 +1,5 @@
 import { ChildProcess, fork } from 'child_process';
-import { Task, TaskResponse } from './worker-process';
+import { ProcessRequestMessage, ProcessResultMessage } from './worker-process';
 import {
   Injectable,
   Logger,
@@ -10,8 +10,8 @@ import * as os from 'os';
 import { AttestationResponseStatus } from '../response-status';
 import { Web2JsonValidationError } from './utils';
 
-interface QueuedTask {
-  task: Task;
+interface QueuedRequest {
+  task: ProcessRequestMessage;
   resolve: (value: string) => void;
   reject: (error: Error) => void;
 }
@@ -26,14 +26,14 @@ interface QueuedTask {
 export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
   private workers: ChildProcess[] = [];
   private availableWorkers: ChildProcess[] = [];
-  private taskQueue: QueuedTask[] = [];
+  private requestQueue: QueuedRequest[] = [];
 
   private readonly logger = new Logger(ProcessPoolService.name);
   private readonly workerPath: string;
   private idCounter = 1;
 
   constructor(
-    private taskTimeoutMs: number,
+    private requestTimeoutMs: number,
     private poolSize: number = os.cpus().length,
   ) {
     this.logger.log(
@@ -97,50 +97,50 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  public async processTask(
+  public async filterAndEncodeData(
     jsonData: object | string,
     jqScheme: string,
     abiSignature: object,
   ): Promise<string> {
-    const taskId = `task-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    const task: Task = {
-      id: taskId,
+    const requestId = `task-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const request: ProcessRequestMessage = {
+      id: requestId,
       jsonData: jsonData,
       jqScheme,
       abiSignature,
     };
 
     return new Promise<string>((resolve, reject) => {
-      const queuedTask: QueuedTask = {
-        task,
+      const queuedRequest: QueuedRequest = {
+        task: request,
         resolve,
         reject,
       };
-      this.taskQueue.push(queuedTask);
+      this.requestQueue.push(queuedRequest);
       this.processQueue();
     });
   }
 
   private processQueue(): void {
-    while (this.taskQueue.length > 0 && this.availableWorkers.length > 0) {
-      const queuedTask = this.taskQueue.shift();
+    while (this.requestQueue.length > 0 && this.availableWorkers.length > 0) {
+      const queuedRequest = this.requestQueue.shift();
       const worker = this.availableWorkers.shift();
 
-      if (queuedTask && worker) {
-        this.executeTaskOnWorker(worker, queuedTask);
+      if (queuedRequest && worker) {
+        this.executeRequestOnWorker(worker, queuedRequest);
       }
     }
   }
 
-  private executeTaskOnWorker(
+  private executeRequestOnWorker(
     worker: ChildProcess,
-    queuedTask: QueuedTask,
+    queuedRequest: QueuedRequest,
   ): void {
-    let isTaskCompleted = false;
+    let isRequestCompleted = false;
 
     const finishTask = (cb: () => void) => {
-      if (isTaskCompleted) return;
-      isTaskCompleted = true;
+      if (isRequestCompleted) return;
+      isRequestCompleted = true;
       worker.off('message', messageHandler);
       worker.off('error', errorHandler);
       cb();
@@ -153,7 +153,7 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
         worker.removeAllListeners('message');
         worker.kill('SIGKILL');
         this.handleWorkerExit(worker);
-        queuedTask.reject(
+        queuedRequest.reject(
           new Web2JsonValidationError(
             AttestationResponseStatus.PROCESSING_TIMEOUT,
             'Filtering and encoding JSON timed out',
@@ -162,20 +162,20 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
       });
     };
 
-    const workerTimeout = setTimeout(terminateWorker, this.taskTimeoutMs);
+    const workerTimeout = setTimeout(terminateWorker, this.requestTimeoutMs);
 
-    const messageHandler = (raw: TaskResponse) => {
-      if (isTaskCompleted) return;
-      if (!raw || raw.id !== queuedTask.task.id) return; // ignore unrelated
+    const messageHandler = (raw: ProcessResultMessage) => {
+      if (isRequestCompleted) return;
+      if (!raw || raw.id !== queuedRequest.task.id) return; // ignore unrelated
 
       finishTask(() => {
         clearTimeout(workerTimeout);
 
         this.availableWorkers.push(worker);
         if (raw.success && raw.result) {
-          queuedTask.resolve(raw.result);
+          queuedRequest.resolve(raw.result);
         } else if (raw.error) {
-          queuedTask.reject(
+          queuedRequest.reject(
             new Web2JsonValidationError(
               raw.error.attestationResponseStatus ||
                 AttestationResponseStatus.UNKNOWN_ERROR,
@@ -183,7 +183,7 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
             ),
           );
         } else {
-          queuedTask.reject(
+          queuedRequest.reject(
             new Web2JsonValidationError(
               AttestationResponseStatus.UNKNOWN_ERROR,
               'Unknown worker response',
@@ -197,7 +197,7 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
       finishTask(() => {
         clearTimeout(workerTimeout);
         this.logger.error('Unexpected worker process error:', error);
-        queuedTask.reject(error);
+        queuedRequest.reject(error);
         this.handleWorkerExit(worker);
       });
     };
@@ -206,12 +206,12 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
     worker.on('error', errorHandler);
 
     try {
-      worker.send(queuedTask.task);
+      worker.send(queuedRequest.task);
     } catch (e) {
       finishTask(() => {
         clearTimeout(workerTimeout);
         this.logger.error('Unexpected worker process error:', e);
-        queuedTask.reject(
+        queuedRequest.reject(
           new Web2JsonValidationError(
             AttestationResponseStatus.UNKNOWN_ERROR,
             'Failed to dispatch task to worker process',
@@ -223,10 +223,10 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async shutdown(): Promise<void> {
-    this.taskQueue.forEach((queuedTask) => {
+    this.requestQueue.forEach((queuedTask) => {
       queuedTask.reject(new Error('Process pool is shutting down'));
     });
-    this.taskQueue = [];
+    this.requestQueue = [];
 
     const terminationPromises = this.workers.map(async (worker) => {
       worker.removeAllListeners('message');

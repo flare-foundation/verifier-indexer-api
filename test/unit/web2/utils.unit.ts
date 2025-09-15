@@ -1,7 +1,6 @@
 import { expect, use } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { isStringArray } from '../../../src/verification/web-2-json/utils';
-import { HTTP_METHOD } from '../../../src/verification/web-2-json/validate-url';
 
 use(chaiAsPromised);
 
