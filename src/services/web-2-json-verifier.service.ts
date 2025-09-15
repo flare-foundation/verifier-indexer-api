@@ -17,7 +17,7 @@ import {
 import { IConfig } from 'src/config/interfaces/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { ThreadPoolService } from '../verification/web-2-json/thread-pool.service';
+import { ProcessPoolService } from '../verification/web-2-json/process-pool.service';
 
 @Injectable()
 export class Web2JsonVerifierService extends BaseVerifierService<
@@ -26,7 +26,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
 > {
   constructor(
     protected configService: ConfigService<IConfig>,
-    private readonly threadPoolService: ThreadPoolService,
+    private readonly threadPoolService: ProcessPoolService,
     @Inject(REQUEST) private readonly req: Request,
   ) {
     super(configService, {

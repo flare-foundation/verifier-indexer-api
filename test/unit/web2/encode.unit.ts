@@ -1,7 +1,7 @@
 import { expect, use } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import { abiEncode } from '../../../src/verification/web-2-json/worker';
-import { ThreadPoolService } from '../../../src/verification/web-2-json/thread-pool.service';
+import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
+import { abiEncode } from '../../../src/verification/web-2-json/utils';
 
 use(chaiAsPromised);
 
@@ -67,10 +67,10 @@ describe('Encoder unit tests', () => {
   });
 
   describe('processTask', () => {
-    let pool: ThreadPoolService;
+    let pool: ProcessPoolService;
 
     before(() => {
-      pool = new ThreadPoolService(jqProcessTimeoutMs, 1);
+      pool = new ProcessPoolService(jqProcessTimeoutMs, 1);
       pool.onModuleInit();
     });
     after(async () => {

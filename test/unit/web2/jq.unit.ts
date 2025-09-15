@@ -2,7 +2,7 @@ import { expect, use } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { validateJqFilter } from '../../../src/verification/web-2-json/validate-jq';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
-import { ThreadPoolService } from '../../../src/verification/web-2-json/thread-pool.service';
+import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
 import * as jq from 'jq-wasm';
 
 use(chaiAsPromised);
@@ -10,7 +10,7 @@ use(chaiAsPromised);
 const jqProcessTimeoutMs = 500;
 const maxJqFilterLength = apiJsonDefaultConfig.securityConfig.maxJqFilterLength;
 
-let pool: ThreadPoolService;
+let pool: ProcessPoolService;
 
 describe('jq unit tests', () => {
   it('Should succeed - github issues', async () => {
@@ -46,7 +46,7 @@ describe('jq unit tests', () => {
 
   describe('jq processing', () => {
     before(() => {
-      pool = new ThreadPoolService(jqProcessTimeoutMs, 1);
+      pool = new ProcessPoolService(jqProcessTimeoutMs, 1);
       pool.onModuleInit();
     });
     after(async () => {

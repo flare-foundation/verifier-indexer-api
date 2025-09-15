@@ -16,7 +16,7 @@ import {
   Web2JsonSourceConfig,
 } from '../../config/interfaces/web2Json';
 import * as https from 'https';
-import { ThreadPoolService } from './thread-pool.service';
+import { ProcessPoolService } from './process-pool.service';
 import { CheckedUrl } from './validate-url';
 import { parseAndValidateResponse } from './validate-response';
 import { parseAndValidateRequest } from './validate-request';
@@ -41,7 +41,7 @@ export async function verifyWeb2Json(
   securityConfig: Web2JsonSecurityConfig,
   sourceConfig: Web2JsonSourceConfig,
   userAgent: string | undefined,
-  workerPool: ThreadPoolService,
+  workerPool: ProcessPoolService,
 ): Promise<VerificationResponse<Web2Json_Response>> {
   try {
     const parsedRequest = await parseAndValidateRequest(
@@ -122,6 +122,7 @@ async function executeRequest(
       httpsAgent,
     });
   } catch (error) {
+    console.error('Error fetching source URL:', error);
     throw new Web2JsonValidationError(
       AttestationResponseStatus.INVALID_FETCH_ERROR,
       `Error fetching source response: ${error}`,

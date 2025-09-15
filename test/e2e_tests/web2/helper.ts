@@ -15,11 +15,10 @@ import { ChainType, getApiKeys } from '../../../src/config/configuration';
 import { Web2JsonVerifierController } from '../../../src/controllers/web-2-json-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { Web2JsonVerifierService } from '../../../src/services/web-2-json-verifier.service';
-import { Web2JsonConfig } from 'src/config/interfaces/web2Json';
-import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
+import { HTTP_METHOD, Web2JsonConfig } from '../../../src/config/interfaces/web2Json';
+import { VerifierServerConfig, IConfig } from '../../../src/config/interfaces/common';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
-import { ThreadPoolService } from '../../../src/verification/web-2-json/thread-pool.service';
-import { HTTP_METHOD } from '../../../src/verification/web-2-json/validate-url';
+import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
 
 export const apiJsonTestConfig: Web2JsonConfig = {
   ...apiJsonDefaultConfig,
@@ -65,12 +64,12 @@ function getConfig() {
   ],
   controllers: [Web2JsonVerifierController],
   providers: [ApiKeyStrategy, AuthService, Web2JsonVerifierService, {
-    provide: ThreadPoolService,
+    provide: ProcessPoolService,
     useFactory: (configService: ConfigService<IConfig>) => {
       const config: Web2JsonConfig = configService.get(
         'verifierConfigOptions',
       );
-      return new ThreadPoolService(config.securityConfig.processingTimeoutMs);
+      return new ProcessPoolService(config.securityConfig.processingTimeoutMs);
     },
     inject: [ConfigService],
   }],
