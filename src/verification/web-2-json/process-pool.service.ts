@@ -31,6 +31,7 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ProcessPoolService.name);
   private readonly workerPath: string;
   private idCounter = 1;
+  private shutdownInitiated = false;
 
   constructor(
     private readonly requestTimeoutMs: number,
@@ -61,6 +62,9 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
   }
 
   private createWorker(): ChildProcess {
+    if (this.shutdownInitiated) {
+      return;
+    }
     const id = this.idCounter++;
     const child = fork(this.workerPath, {
       execArgv: ['--max-old-space-size=256'], // Memory cap per process
@@ -232,6 +236,7 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
   }
 
   private shutdown() {
+    this.shutdownInitiated = true;
     this.requestQueue.forEach((queuedTask) => {
       queuedTask.reject(new Error('Process pool is shutting down'));
     });
@@ -243,5 +248,6 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
     });
     this.workers = [];
     this.availableWorkers = [];
+    this.logger.log("Process pool shut down.")
   }
 }

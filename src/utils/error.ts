@@ -7,7 +7,7 @@ export function asError(e: unknown): Error {
 }
 
 /** Returns error message including stack trace and the `cause` error, if defined. */
-export function errorString(error: unknown) {
+export function errorString(error: unknown): string {
   if (error instanceof Error) {
     const errorDetails = (e: Error) => (e.stack ? `\n${e.stack}` : e.message);
     const cause =

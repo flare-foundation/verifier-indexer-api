@@ -66,32 +66,32 @@ describe('Encoder unit tests', () => {
     });
   });
 
-  describe('processTask', () => {
+  describe('filterAndEncodeData', () => {
     let pool: ProcessPoolService;
 
     before(() => {
       pool = new ProcessPoolService(jqProcessTimeoutMs, 1);
       pool.onModuleInit();
     });
-    after(async () => {
-      await pool?.onModuleDestroy();
+    after(() => {
+      pool?.onModuleDestroy();
     });
 
     it('Should reject - deeply nested JSON', async () => {
       const types = ['bytes'];
       const values = ['0x' + 'ff'.repeat(100_000_000)];
-      await expect(pool.filterAndEncodeData(values, '.', types)).to.be.rejectedWith(
-        'Filtering and encoding JSON timed out',
-      );
+      await expect(
+        pool.filterAndEncodeData(values, '.', types),
+      ).to.be.rejectedWith('Filtering and encoding JSON timed out');
     });
     it('Should reject - deeply nested JSON', async () => {
       const types = ['uint256[]'];
       const values = [Array(10_000_000).fill(42)];
-      await expect(pool.filterAndEncodeData(values, '.', types)).to.be.rejectedWith(
-        'Filtering and encoding JSON timed out',
-      );
+      await expect(
+        pool.filterAndEncodeData(values, '.', types),
+      ).to.be.rejectedWith('Filtering and encoding JSON timed out');
     });
-    it('Should reject - error in child process (invalid tuple)', async () => {
+    it('Should reject - invalid tuple', async () => {
       const abiSignature = {
         internalType: 'tuple(uint256, string',
         name: 'info',

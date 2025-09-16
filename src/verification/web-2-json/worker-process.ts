@@ -25,7 +25,7 @@ export interface ProcessResultMessage {
 
 const logger = new Logger(`Worker-${process.env.WORKER_ID}`);
 
-export async function execute(
+async function execute(
   request: ProcessRequestMessage,
 ): Promise<ProcessResultMessage> {
   logger.debug(
