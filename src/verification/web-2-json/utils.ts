@@ -10,7 +10,7 @@ export class Web2JsonValidationError extends Error {
     public readonly attestationResponseStatus: AttestationResponseStatus,
     message?: string,
   ) {
-    super(message || attestationResponseStatus);
+    super(attestationResponseStatus + (message ? `: ${message}` : ''));
     this.name = 'Web2JsonValidationError';
   }
 }

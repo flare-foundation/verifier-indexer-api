@@ -49,8 +49,8 @@ describe('jq unit tests', () => {
       pool = new ProcessPoolService(jqProcessTimeoutMs, 1);
       pool.onModuleInit();
     });
-    after(async () => {
-      await pool?.onModuleDestroy();
+    after(() => {
+      pool?.onModuleDestroy();
     });
 
     it('Should reject - deeply nested JSON', async () => {

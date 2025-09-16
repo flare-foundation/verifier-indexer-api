@@ -102,7 +102,7 @@ describe('Encoder unit tests', () => {
         pool.filterAndEncodeData(values, '.', abiSignature),
       ).to.be.rejectedWith('ABI ENCODING ERROR');
     });
-    it('Should reject - error in child process (missing value in tuple)', async () => {
+    it('Should reject - missing value in tuple', async () => {
       const abiSignature = {
         internalType: 'tuple(uint256,,string)',
         name: 'pair',
@@ -114,7 +114,7 @@ describe('Encoder unit tests', () => {
       ).to.be.rejectedWith('ABI ENCODING ERROR');
     });
 
-    it('Should reject - error in child process (deep nested tuple)', async () => {
+    it('Should reject -deep nested tuple', async () => {
       const abiSignature = {
         internalType:
           'tuple(tuple(tuple(tuple(tuple(tuple(tuple(tuple(uint256))))))))',

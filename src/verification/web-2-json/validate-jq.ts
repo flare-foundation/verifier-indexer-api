@@ -2,7 +2,7 @@ import { AttestationResponseStatus } from '../response-status';
 import { Web2JsonValidationError } from './utils';
 
 const dangerousKeywords = new RegExp(
-  `\\b(${[
+  `(?:^|\\W)(${[
     'debug',
     'stderr',
     'input',
@@ -46,7 +46,6 @@ const dangerousKeywords = new RegExp(
     '@html',
     '@uri',
     '@sh',
-    '@base64',
     'while',
     'foreach',
     'reduce',
@@ -63,7 +62,7 @@ const dangerousKeywords = new RegExp(
     'continue',
     'label',
     'goto',
-  ].join('|')})\\b`,
+  ].join('|')})(?=\\W|$)`,
   'i',
 );
 
