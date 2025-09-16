@@ -122,7 +122,6 @@ async function executeRequest(
       httpsAgent,
     });
   } catch (error) {
-    console.error('Error fetching source URL:', error);
     throw new Web2JsonValidationError(
       AttestationResponseStatus.INVALID_FETCH_ERROR,
       `Error fetching source response: ${error}`,
