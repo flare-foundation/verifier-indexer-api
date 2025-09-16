@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ChainType } from '../config/configuration';
 import {
@@ -18,12 +18,15 @@ import { IConfig } from 'src/config/interfaces/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { ProcessPoolService } from '../verification/web-2-json/process-pool.service';
+import { printResult } from '../verification/web-2-json/utils';
 
 @Injectable()
 export class Web2JsonVerifierService extends BaseVerifierService<
   Web2Json_Request,
   Web2Json_Response
 > {
+  private readonly logger = new Logger(Web2JsonVerifierService.name);
+
   constructor(
     protected configService: ConfigService<IConfig>,
     private readonly processPool: ProcessPoolService,
@@ -38,6 +41,9 @@ export class Web2JsonVerifierService extends BaseVerifierService<
   async verifyRequest(
     fixedRequest: Web2Json_Request,
   ): Promise<AttestationResponseDTO_Web2Json_Response> {
+    this.logger.debug(
+      `Verifying Web2Json request: ${JSON.stringify(fixedRequest)}`,
+    );
     const verifierConfigOptions: Web2JsonConfig = this.configService.get(
       'verifierConfigOptions',
     );
@@ -55,7 +61,9 @@ export class Web2JsonVerifierService extends BaseVerifierService<
       userAgent,
       this.processPool,
     );
-
+    this.logger.debug(
+      `Web2Json response: status: ${result.status}, result: ${printResult(result)}`,
+    );
     return serializeBigInts({
       status: result.status,
       response: result.response,

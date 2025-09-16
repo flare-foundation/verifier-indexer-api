@@ -1,5 +1,9 @@
-import { AttestationResponseStatus } from '../response-status';
+import {
+  AttestationResponseStatus,
+  VerificationResponse,
+} from '../response-status';
 import { ethers, ParamType } from 'ethers';
+import { Web2Json_Response } from '../../dtos/attestation-types/Web2Json.dto';
 
 export class Web2JsonValidationError extends Error {
   constructor(
@@ -11,7 +15,10 @@ export class Web2JsonValidationError extends Error {
   }
 }
 
-export function abiEncode(data: unknown, abiSignature: object): string {
+export function abiEncode(
+  data: object | object[],
+  abiSignature: object,
+): string {
   let parsed: string[] | ParamType[];
   if (isStringArray(abiSignature as unknown)) {
     parsed = (abiSignature as string[]).map((t) => ethers.ParamType.from(t));
@@ -25,4 +32,16 @@ export function abiEncode(data: unknown, abiSignature: object): string {
 
 export function isStringArray(data: unknown): data is string[] {
   return Array.isArray(data) && data.every((item) => typeof item === 'string');
+}
+
+// Print only the first and last 100 characters of the encoded data for brevity
+export function printResult(
+  result: VerificationResponse<Web2Json_Response>,
+): string {
+  const data = result.response?.responseBody.abiEncodedData;
+  if (data) {
+    return data.length < 250
+      ? data
+      : data.slice(0, 100) + '...' + data.slice(-100);
+  } else return 'N/A';
 }

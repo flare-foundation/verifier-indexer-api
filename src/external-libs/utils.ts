@@ -297,8 +297,6 @@ export function readAttestationTypeConfigs(
 
 /**
  * Helper function serializing bigints to strings recursively.
- * @param obj
- * @returns
  */
 export function serializeBigInts<T>(obj: T): T {
   return JSON.parse(
