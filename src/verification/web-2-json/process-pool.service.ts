@@ -67,9 +67,12 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
     }
     const id = this.idCounter++;
     const child = fork(this.workerPath, {
-      execArgv: ['--max-old-space-size=256'], // Memory cap per process
+      // Restrict memory usage to 256MB.
+      execArgv: ['--max-old-space-size=256'],
+      // Do not inherit parent environment.
       env: { WORKER_ID: id.toString() },
-      stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+      // Disable child stdin, stdout and stderr.
+      stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
     });
 
     child.on('error', (error) => {
@@ -242,7 +245,7 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
     });
     this.requestQueue = [];
 
-    this.workers.map((worker) => {
+    this.workers.forEach((worker) => {
       worker.removeAllListeners('message');
       worker.kill('SIGKILL');
     });
