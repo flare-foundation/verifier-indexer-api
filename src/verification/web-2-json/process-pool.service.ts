@@ -251,6 +251,6 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
     });
     this.workers = [];
     this.availableWorkers = [];
-    this.logger.log("Process pool shut down.")
+    this.logger.log('Process pool shut down.');
   }
 }

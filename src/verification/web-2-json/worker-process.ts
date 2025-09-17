@@ -35,9 +35,7 @@ async function execute(
     const jqResult = await jq.json(request.jsonData, request.jqScheme);
     try {
       const encoded = abiEncode(jqResult, request.abiSignature);
-      logger.debug(
-        `[${request.id}] Processed successfully`,
-      );
+      logger.debug(`[${request.id}] Processed successfully`);
       return { id: request.id, success: true, result: encoded };
     } catch (encodeErr) {
       logger.debug(`[${request.id}] Encoding error: ${errorString(encodeErr)}`);

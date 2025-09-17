@@ -15,8 +15,14 @@ import { ChainType, getApiKeys } from '../../../src/config/configuration';
 import { Web2JsonVerifierController } from '../../../src/controllers/web-2-json-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { Web2JsonVerifierService } from '../../../src/services/web-2-json-verifier.service';
-import { HTTP_METHOD, Web2JsonConfig } from '../../../src/config/interfaces/web2Json';
-import { VerifierServerConfig, IConfig } from '../../../src/config/interfaces/common';
+import {
+  HTTP_METHOD,
+  Web2JsonConfig,
+} from '../../../src/config/interfaces/web2Json';
+import {
+  VerifierServerConfig,
+  IConfig,
+} from '../../../src/config/interfaces/common';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
 
@@ -63,16 +69,23 @@ function getConfig() {
     AuthModule,
   ],
   controllers: [Web2JsonVerifierController],
-  providers: [ApiKeyStrategy, AuthService, Web2JsonVerifierService, {
-    provide: ProcessPoolService,
-    useFactory: (configService: ConfigService<IConfig>) => {
-      const config: Web2JsonConfig = configService.get(
-        'verifierConfigOptions',
-      );
-      return new ProcessPoolService(config.securityConfig.processingTimeoutMs);
+  providers: [
+    ApiKeyStrategy,
+    AuthService,
+    Web2JsonVerifierService,
+    {
+      provide: ProcessPoolService,
+      useFactory: (configService: ConfigService<IConfig>) => {
+        const config: Web2JsonConfig = configService.get(
+          'verifierConfigOptions',
+        );
+        return new ProcessPoolService(
+          config.securityConfig.processingTimeoutMs,
+        );
+      },
+      inject: [ConfigService],
     },
-    inject: [ConfigService],
-  }],
+  ],
 })
 export class Web2JsonVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

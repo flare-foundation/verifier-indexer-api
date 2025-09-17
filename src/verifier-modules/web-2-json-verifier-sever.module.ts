@@ -30,7 +30,9 @@ import { IConfig } from '../config/interfaces/common';
         const config: Web2JsonConfig = configService.get(
           'verifierConfigOptions',
         );
-        return new ProcessPoolService(config.securityConfig.processingTimeoutMs);
+        return new ProcessPoolService(
+          config.securityConfig.processingTimeoutMs,
+        );
       },
       inject: [ConfigService],
     },
