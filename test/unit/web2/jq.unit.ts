@@ -1,5 +1,5 @@
 import { expect, use } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import * as chaiAsPromised from 'chai-as-promised';
 import { validateJqFilter } from '../../../src/verification/web-2-json/validate-jq';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';

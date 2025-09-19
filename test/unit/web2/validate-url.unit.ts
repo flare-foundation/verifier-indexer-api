@@ -1,7 +1,7 @@
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import { apiJsonTestConfig } from '../../e2e_tests/web2/helper';
 import { expect, use } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import * as chaiAsPromised from 'chai-as-promised';
 import {
   validateHttpMethod,
   validateUrl,

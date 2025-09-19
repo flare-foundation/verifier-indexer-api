@@ -1,5 +1,5 @@
 import { expect, use } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import * as chaiAsPromised from 'chai-as-promised';
 import { validateApplicationJsonContentType } from '../../../src/verification/web-2-json/validate-response';
 
 use(chaiAsPromised);
