@@ -71,8 +71,8 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
       execArgv: ['--max-old-space-size=256'],
       // Do not inherit parent environment.
       env: { WORKER_ID: id.toString() },
-      // Disable child stdin, stdout and stderr.
-      stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+      // Disable child stdin, allow stdout and stderr to capture worker logs.
+      stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
     });
 
     child.on('error', (error) => {
