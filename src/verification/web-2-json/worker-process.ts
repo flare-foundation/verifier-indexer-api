@@ -1,8 +1,9 @@
 import { abiEncode } from './utils';
-import * as jq from 'jq-wasm';
 import { AttestationResponseStatus } from '../response-status';
 import { Logger } from '@nestjs/common';
 import { errorString } from '../../utils/error';
+import { evaluate, parse } from '@jq-tools/jq';
+import { performance } from 'perf_hooks';
 
 export interface ProcessRequestMessage {
   id: string;
@@ -31,11 +32,19 @@ async function execute(
   logger.debug(
     `Processing request: ${request.id}, jq: ${request.jqScheme}, abi: ${JSON.stringify(request.abiSignature)}`,
   );
+  const start = performance.now();
   try {
-    const jqResult = await jq.json(request.jsonData, request.jqScheme);
+    const jqResult = runJq(request.jqScheme, request.jsonData);
+    logger.debug(
+      `[${request.id}] Jq result [${performance.now() - start}]: ${JSON.stringify(jqResult)}`,
+    );
+    const jqDone = performance.now();
     try {
       const encoded = abiEncode(jqResult, request.abiSignature);
-      logger.debug(`[${request.id}] Processed successfully`);
+      const encodeDone = performance.now();
+      logger.debug(
+        `[${request.id}] Processed successfully (total=${encodeDone - start}ms, jq=${jqDone - start}ms, encode=${encodeDone - jqDone}ms)`,
+      );
       return { id: request.id, success: true, result: encoded };
     } catch (encodeErr) {
       logger.debug(`[${request.id}] Encoding error: ${errorString(encodeErr)}`);
@@ -58,6 +67,17 @@ async function execute(
         message: errorString(jqErr),
       },
     };
+  }
+}
+
+function runJq(expr: string, data: any): object | object[] {
+  const query = parse(expr);
+  const output = evaluate(query, [data]);
+  const result = Array.from(output);
+  if (result.length === 1) {
+    return result[0];
+  } else {
+    return result;
   }
 }
 

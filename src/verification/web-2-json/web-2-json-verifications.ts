@@ -1,20 +1,9 @@
-import {
-  Web2Json_Request,
-  Web2Json_Response,
-  Web2Json_ResponseBody,
-} from '../../dtos/attestation-types/Web2Json.dto';
+import { Web2Json_Request, Web2Json_Response, Web2Json_ResponseBody, } from '../../dtos/attestation-types/Web2Json.dto';
 import { serializeBigInts } from '../../external-libs/utils';
-import {
-  AttestationResponseStatus,
-  VerificationResponse,
-} from '../response-status';
+import { AttestationResponseStatus, VerificationResponse, } from '../response-status';
 import axios, { AxiosResponse } from 'axios';
 import { Web2JsonValidationError } from './utils';
-import {
-  HTTP_METHOD,
-  Web2JsonSecurityConfig,
-  Web2JsonSourceConfig,
-} from '../../config/interfaces/web2Json';
+import { HTTP_METHOD, Web2JsonSecurityConfig, Web2JsonSourceConfig, } from '../../config/interfaces/web2Json';
 import * as https from 'https';
 import { ProcessPoolService } from './process-pool.service';
 import { CheckedUrl } from './validate-url';
