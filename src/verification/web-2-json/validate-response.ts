@@ -41,7 +41,6 @@ export function validateApplicationJsonContentType(
 export function validateResponseContentData(input: string): object | string {
   try {
     const parsed = JSON.parse(input) as unknown;
-    // jq-wasm accepts objects or strings
     if (typeof parsed === 'object' || typeof parsed === 'string') {
       return parsed;
     }
