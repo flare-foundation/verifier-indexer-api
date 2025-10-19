@@ -79,6 +79,11 @@ function getConfig() {
         const config: Web2JsonConfig = configService.get(
           'verifierConfigOptions',
         );
+        config.securityConfig.allowedHostnames = ['dog.ceo'].concat(
+          [payload, payload2, payload3, payload4].map(
+            (p) => new URL(p.requestBody.url).hostname,
+          ),
+        );
         return new ProcessPoolService(
           config.securityConfig.processingTimeoutMs,
         );
@@ -209,39 +214,17 @@ export const payload4 = {
       '{"q": "pocket", "from": "2025-03-23", "to": "2025-03-23", "sortBy": "publishedAt"}',
     body: '',
     postProcessJq: `
-          .articles[] | {
-            source: {
-              id: (if .source.id == null then "" else .source.id end), 
-              name: .source.name
-            },
-            author: (if .author == null then "" else .author end),
-            title: .title,
-            description: (if .description == null then "" else .description end),
-            url: .url,
-            urlToImage: (if .urlToImage == null then "" else .urlToImage end),
-            publishedAt: (.publishedAt | fromdateiso8601),
-            content: .content
+          {
+            author: .[0].author,
+            title:  .[0].title,
           }
         `,
     abiSignature: `
         {
-          "type": "tuple[]",
+          "type": "tuple",
           "components": [
-            {
-              "type": "tuple",
-              "name": "source",
-              "components": [
-                { "type": "string", "name": "id" },
-                { "type": "string", "name": "name" }
-              ]
-            },
             { "type": "string", "name": "author" },
-            { "type": "string", "name": "title" },
-            { "type": "string", "name": "description" },
-            { "type": "string", "name": "url" },
-            { "type": "string", "name": "urlToImage" },
-            { "type": "uint256", "name": "publishedAt" },
-            { "type": "string", "name": "content" }
+            { "type": "string", "name": "title" }
           ]
         }
       

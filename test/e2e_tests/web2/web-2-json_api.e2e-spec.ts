@@ -318,7 +318,7 @@ describe('/Web2Json/prepareResponse', () => {
       ...payload,
       requestBody: {
         ...payload.requestBody,
-        abiSignature: '{"type":"tuple(uint256,,string)"}',
+        abiSignature: 'uint256',
       },
     };
     const response = await request(app.getHttpServer())
