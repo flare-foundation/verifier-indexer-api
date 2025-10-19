@@ -50,6 +50,10 @@ export interface Web2JsonSecurityConfig {
    */
   maxJqFilterLength: number;
   /**
+   * Maximum allowed length of the ABI signature.
+   */
+  maxAbiSignatureLength: number;
+  /**
    * Response processing timeout (jq filter + ABI encoding), in milliseconds.
    */
   processingTimeoutMs: number;

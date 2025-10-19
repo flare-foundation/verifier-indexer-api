@@ -1,15 +1,14 @@
-import { abiEncode } from './utils';
+import { getPreview } from './utils';
 import { AttestationResponseStatus } from '../response-status';
 import { Logger } from '@nestjs/common';
-import { errorString } from '../../utils/error';
-import { evaluate, parse } from '@jq-tools/jq';
 import { performance } from 'perf_hooks';
+import { ParamType } from 'ethers';
 
 export interface ProcessRequestMessage {
   id: string;
   jsonData: object | string;
   jqScheme: string;
-  abiSignature: object;
+  abiType: ParamType;
 }
 
 interface ProcessErrorMessage {
@@ -30,17 +29,18 @@ async function execute(
   request: ProcessRequestMessage,
 ): Promise<ProcessResultMessage> {
   logger.debug(
-    `Processing request: ${request.id}, jq: ${request.jqScheme}, abi: ${JSON.stringify(request.abiSignature)}`,
+    `Processing request: ${request.id}, jq: ${request.jqScheme}, abi: ${JSON.stringify(request.abiType)}`,
   );
   const start = performance.now();
   try {
     const jqResult = runJq(request.jqScheme, request.jsonData);
-    logger.debug(
-      `[${request.id}] Jq result [${performance.now() - start}]: ${JSON.stringify(jqResult)}`,
-    );
     const jqDone = performance.now();
+    logger.debug(
+      `[${request.id}] Jq result: ${getPreview(JSON.stringify(jqResult))}`,
+    );
+
     try {
-      const encoded = abiEncode(jqResult, request.abiSignature);
+      const encoded = abiEncode(jqResult, request.abiType);
       const encodeDone = performance.now();
       logger.debug(
         `[${request.id}] Processed successfully (total=${encodeDone - start}ms, jq=${jqDone - start}ms, encode=${encodeDone - jqDone}ms)`,
@@ -70,7 +70,7 @@ async function execute(
   }
 }
 
-function runJq(expr: string, data: any): object | object[] {
+export function runJq(expr: string, data: any): object | object[] {
   const query = parse(expr);
   const output = evaluate(query, [data]);
   const result = Array.from(output);

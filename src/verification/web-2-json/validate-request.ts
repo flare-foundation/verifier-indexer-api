@@ -5,12 +5,11 @@ import {
   Web2JsonSecurityConfig,
   Web2JsonSourceConfig,
 } from '../../config/interfaces/web2Json';
-import {
-  parseJsonExpectingObject,
-  parseJsonWithDepthAndKeysValidation,
-} from './validate-json';
+import { parseJsonWithDepthAndKeysValidation } from './validate-json';
 import { AttestationResponseStatus } from '../response-status';
 import { validateJqFilter } from './validate-jq';
+import { ParamType } from 'ethers';
+import { parseAndValidateAbiType } from './validate-abi';
 
 export interface ParsedRequestBody {
   validSourceUrl: CheckedUrl;
@@ -19,7 +18,7 @@ export interface ParsedRequestBody {
   sourceQueryParams: object;
   sourceBody: object;
   jqScheme: string;
-  abiSign: object;
+  abiType: ParamType;
 }
 
 const MAX_DEPTH_ONE = 1;
@@ -75,10 +74,7 @@ export async function parseAndValidateRequest(
   const jqScheme = requestBody.postProcessJq;
   validateJqFilter(jqScheme, securityConfig.maxJqFilterLength);
   // validate ABI signature
-  const abiSign = parseJsonExpectingObject(
-    requestBody.abiSignature,
-    AttestationResponseStatus.INVALID_ABI_SIGNATURE,
-  );
+  const abiType = parseAndValidateAbiType(requestBody.abiSignature, securityConfig.maxAbiSignatureLength);
   return <ParsedRequestBody>{
     validSourceUrl,
     sourceMethod,
@@ -86,6 +82,6 @@ export async function parseAndValidateRequest(
     sourceQueryParams,
     sourceBody,
     jqScheme,
-    abiSign,
+    abiType,
   };
 }

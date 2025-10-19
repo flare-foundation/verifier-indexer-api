@@ -13,6 +13,7 @@ export const apiJsonDefaultConfig: Web2JsonConfig = {
     maxBodyJsonDepth: 6,
     maxBodyJsonKeys: 500,
     maxJqFilterLength: 5_000,
+    maxAbiSignatureLength: 5_000,
     processingTimeoutMs: 1_000,
   },
   sourceConfig: {

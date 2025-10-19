@@ -20,8 +20,8 @@ import {
   Web2JsonConfig,
 } from '../../../src/config/interfaces/web2Json';
 import {
-  VerifierServerConfig,
   IConfig,
+  VerifierServerConfig,
 } from '../../../src/config/interfaces/common';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
@@ -139,11 +139,10 @@ export const payload2 = {
     headers: '{"Content-Type":"application/json"}',
     queryParams: '{"userId": 1}',
     body: '',
-    postProcessJq: '.[0:3]',
-    abiSignature: `[
-        {
-          "internalType": "tuple[]",
-          "type": "tuple[]",
+    postProcessJq: '.[0]',
+    abiSignature: `{
+          "internalType": "tuple",
+          "type": "tuple",
           "components": [
             {
               "internalType": "uint8",
@@ -167,7 +166,6 @@ export const payload2 = {
             }
           ]
         }
-      ]
     `,
   },
 };
@@ -182,14 +180,20 @@ export const payload3 = {
     headers: '',
     queryParams: '{"status": true, "fields": "languages,capital"}',
     body: '',
-    postProcessJq: `.[] | .capital[]`,
-    abiSignature: `[
+    postProcessJq: `{ capital1: .[0].capital[0], capital2: .[1].capital[0] }`,
+    abiSignature: `{
+      "type": "tuple",
+      "components": [
         {
-          "type": "string[]",
-          "name": "capitals"
+          "type": "string",
+          "name": "capital1"
+        },
+        {
+          "type": "string",
+          "name": "capital2"
         }
       ]
-    `,
+    }`,
   },
 };
 export const payload4 = {
@@ -204,7 +208,7 @@ export const payload4 = {
     queryParams:
       '{"q": "pocket", "from": "2025-03-23", "to": "2025-03-23", "sortBy": "publishedAt"}',
     body: '',
-    postProcessJq: `[
+    postProcessJq: `
           .articles[] | {
             source: {
               id: (if .source.id == null then "" else .source.id end), 
@@ -218,8 +222,8 @@ export const payload4 = {
             publishedAt: (.publishedAt | fromdateiso8601),
             content: .content
           }
-        ]`,
-    abiSignature: `[
+        `,
+    abiSignature: `
         {
           "type": "tuple[]",
           "components": [
@@ -240,7 +244,7 @@ export const payload4 = {
             { "type": "string", "name": "content" }
           ]
         }
-      ]
+      
     `,
   },
 };

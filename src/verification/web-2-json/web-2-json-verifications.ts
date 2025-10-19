@@ -53,7 +53,7 @@ export async function verifyWeb2Json(
     const encodedData = await workerPool.filterAndEncodeData(
       responseJsonData,
       parsedRequest.jqScheme,
-      parsedRequest.abiSign,
+      parsedRequest.abiType,
     );
 
     const response = new Web2Json_Response({

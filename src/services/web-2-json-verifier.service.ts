@@ -18,7 +18,7 @@ import { IConfig } from 'src/config/interfaces/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { ProcessPoolService } from '../verification/web-2-json/process-pool.service';
-import { printResult } from '../verification/web-2-json/utils';
+import { getPreview } from '../verification/web-2-json/utils';
 
 @Injectable()
 export class Web2JsonVerifierService extends BaseVerifierService<
@@ -62,7 +62,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
       this.processPool,
     );
     this.logger.debug(
-      `Web2Json response: status: ${result.status}, result: ${printResult(result)}`,
+      `Web2Json response: status: ${result.status}, result: ${getPreview(result.response?.responseBody.abiEncodedData)}`,
     );
     return serializeBigInts({
       status: result.status,

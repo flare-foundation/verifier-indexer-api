@@ -9,6 +9,7 @@ import {
 import * as os from 'os';
 import { AttestationResponseStatus } from '../response-status';
 import { Web2JsonValidationError } from './utils';
+import { ParamType } from 'ethers';
 
 interface QueuedRequest {
   task: ProcessRequestMessage;
@@ -113,14 +114,14 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
   public async filterAndEncodeData(
     jsonData: object | string,
     jqScheme: string,
-    abiSignature: object,
+    abiType: ParamType,
   ): Promise<string> {
     const requestId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     const request: ProcessRequestMessage = {
       id: requestId,
       jsonData: jsonData,
       jqScheme,
-      abiSignature,
+      abiType,
     };
 
     return new Promise<string>((resolve, reject) => {
@@ -172,7 +173,7 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
         queuedRequest.reject(
           new Web2JsonValidationError(
             AttestationResponseStatus.PROCESSING_TIMEOUT,
-            'Filtering and encoding JSON timed out',
+            'Processing JSON response timed out',
           ),
         );
       });

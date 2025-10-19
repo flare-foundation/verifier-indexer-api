@@ -110,13 +110,13 @@ export class Web2Json_RequestBody {
   postProcessJq: string;
 
   /**
-   * ABI signature of the data
+   * ABI type specification
    */
   @IsString()
   @ApiProperty({
-    description: `ABI signature of the data`,
+    description: `ABI type specification for encoding processed JSON data. Provide either a primitive type string (e.g. 'uint256') or a JSON tuple object with components.`,
     example:
-      '{"components": [{"internalType": "uint8","name": "userId","type": "uint8"},{"internalType": "uint8","name": "id","type": "uint8"},{"internalType": "string","name": "title","type": "string"},{"internalType": "bool","name": "completed","type": "bool"}],"name": "task","type": "tuple"}',
+      '{"type":"tuple","components":[{"internalType":"uint8","name":"userId","type":"uint8"},{"internalType":"uint8","name":"id","type":"uint8"},{"internalType":"string","name":"title","type":"string"},{"internalType":"bool","name":"completed","type":"bool"}],"name":"task"}',
   })
   abiSignature: string;
 }

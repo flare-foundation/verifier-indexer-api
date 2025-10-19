@@ -36,7 +36,7 @@ describe('jq unit tests', () => {
       expect(
         () => validateJqFilter(f, maxJqFilterLength),
         `filter "${f}"`,
-      ).to.throw('contains potentially dangerous keywords');
+      ).to.throw('Contains potentially dangerous keywords');
     }
   });
 
@@ -55,14 +55,14 @@ describe('jq unit tests', () => {
       );
       const jqFilter = '.a';
       await expect(
-        pool.filterAndEncodeData(json, jqFilter, {}),
+        pool.filterAndEncodeData(json, jqFilter, undefined),
       ).to.be.rejectedWith('Exceeds depth limit for parsing');
     });
     it('Should reject - invalid multiplication', async () => {
       const json = {};
       const jqFilter = '["a"] * 1000000';
       await expect(
-        pool.filterAndEncodeData(json, jqFilter, {}),
+        pool.filterAndEncodeData(json, jqFilter, undefined),
       ).to.be.rejectedWith(
         'INVALID: JQ PARSE ERROR',
       );
@@ -71,7 +71,7 @@ describe('jq unit tests', () => {
       const json = {};
       const jqFilter = 'if true then "ok" else "bad"';
       await expect(
-        pool.filterAndEncodeData(json, jqFilter, {}),
+        pool.filterAndEncodeData(json, jqFilter, undefined),
       ).to.be.rejectedWith('INVALID: JQ PARSE ERROR');
     });
     it('Should reject - valid filter but too long to process', async function () {
@@ -80,7 +80,7 @@ describe('jq unit tests', () => {
       const jqFilter = '.arr | map(. + 1)';
       validateJqFilter(jqFilter, maxJqFilterLength);
       await expect(
-        pool.filterAndEncodeData(json, jqFilter, {}),
+        pool.filterAndEncodeData(json, jqFilter, undefined),
       ).to.be.rejectedWith('INVALID: PROCESSING TIMEOUT');
     });
   });

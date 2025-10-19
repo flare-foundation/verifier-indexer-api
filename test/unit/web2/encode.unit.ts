@@ -2,6 +2,8 @@ import { expect, use } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
 import { abiEncode } from '../../../src/verification/web-2-json/utils';
+import { ParamType } from 'ethers';
+import { AttestationResponseStatus } from '../../../src/verification/response-status';
 
 use(chaiAsPromised);
 
@@ -10,59 +12,61 @@ const jqProcessTimeoutMs = 500;
 describe('Encoder unit tests', () => {
   describe('abiEncode', () => {
     it('Should reject - types/values length mismatch', () => {
-      const types = Array(100).fill('string');
+      const abiType = ParamType.from('string');
       const values = Array(99).fill('x'.repeat(10));
-      expect(() => abiEncode(values, types)).to.throw(
+      expect(() => abiEncode(values, abiType)).to.throw(
         'types/values length mismatch',
       );
     });
 
-    it('Should reject - invalid type', () => {
-      const types = ['tuple(uint256)'];
-      const values = ['this is not a tuple'];
-      expect(() => abiEncode(values, types)).to.throw(
+    it('Should reject - invalid value', () => {
+      const abiType = ParamType.from('uint256');
+      const values = ['not an int'];
+      expect(() => abiEncode(values, abiType)).to.throw(
         'invalid BigNumberish string',
       );
     });
 
-    it('Should reject - invalid type 2', () => {
-      const abiSignature = { internalType: 'uint', name: 'age', type: 'uint' };
+    it('Should reject - invalid value 2', () => {
+      const abiType = ParamType.from('uint256');
       const values = [];
-      expect(() => abiEncode(values, abiSignature)).to.throw(
-        'invalid BigNumberish value',
+      expect(() => abiEncode(values, abiType)).to.throw(
+        'types/values length mismatch',
       );
     });
 
-    it('Should reject - invalid type 3', () => {
-      const abiSignature = {
-        internalType: 'mapping(address => uint256)',
-        name: 'balances',
-        type: 'mapping',
+    it('Should reject - invalid value 3', () => {
+      const typeObj: object = {
+        type: 'tuple',
+        components: [
+          { name: 'a', type: 'uint256' },
+          { name: 'b', type: 'address' },
+        ],
       };
-      const values = [];
-      expect(() => abiEncode(values, abiSignature)).to.throw('invalid type');
+      const abiType = ParamType.from(typeObj);
+      const values = {
+        a: 42,
+        // missing 'b' field
+      };
+      expect(() => abiEncode(values, abiType)).to.throw('invalid address');
     });
 
-    it('Should reject - invalid type 4', () => {
-      const abiSignature = {
-        internalType: 'invalid',
-        name: 'magic',
-        type: 'invalid',
+    it('Should reject - invalid value 4', () => {
+      const typeObj: object = {
+        type: 'tuple',
+        components: [
+          { name: 'a', type: 'uint256' },
+          { name: 'b', type: 'address' },
+        ],
       };
-      const values = [];
-      expect(() => abiEncode(values, abiSignature)).to.throw('invalid type');
-    });
-
-    it('Should reject - invalid value', () => {
-      let nestedType = 'uint256';
-      for (let i = 0; i < 10; i++) {
-        nestedType = `tuple(${nestedType})[]`;
-      }
-
-      const types = [nestedType];
-      const deepArray = [[[42]]];
-      const values = [deepArray];
-      expect(() => abiEncode(values, types)).to.throw('expected array value');
+      const abiType = ParamType.from(typeObj);
+      const values = {
+        a: 'test',
+        b: '0x0000000000000000000000000000000000000000',
+      };
+      expect(() => abiEncode(values, abiType)).to.throw(
+        'invalid BigNumberish string',
+      );
     });
   });
 
@@ -77,59 +81,12 @@ describe('Encoder unit tests', () => {
       pool?.onModuleDestroy();
     });
 
-    it('Should reject - deeply nested JSON', async () => {
-      const types = ['bytes'];
+    it('Should reject - large input value', async () => {
+      const types = ParamType.from('bytes');
       const values = ['0x' + 'ff'.repeat(100_000_000)];
       await expect(
         pool.filterAndEncodeData(values, '.', types),
-      ).to.be.rejectedWith('Filtering and encoding JSON timed out');
-    });
-    it('Should reject - deeply nested JSON', async () => {
-      const types = ['uint256[]'];
-      const values = [Array(10_000_000).fill(42)];
-      await expect(
-        pool.filterAndEncodeData(values, '.', types),
-      ).to.be.rejectedWith('Filtering and encoding JSON timed out');
-    });
-    it('Should reject - invalid tuple', async () => {
-      const abiSignature = {
-        internalType: 'tuple(uint256, string',
-        name: 'info',
-        type: 'tuple',
-      };
-      const values = [];
-      await expect(
-        pool.filterAndEncodeData(values, '.', abiSignature),
-      ).to.be.rejectedWith('ABI ENCODING ERROR');
-    });
-    it('Should reject - missing value in tuple', async () => {
-      const abiSignature = {
-        internalType: 'tuple(uint256,,string)',
-        name: 'pair',
-        type: 'tuple',
-      };
-      const values = [];
-      await expect(
-        pool.filterAndEncodeData(values, '.', abiSignature),
-      ).to.be.rejectedWith('ABI ENCODING ERROR');
-    });
-
-    it('Should reject -deep nested tuple', async () => {
-      const abiSignature = {
-        internalType:
-          'tuple(tuple(tuple(tuple(tuple(tuple(tuple(tuple(uint256))))))))',
-        name: 'nested',
-        type: 'tuple',
-      };
-      const values = [];
-      await expect(
-        pool.filterAndEncodeData(values, '.', abiSignature),
-      ).to.be.rejectedWith('ABI ENCODING ERROR');
-    });
-    it('Should reject - invalid format', async () => {
-      await expect(
-        pool.filterAndEncodeData({}, '.', { foo: 123 }),
-      ).to.be.rejectedWith();
+      ).to.be.rejectedWith(AttestationResponseStatus.PROCESSING_TIMEOUT);
     });
   });
 });
