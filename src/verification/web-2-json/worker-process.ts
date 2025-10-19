@@ -1,8 +1,10 @@
-import { getPreview } from './utils';
+import { abiEncode, getPreview } from './utils';
 import { AttestationResponseStatus } from '../response-status';
 import { Logger } from '@nestjs/common';
 import { performance } from 'perf_hooks';
 import { ParamType } from 'ethers';
+import { errorString } from '../../utils/error';
+import { evaluate, parse } from '@jq-tools/jq';
 
 export interface ProcessRequestMessage {
   id: string;
