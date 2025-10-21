@@ -12,7 +12,7 @@ export class Web2JsonValidationError extends Error {
 }
 
 export function abiEncode(data: object | object[], abiType: ParamType): string {
-  const values: any[] = Array.isArray(data) ? data : [data];
+  const values = Array.isArray(data) ? data : [data];
   return ethers.AbiCoder.defaultAbiCoder().encode([abiType], values);
 }
 

@@ -9,7 +9,6 @@ import { parseAndValidateAbiType } from '../../../src/verification/web-2-json/va
 
 use(chaiAsPromised);
 
-
 describe('ABI encoding', () => {
   describe('parseAndValidateAbiType', () => {
     const MAX_LEN = 1000;
@@ -19,14 +18,6 @@ describe('ABI encoding', () => {
       expect(() => parseAndValidateAbiType(longType, MAX_LEN)).to.throw(
         Web2JsonValidationError,
       );
-    });
-
-    it('est', () => {
-      const types = 'string';
-      const type = parseAndValidateAbiType(types, MAX_LEN);
-      const values = ['hello'];
-      const out = abiEncode(values, type);
-      console.log('Encoded output:', out);
     });
 
     it('allows a primitive type string', () => {

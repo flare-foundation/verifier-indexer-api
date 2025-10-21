@@ -31,7 +31,7 @@ export function parseAndValidateAbiType(
  */
 function parseType(abiSignature: string) {
   try {
-    let maybeJson = tryParseJson(abiSignature);
+    const maybeJson = tryParseJson(abiSignature);
     if (maybeJson !== undefined) {
       if (Array.isArray(maybeJson)) {
         throw new Error(
@@ -59,7 +59,7 @@ function parseType(abiSignature: string) {
   }
 }
 
-function tryParseJson(raw: string): unknown | undefined {
+function tryParseJson(raw: string): unknown {
   try {
     return JSON.parse(raw);
   } catch {
@@ -85,7 +85,7 @@ function validateAbiType(abiType: ParamType): void {
     if (err instanceof Web2JsonValidationError) throw err;
     throw new Web2JsonValidationError(
       AttestationResponseStatus.INVALID_ABI_SIGNATURE,
-      `Unable to validate ABI type: ${err?.message ?? String(err)}`,
+      `Unable to validate ABI type: ${(err as Error)?.message ?? String(err)}`,
     );
   }
 }

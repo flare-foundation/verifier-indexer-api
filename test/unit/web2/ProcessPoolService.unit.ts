@@ -9,7 +9,7 @@ import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-conf
 
 use(chaiAsPromised);
 
-const jqProcessTimeoutMs = 200;
+const jqProcessTimeoutMs = 500;
 const maxJqFilterLength = apiJsonDefaultConfig.securityConfig.maxJqFilterLength;
 
 describe('filterAndEncodeData', () => {

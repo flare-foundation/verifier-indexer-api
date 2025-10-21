@@ -27,9 +27,7 @@ export interface ProcessResultMessage {
 
 const logger = new Logger(`Worker-${process.env.WORKER_ID}`);
 
-async function execute(
-  request: ProcessRequestMessage,
-): Promise<ProcessResultMessage> {
+function execute(request: ProcessRequestMessage): ProcessResultMessage {
   logger.debug(
     `Processing request: ${request.id}, jq: ${request.jqScheme}, abi: ${JSON.stringify(request.abiType)}`,
   );
@@ -72,33 +70,31 @@ async function execute(
   }
 }
 
-export function runJq(expr: string, data: any): object | object[] {
+export function runJq(expr: string, data: string | object): object | object[] {
   const query = parse(expr);
-  const output = evaluate(query, [data]);
-  const result = Array.from(output);
+  const output = evaluate(query, [data]) as Iterable<unknown>;
+  const result = Array.from(output) as object[];
   if (result.length === 1) {
     return result[0];
-  } else {
-    return result;
   }
+  return result;
 }
 
 process.on('message', (request: ProcessRequestMessage) => {
-  execute(request)
-    .then((response) => process.send(response))
-    .catch((unhandled) => {
-      logger.error(
-        `[${request.id}] Unexpected error: ${errorString(unhandled)}`,
-      );
-      process.send({
-        id: request.id,
-        success: false,
-        error: {
-          status: AttestationResponseStatus.UNKNOWN_ERROR,
-          message: errorString(unhandled),
-        },
-      });
+  try {
+    const result = execute(request);
+    process.send(result);
+  } catch (err) {
+    logger.error(`[${request.id}] Unexpected error: ${errorString(err)}`);
+    process.send({
+      id: request.id,
+      success: false,
+      error: {
+        status: AttestationResponseStatus.UNKNOWN_ERROR,
+        message: errorString(err),
+      },
     });
+  }
 });
 
 process.on('disconnect', () => process.exit(0));

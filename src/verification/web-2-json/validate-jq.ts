@@ -3,9 +3,6 @@ import { Web2JsonValidationError } from './utils';
 import { parse } from '@jq-tools/jq';
 import type {
   ExpressionAst,
-  FilterAst,
-  ObjectAst,
-  ObjectEntryAst,
   ProgAst,
   StrAst,
 } from '@jq-tools/jq/src/lib/parser/AST';
@@ -58,7 +55,7 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
 
   let ast: ProgAst;
   try {
-    ast = parse(jqFilter) as ProgAst;
+    ast = parse(jqFilter);
   } catch (error) {
     throw new Web2JsonValidationError(
       AttestationResponseStatus.INVALID_JQ_FILTER,
@@ -77,7 +74,7 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
   if (ast.expr) stack.push(ast.expr);
 
   while (stack.length) {
-    const expr = stack.pop()!;
+    const expr = stack.pop();
     visited++;
     if (visited > MAX_AST_NODES) throw throwError();
 
@@ -89,7 +86,7 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
       case 'def':
         throw throwError();
       case 'filter': {
-        const raw = (expr as FilterAst).name ?? '';
+        const raw = (expr).name ?? '';
         const name = raw.toLowerCase();
         const base = name.replace(/\/\d+$/, '');
         if (DANGEROUS_FILTERS.has(base)) throw throwError();
@@ -138,12 +135,11 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
         if (expr.expr) stack.push(expr.expr);
         break;
       case 'object': {
-        const obj = expr as ObjectAst;
-        for (let i = obj.entries.length - 1; i >= 0; i--) {
-          const entry = obj.entries[i] as ObjectEntryAst;
-          if (typeof entry.key !== 'string') stack.push(entry.key as any);
-          if ('value' in entry && (entry as any).value)
-            stack.push((entry as any).value);
+        const entries = expr.entries;
+        for (let i = entries.length - 1; i >= 0; i--) {
+          const entry = entries[i];
+          if (typeof entry.key !== 'string') stack.push(entry.key);
+          if (entry.value != null) stack.push(entry.value);
         }
         break;
       }
