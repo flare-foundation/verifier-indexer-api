@@ -86,7 +86,7 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
       case 'def':
         throw throwError();
       case 'filter': {
-        const raw = (expr).name ?? '';
+        const raw = expr.name ?? '';
         const name = raw.toLowerCase();
         const base = name.replace(/\/\d+$/, '');
         if (DANGEROUS_FILTERS.has(base)) throw throwError();

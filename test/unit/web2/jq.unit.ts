@@ -76,9 +76,7 @@ describe('jq unit tests', () => {
       const jqFilter = '["a"] * 1000000';
       await expect(
         pool.filterAndEncodeData(json, jqFilter, undefined),
-      ).to.be.rejectedWith(
-        'INVALID: JQ PARSE ERROR',
-      );
+      ).to.be.rejectedWith('INVALID: JQ PARSE ERROR');
     });
     it('Should reject - malformed jq', async () => {
       const json = {};
@@ -87,7 +85,6 @@ describe('jq unit tests', () => {
         pool.filterAndEncodeData(json, jqFilter, undefined),
       ).to.be.rejectedWith('INVALID: JQ PARSE ERROR');
     });
-
 
     it('Should accept safe, bounded filters', () => {
       const safeFilters = [
@@ -107,8 +104,10 @@ describe('jq unit tests', () => {
       ];
 
       for (const f of safeFilters) {
-        expect(() => validateJqFilter(f, maxJqFilterLength), `filter "${f}"`).to
-          .not.throw();
+        expect(
+          () => validateJqFilter(f, maxJqFilterLength),
+          `filter "${f}"`,
+        ).to.not.throw();
       }
     });
   });

@@ -74,7 +74,10 @@ export async function parseAndValidateRequest(
   const jqScheme = requestBody.postProcessJq;
   validateJqFilter(jqScheme, securityConfig.maxJqFilterLength);
   // validate ABI signature
-  const abiType = parseAndValidateAbiType(requestBody.abiSignature, securityConfig.maxAbiSignatureLength);
+  const abiType = parseAndValidateAbiType(
+    requestBody.abiSignature,
+    securityConfig.maxAbiSignatureLength,
+  );
   return <ParsedRequestBody>{
     validSourceUrl,
     sourceMethod,
