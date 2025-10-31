@@ -1,47 +1,70 @@
 import { AttestationResponseStatus } from '../response-status';
 import { Web2JsonValidationError } from './utils';
 import { parse } from '@jq-tools/jq';
-import type {
+import {
+  BinaryOperator,
   ExpressionAst,
   ProgAst,
-  StrAst,
 } from '@jq-tools/jq/src/lib/parser/AST';
 
 // Limit the max number of AST nodes visited
 const MAX_AST_NODES = 10000;
 
-const DANGEROUS_FILTERS = new Set([
-  // IO / eval
-  'input',
-  'inputs',
-  'input_filename',
-  'input_line_number',
-  'env',
-  'system',
-  'open',
-  'load',
-  'eval',
-  'setpath',
-  'getpath',
-  'delpaths',
-  // user-defined functions / dynamic invocation
-  'call',
-  // potentially unbounded iteration / recursion
-  'while',
-  'walk',
-  'until',
-  'repeat',
-  'recurse',
-  'recurse_down',
-  'recurse_up',
-  'range',
+// Conservative allowlist of jq builtin filters considered safe for this verifier.
+const ALLOWED_FILTERS = new Set([
+  // basic transforms
+  'map',
+  'select',
+  'flatten',
+  // array/object helpers
+  'length',
+  'keys',
+  'to_entries',
+  'from_entries',
+  'has',
+  'contains',
+  'add',
+  'join',
+  // numeric / string helpers
+  'tonumber',
+  'tostring',
+  'split',
+  'gsub',
+  'match',
+  // inspection / type helpers
+  'type',
+  // common string helpers
+  'startswith',
+  'endswith',
+  'test',
+  'explode',
+  'implode',
+  'ascii_upcase',
+  'ascii_downcase',
+  // sorting / sampling
+  'sort',
+  'sort_by',
+  'reverse',
+  'first',
+  'last',
+  // identity
+  '.',
 ]);
 
+const throwError = (message?: string) =>
+  new Web2JsonValidationError(
+    AttestationResponseStatus.INVALID_JQ_FILTER,
+    message || 'Invalid or disallowed jq expression',
+  );
+
 /**
- * Validates a jq filter string to ensure it does not contain potentially dangerous operations or excessive computation.
+ * Validates a jq filter string to ensure it only contains {@link ALLOWED_FILTERS}.
  * - Checks the length of the filter.
- * - Parses the filter into an AST and traverses it to look for dangerous keywords.
+ * - Parses the filter into an AST and traverses it checking if keywords are allowed.
  * - Limits the number of AST nodes visited to prevent excessive computation.
+ *
+ * The AST traversal is now whitelist-driven: only specific node types and filters are supported.
+ * Any unknown node type or filter will be rejected immediately.
  *
  * @throws {Web2JsonValidationError} If the filter is invalid or contains dangerous keywords.
  */
@@ -63,15 +86,11 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
     );
   }
 
-  const throwError = () =>
-    new Web2JsonValidationError(
-      AttestationResponseStatus.INVALID_JQ_FILTER,
-      'Contains potentially dangerous keywords',
-    );
-
   let visited = 0;
   const stack: ExpressionAst[] = [];
-  if (ast.expr) stack.push(ast.expr);
+  if (ast.expr) {
+    stack.push(ast.expr);
+  }
 
   while (stack.length) {
     const expr = stack.pop();
@@ -79,17 +98,22 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
     if (visited > MAX_AST_NODES) throw throwError();
 
     switch (expr.type) {
-      case 'binary':
+      case 'binary': {
+        validateOperator(expr.operator);
         stack.push(expr.right);
         stack.push(expr.left);
         break;
-      case 'def':
-        throw throwError();
+      }
       case 'filter': {
         const raw = expr.name ?? '';
         const name = raw.toLowerCase();
-        const base = name.replace(/\/\d+$/, '');
-        if (DANGEROUS_FILTERS.has(base)) throw throwError();
+        const base =
+          name
+            .replace(/\/\d+$/, '')
+            .split('::')
+            .pop() || name;
+        if (!ALLOWED_FILTERS.has(base))
+          throw throwError(`Unknown or disallowed jq filter: ${base}`);
         for (let i = expr.args.length - 1; i >= 0; i--)
           stack.push(expr.args[i]);
         break;
@@ -108,17 +132,19 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
         if (expr.catch) stack.push(expr.catch);
         stack.push(expr.body);
         break;
-      case 'reduce':
-        throw throwError();
-      case 'foreach':
-        throw throwError();
-      case 'label':
-        throw throwError();
-      case 'break':
-        throw throwError();
-      case 'unary':
-        stack.push(expr.expr);
+      case 'unary': {
+        const operator = expr.operator as string;
+        switch (operator) {
+          case '-':
+            stack.push(expr.expr);
+            break;
+          default:
+            throw throwError(
+              `Unsupported or disallowed unary operator: ${operator}`,
+            );
+        }
         break;
+      }
       case 'index':
         if (typeof expr.index !== 'string') stack.push(expr.index);
         stack.push(expr.expr);
@@ -143,18 +169,10 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
         }
         break;
       }
-      case 'var':
-      case 'identity':
-      case 'num':
-      case 'bool':
-      case 'null':
-      case 'format':
-        break; // Terminals
       case 'str': {
-        const s = expr as StrAst;
-        if (s.interpolated) {
-          for (let i = s.parts.length - 1; i >= 0; i--) {
-            const part = s.parts[i];
+        if (expr.interpolated) {
+          for (let i = expr.parts.length - 1; i >= 0; i--) {
+            const part = expr.parts[i];
             if (typeof part !== 'string') stack.push(part);
           }
         }
@@ -164,11 +182,43 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
         stack.push(expr.next);
         stack.push(expr.expr);
         break;
-      case 'recursiveDescent':
-        throw throwError();
+      case 'var':
+      case 'identity':
+      case 'num':
+      case 'bool':
+      case 'null':
+      case 'format':
+        break;
       default:
-        // Exhaustiveness guard — if a new node type appears, be conservative
+        // Disallow all other node types
         throw throwError();
+    }
+  }
+}
+
+/** Allow non-assignment operators. */
+function validateOperator(op: BinaryOperator) {
+  switch (op) {
+    case '|':
+    case ',':
+    case '//':
+    case 'and':
+    case 'or':
+    case '==':
+    case '!=':
+    case '<':
+    case '>':
+    case '<=':
+    case '>=':
+    case '+':
+    case '-':
+    case '*':
+    case '/':
+    case '%':
+      break;
+    default: {
+      // Defensive: reject other operators by default
+      throw throwError(`Unsupported or unknown binary operator: ${String(op)}`);
     }
   }
 }

@@ -3,6 +3,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import { validateJqFilter } from '../../../src/verification/web-2-json/validate-jq';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
+import { Web2JsonValidationError } from '../../../src/verification/web-2-json/utils';
 
 use(chaiAsPromised);
 
@@ -59,7 +60,83 @@ describe('jq unit tests', () => {
       expect(
         () => validateJqFilter(f, maxJqFilterLength),
         `filter "${f}"`,
-      ).to.throw(/Contains potentially dangerous keywords|Parse error/);
+      ).to.throw(Web2JsonValidationError);
+    }
+  });
+
+  it('Should accept safe, bounded filters', () => {
+    const safeFilters = [
+      '.',
+      '.a',
+      '{x: .a, y: .b}',
+      '[.a, .b]',
+      '(.a // 0)',
+      '(.a | tostring)',
+      '(.a | length)',
+      'keys',
+      'has("a")',
+      'select(type == "object")',
+      'map(. + 1) | .[:3]',
+      '.[0:2]',
+      '([.a] | length)',
+    ];
+
+    for (const f of safeFilters) {
+      expect(
+        () => validateJqFilter(f, maxJqFilterLength),
+        `filter "${f}"`,
+      ).to.not.throw();
+    }
+  });
+
+  it('Should process a complex but safe jq filter', () => {
+    const filter = `
+{ "outcomeIdx": [1, 0][((.data.time_series | to_entries[] | select(.key == "2025-07-07 16:00:00") | .value.price) // (.data.time_series | to_entries | last | .value.price)) >= 24000 | if . then 0 else 1 end] }
+`;
+    expect(() => validateJqFilter(filter, maxJqFilterLength)).to.not.throw();
+  });
+
+  it('Should reject assignment/update operators (mutations)', () => {
+    const mutationFilters = [
+      '.a |= 10',
+      '.a = 10',
+      '.[] |= . + 1',
+      '(.a, .b) |= 0',
+      '{ output: .a |= 10 }',
+    ];
+
+    for (const f of mutationFilters) {
+      expect(
+        () => validateJqFilter(f, maxJqFilterLength),
+        `filter "${f}"`,
+      ).to.throw(Web2JsonValidationError);
+    }
+  });
+
+  it('Should accept allowed binary operators', () => {
+    const allowed = [
+      '1 + 2',
+      '10 - 3',
+      '2 * 3',
+      '10 / 2',
+      '5 % 2',
+      '.a == 10',
+      '.a != .b',
+      '1 < 2',
+      '1 <= 2',
+      '2 > 1',
+      '2 >= 1',
+      '(.a // .b)',
+      '(.a, .b)',
+      '.a and .b',
+      '.a or .b',
+    ];
+
+    for (const f of allowed) {
+      expect(
+        () => validateJqFilter(f, maxJqFilterLength),
+        `filter "${f}"`,
+      ).to.not.throw();
     }
   });
 
@@ -84,31 +161,6 @@ describe('jq unit tests', () => {
       await expect(
         pool.filterAndEncodeData(json, jqFilter, undefined),
       ).to.be.rejectedWith('INVALID: JQ PARSE ERROR');
-    });
-
-    it('Should accept safe, bounded filters', () => {
-      const safeFilters = [
-        '.',
-        '.a',
-        '{x: .a, y: .b}',
-        '[.a, .b]',
-        '(.a // 0)',
-        '(.a | tostring)',
-        '(.a | length)',
-        'keys',
-        'has("a")',
-        'select(type == "object")',
-        'map(. + 1) | .[:3]', // valid composition on array input
-        '.[0:2]',
-        '([.a] | length)',
-      ];
-
-      for (const f of safeFilters) {
-        expect(
-          () => validateJqFilter(f, maxJqFilterLength),
-          `filter "${f}"`,
-        ).to.not.throw();
-      }
     });
   });
 });
