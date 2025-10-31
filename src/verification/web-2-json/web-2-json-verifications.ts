@@ -20,6 +20,7 @@ import { ProcessPoolService } from './process-pool.service';
 import { CheckedUrl } from './validate-url';
 import { parseAndValidateResponse } from './validate-response';
 import { parseAndValidateRequest } from './validate-request';
+import { HttpException } from '@nestjs/common';
 
 const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
 
@@ -82,6 +83,9 @@ export async function verifyWeb2Json(
       response,
     };
   } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
     if (error instanceof Web2JsonValidationError) {
       return { status: error.attestationResponseStatus };
     }

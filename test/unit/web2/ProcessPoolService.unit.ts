@@ -6,6 +6,7 @@ import { ParamType } from 'ethers';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 import { validateJqFilter } from '../../../src/verification/web-2-json/validate-jq';
 import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
+import { BackpressureException } from '../../../src/verification/web-2-json/utils';
 
 use(chaiAsPromised);
 
@@ -59,16 +60,43 @@ describe('filterAndEncodeData', () => {
   });
 
   it('Should timeout - valid filter and data but input too large to process', async function () {
-    const data = { arr: Array(250_000).fill(1) };
+    const data = { arr: Array(10_000).fill(1) };
     expect(
       Buffer.byteLength(JSON.stringify(data), 'utf8') <
         apiJsonDefaultConfig.securityConfig.maxResponseSize,
     ).to.be.true;
 
-    const jqFilter = '.arr ' + '| map(. + 1) '.repeat(10) + '| add';
+    const jqFilter = '.arr ' + '| map(. + 1) '.repeat(100) + '| add';
     validateJqFilter(jqFilter, maxJqFilterLength);
     await expect(
       pool.filterAndEncodeData(data, jqFilter, ParamType.from('uint256')),
     ).to.be.rejectedWith('INVALID: PROCESSING TIMEOUT');
+  });
+
+  it('Should fail fast with BackpressureError when queue is full', () => {
+    // Create a pool with no workers so requests queue up and set a modest maxQueueSize
+    const maxQueueSize = 5;
+    const totalRequests = 10;
+    const smallPool = new ProcessPoolService(
+      jqProcessTimeoutMs,
+      0,
+      maxQueueSize,
+    );
+    smallPool.onModuleInit();
+
+    const types = ParamType.from('uint256');
+    const run = async () => {
+      return await smallPool.filterAndEncodeData({ data: 5 }, '.data', types);
+    };
+
+    for (let i = 0; i < totalRequests; i++) {
+      if (i > maxQueueSize) {
+        expect(run()).to.be.rejectedWith(BackpressureException);
+      } else {
+        void run();
+      }
+    }
+
+    smallPool.onModuleDestroy();
   });
 });

@@ -1,5 +1,6 @@
 import { AttestationResponseStatus } from '../response-status';
 import { ethers, ParamType } from 'ethers';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class Web2JsonValidationError extends Error {
   constructor(
@@ -8,6 +9,15 @@ export class Web2JsonValidationError extends Error {
   ) {
     super(attestationResponseStatus + (message ? `: ${message}` : ''));
     this.name = 'Web2JsonValidationError';
+  }
+}
+
+export class BackpressureException extends HttpException {
+  constructor() {
+    super(
+      'Server is busy, too many pending requests',
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
   }
 }
 

@@ -18,7 +18,10 @@ import { IConfig } from 'src/config/interfaces/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { ProcessPoolService } from '../verification/web-2-json/process-pool.service';
-import { getPreview } from '../verification/web-2-json/utils';
+import {
+  getPreview,
+  BackpressureException,
+} from '../verification/web-2-json/utils';
 
 @Injectable()
 export class Web2JsonVerifierService extends BaseVerifierService<
@@ -44,6 +47,15 @@ export class Web2JsonVerifierService extends BaseVerifierService<
     this.logger.debug(
       `Verifying Web2Json request: ${JSON.stringify(fixedRequest)}`,
     );
+
+    // Fail fast: check if worker pool queue is already full before performing external fetch.
+    if (this.processPool.isQueueFull()) {
+      this.logger.warn(
+        `Request queue is full, rejecting request to prevent overload.`,
+      );
+      throw new BackpressureException();
+    }
+
     const verifierConfigOptions: Web2JsonConfig = this.configService.get(
       'verifierConfigOptions',
     );

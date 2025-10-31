@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import * as os from 'os';
 import { AttestationResponseStatus } from '../response-status';
-import { Web2JsonValidationError } from './utils';
+import { BackpressureException, Web2JsonValidationError } from './utils';
 import { ParamType } from 'ethers';
 
 interface QueuedRequest {
@@ -37,6 +37,8 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly requestTimeoutMs: number,
     private readonly poolSize: number = os.cpus().length,
+    // Maximum number of queued requests before we start rejecting with backpressure.
+    private readonly maxQueueSize: number = 1000,
   ) {
     this.logger.log(
       'Starting process pool service with pool size: ' + this.poolSize,
@@ -124,6 +126,13 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
       abiType,
     };
 
+    if (this.isQueueFull()) {
+      this.logger.warn(
+        `[${requestId}] Request queue is full, rejecting request.`,
+      );
+      throw new BackpressureException();
+    }
+
     return new Promise<string>((resolve, reject) => {
       const queuedRequest: QueuedRequest = {
         task: request,
@@ -133,6 +142,11 @@ export class ProcessPoolService implements OnModuleInit, OnModuleDestroy {
       this.requestQueue.push(queuedRequest);
       this.processQueue();
     });
+  }
+
+  /** Returns true when the request queue is at or above configured max size. */
+  public isQueueFull(): boolean {
+    return this.requestQueue.length >= this.maxQueueSize;
   }
 
   private processQueue(): void {
