@@ -19,7 +19,7 @@ import {
   MicResponse,
 } from '../../dtos/generic/generic.dto';
 import { AttestationDefinitionStore } from '../../external-libs/AttestationDefinitionStore';
-import { MIC_SALT, encodeAttestationName } from '../../external-libs/utils';
+import { encodeAttestationName, MIC_SALT } from '../../external-libs/utils';
 import { IIndexedQueryManager } from '../../indexed-query-manager/IIndexedQueryManager';
 import { IndexedQueryManagerOptions } from '../../indexed-query-manager/indexed-query-manager-types';
 import {
@@ -31,7 +31,7 @@ import { AttestationResponseStatus } from '../../verification/response-status';
 import { IConfig, VerifierServerConfig } from 'src/config/interfaces/common';
 
 interface IVerificationServiceConfig {
-  source: ChainType;
+  chainType: ChainType;
   attestationName: AttestationTypeOptions;
 }
 
@@ -52,19 +52,15 @@ export abstract class BaseVerifierService<
   Req extends AttestationTypeBase_Request,
   Res extends AttestationTypeBase_Response,
 > {
-  store: AttestationDefinitionStore;
-
-  source: SourceNames;
-  attestationName: AttestationTypeOptions;
-  isTestnet: boolean;
+  private readonly store = new AttestationDefinitionStore(
+    'src/config/type-definitions',
+  );
+  protected readonly isTestnet: boolean;
 
   constructor(
-    protected configService: ConfigService<IConfig>,
-    config: IVerificationServiceConfig,
+    protected readonly configService: ConfigService<IConfig>,
+    protected readonly config: IVerificationServiceConfig,
   ) {
-    this.store = new AttestationDefinitionStore('src/config/type-definitions');
-    this.source = getSourceName(config.source);
-    this.attestationName = config.attestationName;
     this.isTestnet = this.configService.getOrThrow<boolean>('isTestnet');
   }
 
@@ -75,10 +71,23 @@ export abstract class BaseVerifierService<
   private async verifyRequestInternal(
     request: Req,
   ): Promise<AttestationResponse<Res>> {
+    this.checkSupportedType(request);
+
+    const fixedRequest = {
+      messageIntegrityCode: ZERO_BYTES_32,
+      ...request, // if messageIntegrityCode is provided, it will shadow zero messageIntegrityCode
+    };
+    return this.verifyRequest(fixedRequest);
+  }
+
+  protected checkSupportedType(request: Req) {
+    const source = getSourceName(this.config.chainType);
+    const attestationName = this.config.attestationName;
+
     if (
-      request.attestationType !== encodeAttestationName(this.attestationName) ||
+      request.attestationType !== encodeAttestationName(attestationName) ||
       request.sourceId !==
-        encodeAttestationName((this.isTestnet ? 'test' : '') + this.source)
+        encodeAttestationName((this.isTestnet ? 'test' : '') + source)
     ) {
       throw new HttpException(
         {
@@ -86,23 +95,16 @@ export abstract class BaseVerifierService<
           error: `Attestation type and source id combination not supported: (${
             request.attestationType
           }, ${request.sourceId}). This source supports attestation type '${
-            this.attestationName
-          }' (${encodeAttestationName(this.attestationName)}) and source id '${
-            (this.isTestnet ? 'test' : '') + this.source
+            attestationName
+          }' (${encodeAttestationName(attestationName)}) and source id '${
+            (this.isTestnet ? 'test' : '') + source
           }' (${encodeAttestationName(
-            (this.isTestnet ? 'test' : '') + this.source,
+            (this.isTestnet ? 'test' : '') + source,
           )}).`,
         },
         HttpStatus.BAD_REQUEST,
       );
     }
-
-    const fixedRequest = {
-      messageIntegrityCode: ZERO_BYTES_32,
-      ...request, // if messageIntegrityCode is provided, it will shadow zero messageIntegrityCode
-    };
-
-    return this.verifyRequest(fixedRequest);
   }
 
   public async verifyEncodedRequest(
@@ -138,7 +140,7 @@ export abstract class BaseVerifierService<
     if (
       (response.status !== AttestationResponseStatus.VALID ||
         !response.response) &&
-      this.attestationName !== 'AddressValidity'
+      this.config.attestationName !== 'AddressValidity'
     ) {
       return {
         status: response.status,
@@ -162,7 +164,7 @@ export abstract class BaseVerifierService<
     const result = await this.verifyRequestInternal(request);
     if (
       result.status !== AttestationResponseStatus.VALID &&
-      this.attestationName !== 'AddressValidity'
+      this.config.attestationName !== 'AddressValidity'
     ) {
       return new MicResponse({ status: result.status });
     }
@@ -181,7 +183,7 @@ export abstract class BaseVerifierService<
     const result = await this.verifyRequestInternal(request);
     if (
       result.status !== AttestationResponseStatus.VALID &&
-      this.attestationName !== 'AddressValidity'
+      this.config.attestationName !== 'AddressValidity'
     ) {
       return new EncodedRequestResponse({ status: result.status });
     }
@@ -215,14 +217,14 @@ export abstract class BaseVerifierServiceWithIndexer<
     options: IVerificationServiceWithIndexerConfig,
   ) {
     super(configService, {
-      source: options.source,
+      chainType: options.chainType,
       attestationName: options.attestationName,
     });
     const verifierConfig =
       this.configService.get<VerifierServerConfig>('verifierConfig');
     const numberOfConfirmations = verifierConfig.numberOfConfirmations;
     const IqmOptions: IndexedQueryManagerOptions = {
-      chainType: options.source,
+      chainType: options.chainType,
       entityManager: this.manager,
       numberOfConfirmations: () => {
         return numberOfConfirmations;
@@ -232,17 +234,15 @@ export abstract class BaseVerifierServiceWithIndexer<
   }
 }
 
-function getSourceName(source: ChainType): SourceNames {
-  switch (source) {
+function getSourceName(chainType: ChainType): SourceNames {
+  switch (chainType) {
     case ChainType.DOGE:
       return 'DOGE';
     case ChainType.BTC:
       return 'BTC';
     case ChainType.XRP:
       return 'XRP';
-    case ChainType.PublicWeb2:
-      return 'PublicWeb2';
     default:
-      throw new Error(`Unsupported source chain, ${source}`);
+      throw new Error(`Unsupported source chain, ${chainType}`);
   }
 }

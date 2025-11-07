@@ -21,7 +21,7 @@ function moduleForDataSource():
       return BtcVerifierServerModule;
     case ChainType.XRP:
       return XRPVerifierServerModule;
-    case ChainType.PublicWeb2:
+    case ChainType.Web2:
       return Web2JsonVerifierServerModule;
     default:
       throw new Error(`Wrong verifier type: '${process.env.VERIFIER_TYPE}'`);

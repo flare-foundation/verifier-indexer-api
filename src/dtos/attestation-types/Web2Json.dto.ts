@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { Is0xHex, IsHash32, IsUnsignedIntLike } from '../dto-validators';
 import { AttestationResponseStatus } from '../../verification/response-status';
-import { HTTP_METHOD } from '../../config/interfaces/web2Json';
+import { HTTP_METHOD } from '../../config/interfaces/web2-json';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////

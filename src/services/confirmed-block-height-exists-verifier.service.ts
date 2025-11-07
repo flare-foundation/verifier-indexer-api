@@ -57,7 +57,7 @@ export class DOGEConfirmedBlockHeightExistsVerifierService extends BaseConfirmed
     protected manager: EntityManager,
   ) {
     super(configService, manager, {
-      source: ChainType.DOGE,
+      chainType: ChainType.DOGE,
       indexerQueryManager: DogeIndexerQueryManager,
     });
   }
@@ -70,7 +70,7 @@ export class BTCConfirmedBlockHeightExistsVerifierService extends BaseConfirmedB
     protected manager: EntityManager,
   ) {
     super(configService, manager, {
-      source: ChainType.BTC,
+      chainType: ChainType.BTC,
       indexerQueryManager: BtcIndexerQueryManager,
     });
   }
@@ -83,7 +83,7 @@ export class XRPConfirmedBlockHeightExistsVerifierService extends BaseConfirmedB
     protected manager: EntityManager,
   ) {
     super(configService, manager, {
-      source: ChainType.XRP,
+      chainType: ChainType.XRP,
       indexerQueryManager: XrpIndexerQueryManager,
     });
   }

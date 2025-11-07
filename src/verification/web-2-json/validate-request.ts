@@ -1,10 +1,6 @@
 import { CheckedUrl, validateHttpMethod, validateUrl } from './validate-url';
 import { Web2Json_Request } from '../../dtos/attestation-types/Web2Json.dto';
-import {
-  HTTP_METHOD,
-  Web2JsonSecurityConfig,
-  Web2JsonSourceConfig,
-} from '../../config/interfaces/web2Json';
+import { HTTP_METHOD, Web2JsonConfig } from '../../config/interfaces/web2-json';
 import { parseJsonWithDepthAndKeysValidation } from './validate-json';
 import { AttestationResponseStatus } from '../response-status';
 import { validateJqFilter } from './validate-jq';
@@ -25,8 +21,7 @@ const MAX_DEPTH_ONE = 1;
 
 export async function parseAndValidateRequest(
   request: Web2Json_Request,
-  securityConfig: Web2JsonSecurityConfig,
-  sourceConfig: Web2JsonSourceConfig,
+  config: Web2JsonConfig,
   userAgent: string,
 ) {
   const requestBody = request.requestBody;
@@ -34,18 +29,17 @@ export async function parseAndValidateRequest(
   // validate url
   const validSourceUrl = await validateUrl(
     sourceUrl,
-    securityConfig.blockHostnames,
-    securityConfig.allowedHostnames,
-    securityConfig.maxUrlLength,
+    config.sources.flatMap((s) => s.endpoints.map((e) => e.host)),
+    config.securityParams.maxUrlLength,
   );
   // validate HTTP method
   const sourceMethod = requestBody.httpMethod;
-  validateHttpMethod(sourceMethod, sourceConfig.allowedMethods);
+  validateHttpMethod(sourceMethod, '*');
   // validate headers
   let sourceHeaders = parseJsonWithDepthAndKeysValidation(
     requestBody.headers,
     MAX_DEPTH_ONE,
-    securityConfig.maxHeaders,
+    config.securityParams.maxHeaders,
     AttestationResponseStatus.INVALID_HEADERS,
   );
   // forward user-agent
@@ -60,23 +54,23 @@ export async function parseAndValidateRequest(
   const sourceQueryParams = parseJsonWithDepthAndKeysValidation(
     requestBody.queryParams,
     MAX_DEPTH_ONE,
-    securityConfig.maxQueryParams,
+    config.securityParams.maxQueryParams,
     AttestationResponseStatus.INVALID_QUERY_PARAMS,
   );
   // validate body
   const sourceBody = parseJsonWithDepthAndKeysValidation(
     requestBody.body,
-    securityConfig.maxBodyJsonDepth,
-    securityConfig.maxBodyJsonKeys,
+    config.securityParams.maxBodyJsonDepth,
+    config.securityParams.maxBodyJsonKeys,
     AttestationResponseStatus.INVALID_BODY,
   );
   // validate jq filter
   const jqScheme = requestBody.postProcessJq;
-  validateJqFilter(jqScheme, securityConfig.maxJqFilterLength);
+  validateJqFilter(jqScheme, config.securityParams.maxJqFilterLength);
   // validate ABI signature
   const abiType = parseAndValidateAbiType(
     requestBody.abiSignature,
-    securityConfig.maxAbiSignatureLength,
+    config.securityParams.maxAbiSignatureLength,
   );
   return <ParsedRequestBody>{
     validSourceUrl,

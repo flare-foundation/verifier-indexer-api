@@ -14,32 +14,38 @@ import { AuthService } from '../../../src/auth/auth.service';
 import { ChainType, getApiKeys } from '../../../src/config/configuration';
 import { Web2JsonVerifierController } from '../../../src/controllers/web-2-json-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
-import { Web2JsonVerifierService } from '../../../src/services/web-2-json-verifier.service';
+import { Web2JsonVerifierService } from '../../../src/services/web2-json-verifier.service';
 import {
   HTTP_METHOD,
   Web2JsonConfig,
-} from '../../../src/config/interfaces/web2Json';
+} from '../../../src/config/interfaces/web2-json';
 import {
   IConfig,
   VerifierServerConfig,
 } from '../../../src/config/interfaces/common';
-import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
+import { web2JsonDefaultParams } from '../../../src/config/defaults/web2-json-config';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
+import { payload, payload2, payload3, payload4 } from './payloads';
 
-export const apiJsonTestConfig: Web2JsonConfig = {
-  ...apiJsonDefaultConfig,
-  securityConfig: {
-    ...apiJsonDefaultConfig.securityConfig,
-    blockHostnames: ['google.com'],
-  },
-  sourceConfig: {
-    ...apiJsonDefaultConfig.sourceConfig,
-    allowedMethods: [HTTP_METHOD.GET],
-  },
+export const web2JsonTestConfig: Web2JsonConfig = {
+  securityParams: web2JsonDefaultParams,
+  sources: [payload, payload2, payload3, payload4].map((p) => {
+    const url = new URL(p.requestBody.url).hostname;
+    return {
+      sourceId: `testSource-${url}`,
+      endpoints: [
+        {
+          host: url,
+          paths: '*',
+          methods: [HTTP_METHOD.GET, HTTP_METHOD.POST],
+        },
+      ],
+    };
+  }),
 };
 
 function getConfig() {
-  const verifier_type = ChainType.PublicWeb2;
+  const verifier_type = ChainType.Web2;
   const isTestnet = process.env.TESTNET == 'true';
 
   const verifierConfig: VerifierServerConfig = {
@@ -53,7 +59,7 @@ function getConfig() {
   const config: IConfig = {
     port: parseInt(process.env.PORT || '3120'),
     api_keys,
-    verifierConfigOptions: apiJsonTestConfig,
+    web2JsonConfig: web2JsonTestConfig,
     verifierConfig,
     isTestnet,
   };
@@ -76,16 +82,9 @@ function getConfig() {
     {
       provide: ProcessPoolService,
       useFactory: (configService: ConfigService<IConfig>) => {
-        const config: Web2JsonConfig = configService.get(
-          'verifierConfigOptions',
-        );
-        config.securityConfig.allowedHostnames = ['dog.ceo'].concat(
-          [payload, payload2, payload3, payload4].map(
-            (p) => new URL(p.requestBody.url).hostname,
-          ),
-        );
+        const config: Web2JsonConfig = configService.get('web2JsonConfig');
         return new ProcessPoolService(
-          config.securityConfig.processingTimeoutMs,
+          config.securityParams.processingTimeoutMs,
         );
       },
       inject: [ConfigService],
@@ -117,120 +116,6 @@ after(async () => {
 // constants used in test
 const api_keys = getApiKeys();
 export const api_key = api_keys[0];
-export const payload = {
-  attestationType:
-    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x746573745075626c696357656232000000000000000000000000000000000000',
-  requestBody: {
-    url: 'https://jsonplaceholder.typicode.com/todos',
-    httpMethod: 'GET',
-    headers:
-      '{"Content-Type":"application/json","User-Agent":"MySuperDuperApp"}',
-    queryParams: '{"id": 1}',
-    body: '',
-    postProcessJq: '.[0].title',
-    abiSignature: '{"internalType": "string","name": "title","type": "string"}',
-  },
-};
-export const payload2 = {
-  attestationType:
-    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x746573745075626c696357656232000000000000000000000000000000000000',
-  requestBody: {
-    url: 'https://jsonplaceholder.typicode.com/todos',
-    httpMethod: 'GET',
-    headers: '{"Content-Type":"application/json"}',
-    queryParams: '{"userId": 1}',
-    body: '',
-    postProcessJq: '.[0]',
-    abiSignature: `{
-          "internalType": "tuple",
-          "type": "tuple",
-          "components": [
-            {
-              "internalType": "uint8",
-              "name": "userId",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint8",
-              "name": "id",
-              "type": "uint8"
-            },
-            {
-              "internalType": "string",
-              "name": "title",
-              "type": "string"
-            },
-            {
-              "internalType": "bool",
-              "name": "completed",
-              "type": "bool"
-            }
-          ]
-        }
-    `,
-  },
-};
-export const payload3 = {
-  attestationType:
-    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x746573745075626c696357656232000000000000000000000000000000000000',
-  requestBody: {
-    url: 'https://restcountries.com/v3.1/independent',
-    httpMethod: 'GET',
-    headers: '',
-    queryParams: '{"status": true, "fields": "languages,capital"}',
-    body: '',
-    postProcessJq: `{ capital1: .[0].capital[0], capital2: .[1].capital[0] }`,
-    abiSignature: `{
-      "type": "tuple",
-      "components": [
-        {
-          "type": "string",
-          "name": "capital1"
-        },
-        {
-          "type": "string",
-          "name": "capital2"
-        }
-      ]
-    }`,
-  },
-};
-export const payload4 = {
-  attestationType:
-    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x746573745075626c696357656232000000000000000000000000000000000000',
-  requestBody: {
-    url: 'https://newsapi.org/v2/everything',
-    httpMethod: 'GET',
-    headers: '',
-    queryParams:
-      '{"q": "pocket", "from": "2025-03-23", "to": "2025-03-23", "sortBy": "publishedAt"}',
-    body: '',
-    postProcessJq: `
-          {
-            author: .[0].author,
-            title:  .[0].title,
-          }
-        `,
-    abiSignature: `
-        {
-          "type": "tuple",
-          "components": [
-            { "type": "string", "name": "author" },
-            { "type": "string", "name": "title" }
-          ]
-        }
-      
-    `,
-  },
-};
 export const attResponse = {
   ...payload,
   votingRound: '0',

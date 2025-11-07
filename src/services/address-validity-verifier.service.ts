@@ -53,7 +53,7 @@ abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
 export class XRPAddressValidityVerifierService extends BaseAddressValidityVerifierService {
   constructor(protected configService: ConfigService<IConfig>) {
     super(configService, {
-      source: ChainType.XRP,
+      chainType: ChainType.XRP,
       attestationName: 'AddressValidity',
     });
   }
@@ -71,7 +71,7 @@ export class XRPAddressValidityVerifierService extends BaseAddressValidityVerifi
 export class BTCAddressValidityVerifierService extends BaseAddressValidityVerifierService {
   constructor(protected configService: ConfigService<IConfig>) {
     super(configService, {
-      source: ChainType.BTC,
+      chainType: ChainType.BTC,
       attestationName: 'AddressValidity',
     });
   }
@@ -88,7 +88,7 @@ export class BTCAddressValidityVerifierService extends BaseAddressValidityVerifi
 export class DOGEAddressValidityVerifierService extends BaseAddressValidityVerifierService {
   constructor(protected configService: ConfigService<IConfig>) {
     super(configService, {
-      source: ChainType.DOGE,
+      chainType: ChainType.DOGE,
       attestationName: 'AddressValidity',
     });
   }

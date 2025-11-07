@@ -11,10 +11,9 @@ import {
 import axios, { AxiosResponse } from 'axios';
 import { Web2JsonValidationError } from './utils';
 import {
-  HTTP_METHOD,
-  Web2JsonSecurityConfig,
-  Web2JsonSourceConfig,
-} from '../../config/interfaces/web2Json';
+  HTTP_METHOD, Web2JsonConfig,
+  Web2JsonSecurityParams,
+} from '../../config/interfaces/web2-json';
 import * as https from 'https';
 import { ProcessPoolService } from './process-pool.service';
 import { CheckedUrl } from './validate-url';
@@ -39,16 +38,14 @@ const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
  */
 export async function verifyWeb2Json(
   request: Web2Json_Request,
-  securityConfig: Web2JsonSecurityConfig,
-  sourceConfig: Web2JsonSourceConfig,
+  config: Web2JsonConfig,
   userAgent: string | undefined,
   workerPool: ProcessPoolService,
 ): Promise<VerificationResponse<Web2Json_Response>> {
   try {
     const parsedRequest = await parseAndValidateRequest(
       request,
-      securityConfig,
-      sourceConfig,
+      config,
       userAgent,
     );
 
@@ -58,7 +55,7 @@ export async function verifyWeb2Json(
       parsedRequest.sourceHeaders,
       parsedRequest.sourceQueryParams,
       parsedRequest.sourceBody,
-      securityConfig,
+      config.securityParams,
     );
     const responseJsonData = parseAndValidateResponse(sourceResponse);
 
@@ -99,7 +96,7 @@ async function executeRequest(
   sourceHeaders: object | undefined,
   sourceQueryParams: object | undefined,
   sourceBody: object | undefined,
-  securityConfig: Web2JsonSecurityConfig,
+  securityParams: Web2JsonSecurityParams,
 ): Promise<AxiosResponse<ArrayBuffer>> {
   try {
     // force lookup to resolve into lookup addresses from 'isValidUrl'
@@ -109,7 +106,7 @@ async function executeRequest(
       },
       servername: validSourceUrl.hostname,
       rejectUnauthorized: true,
-      timeout: securityConfig.requestTimeoutMs,
+      timeout: securityParams.requestTimeoutMs,
     });
 
     return await axios({
@@ -119,9 +116,9 @@ async function executeRequest(
       params: sourceQueryParams,
       data: sourceBody,
       responseType: DEFAULT_RESPONSE_TYPE,
-      maxContentLength: securityConfig.maxResponseSize, // limit response size
-      timeout: securityConfig.requestTimeoutMs,
-      maxRedirects: securityConfig.maxRedirects, // limit redirects
+      maxContentLength: securityParams.maxResponseSize, // limit response size
+      timeout: securityParams.requestTimeoutMs,
+      maxRedirects: securityParams.maxRedirects, // limit redirects
       validateStatus: (status) => status >= 200 && status < 300,
       httpsAgent,
     });

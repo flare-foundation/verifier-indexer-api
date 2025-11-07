@@ -1,14 +1,14 @@
 import { expect, use } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { validateJqFilter } from '../../../src/verification/web-2-json/validate-jq';
-import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
+import { web2JsonDefaultParams } from '../../../src/config/defaults/web2-json-config';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
 import { Web2JsonValidationError } from '../../../src/verification/web-2-json/utils';
 
 use(chaiAsPromised);
 
 const jqProcessTimeoutMs = 500;
-const maxJqFilterLength = apiJsonDefaultConfig.securityConfig.maxJqFilterLength;
+const maxJqFilterLength = web2JsonDefaultParams.maxJqFilterLength;
 
 let pool: ProcessPoolService;
 

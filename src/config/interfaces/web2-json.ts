@@ -1,18 +1,9 @@
-// Additional fields may be added in the future if necessary.
 export interface Web2JsonConfig {
-  securityConfig: Web2JsonSecurityConfig;
-  sourceConfig: Web2JsonSourceConfig;
+  securityParams: Web2JsonSecurityParams;
+  sources: Web2JsonSource[];
 }
 
-export interface Web2JsonSecurityConfig {
-  /**
-   * List of hostnames that should not be fetched from.
-   */
-  blockHostnames: string[];
-  /**
-   * List of hostnames that are allowed to be fetched from. An empty array [] means no restrictions (all hostnames are allowed).
-   */
-  allowedHostnames: string[];
+export interface Web2JsonSecurityParams {
   /**
    * Maximum allowed response size in bytes.
    */
@@ -68,24 +59,27 @@ export enum HTTP_METHOD {
 }
 
 export type AllowedMethods = HTTP_METHOD[] | '*';
-export type AllowedEndPoints = string[] | '*';
+export type AllowedEndpoints = string[] | '*';
 
-export interface Web2JsonSourceConfig {
-  /**
-   * Indicates whether an API key is required to access the source.
-   */
-  requiresApiKey: boolean;
-  /**
-   * Specifies the allowed HTTP methods for requests. Can be a list of specific methods or "*" to allow all.
-   */
-  allowedMethods: AllowedMethods;
-  /**
-   * Specifies the allowed API endpoints. Can be a list of specific endpoint paths or "*" to allow all.
-   */
+export interface Web2JsonSource {
+  sourceId: string;
+  endpoints: Endpoint[];
+}
 
-  allowedEndPoints: AllowedEndPoints;
-  /**
-   * Authentication details required for accessing the source. The structure may vary based on the authentication method.
-   */
-  authentication?: { [key: string]: unknown };
+export interface Endpoint {
+  host: string;
+  paths: AllowedEndpoints;
+  methods: AllowedMethods;
+  auth?: EndpointAuth;
+}
+
+export interface EndpointAuth {
+  type: AuthType;
+  header?: string;
+  keyEnvVar?: string;
+}
+
+export enum AuthType {
+  BEARER = 'bearer',
+  APIKEY = 'apikey',
 }

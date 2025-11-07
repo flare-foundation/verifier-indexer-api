@@ -65,7 +65,7 @@ export class DOGEBalanceDecreasingTransactionVerifierService extends BaseBalance
     protected manager: EntityManager,
   ) {
     super(configService, manager, {
-      source: ChainType.DOGE,
+      chainType: ChainType.DOGE,
       indexerQueryManager: DogeIndexerQueryManager,
     });
   }
@@ -84,7 +84,7 @@ export class BTCBalanceDecreasingTransactionVerifierService extends BaseBalanceD
     protected manager: EntityManager,
   ) {
     super(configService, manager, {
-      source: ChainType.BTC,
+      chainType: ChainType.BTC,
       indexerQueryManager: BtcIndexerQueryManager,
     });
   }
@@ -103,7 +103,7 @@ export class XRPBalanceDecreasingTransactionVerifierService extends BaseBalanceD
     protected manager: EntityManager,
   ) {
     super(configService, manager, {
-      source: ChainType.XRP,
+      chainType: ChainType.XRP,
       indexerQueryManager: XrpIndexerQueryManager,
     });
   }

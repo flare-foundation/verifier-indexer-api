@@ -70,7 +70,7 @@ function getConfig() {
     port: parseInt(process.env.PORT || '3120'),
     api_keys,
     verifierConfig,
-    verifierConfigOptions: {
+    indexerConfig: {
       db,
       typeOrmModuleOptions: {
         ...db,
@@ -95,15 +95,15 @@ function getConfig() {
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService<IConfig>) => {
-        const verifierConfigOptions: IndexerConfig = config.get(
-          'verifierConfigOptions',
+        const indexerConfig: IndexerConfig = config.get(
+          'indexerConfig',
         );
-        if (!verifierConfigOptions?.typeOrmModuleOptions) {
+        if (!indexerConfig?.typeOrmModuleOptions) {
           throw new Error(
             "'typeOrmModuleOptions' is missing in the configuration",
           );
         }
-        return verifierConfigOptions.typeOrmModuleOptions;
+        return indexerConfig.typeOrmModuleOptions;
       },
       inject: [ConfigService],
     }),

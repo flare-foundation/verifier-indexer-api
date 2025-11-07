@@ -7,12 +7,9 @@ import {
   api_key,
   app,
   attResponse,
-  payload,
-  payload2,
-  payload3,
-  payload4,
 } from './helper';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
+import { payload, payload2, payload3, payload4 } from './payloads';
 
 describe('/Web2Json/prepareResponse', () => {
   it('Should get right responseBody', async () => {

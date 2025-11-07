@@ -1,18 +1,22 @@
 import { ChainType } from '../configuration';
-import { Web2JsonConfig } from './web2Json';
+import {
+  Web2JsonConfig,
+} from './web2-json';
 import { IndexerConfig } from './chain-indexer';
 
 export interface IConfig {
-  // server port (PORT)
+  /** Server port (PORT) */
   port: number;
-  // comma separated list of API keys (API_KEYS)
+  /** Comma-separated list of API keys (API_KEYS) */
   api_keys: string[];
 
-  verifierConfigOptions: IndexerConfig | Web2JsonConfig;
+  isTestnet: boolean;
 
   verifierConfig: VerifierServerConfig;
-
-  isTestnet: boolean;
+  /** Indexer configuration for BTC, DOGE and XRP verifiers */
+  indexerConfig?: IndexerConfig;
+  /** Security and source configuration for Web2Json verifier */
+  web2JsonConfig?: Web2JsonConfig
 }
 
 export interface VerifierServerConfig {

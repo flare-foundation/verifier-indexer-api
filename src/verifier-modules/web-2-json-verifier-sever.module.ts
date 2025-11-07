@@ -6,9 +6,9 @@ import { AuthService } from '../auth/auth.service';
 import configuration from '../config/configuration';
 import { Web2JsonVerifierController } from '../controllers/web-2-json-verifier.controller';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
-import { Web2JsonVerifierService } from '../services/web-2-json-verifier.service';
+import { Web2JsonVerifierService } from '../services/web2-json-verifier.service';
 import { ProcessPoolService } from '../verification/web-2-json/process-pool.service';
-import { Web2JsonConfig } from '../config/interfaces/web2Json';
+import { Web2JsonConfig } from '../config/interfaces/web2-json';
 import { IConfig } from '../config/interfaces/common';
 
 @Module({
@@ -27,11 +27,9 @@ import { IConfig } from '../config/interfaces/common';
     {
       provide: ProcessPoolService,
       useFactory: (configService: ConfigService<IConfig>) => {
-        const config: Web2JsonConfig = configService.get(
-          'verifierConfigOptions',
-        );
+        const config: Web2JsonConfig = configService.get('web2JsonConfig');
         return new ProcessPoolService(
-          config.securityConfig.processingTimeoutMs,
+          config.securityParams.processingTimeoutMs,
         );
       },
       inject: [ConfigService],

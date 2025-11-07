@@ -4,7 +4,7 @@ import {
   Web2Json_Request,
   Web2Json_Response,
 } from '../dtos/attestation-types/Web2Json.dto';
-import { Web2JsonVerifierService } from '../services/web-2-json-verifier.service';
+import { Web2JsonVerifierService } from '../services/web2-json-verifier.service';
 import { BaseControllerFactory } from './base/verifier-base.controller';
 
 @ApiTags('Web2Json')

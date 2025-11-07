@@ -5,13 +5,13 @@ import { ProcessPoolService } from '../../../src/verification/web-2-json/process
 import { ParamType } from 'ethers';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 import { validateJqFilter } from '../../../src/verification/web-2-json/validate-jq';
-import { apiJsonDefaultConfig } from '../../../src/config/defaults/web2Json-config';
+import { web2JsonDefaultParams } from '../../../src/config/defaults/web2-json-config';
 import { BackpressureException } from '../../../src/verification/web-2-json/utils';
 
 use(chaiAsPromised);
 
 const jqProcessTimeoutMs = 500;
-const maxJqFilterLength = apiJsonDefaultConfig.securityConfig.maxJqFilterLength;
+const maxJqFilterLength = web2JsonDefaultParams.maxJqFilterLength;
 
 describe('filterAndEncodeData', () => {
   let pool: ProcessPoolService;
@@ -63,7 +63,7 @@ describe('filterAndEncodeData', () => {
     const data = { arr: Array(10_000).fill(1) };
     expect(
       Buffer.byteLength(JSON.stringify(data), 'utf8') <
-        apiJsonDefaultConfig.securityConfig.maxResponseSize,
+        web2JsonDefaultParams.maxResponseSize,
     ).to.be.true;
 
     const jqFilter = '.arr ' + '| map(. + 1) '.repeat(100) + '| add';

@@ -1,5 +1,5 @@
 import * as dns from 'dns';
-import { AllowedMethods, HTTP_METHOD } from '../../config/interfaces/web2Json';
+import { AllowedMethods, HTTP_METHOD } from '../../config/interfaces/web2-json';
 import { AttestationResponseStatus } from '../response-status';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import { Web2JsonValidationError } from './utils';
@@ -37,7 +37,6 @@ const ipPrivate = [
  */
 export async function validateUrl(
   inputUrl: string,
-  blockedHostnames: string[],
   allowedHostnames: string[],
   allowedUrlLength: number,
 ): Promise<CheckedUrl> {
@@ -63,16 +62,6 @@ export async function validateUrl(
       throw new Error(`Invalid protocol: ${parsedUrl.protocol}`);
     }
     const normalizedHostname = parsedUrl.hostname.toLowerCase();
-    // check if hostname is blocked
-    if (
-      blockedHostnames.some(
-        (blocked) =>
-          normalizedHostname === blocked ||
-          normalizedHostname.endsWith(`.${blocked}`),
-      )
-    ) {
-      throw new Error(`Blocked hostname: ${parsedUrl.hostname}`);
-    }
     // ensure hostname is allowed
     if (
       allowedHostnames.length > 0 &&

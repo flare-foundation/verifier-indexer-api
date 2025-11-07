@@ -64,7 +64,7 @@ export class DOGEReferencedPaymentNonexistenceVerifierService extends BaseRefere
     protected manager: EntityManager,
   ) {
     super(configService, manager, {
-      source: ChainType.DOGE,
+      chainType: ChainType.DOGE,
       indexerQueryManager: DogeIndexerQueryManager,
     });
   }
@@ -83,7 +83,7 @@ export class BTCReferencedPaymentNonexistenceVerifierService extends BaseReferen
     protected manager: EntityManager,
   ) {
     super(configService, manager, {
-      source: ChainType.BTC,
+      chainType: ChainType.BTC,
       indexerQueryManager: BtcIndexerQueryManager,
     });
   }
@@ -102,7 +102,7 @@ export class XRPReferencedPaymentNonexistenceVerifierService extends BaseReferen
     protected manager: EntityManager,
   ) {
     super(configService, manager, {
-      source: ChainType.XRP,
+      chainType: ChainType.XRP,
       indexerQueryManager: XrpIndexerQueryManager,
     });
   }
