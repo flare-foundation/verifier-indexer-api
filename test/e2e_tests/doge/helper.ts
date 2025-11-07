@@ -92,9 +92,7 @@ function getConfig() {
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService<IConfig>) => {
-        const indexerConfig: IndexerConfig = config.get(
-          'indexerConfig',
-        );
+        const indexerConfig: IndexerConfig = config.get('indexerConfig');
         if (!indexerConfig?.typeOrmModuleOptions) {
           throw new Error(
             "'typeOrmModuleOptions' is missing in the configuration",

@@ -1,8 +1,9 @@
+import { encodeAttestationName } from '../../../src/external-libs/utils';
+
 export const payload = {
   attestationType:
     '0x576562324a736f6e000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x746573745075626c696357656232000000000000000000000000000000000000',
+  sourceId: encodeAttestationName('testSource1'),
   requestBody: {
     url: 'https://jsonplaceholder.typicode.com/todos',
     httpMethod: 'GET',
@@ -17,8 +18,7 @@ export const payload = {
 export const payload2 = {
   attestationType:
     '0x576562324a736f6e000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x746573745075626c696357656232000000000000000000000000000000000000',
+  sourceId: encodeAttestationName('testSource2'),
   requestBody: {
     url: 'https://jsonplaceholder.typicode.com/todos',
     httpMethod: 'GET',
@@ -58,8 +58,7 @@ export const payload2 = {
 export const payload3 = {
   attestationType:
     '0x576562324a736f6e000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x746573745075626c696357656232000000000000000000000000000000000000',
+  sourceId: encodeAttestationName('testSource3'),
   requestBody: {
     url: 'https://restcountries.com/v3.1/independent',
     httpMethod: 'GET',
@@ -85,8 +84,7 @@ export const payload3 = {
 export const payload4 = {
   attestationType:
     '0x576562324a736f6e000000000000000000000000000000000000000000000000',
-  sourceId:
-    '0x746573745075626c696357656232000000000000000000000000000000000000',
+  sourceId: encodeAttestationName('testSource4'),
   requestBody: {
     url: 'https://newsapi.org/v2/everything',
     httpMethod: 'GET',
@@ -108,7 +106,21 @@ export const payload4 = {
             { "type": "string", "name": "title" }
           ]
         }
-      
     `,
+  },
+};
+
+export const payload5 = {
+  attestationType:
+    '0x576562324a736f6e000000000000000000000000000000000000000000000000',
+  sourceId: encodeAttestationName('testSource5'),
+  requestBody: {
+    url: 'https://images.dog.ceo/breeds/terrier-dandie/n02096437_1129.jpg',
+    httpMethod: 'GET',
+    headers: '',
+    queryParams: '',
+    body: '',
+    postProcessJq: '.[0].title',
+    abiSignature: '{"internalType": "string","name": "title","type": "string"}',
   },
 };

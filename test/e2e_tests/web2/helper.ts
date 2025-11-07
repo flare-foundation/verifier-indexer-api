@@ -25,19 +25,19 @@ import {
 } from '../../../src/config/interfaces/common';
 import { web2JsonDefaultParams } from '../../../src/config/defaults/web2-json-config';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
-import { payload, payload2, payload3, payload4 } from './payloads';
+import { payload, payload2, payload3, payload4, payload5 } from './payloads';
 
 export const web2JsonTestConfig: Web2JsonConfig = {
   securityParams: web2JsonDefaultParams,
-  sources: [payload, payload2, payload3, payload4].map((p) => {
+  sources: [payload, payload2, payload3, payload4, payload5].map((p, i) => {
     const url = new URL(p.requestBody.url).hostname;
     return {
-      sourceId: `testSource-${url}`,
+      sourceId: `testSource${i + 1}`,
       endpoints: [
         {
           host: url,
           paths: '*',
-          methods: [HTTP_METHOD.GET, HTTP_METHOD.POST],
+          methods: [HTTP_METHOD.GET],
         },
       ],
     };

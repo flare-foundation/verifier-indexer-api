@@ -84,9 +84,13 @@ export class Web2JsonVerifierService extends BaseVerifierService<
 
     // store user-agent if available
     const userAgent: string = this.req.headers['user-agent'] || undefined;
+    const sourceConfig = this.web2JsonConfig.sources.find(
+      (s) => encodeAttestationName(s.sourceId) === fixedRequest.sourceId,
+    );
     const result = await verifyWeb2Json(
       fixedRequest,
-      this.web2JsonConfig,
+      this.web2JsonConfig.securityParams,
+      sourceConfig,
       userAgent,
       this.processPool,
     );

@@ -11,8 +11,9 @@ import {
 import axios, { AxiosResponse } from 'axios';
 import { Web2JsonValidationError } from './utils';
 import {
-  HTTP_METHOD, Web2JsonConfig,
+  HTTP_METHOD,
   Web2JsonSecurityParams,
+  Web2JsonSource,
 } from '../../config/interfaces/web2-json';
 import * as https from 'https';
 import { ProcessPoolService } from './process-pool.service';
@@ -38,14 +39,16 @@ const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
  */
 export async function verifyWeb2Json(
   request: Web2Json_Request,
-  config: Web2JsonConfig,
+  securityParams: Web2JsonSecurityParams,
+  source: Web2JsonSource,
   userAgent: string | undefined,
   workerPool: ProcessPoolService,
 ): Promise<VerificationResponse<Web2Json_Response>> {
   try {
     const parsedRequest = await parseAndValidateRequest(
       request,
-      config,
+      securityParams,
+      source,
       userAgent,
     );
 
@@ -55,7 +58,7 @@ export async function verifyWeb2Json(
       parsedRequest.sourceHeaders,
       parsedRequest.sourceQueryParams,
       parsedRequest.sourceBody,
-      config.securityParams,
+      securityParams,
     );
     const responseJsonData = parseAndValidateResponse(sourceResponse);
 

@@ -20,7 +20,7 @@ export const WEB2_TESTNET_SOURCES: Web2JsonSource[] = [
     endpoints: [
       {
         host: 'jsonplaceholder.typicode.com',
-        paths: ['/*'],
+        paths: '*',
         methods: [HTTP_METHOD.GET],
       },
       {

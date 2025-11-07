@@ -1,5 +1,9 @@
 import * as dns from 'dns';
-import { AllowedMethods, HTTP_METHOD } from '../../config/interfaces/web2-json';
+import {
+  AllowedMethods,
+  Endpoint,
+  HTTP_METHOD,
+} from '../../config/interfaces/web2-json';
 import { AttestationResponseStatus } from '../response-status';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import { Web2JsonValidationError } from './utils';
@@ -30,15 +34,39 @@ const ipPrivate = [
 ];
 
 /**
- * Validates input URL against allowed protocols, hostnames, and length.
- * Also performs DNS resolution and checks for private IP addresses.
+ * Parses and sanitizes the input URL. Rejects URLs that exceed the allowed length
+ * or use non-HTTPS protocols.
+ *
+ * @returns Parsed URL object or throws an error
+ */
+export function parseUrl(inputUrl: string, allowedUrlLength: number): URL {
+  // check URL length before and after sanitization
+  if (inputUrl.length > allowedUrlLength) {
+    throw new Error(`URL too long before sanitization: ${inputUrl.length}`);
+  }
+  const sanitizedInputUrl = sanitizeUrl(inputUrl);
+  if (sanitizedInputUrl.length > allowedUrlLength) {
+    throw new Error(
+      `URL too long after sanitization: ${sanitizedInputUrl.length}`,
+    );
+  }
+  const parsedUrl = new URL(sanitizedInputUrl);
+  // only https is allowed
+  if (parsedUrl.protocol !== 'https:') {
+    throw new Error(`Invalid protocol: ${parsedUrl.protocol}`);
+  }
+  return parsedUrl;
+}
+
+/**
+ * Performs DNS resolution and checks for private IP addresses.
+ * Checks that the URL path is allowed by the endpoint configuration.
  *
  * @returns Validated URL or throws an error
  */
 export async function validateUrl(
-  inputUrl: string,
-  allowedHostnames: string[],
-  allowedUrlLength: number,
+  parsedUrl: URL,
+  endpoint: Endpoint,
 ): Promise<CheckedUrl> {
   try {
     const checkedUrl: CheckedUrl = {
@@ -46,38 +74,11 @@ export async function validateUrl(
       url: '',
       lookUpAddresses: [],
     };
-    // check URL length before and after sanitization
-    if (inputUrl.length > allowedUrlLength) {
-      throw new Error(`URL too long before sanitization: ${inputUrl.length}`);
-    }
-    const sanitizedInputUrl = sanitizeUrl(inputUrl);
-    if (sanitizedInputUrl.length > allowedUrlLength) {
-      throw new Error(
-        `URL too long after sanitization: ${sanitizedInputUrl.length}`,
-      );
-    }
-    const parsedUrl = new URL(sanitizedInputUrl);
-    // only https is allowed
-    if (parsedUrl.protocol !== 'https:') {
-      throw new Error(`Invalid protocol: ${parsedUrl.protocol}`);
-    }
-    const normalizedHostname = parsedUrl.hostname.toLowerCase();
-    // ensure hostname is allowed
-    if (
-      allowedHostnames.length > 0 &&
-      !allowedHostnames.some(
-        (allowed) =>
-          normalizedHostname === allowed ||
-          normalizedHostname.endsWith(`.${allowed}`),
-      )
-    ) {
-      throw new Error(`Hostname not in allowed list: ${parsedUrl.hostname}`);
-    }
-    // perform DNS resolution and check for private IP addresses
+    // Perform DNS resolution and check for private IP addresses
     try {
       const addresses = await dnsLookupWithTimeout(parsedUrl.hostname);
       for (const { address } of addresses) {
-        // check if IP is private
+        // Check if IP is private
         if (ipPrivate.some((regex) => regex.test(address))) {
           throw new PrivateIPError(
             `Blocked IP: ${address} from ${parsedUrl.hostname}`,
@@ -99,6 +100,30 @@ export async function validateUrl(
     checkedUrl.url =
       parsedUrl.protocol + '//' + parsedUrl.hostname + parsedUrl.pathname;
     checkedUrl.hostname = parsedUrl.hostname;
+
+    // Ensure the requested path matches one of the allowed paths on the endpoint.
+    // Allowed paths can be '*' (allow any) or an array of path patterns.
+    // Supported pattern forms:
+    //  - Exact path '/todos'
+    //  - Prefix wildcard '/api/v1/*' written as '/api/v1/*' or '/api/v1*'
+    if (endpoint.paths !== '*') {
+      const matched = endpoint.paths.some((pattern) => {
+        const normalized = pattern.startsWith('/') ? pattern : '/' + pattern;
+        if (normalized.endsWith('*')) {
+          const prefix = normalized.slice(0, -1);
+          return parsedUrl.pathname.startsWith(prefix);
+        }
+        return parsedUrl.pathname === normalized;
+      });
+      if (!matched) {
+        throw new Error(
+          `Path ${parsedUrl.pathname} not allowed by endpoint paths ${JSON.stringify(
+            endpoint.paths,
+          )}`,
+        );
+      }
+    }
+
     if (
       !checkedUrl.hostname ||
       !checkedUrl.url ||

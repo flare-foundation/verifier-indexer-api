@@ -9,7 +9,7 @@ import {
   attResponse,
 } from './helper';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
-import { payload, payload2, payload3, payload4 } from './payloads';
+import { payload, payload2, payload3, payload4, payload5 } from './payloads';
 
 describe('/Web2Json/prepareResponse', () => {
   it('Should get right responseBody', async () => {
@@ -287,19 +287,9 @@ describe('/Web2Json/prepareResponse', () => {
   });
 
   it('Should reject - invalid response content type', async () => {
-    const customPayload = {
-      ...payload,
-      requestBody: {
-        ...payload.requestBody,
-        url: 'https://images.dog.ceo/breeds/terrier-dandie/n02096437_1129.jpg',
-        queryParams: '',
-        body: '',
-      },
-    };
-
     const response = await request(app.getHttpServer())
       .post('/Web2Json/prepareResponse')
-      .send(customPayload)
+      .send(payload5)
       .set('X-API-KEY', api_key)
       .expect(200)
       .expect('Content-Type', /json/);

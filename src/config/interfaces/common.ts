@@ -1,7 +1,5 @@
 import { ChainType } from '../configuration';
-import {
-  Web2JsonConfig,
-} from './web2-json';
+import { Web2JsonConfig } from './web2-json';
 import { IndexerConfig } from './chain-indexer';
 
 export interface IConfig {
@@ -16,7 +14,7 @@ export interface IConfig {
   /** Indexer configuration for BTC, DOGE and XRP verifiers */
   indexerConfig?: IndexerConfig;
   /** Security and source configuration for Web2Json verifier */
-  web2JsonConfig?: Web2JsonConfig
+  web2JsonConfig?: Web2JsonConfig;
 }
 
 export interface VerifierServerConfig {
