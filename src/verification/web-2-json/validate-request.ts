@@ -6,6 +6,7 @@ import {
 } from './validate-url';
 import { Web2Json_Request } from '../../dtos/attestation-types/Web2Json.dto';
 import {
+  AuthType,
   HTTP_METHOD,
   Web2JsonSecurityParams,
   Web2JsonSource,
@@ -58,27 +59,48 @@ export async function parseAndValidateRequest(
   const sourceMethod = requestBody.httpMethod;
   validateHttpMethod(sourceMethod, endpoint.methods);
   // validate headers
-  let sourceHeaders = parseJsonWithDepthAndKeysValidation(
-    requestBody.headers,
-    MAX_DEPTH_ONE,
-    securityParams.maxHeaders,
-    AttestationResponseStatus.INVALID_HEADERS,
-  );
+  const sourceHeaders =
+    parseJsonWithDepthAndKeysValidation(
+      requestBody.headers,
+      MAX_DEPTH_ONE,
+      securityParams.maxHeaders,
+      AttestationResponseStatus.INVALID_HEADERS,
+    ) ?? {};
   // forward user-agent
   if (userAgent) {
-    if (!sourceHeaders) {
-      // initialize sourceHeaders if it's undefined
-      sourceHeaders = {};
-    }
     sourceHeaders['User-Agent'] = userAgent;
   }
   // validate query params
-  const sourceQueryParams = parseJsonWithDepthAndKeysValidation(
-    requestBody.queryParams,
-    MAX_DEPTH_ONE,
-    securityParams.maxQueryParams,
-    AttestationResponseStatus.INVALID_QUERY_PARAMS,
-  );
+  const sourceQueryParams =
+    parseJsonWithDepthAndKeysValidation(
+      requestBody.queryParams,
+      MAX_DEPTH_ONE,
+      securityParams.maxQueryParams,
+      AttestationResponseStatus.INVALID_QUERY_PARAMS,
+    ) ?? {};
+
+  // Inject authentication token from endpoint.auth if configured
+  if (endpoint.auth) {
+    const token = process.env[endpoint.auth.keyEnvVar];
+    if (!token) {
+      throw Error(
+        `Missing API key in environment variable ${endpoint.auth.keyEnvVar} for host ${endpoint.host}`,
+      );
+    }
+
+    if (endpoint.auth.type === AuthType.BEARER) {
+      sourceHeaders['Authorization'] = `Bearer ${token}`;
+    } else if (endpoint.auth.type === AuthType.APIKEY) {
+      if (endpoint.auth.header) {
+        sourceHeaders[endpoint.auth.header] = token;
+      } else {
+        sourceQueryParams[endpoint.auth.query] = token;
+      }
+    } else {
+      throw new Error(`Unsupported auth type for host ${endpoint.host}`);
+    }
+  }
+
   // validate body
   const sourceBody = parseJsonWithDepthAndKeysValidation(
     requestBody.body,

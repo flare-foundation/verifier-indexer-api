@@ -76,6 +76,7 @@ export interface Endpoint {
 export interface EndpointAuth {
   type: AuthType;
   header?: string;
+  query?: string;
   keyEnvVar?: string;
 }
 
