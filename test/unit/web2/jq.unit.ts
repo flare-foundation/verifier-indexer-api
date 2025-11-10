@@ -79,6 +79,10 @@ describe('jq unit tests', () => {
       'map(. + 1) | .[:3]',
       '.[0:2]',
       '([.a] | length)',
+      '"Hello \\(.name)"',
+      '"User: \\(.id) (\\(.score | tostring))"',
+      '"abc123" | gsub("[0-9]+"; "N")',
+      '"héllo" | explode',
     ];
 
     for (const f of safeFilters) {

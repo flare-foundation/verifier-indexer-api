@@ -187,7 +187,6 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
       case 'num':
       case 'bool':
       case 'null':
-      case 'format':
         break;
       default:
         // Disallow all other node types
