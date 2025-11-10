@@ -16,6 +16,7 @@ const ALLOWED_FILTERS = new Set([
   'map',
   'select',
   'flatten',
+  'not',
   // array/object helpers
   'length',
   'keys',

@@ -83,6 +83,7 @@ describe('jq unit tests', () => {
       '"User: \\(.id) (\\(.score | tostring))"',
       '"abc123" | gsub("[0-9]+"; "N")',
       '"héllo" | explode',
+      'not .active'
     ];
 
     for (const f of safeFilters) {
