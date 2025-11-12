@@ -59,7 +59,6 @@ export enum HTTP_METHOD {
 }
 
 export type AllowedMethods = HTTP_METHOD[] | '*';
-export type AllowedEndpoints = string[] | '*';
 
 export interface Web2JsonSource {
   sourceId: string;
@@ -68,9 +67,14 @@ export interface Web2JsonSource {
 
 export interface Endpoint {
   host: string;
-  paths: AllowedEndpoints;
+  paths: EndpointPath[] | string[] | '*';
   methods: AllowedMethods;
   auth?: EndpointAuth;
+}
+
+export interface EndpointPath {
+  path: string;
+  postProcessJq?: string;
 }
 
 export interface EndpointAuth {

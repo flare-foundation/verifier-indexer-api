@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   AttestationTypeOptions,
   ChainType,
-  SourceNames,
+  ChainSourceNames,
 } from '../../config/configuration';
 
 import { EntityManager } from 'typeorm';
@@ -234,7 +234,7 @@ export abstract class BaseVerifierServiceWithIndexer<
   }
 }
 
-function getSourceName(chainType: ChainType): SourceNames {
+function getSourceName(chainType: ChainType): ChainSourceNames {
   switch (chainType) {
     case ChainType.DOGE:
       return 'DOGE';

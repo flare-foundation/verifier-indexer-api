@@ -1,22 +1,39 @@
 import { AuthType, HTTP_METHOD, Web2JsonSource } from './interfaces/web2-json';
 
-export const WEB2_MAINNET_SOURCES: Web2JsonSource[] = [
+export const WEB2_JSON_SOURCES: Web2JsonSource[] = [
   {
     sourceId: 'Twitter',
     endpoints: [
       {
-        host: 'api.twitter.com',
-        paths: ['/2/tweets/*'],
+        host: 'api2.twitter.com',
+        paths: [
+          {
+            path: '/3/tweets',
+            postProcessJq: '.data',
+          },
+        ],
         methods: [HTTP_METHOD.GET],
         auth: { type: AuthType.BEARER, keyEnvVar: 'TWITTER_BEARER' },
       },
     ],
   },
-];
-
-export const WEB2_TESTNET_SOURCES: Web2JsonSource[] = [
   {
-    sourceId: 'TestAPIs',
+    sourceId: 'Kalmia',
+    endpoints: [
+      {
+        host: 'proxy.kalmia.com',
+        paths: '*',
+        methods: [HTTP_METHOD.GET],
+        auth: {
+          type: AuthType.APIKEY,
+          keyEnvVar: 'KALMIA_KEY',
+          header: 'x-api-key',
+        },
+      },
+    ],
+  },
+  {
+    sourceId: 'TestAPI',
     endpoints: [
       {
         host: 'jsonplaceholder.typicode.com',

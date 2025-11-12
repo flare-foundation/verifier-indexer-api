@@ -22,10 +22,8 @@ import {
   typeOrmModulePartialOptions,
 } from './defaults/indexer-config';
 import { IConfig, VerifierServerConfig } from './interfaces/common';
-import {
-  WEB2_MAINNET_SOURCES,
-  WEB2_TESTNET_SOURCES,
-} from './web2-json-sources';
+import { WEB2_JSON_SOURCES } from './web2-json-sources';
+import { Web2JsonConfig } from './interfaces/web2-json';
 
 export default () => {
   const api_keys = getApiKeys();
@@ -47,10 +45,7 @@ export default () => {
     isTestnet,
   };
   if (verifier_type === ChainType.Web2) {
-    config.web2JsonConfig = {
-      securityParams: web2JsonDefaultParams,
-      sources: isTestnet ? WEB2_TESTNET_SOURCES : WEB2_MAINNET_SOURCES,
-    };
+    config.web2JsonConfig = getWeb2Config();
   } else {
     config.indexerConfig = getIndexerConfig(verifier_type);
   }
@@ -117,7 +112,25 @@ export function getDatabaseEntities(verifierType: ChainType) {
   }
 }
 
-export function getIndexerConfig(verifierType: ChainType): IndexerConfig {
+function getWeb2Config(): Web2JsonConfig {
+  const selectedSourceIds = (process.env.WEB2_SOURCE_IDS ?? '').split(',');
+  if (selectedSourceIds.length === 0) {
+    throw new Error('WEB2_SOURCES must be set for Web2 verifier');
+  }
+  const sources = WEB2_JSON_SOURCES.filter((source) =>
+    selectedSourceIds.includes(source.sourceId),
+  );
+  if (sources.length === 0) {
+    throw new Error('No valid sources found for Web2 verifier');
+  }
+
+  return {
+    securityParams: web2JsonDefaultParams,
+    sources,
+  };
+}
+
+function getIndexerConfig(verifierType: ChainType): IndexerConfig {
   switch (verifierType) {
     case ChainType.BTC:
     case ChainType.DOGE:
@@ -136,7 +149,7 @@ export function getIndexerConfig(verifierType: ChainType): IndexerConfig {
   }
 }
 
-export type SourceNames = 'DOGE' | 'BTC' | 'XRP';
+export type ChainSourceNames = 'DOGE' | 'BTC' | 'XRP';
 export type AttestationTypeOptions =
   | 'AddressValidity'
   | 'BalanceDecreasingTransaction'
