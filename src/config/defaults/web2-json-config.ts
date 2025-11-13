@@ -1,7 +1,7 @@
 import { Web2JsonSecurityParams } from '../interfaces/web2-json';
 
 export const web2JsonDefaultParams: Web2JsonSecurityParams = {
-  maxResponseSize: 1024 * 1024,
+  maxResponseSize: 100 * 1024,
   maxRedirects: 0,
   requestTimeoutMs: 5_000,
   maxUrlLength: 2_000,
