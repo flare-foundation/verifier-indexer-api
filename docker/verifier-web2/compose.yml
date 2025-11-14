@@ -1,5 +1,3 @@
-version: "3.8"
-
 x-verifier-service-common: &verifier_service_common
   build: ../../
   restart: unless-stopped
