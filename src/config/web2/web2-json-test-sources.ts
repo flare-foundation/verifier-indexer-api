@@ -1,4 +1,4 @@
-import { AuthType, HTTP_METHOD, Web2JsonSource } from './interfaces/web2-json';
+import { AuthType, HTTP_METHOD, Web2JsonSource } from '../interfaces/web2-json';
 
 /** Allowed Web2Json sources definitions for testnet deployments. */
 export const WEB2_JSON_TEST_SOURCES: Web2JsonSource[] = [

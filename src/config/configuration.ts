@@ -23,8 +23,8 @@ import {
 } from './defaults/indexer-config';
 import { IConfig, VerifierServerConfig } from './interfaces/common';
 import { Web2JsonConfig, Web2JsonSource } from './interfaces/web2-json';
-import { WEB2_JSON_TEST_SOURCES } from './web2-json-test-sources';
-import { WEB2_JSON_SOURCES } from './web2-json-sources';
+import { WEB2_JSON_TEST_SOURCES } from './web2/web2-json-test-sources';
+import { WEB2_JSON_SOURCES } from './web2/web2-json-sources';
 
 export default () => {
   const api_keys = getApiKeys();
