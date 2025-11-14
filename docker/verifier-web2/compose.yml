@@ -10,32 +10,22 @@ x-verifier-env: &verifier_env
   VERIFIER_TYPE: web2
 
 services:
-  verifier_twitter:
+  verifier_ignite:
     <<: *verifier_service_common
-    container_name: verifier_twitter
+    container_name: verifier_ignite
     environment:
       <<: *verifier_env
-      WEB2_SOURCE_IDS: "Twitter"
-      TWITTER_BEARER: ${TWITTER_TOKEN}
-    ports:
-      - "3001:3100"
-
-  verifier_kalmia:
-    <<: *verifier_service_common
-    container_name: verifier_kalmia
-    environment:
-      <<: *verifier_env
-      WEB2_SOURCE_IDS: "Kalmia"
-      KALMIA_KEY: ${KALMIA_KEY}
+      WEB2_SOURCE_IDS: "testIgnite"
+      IGNITE_API_KEY: ${IGNITE_API_KEY}
     ports:
       - "3002:3100"
 
-  verifier_testnet:
+  verifier_test:
     <<: *verifier_service_common
     container_name: verifier_test
     environment:
       <<: *verifier_env
       IS_TESTNET: true
-      WEB2_SOURCE_IDS: "TestAPI"
+      WEB2_SOURCE_IDS: "testAPIs"
     ports:
       - "3003:3100"

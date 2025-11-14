@@ -1,6 +1,7 @@
 import {
   CheckedUrl,
   parseUrl,
+  validateEndpointPath,
   validateHttpMethod,
   validateUrl,
 } from './validate-url';
@@ -53,8 +54,11 @@ export async function parseAndValidateRequest(
       'Source URL host not allowed',
     );
   }
-  // validate url
-  const validSourceUrl = await validateUrl(parsedUrl, endpoint);
+  const jqScheme = requestBody.postProcessJq;
+  // validate endpoint path and jq filter compatibility first
+  validateEndpointPath(parsedUrl, endpoint, jqScheme);
+  // validate jq filter length and content
+  validateJqFilter(jqScheme, securityParams.maxJqFilterLength);
   // validate HTTP method
   const sourceMethod = requestBody.httpMethod;
   validateHttpMethod(sourceMethod, endpoint.methods);
@@ -78,6 +82,12 @@ export async function parseAndValidateRequest(
       securityParams.maxQueryParams,
       AttestationResponseStatus.INVALID_QUERY_PARAMS,
     ) ?? {};
+
+  // validate ABI signature
+  const abiType = parseAndValidateAbiType(
+    requestBody.abiSignature,
+    securityParams.maxAbiSignatureLength,
+  );
 
   // Inject authentication token from endpoint.auth if configured
   if (endpoint.auth) {
@@ -108,14 +118,10 @@ export async function parseAndValidateRequest(
     securityParams.maxBodyJsonKeys,
     AttestationResponseStatus.INVALID_BODY,
   );
-  // validate jq filter
-  const jqScheme = requestBody.postProcessJq;
-  validateJqFilter(jqScheme, securityParams.maxJqFilterLength);
-  // validate ABI signature
-  const abiType = parseAndValidateAbiType(
-    requestBody.abiSignature,
-    securityParams.maxAbiSignatureLength,
-  );
+
+  // validate url (DNS checks)
+  const validSourceUrl = await validateUrl(parsedUrl);
+
   return <ParsedRequestBody>{
     validSourceUrl,
     sourceMethod,

@@ -20,9 +20,10 @@ import { ProcessPoolService } from './process-pool.service';
 import { CheckedUrl } from './validate-url';
 import { parseAndValidateResponse } from './validate-response';
 import { parseAndValidateRequest } from './validate-request';
-import { HttpException } from '@nestjs/common';
+import { HttpException, Logger } from '@nestjs/common';
 
 const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
+const logger = new Logger('verifyWeb2Json');
 
 /**
  * Verifies `Web2Json` attestation type requests:
@@ -83,6 +84,8 @@ export async function verifyWeb2Json(
       response,
     };
   } catch (error) {
+    logger.debug(`Error verifying Web2Json request: ${error}`);
+
     if (error instanceof HttpException) {
       throw error;
     }

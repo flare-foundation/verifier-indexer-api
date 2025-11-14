@@ -60,7 +60,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: `Attestation type and source id combination not supported: (${request.attestationType}, ${request.sourceId}). Supported attestation: '${Web2JsonVerifierService.attestationName}' (${supportedAttestation}). Supported source ids: [${supportedSources.join(', ')}].`,
+          error: `Attestation type and source id combination not supported: (${request.attestationType}, ${request.sourceId}). Supported attestation: '${Web2JsonVerifierService.attestationName}' (${supportedAttestation}). Supported source ids: [${supportedSources.join(', ')}] ([${supportedSources.map(encodeAttestationName).join(', ')}]).`,
         },
         HttpStatus.BAD_REQUEST,
       );

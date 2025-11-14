@@ -22,8 +22,9 @@ import {
   typeOrmModulePartialOptions,
 } from './defaults/indexer-config';
 import { IConfig, VerifierServerConfig } from './interfaces/common';
+import { Web2JsonConfig, Web2JsonSource } from './interfaces/web2-json';
+import { WEB2_JSON_TEST_SOURCES } from './web2-json-test-sources';
 import { WEB2_JSON_SOURCES } from './web2-json-sources';
-import { Web2JsonConfig } from './interfaces/web2-json';
 
 export default () => {
   const api_keys = getApiKeys();
@@ -45,7 +46,7 @@ export default () => {
     isTestnet,
   };
   if (verifier_type === ChainType.Web2) {
-    config.web2JsonConfig = getWeb2Config();
+    config.web2JsonConfig = getWeb2Config(isTestnet);
   } else {
     config.indexerConfig = getIndexerConfig(verifier_type);
   }
@@ -81,7 +82,7 @@ export function extractVerifierType(): ChainType {
       return ChainType.Web2;
     default:
       throw new Error(
-        `Wrong verifier type: '${process.env.VERIFIER_TYPE}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2'`,
+        `Wrong verifier type: '${String(process.env.VERIFIER_TYPE)}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2'`,
       );
   }
 }
@@ -112,18 +113,27 @@ export function getDatabaseEntities(verifierType: ChainType) {
   }
 }
 
-function getWeb2Config(): Web2JsonConfig {
+function getWeb2Config(isTestnet: boolean): Web2JsonConfig {
   const selectedSourceIds = (process.env.WEB2_SOURCE_IDS ?? '').split(',');
   if (selectedSourceIds.length === 0) {
-    throw new Error('WEB2_SOURCES must be set for Web2 verifier');
+    throw new Error('WEB2_SOURCE_IDS must be set for Web2 verifier');
   }
-  const sources = WEB2_JSON_SOURCES.filter((source) =>
-    selectedSourceIds.includes(source.sourceId),
-  );
-  if (sources.length === 0) {
-    throw new Error('No valid sources found for Web2 verifier');
-  }
+  const allSources = isTestnet
+    ? WEB2_JSON_TEST_SOURCES
+    : WEB2_JSON_SOURCES;
 
+  const sources: Web2JsonSource[] = [];
+  const availableSourceIds = allSources.map((s) => s.sourceId).join(',');
+  for (const sourceId of selectedSourceIds) {
+    const source = allSources.find((s) => s.sourceId === sourceId);
+    if (!source) {
+      throw new Error(
+        `Configured Web2Json source '${sourceId}' not found in available sources: ${availableSourceIds}`,
+      );
+    }
+    // collect the source when found
+    sources.push(source);
+  }
   return {
     securityParams: web2JsonDefaultParams,
     sources,

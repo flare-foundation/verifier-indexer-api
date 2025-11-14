@@ -2,6 +2,7 @@ import * as dns from 'dns';
 import {
   AllowedMethods,
   Endpoint,
+  EndpointPath,
   HTTP_METHOD,
 } from '../../config/interfaces/web2-json';
 import { AttestationResponseStatus } from '../response-status';
@@ -59,15 +60,52 @@ export function parseUrl(inputUrl: string, allowedUrlLength: number): URL {
 }
 
 /**
+ * Validates that the parsedUrl pathname is allowed by the endpoint.paths configuration
+ * and enforces any postProcessJq requirement for that path.
+ * Throws Web2JsonValidationError with INVALID_SOURCE_URL on mismatch.
+ */
+export function validateEndpointPath(
+  parsedUrl: URL,
+  endpoint: Endpoint,
+  jqScheme: string,
+): void {
+  if (endpoint.paths === '*') return;
+
+  const matched = endpoint.paths.find(
+    (p: EndpointPath | string) => {
+      const path = typeof p === 'string' ? p : p.path;
+      const normalizedPath = path.startsWith('/') ? path : '/' + path;
+      if (normalizedPath === parsedUrl.pathname) {
+        if (typeof p !== 'string' && p.postProcessJq) {
+          if (p.postProcessJq !== jqScheme) {
+            throw new Web2JsonValidationError(
+              AttestationResponseStatus.INVALID_SOURCE_URL,
+              `JQ filter '${jqScheme}' does not match required filter '${p.postProcessJq}' for path '${normalizedPath}'`,
+            );
+          }
+        }
+        return true;
+      }
+      return false;
+    },
+  );
+
+  if (!matched) {
+    throw new Web2JsonValidationError(
+      AttestationResponseStatus.INVALID_SOURCE_URL,
+      `Path ${parsedUrl.pathname} not allowed by endpoint paths ${JSON.stringify(
+        endpoint.paths,
+      )}`,
+    );
+  }
+}
+
+/**
  * Performs DNS resolution and checks for private IP addresses.
- * Checks that the URL path is allowed by the endpoint configuration.
  *
  * @returns Validated URL or throws an error
  */
-export async function validateUrl(
-  parsedUrl: URL,
-  endpoint: Endpoint,
-): Promise<CheckedUrl> {
+export async function validateUrl(parsedUrl: URL): Promise<CheckedUrl> {
   try {
     const checkedUrl: CheckedUrl = {
       hostname: '',
@@ -100,29 +138,6 @@ export async function validateUrl(
     checkedUrl.url =
       parsedUrl.protocol + '//' + parsedUrl.hostname + parsedUrl.pathname;
     checkedUrl.hostname = parsedUrl.hostname;
-
-    // Ensure the requested path matches one of the allowed paths on the endpoint.
-    // Allowed paths can be '*' (allow any) or an array of path patterns.
-    // Supported pattern forms:
-    //  - Exact path '/todos'
-    //  - Prefix wildcard '/api/v1/*' written as '/api/v1/*' or '/api/v1*'
-    if (endpoint.paths !== '*') {
-      const matched = endpoint.paths.some((pattern) => {
-        const normalized = pattern.startsWith('/') ? pattern : '/' + pattern;
-        if (normalized.endsWith('*')) {
-          const prefix = normalized.slice(0, -1);
-          return parsedUrl.pathname.startsWith(prefix);
-        }
-        return parsedUrl.pathname === normalized;
-      });
-      if (!matched) {
-        throw new Error(
-          `Path ${parsedUrl.pathname} not allowed by endpoint paths ${JSON.stringify(
-            endpoint.paths,
-          )}`,
-        );
-      }
-    }
 
     if (
       !checkedUrl.hostname ||
