@@ -71,24 +71,22 @@ export function validateEndpointPath(
 ): void {
   if (endpoint.paths === '*') return;
 
-  const matched = endpoint.paths.find(
-    (p: EndpointPath | string) => {
-      const path = typeof p === 'string' ? p : p.path;
-      const normalizedPath = path.startsWith('/') ? path : '/' + path;
-      if (normalizedPath === parsedUrl.pathname) {
-        if (typeof p !== 'string' && p.postProcessJq) {
-          if (p.postProcessJq !== jqScheme) {
-            throw new Web2JsonValidationError(
-              AttestationResponseStatus.INVALID_SOURCE_URL,
-              `JQ filter '${jqScheme}' does not match required filter '${p.postProcessJq}' for path '${normalizedPath}'`,
-            );
-          }
+  const matched = endpoint.paths.find((p: EndpointPath | string) => {
+    const path = typeof p === 'string' ? p : p.path;
+    const normalizedPath = path.startsWith('/') ? path : '/' + path;
+    if (normalizedPath === parsedUrl.pathname) {
+      if (typeof p !== 'string' && p.postProcessJq) {
+        if (p.postProcessJq !== jqScheme) {
+          throw new Web2JsonValidationError(
+            AttestationResponseStatus.INVALID_SOURCE_URL,
+            `JQ filter '${jqScheme}' does not match required filter '${p.postProcessJq}' for path '${normalizedPath}'`,
+          );
         }
-        return true;
       }
-      return false;
-    },
-  );
+      return true;
+    }
+    return false;
+  });
 
   if (!matched) {
     throw new Web2JsonValidationError(

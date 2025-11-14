@@ -25,31 +25,31 @@ describe('web-2-json URL validation', () => {
   describe('parseUrl', () => {
     it('Should reject - mixed octal and hex IPv4', () => {
       const input = 'https://0177.0.0.0x1    /halo';
-      expect(() => parseUrl(input, web2JsonDefaultParams.maxUrlLength)).to.throw(
-        'Invalid protocol: about',
-      );
+      expect(() =>
+        parseUrl(input, web2JsonDefaultParams.maxUrlLength),
+      ).to.throw('Invalid protocol: about');
     });
 
     it('Should reject - IPv6-mapped IPv4', () => {
       const input = 'https://::ffff:127.0.0.1';
-      expect(() => parseUrl(input, web2JsonDefaultParams.maxUrlLength)).to.throw(
-        'Invalid URL',
-      );
+      expect(() =>
+        parseUrl(input, web2JsonDefaultParams.maxUrlLength),
+      ).to.throw('Invalid URL');
     });
 
     it('Should reject - IPv6 localhost', () => {
       const input = 'https://::1';
-      expect(() => parseUrl(input, web2JsonDefaultParams.maxUrlLength)).to.throw(
-        'Invalid URL',
-      );
+      expect(() =>
+        parseUrl(input, web2JsonDefaultParams.maxUrlLength),
+      ).to.throw('Invalid URL');
     });
 
     it('Should reject - too long input url', () => {
       const longQueryValue = 'a'.repeat(web2JsonDefaultParams.maxUrlLength);
       const input = `https://example.com/search?q=${longQueryValue}`;
-      expect(() => parseUrl(input, web2JsonDefaultParams.maxUrlLength)).to.throw(
-        `URL too long before sanitization: ${input.length}`,
-      );
+      expect(() =>
+        parseUrl(input, web2JsonDefaultParams.maxUrlLength),
+      ).to.throw(`URL too long before sanitization: ${input.length}`);
     });
 
     it('Should reject URL - too long url after sanitization', () => {
@@ -58,16 +58,18 @@ describe('web-2-json URL validation', () => {
       const longQueryValue = 'a'.repeat(neededChars);
       const input = `${base}${longQueryValue}`;
       const sanitizedInputUrl = sanitizeUrl(input);
-      expect(() => parseUrl(input, web2JsonDefaultParams.maxUrlLength)).to.throw(
+      expect(() =>
+        parseUrl(input, web2JsonDefaultParams.maxUrlLength),
+      ).to.throw(
         `URL too long after sanitization: ${sanitizedInputUrl.length}`,
       );
     });
 
     it('Should reject - invalidation error', () => {
       const input = 'https://[invalid-url';
-      expect(() => parseUrl(input, web2JsonDefaultParams.maxUrlLength)).to.throw(
-        'Invalid protocol: about',
-      );
+      expect(() =>
+        parseUrl(input, web2JsonDefaultParams.maxUrlLength),
+      ).to.throw('Invalid protocol: about');
     });
   });
 

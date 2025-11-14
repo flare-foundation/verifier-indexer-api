@@ -24,9 +24,9 @@ export const WEB2_JSON_TEST_SOURCES: Web2JsonSource[] = [
         host: 'jsonplaceholder.typicode.com',
         paths: [
           {
-            path: "/todos",
-            postProcessJq: "."
-          }
+            path: '/todos',
+            postProcessJq: '.',
+          },
         ],
         methods: [HTTP_METHOD.GET],
       },

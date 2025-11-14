@@ -118,9 +118,7 @@ function getWeb2Config(isTestnet: boolean): Web2JsonConfig {
   if (selectedSourceIds.length === 0) {
     throw new Error('WEB2_SOURCE_IDS must be set for Web2 verifier');
   }
-  const allSources = isTestnet
-    ? WEB2_JSON_TEST_SOURCES
-    : WEB2_JSON_SOURCES;
+  const allSources = isTestnet ? WEB2_JSON_TEST_SOURCES : WEB2_JSON_SOURCES;
 
   const sources: Web2JsonSource[] = [];
   const availableSourceIds = allSources.map((s) => s.sourceId).join(',');
