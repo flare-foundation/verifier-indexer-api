@@ -4,8 +4,8 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {
   parseUrl,
   validateHttpMethod,
+  validatePath,
   validateUrl,
-  validateEndpointPath,
 } from '../../../src/verification/web-2-json/validate-url';
 import {
   Endpoint,
@@ -132,7 +132,7 @@ describe('web-2-json URL validation', () => {
         paths: '*',
       };
       const parsed = new URL('https://example.com/some/path');
-      expect(() => validateEndpointPath(parsed, endpoint, '')).to.not.throw();
+      expect(() => validatePath(parsed, endpoint)).to.not.throw();
     });
 
     it('allows exact path when endpoint.paths contains a string without leading slash', () => {
@@ -142,7 +142,7 @@ describe('web-2-json URL validation', () => {
         paths: ['allowed'],
       };
       const parsed = new URL('https://example.com/allowed');
-      expect(() => validateEndpointPath(parsed, endpoint, '')).to.not.throw();
+      expect(() => validatePath(parsed, endpoint)).to.not.throw();
     });
 
     it('allows exact path when endpoint.paths contains a string with leading slash', () => {
@@ -152,29 +152,7 @@ describe('web-2-json URL validation', () => {
         paths: ['/allowed2'],
       };
       const parsed = new URL('https://example.com/allowed2');
-      expect(() => validateEndpointPath(parsed, endpoint, '')).to.not.throw();
-    });
-
-    it('enforces postProcessJq requirement when provided (accepts matching jq)', () => {
-      const endpoint: Endpoint = {
-        host: 'example.com',
-        methods: '*',
-        paths: [{ path: '/needsjq', postProcessJq: '.' }],
-      };
-      const parsed = new URL('https://example.com/needsjq');
-      expect(() => validateEndpointPath(parsed, endpoint, '.')).to.not.throw();
-    });
-
-    it('rejects when postProcessJq does not match provided jq scheme', () => {
-      const endpoint: Endpoint = {
-        host: 'example.com',
-        methods: '*',
-        paths: [{ path: '/needsjq', postProcessJq: '.' }],
-      };
-      const parsed = new URL('https://example.com/needsjq');
-      expect(() => validateEndpointPath(parsed, endpoint, 'other')).to.throw(
-        /JQ filter .* does not match required filter/,
-      );
+      expect(() => validatePath(parsed, endpoint)).to.not.throw();
     });
 
     it('rejects when path is not listed in endpoint.paths', () => {
@@ -184,8 +162,8 @@ describe('web-2-json URL validation', () => {
         paths: ['/only-this'],
       };
       const parsed = new URL('https://example.com/notlisted');
-      expect(() => validateEndpointPath(parsed, endpoint, '')).to.throw(
-        /Path .* not allowed by endpoint paths/,
+      expect(() => validatePath(parsed, endpoint)).to.throw(
+        /Path .* not allowed for source/,
       );
     });
   });

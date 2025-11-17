@@ -65,7 +65,7 @@ export async function verifyWeb2Json(
 
     const encodedData = await workerPool.filterAndEncodeData(
       responseJsonData,
-      parsedRequest.jqScheme,
+      parsedRequest.jqFilter,
       parsedRequest.abiType,
     );
 

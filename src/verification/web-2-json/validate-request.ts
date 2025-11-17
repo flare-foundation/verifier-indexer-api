@@ -1,7 +1,7 @@
 import {
   CheckedUrl,
   parseUrl,
-  validateEndpointPath,
+  validatePath,
   validateHttpMethod,
   validateUrl,
 } from './validate-url';
@@ -25,7 +25,7 @@ export interface ParsedRequestBody {
   sourceHeaders: object;
   sourceQueryParams: object;
   sourceBody: object;
-  jqScheme: string;
+  jqFilter: string;
   abiType: ParamType;
 }
 
@@ -54,11 +54,8 @@ export async function parseAndValidateRequest(
       'Source URL host not allowed',
     );
   }
-  const jqScheme = requestBody.postProcessJq;
-  // validate endpoint path and jq filter compatibility first
-  validateEndpointPath(parsedUrl, endpoint, jqScheme);
-  // validate jq filter length and content
-  validateJqFilter(jqScheme, securityParams.maxJqFilterLength);
+  // validate endpoint path
+  validatePath(parsedUrl, endpoint);
   // validate HTTP method
   const sourceMethod = requestBody.httpMethod;
   validateHttpMethod(sourceMethod, endpoint.methods);
@@ -83,6 +80,9 @@ export async function parseAndValidateRequest(
       AttestationResponseStatus.INVALID_QUERY_PARAMS,
     ) ?? {};
 
+  // validate jq filter length and content
+  const jqFilter = requestBody.postProcessJq
+  validateJqFilter(requestBody.postProcessJq, securityParams.maxJqFilterLength);
   // validate ABI signature
   const abiType = parseAndValidateAbiType(
     requestBody.abiSignature,
@@ -128,7 +128,7 @@ export async function parseAndValidateRequest(
     sourceHeaders,
     sourceQueryParams,
     sourceBody,
-    jqScheme,
+    jqFilter,
     abiType,
   };
 }

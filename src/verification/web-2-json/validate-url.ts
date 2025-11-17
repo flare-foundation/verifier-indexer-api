@@ -2,7 +2,6 @@ import * as dns from 'dns';
 import {
   AllowedMethods,
   Endpoint,
-  EndpointPath,
   HTTP_METHOD,
 } from '../../config/interfaces/web2-json';
 import { AttestationResponseStatus } from '../response-status';
@@ -60,39 +59,25 @@ export function parseUrl(inputUrl: string, allowedUrlLength: number): URL {
 }
 
 /**
- * Validates that the parsedUrl pathname is allowed by the endpoint.paths configuration
- * and enforces any postProcessJq requirement for that path.
+ * Validates that the parsedUrl pathname is allowed by the endpoint.paths configuration.
  * Throws Web2JsonValidationError with INVALID_SOURCE_URL on mismatch.
  */
-export function validateEndpointPath(
+export function validatePath(
   parsedUrl: URL,
-  endpoint: Endpoint,
-  jqScheme: string,
+  supportedEndpoint: Endpoint,
 ): void {
-  if (endpoint.paths === '*') return;
+  if (supportedEndpoint.paths === '*') return;
 
-  const matched = endpoint.paths.find((p: EndpointPath | string) => {
-    const path = typeof p === 'string' ? p : p.path;
-    const normalizedPath = path.startsWith('/') ? path : '/' + path;
-    if (normalizedPath === parsedUrl.pathname) {
-      if (typeof p !== 'string' && p.postProcessJq) {
-        if (p.postProcessJq !== jqScheme) {
-          throw new Web2JsonValidationError(
-            AttestationResponseStatus.INVALID_SOURCE_URL,
-            `JQ filter '${jqScheme}' does not match required filter '${p.postProcessJq}' for path '${normalizedPath}'`,
-          );
-        }
-      }
-      return true;
-    }
-    return false;
+  const matched = supportedEndpoint.paths.find((p: string) => {
+    const normalizedPath = p.startsWith('/') ? p : '/' + p;
+    return normalizedPath === parsedUrl.pathname;
   });
 
   if (!matched) {
     throw new Web2JsonValidationError(
       AttestationResponseStatus.INVALID_SOURCE_URL,
-      `Path ${parsedUrl.pathname} not allowed by endpoint paths ${JSON.stringify(
-        endpoint.paths,
+      `Path ${parsedUrl.pathname} not allowed for source. Allowed endpoint paths: ${JSON.stringify(
+        supportedEndpoint.paths,
       )}`,
     );
   }

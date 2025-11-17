@@ -67,14 +67,9 @@ export interface Web2JsonSource {
 
 export interface Endpoint {
   host: string;
-  paths: EndpointPath[] | string[] | '*';
+  paths: string[] | '*';
   methods: AllowedMethods;
   auth?: EndpointAuth;
-}
-
-export interface EndpointPath {
-  path: string;
-  postProcessJq?: string;
 }
 
 export interface EndpointAuth {
