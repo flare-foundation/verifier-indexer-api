@@ -61,22 +61,43 @@ export enum HTTP_METHOD {
 export type AllowedMethods = HTTP_METHOD[] | '*';
 
 export interface Web2JsonSource {
+  /** Unique identifier for the source. Must be alphanumeric and fit into Solidity's `bytes32. */
   sourceId: string;
+  /** List of allowed endpoints for this source. */
   endpoints: Endpoint[];
 }
 
 export interface Endpoint {
+  /**
+   * DNS host only. Can optionally include a port, but no protocol.
+   * Wildcards are not allowed.
+   *
+   * E.g. `api.example.com` or `api.example.com:8080`.
+   */
   host: string;
+  /**
+   * Allowed paths for this host. Use `"*"` to allow any path, or an array of specific paths.
+   *
+   * E.g. `["/v1/foo", "/v1/bar"]`.
+   */
   paths: string[] | '*';
   methods: AllowedMethods;
+  /** Authentication details for this endpoint, if required. */
   auth?: EndpointAuth;
 }
 
+/**
+ * Authentication details for an endpoint.
+ * Either `header` or `query` must be specified to indicate how to pass the secret.
+ */
 export interface EndpointAuth {
   type: AuthType;
+  /** Name of the header field to pass the secret, if applicable. */
   header?: string;
+  /** Name of the query parameter to pass the secret, if applicable. */
   query?: string;
-  keyEnvVar?: string;
+  /** Name of the environment variable that holds the secret at runtime. */
+  env?: string;
 }
 
 export enum AuthType {

@@ -91,10 +91,10 @@ export async function parseAndValidateRequest(
 
   // Inject authentication token from endpoint.auth if configured
   if (endpoint.auth) {
-    const token = process.env[endpoint.auth.keyEnvVar];
+    const token = process.env[endpoint.auth.env];
     if (!token) {
       throw Error(
-        `Missing API key in environment variable ${endpoint.auth.keyEnvVar} for host ${endpoint.host}`,
+        `Missing API key in environment variable ${endpoint.auth.env} for host ${endpoint.host}`,
       );
     }
 

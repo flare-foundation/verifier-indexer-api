@@ -11,7 +11,7 @@ export const WEB2_JSON_TEST_SOURCES: Web2JsonSource[] = [
         methods: [HTTP_METHOD.GET],
         auth: {
           type: AuthType.APIKEY,
-          keyEnvVar: 'IGNITE_API_KEY',
+          env: 'IGNITE_API_KEY',
           header: 'x-api-key',
         },
       },
