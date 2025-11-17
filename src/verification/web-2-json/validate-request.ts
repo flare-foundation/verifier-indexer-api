@@ -81,7 +81,7 @@ export async function parseAndValidateRequest(
     ) ?? {};
 
   // validate jq filter length and content
-  const jqFilter = requestBody.postProcessJq
+  const jqFilter = requestBody.postProcessJq;
   validateJqFilter(requestBody.postProcessJq, securityParams.maxJqFilterLength);
   // validate ABI signature
   const abiType = parseAndValidateAbiType(

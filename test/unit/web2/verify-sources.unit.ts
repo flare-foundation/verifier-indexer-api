@@ -62,9 +62,7 @@ describe('Web2Json source validation', () => {
             continue;
           }
 
-          for (const p of paths) {
-            const path = typeof p === 'string' ? p : p.path;
-
+          for (const path of paths) {
             if (!path || path.trim().length === 0) {
               throw new Error(
                 `Invalid endpoint: sourceId=${source.sourceId}:${endpoint.host}:<empty-path>`,
