@@ -120,3 +120,4 @@ Community members can propose adding or removing supported Web2 API endpoints by
 Use the template in `src/config/web2/pull_request_template.md` and follow the checklist.
 
 This will undergo an initial review by the Flare team and then be submitted to the Management Group for voting.
+If accepted, the changes will be applied and rolled out in phases: first on Songbird and on Flare network.
