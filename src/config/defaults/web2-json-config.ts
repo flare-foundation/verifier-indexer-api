@@ -11,5 +11,5 @@ export const web2JsonDefaultParams: Web2JsonSecurityParams = {
   maxBodyJsonKeys: 500,
   maxJqFilterLength: 5_000,
   maxAbiSignatureLength: 5_000,
-  processingTimeoutMs: 1_000,
+  processingTimeoutMs: 500,
 };
