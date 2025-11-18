@@ -17,9 +17,7 @@ Provide details for any added/modified endpoints:
   - Rate limits / quotas (requests per minute/hour/day).
 
 ## Request fee
-Suggested attestation request fee for the source with new/modified endpoints, if applicable.
-
-## Legal/compliance considerations (optional)
+Suggested attestation request fee in FLR/SGB for the source if endpoints were added or modified.
 
 ## Additional notes (optional)
 
