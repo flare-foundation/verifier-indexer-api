@@ -16,6 +16,9 @@ Provide details for any added/modified endpoints:
     - Free tier available? (Yes / No).
   - Rate limits / quotas (requests per minute/hour/day).
 
+## Request fee
+Suggested attestation request fee for the source with new/modified endpoints, if applicable.
+
 ## Legal/compliance considerations (optional)
 
 ## Additional notes (optional)
