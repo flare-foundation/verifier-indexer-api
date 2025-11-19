@@ -13,11 +13,7 @@ import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
-import {
-  getDatabaseEntities,
-  IConfig,
-  VerifierServerConfig,
-} from '../../../src/config/configuration';
+import { getDatabaseEntities } from '../../../src/config/configuration';
 import { XRPAddressValidityVerifierController } from '../../../src/controllers/address-validity-verifier.controller';
 import { XRPBalanceDecreasingTransactionVerifierController } from '../../../src/controllers/balance-decreasing-transaction-verifier.controller';
 import { XRPConfirmedBlockHeightExistsVerifierController } from '../../../src/controllers/confirmed-block-height-exists-verifier.controller';
@@ -32,6 +28,11 @@ import { XRPConfirmedBlockHeightExistsVerifierService } from '../../../src/servi
 import { XrpExternalIndexerEngineService } from '../../../src/services/indexer-services/xrp-indexer.service';
 import { XRPPaymentVerifierService } from '../../../src/services/payment-verifier.service';
 import { XRPReferencedPaymentNonexistenceVerifierService } from '../../../src/services/referenced-payment-nonexistence-verifier.service';
+import {
+  IConfig,
+  VerifierServerConfig,
+} from '../../../src/config/interfaces/common';
+import { IndexerConfig } from '../../../src/config/interfaces/chain-indexer';
 
 function getConfig() {
   const api_keys = process.env.API_KEYS?.split(',') || [''];
@@ -66,14 +67,16 @@ function getConfig() {
     port: parseInt(process.env.PORT || '3120'),
     api_keys,
     verifierConfig,
-    db: db,
-    typeOrmModuleOptions: {
-      ...db,
-      type: 'postgres',
-      entities: entities,
-      synchronize: false,
-      migrationsRun: false,
-      logging: false,
+    indexerConfig: {
+      db,
+      typeOrmModuleOptions: {
+        ...db,
+        type: 'postgres',
+        entities: entities,
+        synchronize: false,
+        migrationsRun: false,
+        logging: false,
+      },
     },
     isTestnet,
   };
@@ -88,8 +91,15 @@ function getConfig() {
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (config: ConfigService<IConfig>) =>
-        config.get('typeOrmModuleOptions'),
+      useFactory: (config: ConfigService<IConfig>) => {
+        const indexerConfig: IndexerConfig = config.get('indexerConfig');
+        if (!indexerConfig?.typeOrmModuleOptions) {
+          throw new Error(
+            "'typeOrmModuleOptions' is missing in the configuration",
+          );
+        }
+        return indexerConfig.typeOrmModuleOptions;
+      },
       inject: [ConfigService],
     }),
     AuthModule,
