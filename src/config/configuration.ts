@@ -114,7 +114,9 @@ export function getDatabaseEntities(verifierType: ChainType) {
 }
 
 function getWeb2Config(isTestnet: boolean): Web2JsonConfig {
-  const selectedSourceIds = (process.env.WEB2_SOURCE_IDS ?? '').split(',');
+  const selectedSourceIds = (process.env.WEB2_SOURCE_IDS ?? '')
+    .split(',')
+    .map((s) => s.trim());
   if (selectedSourceIds.length === 0) {
     throw new Error('WEB2_SOURCE_IDS must be set for Web2 verifier');
   }

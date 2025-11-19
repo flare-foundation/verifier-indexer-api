@@ -6,6 +6,7 @@ x-verifier-service-common: &verifier_service_common
 
 x-verifier-env: &verifier_env
   VERIFIER_TYPE: web2
+  TESTNET: true
 
 services:
   verifier_ignite:
@@ -13,7 +14,7 @@ services:
     container_name: verifier_ignite
     environment:
       <<: *verifier_env
-      WEB2_SOURCE_IDS: "testIgnite"
+      WEB2_SOURCE_IDS: testIgnite
       IGNITE_API_KEY: ${IGNITE_API_KEY}
     ports:
       - "3002:3100"
@@ -23,7 +24,6 @@ services:
     container_name: verifier_test
     environment:
       <<: *verifier_env
-      IS_TESTNET: true
-      WEB2_SOURCE_IDS: "testAPIs"
+      WEB2_SOURCE_IDS: testAPIs
     ports:
       - "3003:3100"
