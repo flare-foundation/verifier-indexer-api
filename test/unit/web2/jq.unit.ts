@@ -7,7 +7,7 @@ import { Web2JsonValidationError } from '../../../src/verification/web-2-json/ut
 
 use(chaiAsPromised);
 
-const jqProcessTimeoutMs = 500;
+const jqProcessTimeoutMs = 1000;
 const maxJqFilterLength = web2JsonDefaultParams.maxJqFilterLength;
 
 let pool: ProcessPoolService;

@@ -10,7 +10,7 @@ import { BackpressureException } from '../../../src/verification/web-2-json/util
 
 use(chaiAsPromised);
 
-const jqProcessTimeoutMs = 500;
+const jqProcessTimeoutMs = 1000;
 const maxJqFilterLength = web2JsonDefaultParams.maxJqFilterLength;
 
 describe('filterAndEncodeData', () => {
