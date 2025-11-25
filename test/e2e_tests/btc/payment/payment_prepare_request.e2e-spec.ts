@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app } from '../helper';
+import { app, baseHooks } from '../helper';
 
 describe('/Payment/prepareRequest', () => {
+  baseHooks();
   it('should get abiEncodedRequest', async () => {
     const payload = {
       attestationType:

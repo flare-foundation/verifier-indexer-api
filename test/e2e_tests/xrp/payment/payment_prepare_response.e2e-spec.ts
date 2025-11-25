@@ -1,9 +1,10 @@
 import { standardAddressHash } from '@flarenetwork/mcc';
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app } from '../helper';
+import { app, baseHooks } from '../helper';
 
 describe('/Payment/prepareResponse', () => {
+  baseHooks();
   it('should get abiEncodedRequest', async () => {
     const payload = {
       attestationType:

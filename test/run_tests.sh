@@ -115,11 +115,11 @@ _run_all_tests(){
   echo ""
 
   if [ "$1" == "coverage" ]; then
-    echo Runing all tests with coverage
-    nyc --reporter=html --reporter=text --reporter=text-summary --report-dir=coverage mocha --timeout 5_000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
+    echo "Running all tests with coverage"
+    nyc --reporter=html --reporter=text --reporter=text-summary --report-dir=coverage mocha --reporter spec --full-trace --colors --timeout 5000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
   else
-    echo Runing all tests
-    mocha --timeout 5_000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
+    echo "Running all tests"
+    mocha --reporter spec --full-trace --colors --timeout 5000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
   fi
 }
 
@@ -181,4 +181,3 @@ main() {
 }
 
 main "$@"
-

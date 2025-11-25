@@ -132,16 +132,18 @@ export class XRPVerifierServerModule implements NestModule {
 
 export let app: INestApplication;
 
-before(async () => {
-  app = await NestFactory.create(XRPVerifierServerModule);
+export function baseHooks() {
+  before(async () => {
+    app = await NestFactory.create(XRPVerifierServerModule);
 
-  app.use(helmet());
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  app.enableCors();
+    app.use(helmet());
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.enableCors();
 
-  await app.listen(3125, '0.0.0.0');
-});
+    await app.listen(3125, '0.0.0.0');
+  });
 
-after(async () => {
-  await app.close();
-});
+  after(async () => {
+    await app.close();
+  });
+}

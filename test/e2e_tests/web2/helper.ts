@@ -99,19 +99,21 @@ export class Web2JsonVerifierServerModule implements NestModule {
 
 export let app: INestApplication;
 
-before(async () => {
-  app = await NestFactory.create(Web2JsonVerifierServerModule);
+export function baseHooks() {
+  before(async () => {
+    app = await NestFactory.create(Web2JsonVerifierServerModule);
 
-  app.use(helmet());
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  app.enableCors();
+    app.use(helmet());
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.enableCors();
 
-  await app.listen(3125, '0.0.0.0');
-});
+    await app.listen(3126, '0.0.0.0');
+  });
 
-after(async () => {
-  await app.close();
-});
+  after(async () => {
+    await app.close();
+  });
+}
 
 // constants used in test
 const api_keys = getApiKeys();

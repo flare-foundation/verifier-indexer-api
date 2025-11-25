@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app } from '../helper';
+import { app, baseHooks } from '../helper';
 
 describe('/AddressValidity/mic', () => {
+  baseHooks();
   it('should get abiEncodedRequest', async () => {
     const payload = {
       attestationType:
@@ -59,7 +60,7 @@ describe('/AddressValidity/mic', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
+    expect(response.body.status).to.be.equal('VALID');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
   it('should get abiEncodedRequest random address', async () => {
@@ -79,7 +80,7 @@ describe('/AddressValidity/mic', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
+    expect(response.body.status).to.be.equal('VALID');
     expect(response.body.messageIntegrityCode.length).to.be.equal(66);
   });
   it('should get abiEncodedRequest with no 0x in attestationType', async () => {
@@ -156,7 +157,7 @@ describe('/AddressValidity/mic', () => {
   it('should get bad request (400) with wrong attestationType (but with hexadecimal characters)', async () => {
     const payload = {
       attestationType:
-        '0x4164647265737356616cA964697479000000000000000000000000000000000',
+        '0x4164647265737356616c696469747900000000000000000000000000000000001',
       sourceId:
         '0x74657374444f4745000000000000000000000000000000000000000000000000',
       requestBody: {

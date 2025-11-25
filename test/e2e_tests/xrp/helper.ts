@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
@@ -32,7 +32,7 @@ import { XrpExternalIndexerEngineService } from '../../../src/services/indexer-s
 import { XRPPaymentVerifierService } from '../../../src/services/payment-verifier.service';
 import { XRPReferencedPaymentNonexistenceVerifierService } from '../../../src/services/referenced-payment-nonexistence-verifier.service';
 import { IndexerConfig } from 'src/config/interfaces/chain-indexer';
-import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
+import { IConfig, VerifierServerConfig } from 'src/config/interfaces/common';
 
 function getConfig() {
   const api_keys = getApiKeys();
@@ -132,16 +132,18 @@ export class XRPVerifierServerModule implements NestModule {
 
 export let app: INestApplication;
 
-before(async () => {
-  app = await NestFactory.create(XRPVerifierServerModule);
+export function baseHooks() {
+  before(async () => {
+    app = await NestFactory.create(XRPVerifierServerModule);
 
-  app.use(helmet());
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  app.enableCors();
+    app.use(helmet());
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.enableCors();
 
-  await app.listen(3123, '0.0.0.0');
-});
+    await app.listen(3123, '0.0.0.0');
+  });
 
-after(async () => {
-  await app.close();
-});
+  after(async () => {
+    await app.close();
+  });
+}

@@ -1,9 +1,10 @@
 import { standardAddressHash } from '@flarenetwork/mcc';
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app } from '../helper';
+import { app, baseHooks } from '../helper';
 
 describe('/BalanceDecreasingTransaction/mic', () => {
+  baseHooks();
   it('should get valid status', async () => {
     const payload = {
       attestationType:

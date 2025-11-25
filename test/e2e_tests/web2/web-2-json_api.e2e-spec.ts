@@ -7,11 +7,13 @@ import {
   api_key,
   app,
   attResponse,
+  baseHooks,
 } from './helper';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 import { payload, payload2, payload3, payload4, payload5 } from './payloads';
 
 describe('/Web2Json/prepareResponse', () => {
+  baseHooks();
   it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
       .post('/Web2Json/prepareResponse')

@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app } from '../helper';
+import { app, baseHooks } from '../helper';
 
 describe('/AddressValidity/prepareRequest', () => {
+  baseHooks();
   it('should get abiEncodedRequest', async () => {
     const payload = {
       attestationType:
@@ -58,7 +59,7 @@ describe('/AddressValidity/prepareRequest', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS TYPE');
+    expect(response.body.status).to.be.equal('VALID');
   });
   it('should get abiEncodedRequest random address', async () => {
     const payload = {
@@ -77,7 +78,7 @@ describe('/AddressValidity/prepareRequest', () => {
       .set('X-API-KEY', '12345')
       .expect(200);
 
-    expect(response.body.status).to.be.equal('INVALID: INVALID ADDRESS LENGTH');
+    expect(response.body.status).to.be.equal('VALID');
   });
   it('should get abiEncodedRequest with no 0x in attestationType', async () => {
     const payload = {

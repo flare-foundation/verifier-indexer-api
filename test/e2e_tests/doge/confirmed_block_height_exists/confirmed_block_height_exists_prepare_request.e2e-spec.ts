@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app } from '../helper';
+import { app, baseHooks } from '../helper';
 
 describe('/ConfirmedBlockHeightExists/prepareRequest', () => {
+  baseHooks();
   it('should get status', async () => {
     const payload = {
       attestationType:

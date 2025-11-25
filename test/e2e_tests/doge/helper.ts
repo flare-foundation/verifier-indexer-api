@@ -32,7 +32,7 @@ import { DogeExternalIndexerEngineService } from '../../../src/services/indexer-
 import { DOGEPaymentVerifierService } from '../../../src/services/payment-verifier.service';
 import { DOGEReferencedPaymentNonexistenceVerifierService } from '../../../src/services/referenced-payment-nonexistence-verifier.service';
 import { IndexerConfig } from 'src/config/interfaces/chain-indexer';
-import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
+import { IConfig, VerifierServerConfig } from 'src/config/interfaces/common';
 
 function getConfig() {
   const api_keys = getApiKeys();
@@ -132,16 +132,18 @@ export class DogeVerifierServerModule implements NestModule {
 
 export let app: INestApplication;
 
-before(async () => {
-  app = await NestFactory.create(DogeVerifierServerModule);
+export function baseHooks() {
+  before(async () => {
+    app = await NestFactory.create(DogeVerifierServerModule);
 
-  app.use(helmet());
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  app.enableCors();
+    app.use(helmet());
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.enableCors();
 
-  await app.listen(3122, '0.0.0.0');
-});
+    await app.listen(3122, '0.0.0.0');
+  });
 
-after(async () => {
-  await app.close();
-});
+  after(async () => {
+    await app.close();
+  });
+}

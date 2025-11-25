@@ -132,16 +132,20 @@ export class BtcVerifierServerModule implements NestModule {
 
 export let app: INestApplication;
 
-before(async () => {
-  app = await NestFactory.create(BtcVerifierServerModule);
+export function baseHooks() {
+  before(async () => {
+    app = await NestFactory.create(BtcVerifierServerModule);
 
-  app.use(helmet());
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  app.enableCors();
+    app.use(helmet());
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.enableCors();
 
-  await app.listen(3121, '0.0.0.0');
-});
+    await app.listen(3121, '0.0.0.0');
+  });
 
-after(async () => {
-  await app.close();
-});
+  after(async () => {
+    await app.close();
+  });
+
+  return app;
+}

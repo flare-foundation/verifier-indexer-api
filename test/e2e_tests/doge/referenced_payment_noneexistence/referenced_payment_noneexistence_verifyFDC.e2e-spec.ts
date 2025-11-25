@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app } from '../helper';
+import { app, baseHooks } from '../helper';
 
 describe('/ReferencedPaymentNonexistence/verifyFDC', () => {
+  baseHooks();
   it('should get status', async () => {
     const payload = {
       abiEncodedRequest:
