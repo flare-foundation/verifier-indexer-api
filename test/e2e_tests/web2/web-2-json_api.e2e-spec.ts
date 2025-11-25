@@ -325,6 +325,7 @@ describe('/Web2Json/prepareResponse', () => {
 });
 
 describe('/Web2Json/mic', () => {
+  baseHooks();
   it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
       .post('/Web2Json/mic')
