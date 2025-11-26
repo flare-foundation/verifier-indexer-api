@@ -1,98 +1,47 @@
-<p align="center">
-  <a href="https://flare.network/" target="blank"><img src="https://flare.network/wp-content/uploads/Artboard-1-1.svg" width="400" height="300" alt="Flare Logo" /></a>
-</p>
+<!-- LOGO -->
+<div align="center">
+  <a href="https://flare.network/" target="blank">
+    <img src="https://content.flare.network/Flare-2.svg" width="300" alt="Flare Logo" />
+  </a>
+  <br />
+  <a href="CONTRIBUTING.md">Contributing</a>
+  ·
+  <a href="SECURITY.md">Security</a>
+  ·
+  <a href="CHANGELOG.md">Changelog</a>
+</div>
 
-# Verifier server API implementation
+# FDC Attestation Verifier
 
-One can run the Verifier API service on three different sources:
+A microservice in the Flare Data Connector (FDC) suite responsible for verifying and executing attestation requests and
+providing ABI-encoded responses.
 
-- **BTC** / testBTC
-- **XRP** / testXRP
-- **DOGE** / testDOGE
+It can be configured to run one of the supported attestation type and source combination verifications.
 
-For the API to function correctly, the service must be connected to the corresponding PostgreSQL database, which is populated using the appropriate indexing solution (e.g., BTC Indexer for BTC API Service).
+See documentation for more attestation type details: https://dev.flare.network/fdc/attestation-types/ 
 
-## Local Installation
+## Blockchain data attestations
 
-Make sure you're using the Node version specified in the `.nvmrc` file. We recommend using `nvm` to manage your local Node installations. Additionally, ensure that `yarn` is installed and enabled.
+Supported attestation types:
 
-Install the dependencies
+- `AddressValidity`
+- `Payment`
+- `BalanceDecreasingTransaction`
+- `ReferencedPaymentNonexistence`
+- `ConfirmedBlockHeightExists`
 
-```bash
-$ yarn install
-```
+Supported sources:
+- Mainnet: `BTC`, `DOGE`, `XRPL`
+- Testnet: `testBTC`, `testDOGE`, `testXRP`
 
-## Configuration
+For these attestation types the verifier requires access to blockchain indexers writing to PostgreSQL backends (fully synced to the target network).
 
-Copy `.env.example` to `.env` and fill the required configuration.
+## Web2 data attestations
 
-## Running the app
+Supported attestation type: `Web2Json`
 
-To start app run
+Supported sources:
+- Mainnet: [web2-json-sources.ts](src/config/web2/web2-json-sources.ts)
+- Testnet: [web2-json-test-sources.ts](src/config/web2/web2-json-test-sources.ts)
 
-```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-```
-
-## Testing with postgresql dump
-
-Download the database instances from the following links and move them to `/e2e_tests/db/`:
-
-- [BTC Testnet Database](https://githubstatic.flare.center/db_btc_testnet) as `db_btc_testnet`
-- [BTC2 Testnet Database](https://githubstatic.flare.center/db_btc2_testnet) as `db_btc2_testnet`
-- [DOGE Testnet Database](https://githubstatic.flare.center/db_doge_testnet) as `db_doge_testnet`
-- [XRP Testnet Database](https://githubstatic.flare.center/db_xrp_testnet) as `db_xrp_testnet`
-- [XRP2 Testnet Database](https://githubstatic.flare.center/db_xrp2_testnet) as `db_xrp2_testnet`
-
-or simply run
-
-```bash
-yarn test download
-```
-
-Currently, all databases are from testnets.
-
-### Option 1: Running Tests Against a Database Instance
-
-To run all tests across all sources or check code coverage, use the following commands:
-
-```bash
-yarn test run
-yarn test coverage
-```
-
-### Option 2: Spinning Up a Database from a Dump and Persisting It
-
-Depending on your source, create a database instance using the following command:
-
-```bash
-yarn test make_db btc
-```
-
-Once the database is up and running, you can start a local server and manually send requests. For this setup, set the following environment variables to your `.env` file:
-
-```bash
-# .env file
-DB_DATABASE=db
-DB_USERNAME=user
-DB_PASSWORD=pass
-DB_HOST=127.0.0.1
-DB_PORT=8080
-```
-
-Additionally, set the appropriate values for `VERIFIER_TYPE` and `TESTNET`:
-
-```bash
-VERIFIER_TYPE=btc
-TESTNET=true
-```
-
-When you're finished, remember to stop the database server with:
-
-```bash
-yarn test delete_db
-```
+Web2 data attestations fetch and transform JSON data from HTTP(S) endpoints using jq queries. Allowed endpoints are defined by the source configuration files above.

@@ -28,51 +28,97 @@ also welcome.
 
 Prerequisites:
 
-- Node.js 20+ (LTS recommended)
+- Node.js, as specified in the `.nvmrc` file. We recommend using `nvm` to manage versions.
 - Yarn 1.22.x
 - Docker Desktop (or Docker Engine) with Docker Compose v2 — required for tests
 - Git
 
-Setup:
+Install the dependencies:
 
-1. Install dependencies
+```bash
+$ yarn install
+```
 
-   ```bash
-   yarn install
-   ```
+### Configuration
 
-2. Build (TypeScript → dist)
+Copy `.env.example` to `.env` and fill the required configuration parameters.
 
-   ```bash
-   yarn build
-   ```
 
-3. Run locally
+### Running the app
 
-   - Development (watch mode):
+To start app run:
 
-     ```bash
-     yarn start:dev
-     ```
+```bash
+# development
+$ yarn run start
 
-   - Standard start (no watch):
+# watch mode
+$ yarn run start:dev
+```
 
-     ```bash
-     yarn start
-     ```
+### Testing with postgresql dump
 
-   - Production (after build):
+Download the database instances from the following links and move them to `/e2e_tests/db/`:
 
-     ```bash
-     yarn start:prod
-     ```
+- [BTC Testnet Database](https://githubstatic.flare.center/db_btc_testnet) as `db_btc_testnet`
+- [BTC2 Testnet Database](https://githubstatic.flare.center/db_btc2_testnet) as `db_btc2_testnet`
+- [DOGE Testnet Database](https://githubstatic.flare.center/db_doge_testnet) as `db_doge_testnet`
+- [XRP Testnet Database](https://githubstatic.flare.center/db_xrp_testnet) as `db_xrp_testnet`
+- [XRP2 Testnet Database](https://githubstatic.flare.center/db_xrp2_testnet) as `db_xrp2_testnet`
+
+or simply run:
+
+```bash
+yarn test download
+```
+
+Currently, all databases are from testnets.
+
+#### Option 1: Running Tests Against a Database Instance
+
+To run all tests across all sources or check code coverage, use the following commands:
+
+```bash
+yarn test run
+yarn test coverage
+```
+
+#### Option 2: Spinning Up a Database from a Dump and Persisting It
+
+Depending on your source, create a database instance using the following command:
+
+```bash
+yarn test make_db btc
+```
+
+Once the database is up and running, you can start a local server and manually send requests. For this setup, set the
+following environment variables to your `.env` file:
+
+```bash
+# .env file
+DB_DATABASE=db
+DB_USERNAME=user
+DB_PASSWORD=pass
+DB_HOST=127.0.0.1
+DB_PORT=8080
+```
+
+Additionally, set the appropriate values for `VERIFIER_TYPE` and `TESTNET`:
+
+```bash
+VERIFIER_TYPE=btc
+TESTNET=true
+```
+
+When you're finished, remember to stop the database server with:
+
+```bash
+yarn test delete_db
+```
      
-## Linting and formatting
+### Linting and formatting
 
-We use ESLint and Prettier.
-
-Common commands:
-
+We use ESLint and Prettier:
 - Check lint:
 
   ```bash
@@ -96,24 +142,6 @@ Common commands:
   ```bash
   yarn format:fix
   ```
-  
-## Testing
-
-Tests are run with Mocha (TypeScript via ts-node) and require a Postgres Docker container that is managed by our test script.
-
-Quick run (spins up DB, runs tests, tears down DB):
-
-```bash
-# run all e2e + unit tests
-yarn test run
-```
-
-Coverage:
-
-```bash
-yarn test coverage
-# HTML and text reports under ./coverage
-```
 ## Proposing Web2Json attestation type source changes
 
 Community members can propose adding or removing supported Web2 API endpoints by updating the `Web2Json` source list at [src/config/web2/web2-json-sources.ts](src/config/web2/web2-json-sources.ts) and opening a pull request.
