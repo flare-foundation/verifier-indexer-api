@@ -16,12 +16,10 @@ Please refer to our [Immunefi Bug Bounty Program](https://immunefi.com/bug-bount
 ## Vulnerability disclosures
 
 Critical vulnerabilities will be disclosed via GitHub's
-[security advisory](https://github.com/flare-foundation/fassets/security) <!-- change the link to the repo to the relevant repo on GitHub -->
+[security advisory](https://github.com/flare-foundation/verifier-indexer-api/security) 
 system.
 
 ## Audits
 
 Audit reports are published on Flare's [Developer Hub](https://dev.flare.network/support/audits/).
 
-<!-- This section should contain the audit scope as well as any published
-audits. Audit scope can be inverted (eg.: everything except: ...) -->
