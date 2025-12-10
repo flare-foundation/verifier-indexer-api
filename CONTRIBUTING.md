@@ -56,25 +56,27 @@ $ yarn run start
 $ yarn run start:dev
 ```
 
-### Testing with postgresql dump
+### Testing
 
-Download the database instances from the following links and move them to `/e2e_tests/db/`:
+End-to-end tests for blockchain verifier types require indexer database access.
 
-- [BTC Testnet Database](https://githubstatic.flare.center/db_btc_testnet) as `db_btc_testnet`
-- [BTC2 Testnet Database](https://githubstatic.flare.center/db_btc2_testnet) as `db_btc2_testnet`
-- [DOGE Testnet Database](https://githubstatic.flare.center/db_doge_testnet) as `db_doge_testnet`
-- [XRP Testnet Database](https://githubstatic.flare.center/db_xrp_testnet) as `db_xrp_testnet`
-- [XRP2 Testnet Database](https://githubstatic.flare.center/db_xrp2_testnet) as `db_xrp2_testnet`
-
-or simply run:
+To download database snapshots, run:
 
 ```bash
 yarn test download
 ```
 
-Currently, all databases are from testnets.
-
-#### Option 1: Running Tests Against a Database Instance
+> **Manual download (alternative)**
+>
+> You can also download the database snapshots manually and move them to `/e2e_tests/db/`:
+>
+> - [BTC Testnet Database](https://githubstatic.flare.center/db_btc_testnet) as `db_btc_testnet`
+> - [BTC2 Testnet Database](https://githubstatic.flare.center/db_btc2_testnet) as `db_btc2_testnet`
+> - [DOGE Testnet Database](https://githubstatic.flare.center/db_doge_testnet) as `db_doge_testnet`
+> - [XRP Testnet Database](https://githubstatic.flare.center/db_xrp_testnet) as `db_xrp_testnet`
+> - [XRP2 Testnet Database](https://githubstatic.flare.center/db_xrp2_testnet) as `db_xrp2_testnet`
+>
+> Currently, all snapshots are from testnets.
 
 To run all tests across all sources or check code coverage, use the following commands:
 
@@ -83,13 +85,15 @@ yarn test run
 yarn test coverage
 ```
 
-#### Option 2: Spinning Up a Database from a Dump and Persisting It
+#### Manual testing
 
-Depending on your source, create a database instance using the following command:
+To test a specific verifier type you can also instantiate only the relevant indexer db. For example, for `btc` verifier type:
 
 ```bash
 yarn test make_db btc
 ```
+
+This will create and start a local Postgres database server with the Bitcoin testnet snapshot.
 
 Once the database is up and running, you can start a local server and manually send requests. For this setup, set the
 following environment variables to your `.env` file:
