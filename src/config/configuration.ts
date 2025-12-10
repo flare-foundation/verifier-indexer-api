@@ -17,10 +17,7 @@ import {
 import { IndexerConfig } from './interfaces/chain-indexer';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { web2JsonDefaultParams } from './defaults/web2-json-config';
-import {
-  database,
-  typeOrmModulePartialOptions,
-} from './defaults/indexer-config';
+import { getDatabaseConfig } from './defaults/indexer-config';
 import { IConfig, VerifierServerConfig } from './interfaces/common';
 import { Web2JsonConfig, Web2JsonSource } from './interfaces/web2-json';
 import { WEB2_JSON_TEST_SOURCES } from './web2/web2-json-test-sources';
@@ -146,11 +143,19 @@ function getIndexerConfig(verifierType: ChainType): IndexerConfig {
     case ChainType.DOGE:
     case ChainType.XRP: {
       const entities = getDatabaseEntities(verifierType);
+      const databaseConfig = getDatabaseConfig();
+      const typeOrmModulePartialOptions: TypeOrmModuleOptions = {
+        ...databaseConfig,
+        type: 'postgres',
+        synchronize: false,
+        migrationsRun: false,
+        logging: false,
+      };
       const typeOrmModuleOptions: TypeOrmModuleOptions = {
         ...typeOrmModulePartialOptions,
         entities,
       };
-      return { db: database, typeOrmModuleOptions };
+      return { db: databaseConfig, typeOrmModuleOptions };
     }
     case ChainType.Web2:
       throw new Error('Web2 verifier does not use indexer config');
