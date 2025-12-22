@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - report
 
 build:
   stage: build
@@ -12,6 +13,12 @@ build:
   artifacts:
     paths:
       - dist/
+
+include:
+  - component: gitlab.com/flarenetwork/ci-components-private/cursor-code-review@1
+    inputs:
+      rules_condition: $CI_MERGE_REQUEST_IID != null && $GITLAB_USER_NAME != "SealBot" && $CI_MERGE_REQUEST_EVENT_TYPE != "merge_train"
+      rules_when: always
 
 build-docker:
   stage: build
