@@ -1,10 +1,13 @@
-# Ignite Proxy API Key Decryption example
+# Obtaining Web2Json Ignite Source API Key
 
-This is a sample script demonstrating how to obtain your Ignite proxy API key.
+API keys for the Ignite proxy are issued separately to each registered data provider.
+Each key is encrypted with that provider's signing policy public key and then published as part of a global list at: https://api.ignitemarket.xyz/proxy-api-keys
+
+The steps below show how to decrypt and obtain your own provider's API key.
 
 ## Setup
 
-From the project root:
+From the project root run:
 
 ```bash
 yarn install
@@ -18,7 +21,7 @@ PRIVATE_KEY=0x...
 
 - `PRIVATE_KEY`: your provider's signing policy private key in hex format.
 
-## Step 1: Fetch encrypted keys list
+## Step 1: Fetch encrypted keys
 
 From `scripts/web2/`, run:
 
