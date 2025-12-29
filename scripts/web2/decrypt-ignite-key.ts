@@ -1,17 +1,16 @@
 #!/usr/bin/env ts-node
 import 'dotenv/config';
-import axios from 'axios';
 import { ethers } from 'ethers';
 import { createDecipheriv, createECDH, hkdfSync } from 'crypto';
 import { config as loadEnv } from 'dotenv';
+import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 // Load dedicated env file for decryption, next to this script
 loadEnv({ path: resolve(__dirname, '.env.decrypt') });
 
-const KEYS_URL =
-  process.env.KEYS_URL || 'https://api.ignitemarket.xyz/proxy-api-keys';
 const ENV_KEY = 'PRIVATE_KEY';
+const INPUT_FILE = 'ignite-api-keys.json';
 
 const ECDH_SALT = Buffer.from('key-publish-ecdh-salt-v1');
 const ECDH_INFO_PREFIX = Buffer.from('key-publish-api-key:v1:');
@@ -19,8 +18,7 @@ const AES_NONCE_SIZE = 12;
 const AUTH_TAG_SIZE = 16;
 
 interface EncryptedKeyRecord {
-  signing_address?: string;
-  identity_address?: string;
+  signing_policy_address: string;
   encrypted_API_key: string;
 }
 
@@ -107,26 +105,27 @@ function decryptIgniteKey(
   }
 }
 
-async function fetchEncryptedKeys(): Promise<EncryptedKeyRecord[]> {
-  const resp = await axios.get(KEYS_URL, { timeout: 10_000 });
-  const data = resp.data;
-  if (!data || typeof data !== 'object' || !Array.isArray(data.data)) {
-    throw new Error('API response is not in the expected format.');
+function loadAllKeysFromFile(): EncryptedKeyRecord[] {
+  const filePath = resolve(__dirname, INPUT_FILE);
+  const raw = readFileSync(filePath, { encoding: 'utf8' });
+  const parsed = JSON.parse(raw) as any;
+
+  if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.data)) {
+    throw new Error(
+      `Input file ${INPUT_FILE} does not contain a 'data' array.`,
+    );
   }
-  return data.data as EncryptedKeyRecord[];
+
+  return parsed.data as EncryptedKeyRecord[];
 }
 
-function findEncryptedKeyForAddress(
+function findRecordForAddress(
   records: EncryptedKeyRecord[],
   myAddress: string,
 ): string | undefined {
   const target = myAddress.toLowerCase();
   for (const item of records) {
-    const addr = (
-      item.signing_address ||
-      item.identity_address ||
-      ''
-    ).toString();
+    const addr = item.signing_policy_address?.toString();
     if (addr && addr.toLowerCase() === target) {
       return item.encrypted_API_key;
     }
@@ -140,15 +139,15 @@ async function main(): Promise<void> {
     const wallet = new ethers.Wallet(privateKeyHex);
     const myAddress = wallet.address;
 
-    console.log(`Derived signing policy address: ${myAddress}`);
+    console.log(`Decrypting key for signing policy address: ${myAddress}`);
+    console.log(`Reading keys from file: ${INPUT_FILE}`);
 
-    const records = await fetchEncryptedKeys();
-    const encryptedKey = findEncryptedKeyForAddress(records, myAddress);
+    const records = loadAllKeysFromFile();
+    const encryptedKey = findRecordForAddress(records, myAddress);
 
     if (!encryptedKey) {
       throw new Error(`No encrypted key found for address ${myAddress}.`);
     }
-    console.log('Found encrypted key. Decrypting...');
 
     const apiKey = decryptIgniteKey(privateKeyHex, myAddress, encryptedKey);
 
