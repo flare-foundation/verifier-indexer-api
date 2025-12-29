@@ -1,4 +1,4 @@
-FROM node:20-bullseye
+FROM node:24-bullseye
 WORKDIR /app/verifier-indexer-api
 COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "yarn.lock", "./"]
 ENV DEBIAN_FRONTEND=noninteractive
