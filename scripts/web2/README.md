@@ -31,7 +31,7 @@ npx ts-node decrypt-ignite-key.ts
 
 The script will:
 
-1. Load `PRIVATE_KEY` (and optionally `KEYS_URL`) from `.env.decryptIgniteKey`.
+1. Load `PRIVATE_KEY` (and optionally `KEYS_URL`) from `.env.decrypt`.
 2. Derive your signing policy address from `PRIVATE_KEY`.
 3. Fetch encrypted API keys from `KEYS_URL`.
 4. Find the entry matching your address.
