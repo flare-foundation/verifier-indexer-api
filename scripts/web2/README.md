@@ -1,7 +1,9 @@
 # Obtaining Web2Json Ignite Source API Key
 
 API keys for the Ignite proxy are issued separately to each registered data provider.
-Each key is encrypted with that provider's signing policy public key and then published as part of a global list at: https://api.ignitemarket.xyz/proxy-api-keys
+Each key is encrypted with that provider's signing policy public key and then published as part of a global list at:
+- Flare: https://api.ignitemarket.xyz/proxy-api-keys
+- Songbird: https://api.ignitemarket.xyz/proxy-api-keys/songbird
 
 The steps below show how to decrypt and obtain your own provider's API key.
 
