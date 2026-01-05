@@ -158,35 +158,31 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     from,
     to,
   }: QueryBlock): Promise<PaginatedList<ApiDBBlock>> {
-    // TODO: (Luka) add pagination
-    let theLimit = this.indexerServerPageLimit;
+    const theLimit = this.indexerServerPageLimit;
     let query = this.manager
       .createQueryBuilder(this.blockTable, 'block')
       .orderBy('block.block_number', 'ASC');
-    const count = await query.getCount();
-    theLimit = Math.min(theLimit, count);
 
     if (from !== undefined && to !== undefined && from > to) {
       throw new Error('Invalid range, from must be less or equal than to');
+    } else if (from === undefined && to === undefined) {
+      query = query.take(theLimit);
+    } else if (from !== undefined && to !== undefined) {
+      const tempTo = Math.min(to, from + theLimit - 1);
+      query = query
+        .andWhere('block.block_number >= :from', { from })
+        .andWhere('block.block_number <= :tempTo', { tempTo });
+    } else if (from !== undefined && to === undefined) {
+      query = query
+        .andWhere('block.block_number >= :from', { from })
+        .take(theLimit);
+    } else if (from === undefined && to !== undefined) {
+      const tempFrom = Math.max(0, to - theLimit + 1);
+      query = query
+        .andWhere('block.block_number >= :from', { tempFrom })
+        .andWhere('block.block_number <= :tempTo', { to });
     }
 
-    if (from !== undefined) {
-      query = query.andWhere('block.block_number >= :from', { from });
-    }
-    if (to !== undefined) {
-      if (from === undefined) {
-        query = query
-          .andWhere('block.block_number <= :to', { to })
-          .take(theLimit);
-      } else {
-        const tempTo = Math.min(to, from + theLimit - 1);
-        theLimit = tempTo - from + 1;
-        query = query.andWhere('block.block_number <= :tempTo', { tempTo });
-      }
-    }
-    if (from === undefined && to === undefined) {
-      query = query.take(theLimit);
-    }
     const results = await query.getMany();
     const items = results.map((res) => {
       return res.toApiDBBlock();
