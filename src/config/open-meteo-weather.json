@@ -1,0 +1,24 @@
+{
+  "attestationType": "Web2Json",
+  "source": "open-meteo-archive",
+  "description": "Historical weather data for insurance settlement",
+  "url": "https://archive-api.open-meteo.com/v1/archive",
+  "methods": ["GET"],
+  "cost": 1,
+  "responseSchema": {
+    "type": "object",
+    "properties": {
+      "latitude": { "type": "number" },
+      "longitude": { "type": "number" },
+      "daily": {
+        "type": "object",
+        "properties": {
+          "precipitation_sum": {
+            "type": "array",
+            "items": { "type": "number" }
+          }
+        }
+      }
+    }
+  }
+}
