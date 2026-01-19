@@ -6,7 +6,7 @@ export const WEB2_JSON_TEST_SOURCES: Web2JsonSource[] = [
     sourceId: 'testIgnite',
     endpoints: [
       {
-        host: 'api-proxy.ignitemarket.xyz',
+        host: 'api-proxy-dev.ignitemarket.xyz',
         paths: '*',
         methods: [HTTP_METHOD.GET],
         auth: {
