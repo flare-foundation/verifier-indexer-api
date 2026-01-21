@@ -3,10 +3,35 @@ stages:
   - test
   - report
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
 variables:
   NODE_VERSION: "24.12.0"
 
-build:
+include:
+  - component: gitlab.com/flarenetwork/ci-components-private/ai-code-review@1
+    inputs:
+      use_cursor_cli: true
+      rules_condition: $CI_MERGE_REQUEST_IID != null && $GITLAB_USER_NAME != "SealBot" && $CI_MERGE_REQUEST_EVENT_TYPE != "merge_train"
+      rules_when: always
+  - component: gitlab.com/flarenetwork/ci-components-private/release-image@release-image-commit-hash
+    inputs:
+      job_name_suffix: "-gitlab-cr"
+      image_name: "verifier-indexer-api"
+      image_tag_source: "commit_hash"
+      build_tags: ["flarenetwork-md"]
+      stage: build
+      push_to_staging: true
+      push_to_production_on_protected: false
+      staging_registry: "registry.gitlab.com/flarenetwork/fdc"
+      rules_condition: $CI_MERGE_REQUEST_IID != null
+
+build-app:
   stage: build
   image: node:${NODE_VERSION}
   before_script:
@@ -16,25 +41,6 @@ build:
   artifacts:
     paths:
       - dist/
-
-include:
-  - component: gitlab.com/flarenetwork/ci-components-private/ai-code-review@1
-    inputs:
-      rules_condition: $CI_MERGE_REQUEST_IID != null && $GITLAB_USER_NAME != "SealBot" && $CI_MERGE_REQUEST_EVENT_TYPE != "merge_train"
-      rules_when: always
-
-build-docker:
-  stage: build
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  script:
-    - mkdir -p /kaniko/.docker
-    - echo "$CI_COMMIT_SHA" > COMMIT_HASH
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH --cache=true --cache-ttl=120h
-  only:
-    - branches
 
 e2e_test:
   stage: test
