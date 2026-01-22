@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `Web2Json`: added `PublicWeb2` source support, allows calling any public Web2 endpoint. Only available on testnets.
+
+### Changed
+
+- `Web2Json`: removed `testApis` source, use `PublicWeb2` instead.
+- Bumped required Node.js version to 24 (lts/krypton).
+
 ## [1.3.1] - 2026-01-08
 
 ### Fixed
