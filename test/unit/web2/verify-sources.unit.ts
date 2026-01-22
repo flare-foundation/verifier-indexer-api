@@ -38,9 +38,17 @@ describe('Web2Json source validation', () => {
     });
   });
   describe('host and path validation', () => {
-    const allSources = WEB2_JSON_SOURCES.concat(WEB2_JSON_TEST_SOURCES);
+    it('endpoints should be defined for mainnet sources', () => {
+      for (const source of WEB2_JSON_SOURCES) {
+        expect(
+          source.endpoints.length > 0,
+          `No endpoints defined for sourceId=${source.sourceId}`,
+        ).to.be.true;
+      }
+    });
 
     it('all endpoint host+path combinations should form valid URLs', () => {
+      const allSources = WEB2_JSON_SOURCES.concat(WEB2_JSON_TEST_SOURCES);
       for (const source of allSources) {
         for (const endpoint of source.endpoints) {
           const host = endpoint.host;

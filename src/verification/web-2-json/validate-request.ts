@@ -1,8 +1,8 @@
 import {
   CheckedUrl,
   parseUrl,
-  validatePath,
   validateHttpMethod,
+  validatePath,
   validateUrl,
 } from './validate-url';
 import { Web2Json_Request } from '../../dtos/attestation-types/Web2Json.dto';
@@ -18,6 +18,7 @@ import { validateJqFilter } from './validate-jq';
 import { ParamType } from 'ethers';
 import { parseAndValidateAbiType } from './validate-abi';
 import { Web2JsonValidationError } from './utils';
+import { PUBLIC_WEB2 } from '../../config/web2/web2-json-test-sources';
 
 export interface ParsedRequestBody {
   validSourceUrl: CheckedUrl;
@@ -47,18 +48,6 @@ export async function parseAndValidateRequest(
       `Invalid source URL: ${(e as Error).message}`,
     );
   }
-  const endpoint = source.endpoints.find((e) => e.host === parsedUrl.hostname);
-  if (!endpoint) {
-    throw new Web2JsonValidationError(
-      AttestationResponseStatus.INVALID_SOURCE_URL,
-      'Source URL host not allowed',
-    );
-  }
-  // validate endpoint path
-  validatePath(parsedUrl, endpoint);
-  // validate HTTP method
-  const sourceMethod = requestBody.httpMethod;
-  validateHttpMethod(sourceMethod, endpoint.methods);
   // validate headers
   const sourceHeaders =
     parseJsonWithDepthAndKeysValidation(
@@ -80,6 +69,49 @@ export async function parseAndValidateRequest(
       AttestationResponseStatus.INVALID_QUERY_PARAMS,
     ) ?? {};
 
+  const sourceMethod = requestBody.httpMethod;
+
+  if (source === PUBLIC_WEB2) {
+    // validate HTTP method
+    validateHttpMethod(sourceMethod, [HTTP_METHOD.GET, HTTP_METHOD.POST]);
+  } else {
+    const endpoint = source.endpoints.find(
+      (e) => e.host === parsedUrl.hostname,
+    );
+    if (!endpoint) {
+      throw new Web2JsonValidationError(
+        AttestationResponseStatus.INVALID_SOURCE_URL,
+        'Source URL host not allowed',
+      );
+    }
+
+    // validate endpoint path
+    validatePath(parsedUrl, endpoint);
+    // validate HTTP method
+    validateHttpMethod(sourceMethod, endpoint.methods);
+    // Inject authentication token from endpoint.auth if configured
+    if (endpoint.auth) {
+      const token = process.env[endpoint.auth.env];
+      if (!token) {
+        throw Error(
+          `Missing API key in environment variable ${endpoint.auth.env} for host ${endpoint.host}`,
+        );
+      }
+
+      if (endpoint.auth.type === AuthType.BEARER) {
+        sourceHeaders['Authorization'] = `Bearer ${token}`;
+      } else if (endpoint.auth.type === AuthType.APIKEY) {
+        if (endpoint.auth.header) {
+          sourceHeaders[endpoint.auth.header] = token;
+        } else {
+          sourceQueryParams[endpoint.auth.query] = token;
+        }
+      } else {
+        throw new Error(`Unsupported auth type for host ${endpoint.host}`);
+      }
+    }
+  }
+
   // validate jq filter length and content
   const jqFilter = requestBody.postProcessJq;
   validateJqFilter(requestBody.postProcessJq, securityParams.maxJqFilterLength);
@@ -88,28 +120,6 @@ export async function parseAndValidateRequest(
     requestBody.abiSignature,
     securityParams.maxAbiSignatureLength,
   );
-
-  // Inject authentication token from endpoint.auth if configured
-  if (endpoint.auth) {
-    const token = process.env[endpoint.auth.env];
-    if (!token) {
-      throw Error(
-        `Missing API key in environment variable ${endpoint.auth.env} for host ${endpoint.host}`,
-      );
-    }
-
-    if (endpoint.auth.type === AuthType.BEARER) {
-      sourceHeaders['Authorization'] = `Bearer ${token}`;
-    } else if (endpoint.auth.type === AuthType.APIKEY) {
-      if (endpoint.auth.header) {
-        sourceHeaders[endpoint.auth.header] = token;
-      } else {
-        sourceQueryParams[endpoint.auth.query] = token;
-      }
-    } else {
-      throw new Error(`Unsupported auth type for host ${endpoint.host}`);
-    }
-  }
 
   // validate body
   const sourceBody = parseJsonWithDepthAndKeysValidation(

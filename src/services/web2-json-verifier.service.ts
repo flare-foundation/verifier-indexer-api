@@ -12,6 +12,7 @@ import {
   Web2Json_Response,
 } from '../dtos/attestation-types/Web2Json.dto';
 import {
+  decodeAttestationName,
   encodeAttestationName,
   serializeBigInts,
 } from '../external-libs/utils';
@@ -50,21 +51,22 @@ export class Web2JsonVerifierService extends BaseVerifierService<
   }
 
   protected checkSupportedType(request: Web2Json_Request) {
-    const supportedAttestation = encodeAttestationName(
-      Web2JsonVerifierService.attestationName,
+    const requestType = decodeAttestationName(request.attestationType);
+    const requestSourceId = decodeAttestationName(request.sourceId);
+    const supportedSourceIds = this.web2JsonConfig.sources.map(
+      (s) => s.sourceId,
     );
-    const supportedSources = this.web2JsonConfig.sources.map((s) => s.sourceId);
 
     if (
-      request.attestationType !== supportedAttestation ||
-      !supportedSources.some(
-        (s) => request.sourceId == encodeAttestationName(s),
-      )
+      requestType !== Web2JsonVerifierService.attestationName ||
+      !supportedSourceIds.some((s) => requestSourceId == s)
     ) {
+      const errorMsg = `Attestation type and source id combination not supported: ${requestType}/${requestSourceId}. Supported attestation type: '${Web2JsonVerifierService.attestationName}'. Supported source ids: [${supportedSourceIds.join(', ')}].`;
+      this.logger.debug(errorMsg);
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: `Attestation type and source id combination not supported: (${request.attestationType}, ${request.sourceId}). Supported attestation: '${Web2JsonVerifierService.attestationName}' (${supportedAttestation}). Supported source ids: [${supportedSources.join(', ')}] ([${supportedSources.map(encodeAttestationName).join(', ')}]).`,
+          error: errorMsg,
         },
         HttpStatus.BAD_REQUEST,
       );
