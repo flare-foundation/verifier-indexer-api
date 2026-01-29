@@ -7,6 +7,7 @@ x-verifier-service-common: &verifier_service_common
 x-verifier-env: &verifier_env
   VERIFIER_TYPE: web2
   TESTNET: true
+  API_KEYS: "123456"
 
 services:
   verifier_ignite:
@@ -24,6 +25,6 @@ services:
     container_name: verifier_test
     environment:
       <<: *verifier_env
-      WEB2_SOURCE_IDS: testAPIs
+      WEB2_SOURCE_IDS: PublicWeb2
     ports:
       - "3003:3100"

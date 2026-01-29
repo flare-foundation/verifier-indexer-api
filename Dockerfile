@@ -7,13 +7,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 RUN corepack prepare "$(node -p "require('./package.json').packageManager")" --activate && \
-    pnpm install --frozen-lockfile
+    pnpm install --prod --frozen-lockfile
 
 # Build
 COPY . .
 ENV CI=true
 RUN pnpm run build
-RUN pnpm prune --prod
 
 # Versioning metadata, served by the app at runtime
 RUN (git describe --tags --always > PROJECT_VERSION || echo "unknown" > PROJECT_VERSION) && \
