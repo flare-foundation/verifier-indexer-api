@@ -35,8 +35,7 @@ interface IVerificationServiceConfig {
   attestationName: AttestationTypeOptions;
 }
 
-interface IVerificationServiceWithIndexerConfig
-  extends IVerificationServiceConfig {
+interface IVerificationServiceWithIndexerConfig extends IVerificationServiceConfig {
   indexerQueryManager:
     | typeof DogeIndexerQueryManager
     | typeof BtcIndexerQueryManager

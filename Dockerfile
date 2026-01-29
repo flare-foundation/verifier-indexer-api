@@ -1,5 +1,5 @@
 # ---- Build stage ----
-FROM node:24-slim AS build
+FROM node:24-slim@sha256:bf22df20270b654c4e9da59d8d4a3516cce6ba2852e159b27288d645b7a7eedc AS build
 
 WORKDIR /app/verifier-indexer-api
 ENV DEBIAN_FRONTEND=noninteractive
@@ -21,7 +21,7 @@ RUN (git describe --tags --always > PROJECT_VERSION || echo "unknown" > PROJECT_
     (git rev-parse HEAD > PROJECT_COMMIT_HASH || echo "unknown" > PROJECT_COMMIT_HASH)
 
 # ---- Runtime stage ----
-FROM node:24-slim AS runtime
+FROM node:24-slim@sha256:bf22df20270b654c4e9da59d8d4a3516cce6ba2852e159b27288d645b7a7eedc AS runtime
 
 WORKDIR /app/verifier-indexer-api
 ENV NODE_ENV=production
