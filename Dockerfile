@@ -1,24 +1,40 @@
-FROM node:24-bullseye
+# ---- Build stage ----
+FROM node:24-slim AS build
+
 WORKDIR /app/verifier-indexer-api
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "yarn.lock", "./"]
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
-    yarn install --frozen-lockfile
+RUN corepack enable
+COPY package.json pnpm-lock.yaml ./
+RUN corepack prepare "$(node -p "require('./package.json').packageManager")" --activate && \
+    pnpm install --frozen-lockfile
 
+# Build
 COPY . .
-RUN yarn build
-EXPOSE 3000
+ENV CI=true
+RUN pnpm run build
+RUN pnpm prune --prod
 
-RUN git describe --tags --always > PROJECT_VERSION && \
+# Versioning metadata, served by the app at runtime
+RUN (git describe --tags --always > PROJECT_VERSION || echo "unknown" > PROJECT_VERSION) && \
     date +%s > PROJECT_BUILD_DATE && \
-    git rev-parse HEAD > PROJECT_COMMIT_HASH && \
-    rm -rf .git
+    (git rev-parse HEAD > PROJECT_COMMIT_HASH || echo "unknown" > PROJECT_COMMIT_HASH)
 
-USER node
+# ---- Runtime stage ----
+FROM node:24-slim AS runtime
 
-ENV PATH="${PATH}:/app/verifier-indexer-api/docker/scripts"
+WORKDIR /app/verifier-indexer-api
 ENV NODE_ENV=production
 
-ENTRYPOINT [ "/app/verifier-indexer-api/docker/scripts/entrypoint.sh" ]
-CMD [ "yarn", "start:prod" ]
+COPY --from=build /app/verifier-indexer-api/dist ./dist
+COPY --from=build /app/verifier-indexer-api/node_modules ./node_modules
+COPY --from=build /app/verifier-indexer-api/package.json ./package.json
+
+COPY --from=build /app/verifier-indexer-api/PROJECT_VERSION ./PROJECT_VERSION
+COPY --from=build /app/verifier-indexer-api/PROJECT_BUILD_DATE ./PROJECT_BUILD_DATE
+COPY --from=build /app/verifier-indexer-api/PROJECT_COMMIT_HASH ./PROJECT_COMMIT_HASH
+
+EXPOSE 3000
+USER node
+
+CMD [ "node", "dist/main" ]
