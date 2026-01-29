@@ -12,6 +12,22 @@ workflow:
 
 variables:
   NODE_VERSION: "24.12.0"
+  PNPM_VERSION: "10.28.0"
+  PNPM_STORE_DIR: ".pnpm-store"
+
+.pnpm-setup:
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@${PNPM_VERSION} --activate
+    - pnpm --version
+
+.pnpm-cache:
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store/
 
 include:
   - component: gitlab.com/flarenetwork/ci-components-private/ai-code-review@1
@@ -34,10 +50,15 @@ include:
 build-app:
   stage: build
   image: node:${NODE_VERSION}
+  extends:
+    - .pnpm-setup
+    - .pnpm-cache
   before_script:
-    - yarn install --frozen-lockfile
+    - !reference [.pnpm-setup, before_script]
+    - pnpm config set store-dir ${PNPM_STORE_DIR}
+    - pnpm install --frozen-lockfile
   script:
-    - yarn build
+    - pnpm run build
   artifacts:
     paths:
       - dist/
@@ -45,6 +66,9 @@ build-app:
 e2e_test:
   stage: test
   image: node:${NODE_VERSION}
+  extends:
+    - .pnpm-setup
+    - .pnpm-cache
   variables:
     POSTGRES_DB: db
     POSTGRES_USER: user
@@ -54,7 +78,9 @@ e2e_test:
     - name: postgres:17
       alias: postgres
   before_script:
-    - yarn install --frozen-lockfile
+    - !reference [.pnpm-setup, before_script]
+    - pnpm config set store-dir ${PNPM_STORE_DIR}
+    - pnpm install --frozen-lockfile
     - apt update && apt install -y postgresql-common
     - YES=1 /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
     - apt -y install postgresql-client-17
@@ -87,13 +113,18 @@ e2e_test:
       fetch_and_verify https://githubstatic.flare.center/db_xrp_testnet test/e2e_tests/db/db_xrp_testnet "db1ef0794bff297323db63f783d030a9af66c5ac8318441c03c9fea2fa792e35"
       fetch_and_verify https://githubstatic.flare.center/db_xrp2_testnet test/e2e_tests/db/db_xrp2_testnet "72277e725b9ff5a5f679c56d163724a0206ebdbe4f89f333a42b1d26efab9652"
   script:
-    - yarn test ci
+    - pnpm test ci
 
 lint:
   stage: test
   image: node:${NODE_VERSION}
+  extends:
+    - .pnpm-setup
+    - .pnpm-cache
   before_script:
-    - yarn install --frozen-lockfile
+    - !reference [.pnpm-setup, before_script]
+    - pnpm config set store-dir ${PNPM_STORE_DIR}
+    - pnpm install --frozen-lockfile
   script:
-    - yarn lint:check
-    - yarn format:check
+    - pnpm run lint:check
+    - pnpm run format:check

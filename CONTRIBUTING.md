@@ -29,14 +29,14 @@ also welcome.
 Prerequisites:
 
 - Node.js, as specified in the `.nvmrc` file. We recommend using `nvm` to manage versions.
-- Yarn 1.22.x
+- pnpm 10.28.0
 - Docker Desktop (or Docker Engine) with Docker Compose v2 — required for tests
 - Git
 
 Install the dependencies:
 
 ```bash
-$ yarn install
+$ pnpm install
 ```
 
 ### Configuration
@@ -50,10 +50,10 @@ To start app run:
 
 ```bash
 # development
-$ yarn run start
+$ pnpm run start
 
 # watch mode
-$ yarn run start:dev
+$ pnpm run start:dev
 ```
 
 ### Testing
@@ -63,7 +63,7 @@ End-to-end tests for blockchain verifier types require indexer database access.
 To download database snapshots, run:
 
 ```bash
-yarn test download
+pnpm test download
 ```
 
 > **Manual download (alternative)**
@@ -81,8 +81,8 @@ yarn test download
 To run all tests across all sources or check code coverage, use the following commands:
 
 ```bash
-yarn test run
-yarn test coverage
+pnpm test run
+pnpm test coverage
 ```
 
 #### Manual testing
@@ -90,7 +90,7 @@ yarn test coverage
 To test a specific verifier type you can also instantiate only the relevant indexer db. For example, for `btc` verifier type:
 
 ```bash
-yarn test make_db btc
+pnpm test make_db btc
 ```
 
 This will create and start a local Postgres database server with the Bitcoin testnet snapshot.
@@ -117,7 +117,7 @@ TESTNET=true
 When you're finished, remember to stop the database server with:
 
 ```bash
-yarn test delete_db
+pnpm test delete_db
 ```
      
 ### Linting and formatting
@@ -126,25 +126,25 @@ We use ESLint and Prettier:
 - Check lint:
 
   ```bash
-  yarn lint:check
+  pnpm lint:check
   ```
 
 - Auto-fix lint issues:
 
   ```bash
-  yarn lint:fix
+  pnpm lint:fix
   ```
 
 - Check formatting:
 
   ```bash
-  yarn format:check
+  pnpm format:check
   ```
 
 - Auto-format:
 
   ```bash
-  yarn format:fix
+  pnpm format:fix
   ```
 ## Proposing Web2Json attestation type source changes
 
