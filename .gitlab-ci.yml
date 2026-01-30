@@ -12,13 +12,12 @@ workflow:
 
 variables:
   NODE_VERSION: "24.12.0"
-  PNPM_VERSION: "10.28.0"
   PNPM_STORE_DIR: ".pnpm-store"
 
 .pnpm-setup:
   before_script:
     - corepack enable
-    - corepack prepare pnpm@${PNPM_VERSION} --activate
+    - corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
     - pnpm --version
 
 .pnpm-cache:
