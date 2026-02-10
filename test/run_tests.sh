@@ -131,7 +131,7 @@ delete_db(){
 
 show_help() {
   echo "
-Usage: yarn test COMMAND ARGUMENT
+Usage: pnpm test COMMAND ARGUMENT
 
 Commands:
   run               Run tests (create DBs for all verifier types, run tests, delete DBs)

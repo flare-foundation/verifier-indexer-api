@@ -12,7 +12,7 @@ The steps below show how to decrypt and obtain your own provider's API key.
 From the project root run:
 
 ```bash
-yarn install
+pnpm install
 ```
 
 Create a `.env.decrypt` file in `scripts/web2/` with:
