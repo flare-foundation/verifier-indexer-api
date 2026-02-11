@@ -8,6 +8,7 @@ x-verifier-env: &verifier_env
   VERIFIER_TYPE: web2
   TESTNET: true
   API_KEYS: "123456"
+  PORT: 3100
 
 services:
   verifier_ignite:
