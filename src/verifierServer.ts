@@ -50,7 +50,6 @@ export async function runVerifierServer() {
         process.env.TESTNET == 'true' ? 'test' : ''
       }${verifierType})`,
     )
-    .setBasePath(basePath)
     .setDescription('Verifier and indexer server over an indexer database.')
     .addApiKey({ type: 'apiKey', name: 'X-API-KEY', in: 'header' }, 'X-API-KEY')
     .setVersion('1.0')
