@@ -139,6 +139,7 @@ Commands:
   make_db <type>    Create mock DB for a verifier type, <type> can be 'btc', 'doge' or 'xrp'.
   delete_db         Delete mock DB
   download          Download all DB dumps
+  container_smoke   Run Docker container smoke test, uses Web2 verifier
 "
 }
 
@@ -170,6 +171,10 @@ main() {
   ci)
     _make_db_ci &&
     _run_all_tests
+    ;;
+  container_smoke)
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    bash "$SCRIPT_DIR/container/web2/web2-container-smoke.sh"
     ;;
   download)
     _download_db_dumps
