@@ -26,7 +26,7 @@
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.1",
     "@flarenetwork/mcc": "4.4.0",
-    "@jq-tools/jq": "^0.0.10",
+    "@jq-tools/jq": "^0.0.11",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
