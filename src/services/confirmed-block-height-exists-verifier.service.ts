@@ -1,39 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityManager } from 'typeorm';
-import { ChainType } from '../config/configuration';
+import { VerifierType } from '../config/configuration';
 import {
   AttestationResponseDTO_ConfirmedBlockHeightExists_Response,
   ConfirmedBlockHeightExists_Request,
   ConfirmedBlockHeightExists_Response,
 } from '../dtos/attestation-types/ConfirmedBlockHeightExists.dto';
 import { serializeBigInts } from '../external-libs/utils';
-import {
-  BtcIndexerQueryManager,
-  DogeIndexerQueryManager,
-} from '../indexed-query-manager/UtxoIndexQueryManager';
-import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
 
 import { verifyConfirmedBlockHeightExists } from '../verification/confirmed-block-height-exists/confirmed-block-height-exists';
-import {
-  BaseVerifierServiceWithIndexer,
-  ITypeSpecificVerificationServiceConfig,
-} from './common/verifier-base.service';
+import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
 import { IConfig } from 'src/config/interfaces/common';
 
 abstract class BaseConfirmedBlockHeightExistsVerifierService extends BaseVerifierServiceWithIndexer<
   ConfirmedBlockHeightExists_Request,
   ConfirmedBlockHeightExists_Response
 > {
-  constructor(
+  protected constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
-    options: ITypeSpecificVerificationServiceConfig,
+    verifierType: VerifierType,
   ) {
-    super(configService, manager, {
-      ...options,
-      attestationName: 'ConfirmedBlockHeightExists',
-    });
+    super(configService, manager, 'ConfirmedBlockHeightExists', verifierType);
   }
 
   async verifyRequest(
@@ -56,10 +45,7 @@ export class DOGEConfirmedBlockHeightExistsVerifierService extends BaseConfirmed
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(configService, manager, {
-      chainType: ChainType.DOGE,
-      indexerQueryManager: DogeIndexerQueryManager,
-    });
+    super(configService, manager, VerifierType.DOGE);
   }
 }
 
@@ -69,10 +55,7 @@ export class BTCConfirmedBlockHeightExistsVerifierService extends BaseConfirmedB
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(configService, manager, {
-      chainType: ChainType.BTC,
-      indexerQueryManager: BtcIndexerQueryManager,
-    });
+    super(configService, manager, VerifierType.BTC);
   }
 }
 
@@ -82,9 +65,6 @@ export class XRPConfirmedBlockHeightExistsVerifierService extends BaseConfirmedB
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(configService, manager, {
-      chainType: ChainType.XRP,
-      indexerQueryManager: XrpIndexerQueryManager,
-    });
+    super(configService, manager, VerifierType.XRP);
   }
 }

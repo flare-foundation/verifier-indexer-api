@@ -1,0 +1,39 @@
+services:
+  verifier_eth:
+    build: ../../
+    restart: unless-stopped
+    container_name: verifier_eth
+    environment:
+      VERIFIER_TYPE: eth
+      TESTNET: false
+      API_KEYS: "123456"
+      PORT: 3100
+      EVM_RPC: "https://ethereum.publicnode.com"
+    ports:
+      - "3004:3100"
+
+  verifier_flr:
+    build: ../../
+    restart: unless-stopped
+    container_name: verifier_flr
+    environment:
+      VERIFIER_TYPE: flr
+      TESTNET: false
+      API_KEYS: "123456"
+      PORT: 3100
+      EVM_RPC: "https://flare-api.flare.network/ext/C/rpc"
+    ports:
+      - "3005:3100"
+
+  verifier_sgb:
+    build: ../../
+    restart: unless-stopped
+    container_name: verifier_sgb
+    environment:
+      VERIFIER_TYPE: sgb
+      TESTNET: false
+      API_KEYS: "123456"
+      PORT: 3100
+      EVM_RPC: "https://songbird-api.flare.network/ext/C/rpc"
+    ports:
+      - "3006:3100"

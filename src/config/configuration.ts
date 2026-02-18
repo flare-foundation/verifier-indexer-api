@@ -18,34 +18,38 @@ import { IndexerConfig } from './interfaces/chain-indexer';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { web2JsonDefaultParams } from './defaults/web2-json-config';
 import { getDatabaseConfig } from './defaults/indexer-config';
-import { IConfig, VerifierServerConfig } from './interfaces/common';
+import { IConfig } from './interfaces/common';
 import { Web2JsonConfig, Web2JsonSource } from './interfaces/web2-json';
 import { WEB2_JSON_TEST_SOURCES } from './web2/web2-json-test-sources';
 import { WEB2_JSON_SOURCES } from './web2/web2-json-sources';
 
 export default () => {
-  const api_keys = getApiKeys();
-  const verifier_type = extractVerifierType();
+  const apiKeys = getApiKeys();
+  const verifierType = extractVerifierType();
   const isTestnet = process.env.TESTNET == 'true';
-
-  const verifierConfig: VerifierServerConfig = {
-    verifierType: verifier_type,
-    numberOfConfirmations: parseInt(process.env.NUMBER_OF_CONFIRMATIONS || '6'), // TODO: This should be read from db state
-    indexerServerPageLimit: parseInt(
-      process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
-    ),
-  };
 
   const config: IConfig = {
     port: parseInt(process.env.PORT || '3120'),
-    api_keys,
-    verifierConfig,
+    apiKeys: apiKeys,
     isTestnet,
+    verifierType,
   };
-  if (verifier_type === ChainType.Web2) {
-    config.web2JsonConfig = getWeb2Config(isTestnet);
-  } else {
-    config.indexerConfig = getIndexerConfig(verifier_type);
+
+  switch (verifierType) {
+    case VerifierType.BTC:
+    case VerifierType.DOGE:
+    case VerifierType.XRP:
+      config.indexerConfig = getIndexerConfig(verifierType);
+      break;
+    case VerifierType.ETH:
+    case VerifierType.SGB:
+    case VerifierType.FLR:
+      config.evmRpcUrl =
+        process.env.EVM_RPC || 'https://flare-api.flare.network/ext/C/rpc';
+      break;
+    case VerifierType.Web2:
+      config.web2JsonConfig = getWeb2Config(isTestnet);
+      break;
   }
 
   return config;
@@ -66,28 +70,34 @@ export function getApiKeys(): string[] {
   return apiKeys;
 }
 
-export function extractVerifierType(): ChainType {
+export function extractVerifierType(): VerifierType {
   const verifierType = process.env.VERIFIER_TYPE?.toLowerCase();
   switch (verifierType) {
     case 'doge':
-      return ChainType.DOGE;
+      return VerifierType.DOGE;
     case 'btc':
-      return ChainType.BTC;
+      return VerifierType.BTC;
     case 'xrp':
-      return ChainType.XRP;
+      return VerifierType.XRP;
     case 'web2':
-      return ChainType.Web2;
+      return VerifierType.Web2;
+    case 'eth':
+      return VerifierType.ETH;
+    case 'sgb':
+      return VerifierType.SGB;
+    case 'flr':
+      return VerifierType.FLR;
     default:
       throw new Error(
-        `Wrong verifier type: '${String(process.env.VERIFIER_TYPE)}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2'`,
+        `Wrong verifier type: '${String(process.env.VERIFIER_TYPE)}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eht' | 'sgb' | 'flr'`,
       );
   }
 }
 
-export function getDatabaseEntities(verifierType: ChainType) {
+export function getDatabaseEntities(verifierType: VerifierType) {
   switch (verifierType) {
-    case ChainType.BTC:
-    case ChainType.DOGE:
+    case VerifierType.BTC:
+    case VerifierType.DOGE:
       return [
         DBUtxoIndexerBlock,
         DBUtxoTransaction,
@@ -98,7 +108,7 @@ export function getDatabaseEntities(verifierType: ChainType) {
         DBPruneSyncState,
         DBIndexerVersion,
       ];
-    case ChainType.XRP:
+    case VerifierType.XRP:
       return [
         DBXrpIndexerBlock,
         DBXrpTransaction,
@@ -137,47 +147,73 @@ function getWeb2Config(isTestnet: boolean): Web2JsonConfig {
   };
 }
 
-function getIndexerConfig(verifierType: ChainType): IndexerConfig {
-  switch (verifierType) {
-    case ChainType.BTC:
-    case ChainType.DOGE:
-    case ChainType.XRP: {
-      const entities = getDatabaseEntities(verifierType);
-      const databaseConfig = getDatabaseConfig();
-      const typeOrmModulePartialOptions: TypeOrmModuleOptions = {
-        ...databaseConfig,
-        type: 'postgres',
-        synchronize: false,
-        migrationsRun: false,
-        logging: false,
-      };
-      const typeOrmModuleOptions: TypeOrmModuleOptions = {
-        ...typeOrmModulePartialOptions,
-        entities,
-      };
-      return { db: databaseConfig, typeOrmModuleOptions };
-    }
-    case ChainType.Web2:
-      throw new Error('Web2 verifier does not use indexer config');
-    default:
-      throw new Error(`Unsupported verifier type: ${verifierType}`);
-  }
+function getIndexerConfig(verifierType: VerifierType): IndexerConfig {
+  const entities = getDatabaseEntities(verifierType);
+  const databaseConfig = getDatabaseConfig();
+  const typeOrmModulePartialOptions: TypeOrmModuleOptions = {
+    ...databaseConfig,
+    type: 'postgres',
+    synchronize: false,
+    migrationsRun: false,
+    logging: false,
+  };
+  const typeOrmModuleOptions: TypeOrmModuleOptions = {
+    ...typeOrmModulePartialOptions,
+    entities,
+  };
+  return {
+    db: databaseConfig,
+    typeOrmModuleOptions,
+    numberOfConfirmations: parseInt(process.env.NUMBER_OF_CONFIRMATIONS || '6'), // TODO: This should be read from db state
+    indexerServerPageLimit: parseInt(
+      process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
+    ),
+  };
 }
 
-export type ChainSourceNames = 'DOGE' | 'BTC' | 'XRP';
 export type AttestationTypeOptions =
   | 'AddressValidity'
   | 'BalanceDecreasingTransaction'
   | 'ConfirmedBlockHeightExists'
   | 'Payment'
   | 'ReferencedPaymentNonexistence'
-  | 'Web2Json';
+  | 'Web2Json'
+  | 'EVMTransaction';
 
-export enum ChainType {
-  invalid = -1,
+export enum VerifierType {
   BTC = 0,
   DOGE = 2,
   XRP = 3,
   Web2 = 4,
-  // ... make sure IDs are the same as in Flare node
+  ETH = 5,
+  SGB = 6,
+  FLR = 7,
 }
+
+export function typeToSource(type: VerifierType): ChainSourceNames {
+  switch (type) {
+    case VerifierType.BTC:
+      return 'BTC';
+    case VerifierType.DOGE:
+      return 'DOGE';
+    case VerifierType.XRP:
+      return 'XRP';
+    case VerifierType.ETH:
+      return 'ETH';
+    case VerifierType.SGB:
+      return 'SGB';
+    case VerifierType.FLR:
+      return 'FLR';
+    case VerifierType.Web2:
+      return 'WEB2';
+  }
+}
+
+export type ChainSourceNames =
+  | 'DOGE'
+  | 'BTC'
+  | 'XRP'
+  | 'ETH'
+  | 'SGB'
+  | 'FLR'
+  | 'WEB2';

@@ -7,39 +7,28 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityManager } from 'typeorm';
-import { ChainType } from '../config/configuration';
 import {
   AttestationResponseDTO_BalanceDecreasingTransaction_Response,
   BalanceDecreasingTransaction_Request,
   BalanceDecreasingTransaction_Response,
 } from '../dtos/attestation-types/BalanceDecreasingTransaction.dto';
 import { serializeBigInts } from '../external-libs/utils';
-import {
-  BtcIndexerQueryManager,
-  DogeIndexerQueryManager,
-} from '../indexed-query-manager/UtxoIndexQueryManager';
-import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
 
 import { verifyBalanceDecreasingTransaction } from '../verification/balance-decreasing-transaction/balance-decreasing-transaction';
-import {
-  BaseVerifierServiceWithIndexer,
-  ITypeSpecificVerificationServiceConfig,
-} from './common/verifier-base.service';
+import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
 import { IConfig } from 'src/config/interfaces/common';
+import { VerifierType } from '../config/configuration';
 
 abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerifierServiceWithIndexer<
   BalanceDecreasingTransaction_Request,
   BalanceDecreasingTransaction_Response
 > {
-  constructor(
+  protected constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
-    options: ITypeSpecificVerificationServiceConfig,
+    verifierType: VerifierType,
   ) {
-    super(configService, manager, {
-      ...options,
-      attestationName: 'BalanceDecreasingTransaction',
-    });
+    super(configService, manager, 'BalanceDecreasingTransaction', verifierType);
   }
 
   async _verifyRequest<T extends TransactionBase<unknown>>(
@@ -64,10 +53,7 @@ export class DOGEBalanceDecreasingTransactionVerifierService extends BaseBalance
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(configService, manager, {
-      chainType: ChainType.DOGE,
-      indexerQueryManager: DogeIndexerQueryManager,
-    });
+    super(configService, manager, VerifierType.DOGE);
   }
 
   async verifyRequest(
@@ -83,10 +69,7 @@ export class BTCBalanceDecreasingTransactionVerifierService extends BaseBalanceD
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(configService, manager, {
-      chainType: ChainType.BTC,
-      indexerQueryManager: BtcIndexerQueryManager,
-    });
+    super(configService, manager, VerifierType.BTC);
   }
 
   async verifyRequest(
@@ -102,10 +85,7 @@ export class XRPBalanceDecreasingTransactionVerifierService extends BaseBalanceD
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(configService, manager, {
-      chainType: ChainType.XRP,
-      indexerQueryManager: XrpIndexerQueryManager,
-    });
+    super(configService, manager, VerifierType.XRP);
   }
 
   async verifyRequest(

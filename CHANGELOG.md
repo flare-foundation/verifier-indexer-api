@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `Web2Json`: added `PublicWeb2` source support, allows calling any public Web2 endpoint. Only available on testnets.
+- Migrated `evm` verifier type with `EVMTransaction` attestation type support into this repository from the [evm-verifier](https://gitlab.com/flarenetwork/fdc/evm-verifier) repository, which is now deprecated.
 
 ### Changed
 

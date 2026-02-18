@@ -20,7 +20,8 @@ import {
 } from '../../entity/xrp-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
-import { IConfig, VerifierServerConfig } from 'src/config/interfaces/common';
+import { IConfig } from 'src/config/interfaces/common';
+import { IndexerConfig } from '../../config/interfaces/chain-indexer';
 
 @Injectable()
 export class XrpExternalIndexerEngineService extends IIndexerEngineService {
@@ -41,9 +42,9 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     this.blockTable = DBXrpIndexerBlock;
     this.tipState = DBXrpState;
     this.versionTable = DBXrpIndexerVersion;
-    const verifierConfig =
-      this.configService.get<VerifierServerConfig>('verifierConfig');
-    this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;
+    const indexerConfig =
+      this.configService.get<IndexerConfig>('indexerConfig');
+    this.indexerServerPageLimit = indexerConfig.indexerServerPageLimit;
   }
 
   public async getStateSetting(): Promise<ApiDBState> {

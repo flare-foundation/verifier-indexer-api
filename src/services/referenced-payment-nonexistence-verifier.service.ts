@@ -7,38 +7,32 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityManager } from 'typeorm';
-import { ChainType } from '../config/configuration';
+import { VerifierType } from '../config/configuration';
 import {
   AttestationResponseDTO_ReferencedPaymentNonexistence_Response,
   ReferencedPaymentNonexistence_Request,
   ReferencedPaymentNonexistence_Response,
 } from '../dtos/attestation-types/ReferencedPaymentNonexistence.dto';
 import { serializeBigInts } from '../external-libs/utils';
-import {
-  BtcIndexerQueryManager,
-  DogeIndexerQueryManager,
-} from '../indexed-query-manager/UtxoIndexQueryManager';
-import { XrpIndexerQueryManager } from '../indexed-query-manager/XrpIndexerQueryManager';
 import { verifyReferencedPaymentNonExistence } from '../verification/referenced-payment-nonexistence/referenced-payment-nonexistence';
-import {
-  BaseVerifierServiceWithIndexer,
-  ITypeSpecificVerificationServiceConfig,
-} from './common/verifier-base.service';
+import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
 import { IConfig } from 'src/config/interfaces/common';
 
 abstract class BaseReferencedPaymentNonexistenceVerifierService extends BaseVerifierServiceWithIndexer<
   ReferencedPaymentNonexistence_Request,
   ReferencedPaymentNonexistence_Response
 > {
-  constructor(
+  protected constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
-    options: ITypeSpecificVerificationServiceConfig,
+    verifierType: VerifierType,
   ) {
-    super(configService, manager, {
-      ...options,
-      attestationName: 'ReferencedPaymentNonexistence',
-    });
+    super(
+      configService,
+      manager,
+      'ReferencedPaymentNonexistence',
+      verifierType,
+    );
   }
 
   async _verifyRequest<T extends TransactionBase<unknown>>(
@@ -63,10 +57,7 @@ export class DOGEReferencedPaymentNonexistenceVerifierService extends BaseRefere
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(configService, manager, {
-      chainType: ChainType.DOGE,
-      indexerQueryManager: DogeIndexerQueryManager,
-    });
+    super(configService, manager, VerifierType.DOGE);
   }
 
   async verifyRequest(
@@ -82,10 +73,7 @@ export class BTCReferencedPaymentNonexistenceVerifierService extends BaseReferen
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(configService, manager, {
-      chainType: ChainType.BTC,
-      indexerQueryManager: BtcIndexerQueryManager,
-    });
+    super(configService, manager, VerifierType.BTC);
   }
 
   async verifyRequest(
@@ -101,10 +89,7 @@ export class XRPReferencedPaymentNonexistenceVerifierService extends BaseReferen
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(configService, manager, {
-      chainType: ChainType.XRP,
-      indexerQueryManager: XrpIndexerQueryManager,
-    });
+    super(configService, manager, VerifierType.XRP);
   }
 
   async verifyRequest(

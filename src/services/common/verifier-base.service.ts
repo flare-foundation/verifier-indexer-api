@@ -3,8 +3,9 @@ import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AttestationTypeOptions,
-  ChainType,
   ChainSourceNames,
+  VerifierType,
+  typeToSource,
 } from '../../config/configuration';
 
 import { EntityManager } from 'typeorm';
@@ -28,24 +29,8 @@ import {
 } from '../../indexed-query-manager/UtxoIndexQueryManager';
 import { XrpIndexerQueryManager } from '../../indexed-query-manager/XrpIndexerQueryManager';
 import { AttestationResponseStatus } from '../../verification/response-status';
-import { IConfig, VerifierServerConfig } from 'src/config/interfaces/common';
-
-interface IVerificationServiceConfig {
-  chainType: ChainType;
-  attestationName: AttestationTypeOptions;
-}
-
-interface IVerificationServiceWithIndexerConfig extends IVerificationServiceConfig {
-  indexerQueryManager:
-    | typeof DogeIndexerQueryManager
-    | typeof BtcIndexerQueryManager
-    | typeof XrpIndexerQueryManager;
-}
-
-export type ITypeSpecificVerificationServiceConfig = Omit<
-  IVerificationServiceWithIndexerConfig,
-  'attestationName'
->;
+import { IConfig } from 'src/config/interfaces/common';
+import { IndexerConfig } from '../../config/interfaces/chain-indexer';
 
 export abstract class BaseVerifierService<
   Req extends AttestationTypeBase_Request,
@@ -54,12 +39,15 @@ export abstract class BaseVerifierService<
   private readonly store = new AttestationDefinitionStore(
     'src/config/type-definitions',
   );
+  protected readonly chainSourceName: ChainSourceNames;
   protected readonly isTestnet: boolean;
 
   constructor(
     protected readonly configService: ConfigService<IConfig>,
-    protected readonly config: IVerificationServiceConfig,
+    private readonly attestationName: AttestationTypeOptions,
+    verifierType: VerifierType,
   ) {
+    this.chainSourceName = typeToSource(verifierType);
     this.isTestnet = this.configService.getOrThrow<boolean>('isTestnet');
   }
 
@@ -80,8 +68,8 @@ export abstract class BaseVerifierService<
   }
 
   protected checkSupportedType(request: Req) {
-    const source = getSourceName(this.config.chainType);
-    const attestationName = this.config.attestationName;
+    const source = this.chainSourceName;
+    const attestationName = this.attestationName;
 
     if (
       request.attestationType !== encodeAttestationName(attestationName) ||
@@ -97,9 +85,7 @@ export abstract class BaseVerifierService<
             attestationName
           }' (${encodeAttestationName(attestationName)}) and source id '${
             (this.isTestnet ? 'test' : '') + source
-          }' (${encodeAttestationName(
-            (this.isTestnet ? 'test' : '') + source,
-          )}).`,
+          }' (${encodeAttestationName((this.isTestnet ? 'test' : '') + source)}).`,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -139,7 +125,7 @@ export abstract class BaseVerifierService<
     if (
       (response.status !== AttestationResponseStatus.VALID ||
         !response.response) &&
-      this.config.attestationName !== 'AddressValidity'
+      this.attestationName !== 'AddressValidity'
     ) {
       return {
         status: response.status,
@@ -163,7 +149,7 @@ export abstract class BaseVerifierService<
     const result = await this.verifyRequestInternal(request);
     if (
       result.status !== AttestationResponseStatus.VALID &&
-      this.config.attestationName !== 'AddressValidity'
+      this.attestationName !== 'AddressValidity'
     ) {
       return new MicResponse({ status: result.status });
     }
@@ -182,7 +168,7 @@ export abstract class BaseVerifierService<
     const result = await this.verifyRequestInternal(request);
     if (
       result.status !== AttestationResponseStatus.VALID &&
-      this.config.attestationName !== 'AddressValidity'
+      this.attestationName !== 'AddressValidity'
     ) {
       return new EncodedRequestResponse({ status: result.status });
     }
@@ -210,38 +196,43 @@ export abstract class BaseVerifierServiceWithIndexer<
 > extends BaseVerifierService<Req, Res> {
   indexedQueryManager: IIndexedQueryManager;
 
-  constructor(
+  protected constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
-    options: IVerificationServiceWithIndexerConfig,
+    attestationName: AttestationTypeOptions,
+    verifierType: VerifierType,
   ) {
-    super(configService, {
-      chainType: options.chainType,
-      attestationName: options.attestationName,
-    });
-    const verifierConfig =
-      this.configService.get<VerifierServerConfig>('verifierConfig');
-    const numberOfConfirmations = verifierConfig.numberOfConfirmations;
+    super(configService, attestationName, verifierType);
+    const indexerConfig =
+      this.configService.get<IndexerConfig>('indexerConfig');
+    const numberOfConfirmations = indexerConfig.numberOfConfirmations;
+
     const IqmOptions: IndexedQueryManagerOptions = {
-      chainType: options.chainType,
+      chainType: verifierType,
       entityManager: this.manager,
       numberOfConfirmations: () => {
         return numberOfConfirmations;
       },
     };
-    this.indexedQueryManager = new options.indexerQueryManager(IqmOptions);
+
+    this.indexedQueryManager = getIndexerQueryManager(verifierType, IqmOptions);
   }
 }
 
-function getSourceName(chainType: ChainType): ChainSourceNames {
-  switch (chainType) {
-    case ChainType.DOGE:
-      return 'DOGE';
-    case ChainType.BTC:
-      return 'BTC';
-    case ChainType.XRP:
-      return 'XRP';
+function getIndexerQueryManager(
+  verifierType: VerifierType,
+  IqmOptions: IndexedQueryManagerOptions,
+): IIndexedQueryManager {
+  switch (verifierType) {
+    case VerifierType.BTC:
+      return new BtcIndexerQueryManager(IqmOptions);
+    case VerifierType.DOGE:
+      return new DogeIndexerQueryManager(IqmOptions);
+    case VerifierType.XRP:
+      return new XrpIndexerQueryManager(IqmOptions);
     default:
-      throw new Error(`Unsupported source chain, ${chainType}`);
+      throw new Error(
+        `Unsupported verifier type for indexer query manager: ${verifierType}`,
+      );
   }
 }

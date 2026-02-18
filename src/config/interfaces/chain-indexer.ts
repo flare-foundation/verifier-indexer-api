@@ -30,4 +30,14 @@ export interface DatabaseConfig {
 export interface IndexerConfig {
   db: DatabaseConfig;
   typeOrmModuleOptions: TypeOrmModuleOptions;
+
+  /**
+   * The page size for indexer API queries when listing outputs
+   */
+  indexerServerPageLimit: number;
+
+  /**
+   * The number of confirmations required for a transaction to be considered confirmed
+   */
+  numberOfConfirmations: number;
 }

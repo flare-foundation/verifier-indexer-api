@@ -27,7 +27,7 @@ import {
   BackpressureException,
   getPreview,
 } from '../verification/web-2-json/utils';
-import { ChainType } from '../config/configuration';
+import { VerifierType } from '../config/configuration';
 
 @Injectable()
 export class Web2JsonVerifierService extends BaseVerifierService<
@@ -43,10 +43,7 @@ export class Web2JsonVerifierService extends BaseVerifierService<
     private readonly processPool: ProcessPoolService,
     @Inject(REQUEST) private readonly req: Request,
   ) {
-    super(configService, {
-      attestationName: 'Web2Json',
-      chainType: ChainType.Web2,
-    });
+    super(configService, 'Web2Json', VerifierType.Web2);
     this.web2JsonConfig = this.configService.get('web2JsonConfig');
   }
 

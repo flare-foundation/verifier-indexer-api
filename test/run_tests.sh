@@ -139,7 +139,8 @@ Commands:
   make_db <type>    Create mock DB for a verifier type, <type> can be 'btc', 'doge' or 'xrp'.
   delete_db         Delete mock DB
   download          Download all DB dumps
-  container_smoke   Run Docker container smoke test, uses Web2 verifier
+  smoke_web2        Run Docker container smoke test for Web2 verifier
+  smoke_evm         Run Docker container smoke test for EVM verifier (ETH/FLR/SGB)
 "
 }
 
@@ -172,9 +173,13 @@ main() {
     _make_db_ci &&
     _run_all_tests
     ;;
-  container_smoke)
+  smoke_web2)
     SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
     bash "$SCRIPT_DIR/container/web2/web2-container-smoke.sh"
+    ;;
+  smoke_evm)
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    bash "$SCRIPT_DIR/container/evm/evm-container-smoke.sh"
     ;;
   download)
     _download_db_dumps

@@ -19,7 +19,7 @@ import {
   BlockResult,
   TransactionResult,
 } from '../indexed-query-manager/indexed-query-manager-types';
-import { ChainType } from '../config/configuration';
+import { VerifierType } from '../config/configuration'; // External Postgres Database Entities (Utxo (BTC and DOGE)) (read only)
 
 // External Postgres Database Entities (Utxo (BTC and DOGE)) (read only)
 
@@ -183,7 +183,7 @@ export class DBUtxoTransaction {
     };
   }
 
-  toTransactionResult(chainType: ChainType): TransactionResult {
+  toTransactionResult(chainType: VerifierType): TransactionResult {
     const response = JSON.stringify(this.response);
     return {
       getResponse() {
@@ -200,7 +200,7 @@ export class DBUtxoTransaction {
   }
 
   toApiDBTransaction(
-    chainType: ChainType,
+    chainType: VerifierType,
     returnResponse: boolean = false,
   ): ApiDBTransaction {
     const baseRes = {

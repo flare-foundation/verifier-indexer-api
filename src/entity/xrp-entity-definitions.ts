@@ -9,7 +9,7 @@ import {
   BlockResult,
   TransactionResult,
 } from '../indexed-query-manager/indexed-query-manager-types';
-import { ChainType } from '../config/configuration';
+import { VerifierType } from '../config/configuration';
 
 @Entity('blocks')
 export class DBXrpIndexerBlock {
@@ -107,7 +107,7 @@ export class DBXrpTransaction {
       getResponse() {
         return JSON.stringify(response);
       },
-      chainType: ChainType.XRP,
+      chainType: VerifierType.XRP,
       transactionId: this.hash,
       blockNumber: this.block_number,
       timestamp: this.timestamp,
@@ -120,7 +120,7 @@ export class DBXrpTransaction {
   toApiDBTransaction(returnResponse: boolean = false): ApiDBTransaction {
     const baseRes = {
       id: 0,
-      chainType: ChainType.XRP,
+      chainType: VerifierType.XRP,
       transactionId: this.hash,
       blockNumber: this.block_number,
       timestamp: this.timestamp,

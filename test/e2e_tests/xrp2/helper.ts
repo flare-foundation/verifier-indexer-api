@@ -1,4 +1,3 @@
-import { ChainType } from '@flarenetwork/mcc';
 import {
   INestApplication,
   MiddlewareConsumer,
@@ -13,7 +12,10 @@ import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
-import { getDatabaseEntities } from '../../../src/config/configuration';
+import {
+  getDatabaseEntities,
+  VerifierType,
+} from '../../../src/config/configuration';
 import { XRPAddressValidityVerifierController } from '../../../src/controllers/address-validity-verifier.controller';
 import { XRPBalanceDecreasingTransactionVerifierController } from '../../../src/controllers/balance-decreasing-transaction-verifier.controller';
 import { XRPConfirmedBlockHeightExistsVerifierController } from '../../../src/controllers/confirmed-block-height-exists-verifier.controller';
@@ -28,15 +30,12 @@ import { XRPConfirmedBlockHeightExistsVerifierService } from '../../../src/servi
 import { XrpExternalIndexerEngineService } from '../../../src/services/indexer-services/xrp-indexer.service';
 import { XRPPaymentVerifierService } from '../../../src/services/payment-verifier.service';
 import { XRPReferencedPaymentNonexistenceVerifierService } from '../../../src/services/referenced-payment-nonexistence-verifier.service';
-import {
-  IConfig,
-  VerifierServerConfig,
-} from '../../../src/config/interfaces/common';
+import { IConfig } from '../../../src/config/interfaces/common';
 import { IndexerConfig } from '../../../src/config/interfaces/chain-indexer';
 
 function getConfig() {
   const api_keys = process.env.API_KEYS?.split(',') || [''];
-  const verifier_type = ChainType.XRP;
+  const verifier_type = VerifierType.XRP;
   const isTestnet = process.env.TESTNET == 'true';
 
   let database = 'db';
@@ -55,18 +54,11 @@ function getConfig() {
 
   const entities = getDatabaseEntities(verifier_type);
 
-  const verifierConfig: VerifierServerConfig = {
-    verifierType: verifier_type,
-    numberOfConfirmations: parseInt(process.env.NUMBER_OF_CONFIRMATIONS || '6'),
-    indexerServerPageLimit: parseInt(
-      process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
-    ),
-  };
-
   const config: IConfig = {
     port: parseInt(process.env.PORT || '3120'),
-    api_keys,
-    verifierConfig,
+    apiKeys: api_keys,
+    isTestnet,
+    verifierType: verifier_type,
     indexerConfig: {
       db,
       typeOrmModuleOptions: {
@@ -77,8 +69,13 @@ function getConfig() {
         migrationsRun: false,
         logging: false,
       },
+      numberOfConfirmations: parseInt(
+        process.env.NUMBER_OF_CONFIRMATIONS || '6',
+      ),
+      indexerServerPageLimit: parseInt(
+        process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
+      ),
     },
-    isTestnet,
   };
   return config;
 }

@@ -2,27 +2,40 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
-import { ChainType, extractVerifierType } from './config/configuration';
+import { VerifierType, extractVerifierType } from './config/configuration';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
 import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
 import { Web2JsonVerifierServerModule } from './verifier-modules/web-2-json-verifier-sever.module';
 import { XRPVerifierServerModule } from './verifier-modules/xrp-verifier-server.module';
 import * as express from 'express';
+import { FLRVerifierServerModule } from './verifier-modules/flr-verifier-sever.module';
+import { ETHVerifierServerModule } from './verifier-modules/eth-verifier-sever.module';
+import { SGBVerifierServerModule } from './verifier-modules/sgb-verifier-sever.module';
 
 function moduleForDataSource():
   | typeof DogeVerifierServerModule
   | typeof BtcVerifierServerModule
-  | typeof XRPVerifierServerModule {
+  | typeof XRPVerifierServerModule
+  | typeof Web2JsonVerifierServerModule
+  | typeof ETHVerifierServerModule
+  | typeof SGBVerifierServerModule
+  | typeof FLRVerifierServerModule {
   const verifier_type = extractVerifierType();
   switch (verifier_type) {
-    case ChainType.DOGE:
+    case VerifierType.DOGE:
       return DogeVerifierServerModule;
-    case ChainType.BTC:
+    case VerifierType.BTC:
       return BtcVerifierServerModule;
-    case ChainType.XRP:
+    case VerifierType.XRP:
       return XRPVerifierServerModule;
-    case ChainType.Web2:
+    case VerifierType.Web2:
       return Web2JsonVerifierServerModule;
+    case VerifierType.ETH:
+      return ETHVerifierServerModule;
+    case VerifierType.SGB:
+      return SGBVerifierServerModule;
+    case VerifierType.FLR:
+      return FLRVerifierServerModule;
     default:
       throw new Error(`Wrong verifier type: '${process.env.VERIFIER_TYPE}'`);
   }

@@ -11,7 +11,7 @@ import helmet from 'helmet';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
-import { ChainType, getApiKeys } from '../../../src/config/configuration';
+import { VerifierType, getApiKeys } from '../../../src/config/configuration';
 import { Web2JsonVerifierController } from '../../../src/controllers/web-2-json-verifier.controller';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { Web2JsonVerifierService } from '../../../src/services/web2-json-verifier.service';
@@ -19,13 +19,10 @@ import {
   HTTP_METHOD,
   Web2JsonConfig,
 } from '../../../src/config/interfaces/web2-json';
-import {
-  IConfig,
-  VerifierServerConfig,
-} from '../../../src/config/interfaces/common';
+import { IConfig } from '../../../src/config/interfaces/common';
 import { web2JsonDefaultParams } from '../../../src/config/defaults/web2-json-config';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
-import { payload, payload2, payload3, payload4, payload5 } from './payloads';
+import { payload, payload2, payload3, payload4, payload5 } from './fixtures';
 
 export const web2JsonTestConfig: Web2JsonConfig = {
   securityParams: web2JsonDefaultParams,
@@ -45,23 +42,14 @@ export const web2JsonTestConfig: Web2JsonConfig = {
 };
 
 function getConfig() {
-  const verifier_type = ChainType.Web2;
   const isTestnet = process.env.TESTNET == 'true';
-
-  const verifierConfig: VerifierServerConfig = {
-    verifierType: verifier_type,
-    numberOfConfirmations: parseInt(process.env.NUMBER_OF_CONFIRMATIONS || '6'),
-    indexerServerPageLimit: parseInt(
-      process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
-    ),
-  };
 
   const config: IConfig = {
     port: parseInt(process.env.PORT || '3120'),
-    api_keys,
-    web2JsonConfig: web2JsonTestConfig,
-    verifierConfig,
+    apiKeys: api_keys,
     isTestnet,
+    verifierType: VerifierType.Web2,
+    web2JsonConfig: web2JsonTestConfig,
   };
   return config;
 }

@@ -10,7 +10,7 @@ import {
   baseHooks,
 } from './helper';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
-import { payload, payload2, payload3, payload4, payload5 } from './payloads';
+import { payload, payload2, payload3, payload4, payload5 } from './fixtures';
 
 describe('/Web2Json/prepareResponse', () => {
   baseHooks();

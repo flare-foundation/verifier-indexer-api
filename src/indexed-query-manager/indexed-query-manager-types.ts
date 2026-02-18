@@ -1,8 +1,8 @@
-import { ChainType } from '../config/configuration';
+import { VerifierType } from '../config/configuration';
 import { EntityManager } from 'typeorm';
 
 export interface IndexedQueryManagerOptions {
-  chainType: ChainType;
+  chainType: VerifierType;
   entityManager: EntityManager;
   numberOfConfirmations: () => number;
 }
@@ -40,7 +40,7 @@ export interface BlockResult {
 ////////////////////////////////////////////////////////
 
 export interface TransactionQueryParams {
-  chainType?: ChainType;
+  chainType?: VerifierType;
   startBlockNumber?: number;
   endBlockNumber?: number;
   transactionId?: string;

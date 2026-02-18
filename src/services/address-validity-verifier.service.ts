@@ -1,4 +1,3 @@
-import { ChainType } from '@flarenetwork/mcc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -14,6 +13,7 @@ import { verifyAddressXRP } from '../verification/address-validity/address-valid
 import { VerificationResponse } from '../verification/response-status';
 import { BaseVerifierService } from './common/verifier-base.service';
 import { IConfig } from 'src/config/interfaces/common';
+import { VerifierType } from '../config/configuration';
 
 abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
   AddressValidity_Request,
@@ -52,16 +52,12 @@ abstract class BaseAddressValidityVerifierService extends BaseVerifierService<
 @Injectable()
 export class XRPAddressValidityVerifierService extends BaseAddressValidityVerifierService {
   constructor(protected configService: ConfigService<IConfig>) {
-    super(configService, {
-      chainType: ChainType.XRP,
-      attestationName: 'AddressValidity',
-    });
+    super(configService, 'AddressValidity', VerifierType.XRP);
   }
 
   verifyAddress(
     address: string,
-
-    testnet: boolean,
+    _testnet: boolean,
   ): VerificationResponse<AddressValidity_ResponseBody> {
     return verifyAddressXRP(address);
   }
@@ -70,10 +66,7 @@ export class XRPAddressValidityVerifierService extends BaseAddressValidityVerifi
 @Injectable()
 export class BTCAddressValidityVerifierService extends BaseAddressValidityVerifierService {
   constructor(protected configService: ConfigService<IConfig>) {
-    super(configService, {
-      chainType: ChainType.BTC,
-      attestationName: 'AddressValidity',
-    });
+    super(configService, 'AddressValidity', VerifierType.BTC);
   }
 
   verifyAddress(
@@ -87,10 +80,7 @@ export class BTCAddressValidityVerifierService extends BaseAddressValidityVerifi
 @Injectable()
 export class DOGEAddressValidityVerifierService extends BaseAddressValidityVerifierService {
   constructor(protected configService: ConfigService<IConfig>) {
-    super(configService, {
-      chainType: ChainType.DOGE,
-      attestationName: 'AddressValidity',
-    });
+    super(configService, 'AddressValidity', VerifierType.DOGE);
   }
 
   verifyAddress(

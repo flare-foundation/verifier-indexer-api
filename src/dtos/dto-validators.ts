@@ -53,7 +53,7 @@ export class IsHash32 implements ValidatorConstraintInterface {
    * @returns
    */
   defaultMessage(_args: ValidationArguments) {
-    return `proerty ${_args.property} of value (${_args.value}) is not 0x/0X prefixed or unprefixed hexadecimal string representing 32 bytes`;
+    return `property ${_args.property} of value (${_args.value}) is not 0x/0X prefixed or unprefixed hexadecimal string representing 32 bytes`;
   }
 }
 
@@ -80,4 +80,36 @@ export class Is0xHex implements ValidatorConstraintInterface {
   defaultMessage(_args: ValidationArguments) {
     return '($property) value ($value) is not 0x-prefixed hexadecimal string';
   }
+}
+
+/**
+ * Validator constraint if the given value is an EVM address, hence 0x-prefixed hexadecimal string representing 20 bytes.
+ */
+@ValidatorConstraint({ name: 'evm-address', async: false })
+export class IsEVMAddress implements ValidatorConstraintInterface {
+  /**
+   * Validates if the given value is an EVM address, hence 0x-prefixed hexadecimal string representing 20 bytes.
+   * @param text
+   * @param args
+   * @returns
+   */
+  validate(text: unknown, _args: ValidationArguments) {
+    return typeof text === 'string' && /^(0x|0X)?[0-9a-f]{40}$/i.test(text);
+  }
+
+  /**
+   * Returns the default error message template.
+   * @param args
+   * @returns
+   */
+  defaultMessage(_args: ValidationArguments) {
+    return '($property) value ($value) is not 0x-prefixed hexadecimal string representing 20 bytes (EVM address)';
+  }
+}
+
+export function prefix0x(tx: string) {
+  if (!tx) {
+    return '0x0';
+  }
+  return tx.startsWith('0x') ? tx : '0x' + tx;
 }

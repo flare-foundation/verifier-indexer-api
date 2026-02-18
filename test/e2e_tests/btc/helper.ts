@@ -1,4 +1,3 @@
-import { ChainType } from '@flarenetwork/mcc';
 import {
   INestApplication,
   MiddlewareConsumer,
@@ -16,6 +15,7 @@ import { AuthService } from '../../../src/auth/auth.service';
 import {
   getApiKeys,
   getDatabaseEntities,
+  VerifierType,
 } from '../../../src/config/configuration';
 import { BTCAddressValidityVerifierController } from '../../../src/controllers/address-validity-verifier.controller';
 import { BTCBalanceDecreasingTransactionVerifierController } from '../../../src/controllers/balance-decreasing-transaction-verifier.controller';
@@ -32,11 +32,11 @@ import { BtcExternalIndexerEngineService } from '../../../src/services/indexer-s
 import { BTCPaymentVerifierService } from '../../../src/services/payment-verifier.service';
 import { BTCReferencedPaymentNonexistenceVerifierService } from '../../../src/services/referenced-payment-nonexistence-verifier.service';
 import { IndexerConfig } from 'src/config/interfaces/chain-indexer';
-import { VerifierServerConfig, IConfig } from 'src/config/interfaces/common';
+import { IConfig } from 'src/config/interfaces/common';
 
 function getConfig() {
-  const api_keys = getApiKeys();
-  const verifier_type = ChainType.BTC;
+  const apiKeys = getApiKeys();
+  const verifierType = VerifierType.BTC;
   const isTestnet = process.env.TESTNET == 'true';
 
   let database = 'db';
@@ -53,20 +53,13 @@ function getConfig() {
     password: process.env.DB_PASSWORD || 'password',
   };
 
-  const entities = getDatabaseEntities(verifier_type);
-
-  const verifierConfig: VerifierServerConfig = {
-    verifierType: verifier_type,
-    numberOfConfirmations: parseInt(process.env.NUMBER_OF_CONFIRMATIONS || '6'),
-    indexerServerPageLimit: parseInt(
-      process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
-    ),
-  };
+  const entities = getDatabaseEntities(verifierType);
 
   const config: IConfig = {
     port: parseInt(process.env.PORT || '3120'),
-    api_keys,
-    verifierConfig,
+    apiKeys: apiKeys,
+    isTestnet,
+    verifierType: verifierType,
     indexerConfig: {
       db,
       typeOrmModuleOptions: {
@@ -77,8 +70,13 @@ function getConfig() {
         migrationsRun: false,
         logging: false,
       },
+      numberOfConfirmations: parseInt(
+        process.env.NUMBER_OF_CONFIRMATIONS || '6',
+      ),
+      indexerServerPageLimit: parseInt(
+        process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
+      ),
     },
-    isTestnet,
   };
   return config;
 }

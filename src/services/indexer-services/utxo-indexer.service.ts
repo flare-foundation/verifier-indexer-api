@@ -8,7 +8,7 @@ import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
 
 import { ConfigService } from '@nestjs/config';
 import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
-import { ChainType } from '../../config/configuration';
+import { VerifierType } from '../../config/configuration';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
@@ -26,21 +26,22 @@ import {
 } from '../../entity/utxo-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
-import { IConfig, VerifierServerConfig } from 'src/config/interfaces/common';
+import { IConfig } from 'src/config/interfaces/common';
+import { IndexerConfig } from '../../config/interfaces/chain-indexer';
 
 abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
   // External utxo indexers specific tables
-  private transactionTable: IDBUtxoTransaction;
+  private readonly transactionTable: IDBUtxoTransaction;
   private blockTable: IDBUtxoIndexerBlock;
-  private tipState: IDBTipSyncState;
-  private pruneState: IDBPruneSyncState;
-  private versionTable: IDBIndexerVersion;
+  private readonly tipState: IDBTipSyncState;
+  private readonly pruneState: IDBPruneSyncState;
+  private readonly versionTable: IDBIndexerVersion;
 
-  private indexerServerPageLimit: number;
+  private readonly indexerServerPageLimit: number;
 
-  protected abstract chainType: ChainType;
+  protected chainType: VerifierType;
 
-  constructor(
+  protected constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
@@ -50,9 +51,9 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     this.tipState = DBTipSyncState;
     this.pruneState = DBPruneSyncState;
     this.versionTable = DBIndexerVersion;
-    const verifierConfig =
-      this.configService.get<VerifierServerConfig>('verifierConfig');
-    this.indexerServerPageLimit = verifierConfig.indexerServerPageLimit;
+    const indexerConfig =
+      this.configService.get<IndexerConfig>('indexerConfig');
+    this.indexerServerPageLimit = indexerConfig.indexerServerPageLimit;
   }
 
   private joinTransactionQuery(query: SelectQueryBuilder<DBUtxoTransaction>) {
@@ -301,24 +302,22 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
 
 @Injectable()
 export class BtcExternalIndexerEngineService extends UtxoExternalIndexerEngineService {
-  protected chainType;
   constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
     super(configService, manager);
-    this.chainType = ChainType.BTC;
+    this.chainType = VerifierType.BTC;
   }
 }
 
 @Injectable()
 export class DogeExternalIndexerEngineService extends UtxoExternalIndexerEngineService {
-  protected chainType;
   constructor(
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
     super(configService, manager);
-    this.chainType = ChainType.DOGE;
+    this.chainType = VerifierType.DOGE;
   }
 }

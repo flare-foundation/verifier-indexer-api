@@ -1,11 +1,11 @@
-import { ChainType } from '../config/configuration';
+import { VerifierType } from '../config/configuration';
 import {
+  DBTipSyncState,
   DBUtxoIndexerBlock,
   DBUtxoTransaction,
+  IDBTipSyncState,
   IDBUtxoIndexerBlock,
   IDBUtxoTransaction,
-  IDBTipSyncState,
-  DBTipSyncState,
 } from '../entity/utxo-entity-definitions';
 import { IIndexedQueryManager } from './IIndexedQueryManager';
 import {
@@ -29,13 +29,14 @@ import {
  */
 abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
   // Block table entity
-  private transactionTable: IDBUtxoTransaction;
-  private blockTable: IDBUtxoIndexerBlock;
-  private tipState: IDBTipSyncState;
+  private readonly transactionTable: IDBUtxoTransaction;
+  private readonly blockTable: IDBUtxoIndexerBlock;
+  private readonly tipState: IDBTipSyncState;
 
-  protected abstract chainType: ChainType;
-
-  constructor(options: IndexedQueryManagerOptions) {
+  protected constructor(
+    options: IndexedQueryManagerOptions,
+    protected readonly chainType: VerifierType,
+  ) {
     super(options);
     this.blockTable = DBUtxoIndexerBlock;
     this.tipState = DBTipSyncState;
@@ -247,17 +248,13 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
 }
 
 export class BtcIndexerQueryManager extends UtxoIndexedQueryManager {
-  protected chainType;
   constructor(options: IndexedQueryManagerOptions) {
-    super(options);
-    this.chainType = ChainType.BTC;
+    super(options, VerifierType.BTC);
   }
 }
 
 export class DogeIndexerQueryManager extends UtxoIndexedQueryManager {
-  protected chainType;
   constructor(options: IndexedQueryManagerOptions) {
-    super(options);
-    this.chainType = ChainType.DOGE;
+    super(options, VerifierType.DOGE);
   }
 }
