@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { VerifierType } from '../config/configuration';
 
@@ -16,6 +16,7 @@ export abstract class BaseEVMTransactionVerifierService extends BaseVerifierServ
   EVMTransaction_Request,
   EVMTransaction_Response
 > {
+  protected readonly logger: Logger;
   private readonly web3Provider: JsonRpcProvider;
 
   protected constructor(
@@ -24,14 +25,23 @@ export abstract class BaseEVMTransactionVerifierService extends BaseVerifierServ
   ) {
     super(configService, 'EVMTransaction', verifierType);
 
+    this.logger = new Logger(new.target.name);
     const rpcUrl: string = configService.get('evmRpcUrl');
+    this.logger.debug(`RPC host: ${new URL(rpcUrl).host}`);
     this.web3Provider = new ethers.JsonRpcProvider(rpcUrl);
   }
 
   async verifyRequest(
     request: EVMTransaction_Request,
   ): Promise<AttestationResponse<EVMTransaction_Response>> {
-    return await verifyEVMTransactionRequest(request, this.web3Provider);
+    this.logger.debug(
+      `Verifying EVMTransaction request: ${JSON.stringify(request)}`,
+    );
+    const result = await verifyEVMTransactionRequest(request, this.web3Provider);
+    this.logger.debug(
+      `EVMTransaction response: status: ${result.status}, result: ${JSON.stringify(result.response?.responseBody ?? "none")}`,
+    );
+    return result;
   }
 }
 

@@ -73,7 +73,7 @@ export async function runVerifierServer() {
   // TODO: type safe config module
   const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3120;
   const VERIFIER_TYPE = extractVerifierType();
-  logger.log(`Verifier type: ${VERIFIER_TYPE}`);
+  logger.log(`Verifier type: ${VerifierType[VERIFIER_TYPE]}`);
 
   await app.listen(PORT, '0.0.0.0', () =>
     logger.log(`Server started listening at http://0.0.0.0:${PORT}`),
