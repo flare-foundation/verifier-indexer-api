@@ -37,9 +37,12 @@ export abstract class BaseEVMTransactionVerifierService extends BaseVerifierServ
     this.logger.debug(
       `Verifying EVMTransaction request: ${JSON.stringify(request)}`,
     );
-    const result = await verifyEVMTransactionRequest(request, this.web3Provider);
+    const result = await verifyEVMTransactionRequest(
+      request,
+      this.web3Provider,
+    );
     this.logger.debug(
-      `EVMTransaction response: status: ${result.status}, result: ${JSON.stringify(result.response?.responseBody ?? "none")}`,
+      `EVMTransaction response: status: ${result.status}, result: ${JSON.stringify(result.response?.responseBody ?? 'none')}`,
     );
     return result;
   }
