@@ -22,7 +22,7 @@ abstract class BaseHealthController {
    * Gets the state entries from the indexer database.
    * @returns
    */
-  @Get('health')
+  @Get('Health')
   public async indexerState(): Promise<boolean> {
     try {
       const blockNum = await this.web3Provider.getBlockNumber();
@@ -37,7 +37,7 @@ abstract class BaseHealthController {
 }
 
 @ApiTags('Health')
-@Controller('sgb/')
+@Controller('SGB/')
 export class SGBHealthController extends BaseHealthController {
   constructor(configService: ConfigService<IConfig>) {
     super(configService, 'SGB');
@@ -45,7 +45,7 @@ export class SGBHealthController extends BaseHealthController {
 }
 
 @ApiTags('Health')
-@Controller('flr/')
+@Controller('FLR/')
 export class FLRHealthController extends BaseHealthController {
   constructor(configService: ConfigService<IConfig>) {
     super(configService, 'FLR');
@@ -53,7 +53,7 @@ export class FLRHealthController extends BaseHealthController {
 }
 
 @ApiTags('Health')
-@Controller('eth/')
+@Controller('ETH/')
 export class ETHHealthController extends BaseHealthController {
   constructor(configService: ConfigService<IConfig>) {
     super(configService, 'ETH');

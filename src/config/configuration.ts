@@ -89,7 +89,7 @@ export function extractVerifierType(): VerifierType {
       return VerifierType.FLR;
     default:
       throw new Error(
-        `Wrong verifier type: '${String(process.env.VERIFIER_TYPE)}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eht' | 'sgb' | 'flr'`,
+        `Wrong verifier type: '${String(process.env.VERIFIER_TYPE)}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eth' | 'sgb' | 'flr'`,
       );
   }
 }
