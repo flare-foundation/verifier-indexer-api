@@ -57,7 +57,7 @@ run_chain_test() {
     curl -s -o "$response_file" -w "%{http_code}" \
       --connect-timeout 5 \
       --max-time 20 \
-      -X POST "$BASE_URL/${chain}/EVMTransaction/prepareResponse" \
+      -X POST "$BASE_URL/EVMTransaction/prepareResponse" \
       -H "Content-Type: application/json" \
       -H "X-API-KEY: $API_KEY" \
       -d "$payload_body" || true
@@ -86,7 +86,7 @@ run_chain_health_test() {
     curl -s -o "$response_file" -w "%{http_code}" \
       --connect-timeout 5 \
       --max-time 15 \
-      "$BASE_URL/${chain}/health" || true
+      "$BASE_URL/api/health" || true
   )"
 
   if [[ "$http_code" != "200" ]]; then

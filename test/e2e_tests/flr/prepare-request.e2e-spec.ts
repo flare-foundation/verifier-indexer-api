@@ -8,7 +8,7 @@ describe('EVMTransaction/prepareRequest', () => {
 
   it('should return encoded request', async () => {
     const res = await request(app.getHttpServer())
-      .post('/FLR/EVMTransaction/prepareRequest')
+      .post('/EVMTransaction/prepareRequest')
       .set('X-API-KEY', api_key)
       .send(validPayload)
       .expect(200);
@@ -20,7 +20,7 @@ describe('EVMTransaction/prepareRequest', () => {
 
   it('should return expected encoded request for FLR request', async () => {
     const res = await request(app.getHttpServer())
-      .post('/FLR/EVMTransaction/prepareRequest')
+      .post('/EVMTransaction/prepareRequest')
       .set('X-API-KEY', api_key)
       .send(flrRequestNoMic)
       .expect(200);

@@ -12,7 +12,7 @@ describe('EVMTransaction/mic', () => {
 
   it('should return MIC', async () => {
     const res = await request(app.getHttpServer())
-      .post('/FLR/EVMTransaction/mic')
+      .post('/EVMTransaction/mic')
       .set('X-API-KEY', api_key)
       .send(validPayload)
       .expect(200);
@@ -24,7 +24,7 @@ describe('EVMTransaction/mic', () => {
 
   it('should return expected MIC for FLR request', async () => {
     const res = await request(app.getHttpServer())
-      .post('/FLR/EVMTransaction/mic')
+      .post('/EVMTransaction/mic')
       .set('X-API-KEY', api_key)
       .send(flrRequestNoMic)
       .expect(200);

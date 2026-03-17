@@ -55,7 +55,7 @@ describe('EVMTransaction/prepareResponse', () => {
     apiKey = api_key,
   ) => {
     return request(app.getHttpServer())
-      .post('/FLR/EVMTransaction/prepareResponse')
+      .post('/EVMTransaction/prepareResponse')
       .set('X-API-KEY', apiKey)
       .send(payload)
       .expect(expectedStatus);
@@ -201,7 +201,7 @@ describe('EVMTransaction/prepareResponse', () => {
 
   it('should verify encoded FLR request', async () => {
     const res = await request(app.getHttpServer())
-      .post('/FLR/EVMTransaction')
+      .post('/EVMTransaction')
       .set('X-API-KEY', api_key)
       .send({ abiEncodedRequest: flrEncodedRequest })
       .expect(200);
@@ -216,7 +216,7 @@ describe('EVMTransaction/prepareResponse', () => {
 
   it('should prepare response for FLR request', async () => {
     const res = await request(app.getHttpServer())
-      .post('/FLR/EVMTransaction/prepareResponse')
+      .post('/EVMTransaction/prepareResponse')
       .set('X-API-KEY', api_key)
       .send(flrRequestNoMic)
       .expect(200);

@@ -8,7 +8,7 @@ describe('EVMTransaction/verifyFDC', () => {
 
   it('should verify FDC request', async () => {
     const prepRes = await request(app.getHttpServer())
-      .post('/FLR/EVMTransaction/prepareRequest')
+      .post('/EVMTransaction/prepareRequest')
       .set('X-API-KEY', api_key)
       .send(validPayload)
       .expect(200);
@@ -17,7 +17,7 @@ describe('EVMTransaction/verifyFDC', () => {
     expect(abiEncodedRequest).to.exist;
 
     const res = await request(app.getHttpServer())
-      .post('/FLR/EVMTransaction/verifyFDC')
+      .post('/EVMTransaction/verifyFDC')
       .set('X-API-KEY', api_key)
       .send({ abiEncodedRequest })
       .expect(200);
