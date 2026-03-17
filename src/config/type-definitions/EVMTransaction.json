@@ -1,14 +1,18 @@
 {
   "name": "EVMTransaction",
-  "fullComment": " @custom:name EVMTransaction\n @custom:id 0x06\n @custom:supported ETH, FLR, SGB, testETH, testFLR, testSGB\n @author Flare\n @notice A relay of a transaction from an EVM chain.\n This type is only relevant for EVM-compatible chains.\n @custom:verification If a transaction with the `transactionId` is in a block on the main branch with at least `requiredConfirmations`, the specified data is relayed.\n If an indicated event does not exist, the request is rejected.\n @custom:lut `timestamp`",
+  "fullComment": " @custom:name EVMTransaction\n @custom:id 0x06\n @custom:supported ETH, FLR, SGB, BASE, HYPE, testETH, testFLR, testSGB, testBASE, testHYPE\n @author Flare\n @notice A relay of a transaction from an EVM chain.\n This type is only relevant for EVM-compatible chains.\n @custom:verification If a transaction with the `transactionId` is in a block on the main branch with at least `requiredConfirmations`, the specified data is relayed.\n If an indicated event does not exist, the request is rejected.\n @custom:lut `timestamp`",
   "description": "A relay of a transaction from an EVM chain.\n This type is only relevant for EVM-compatible chains.",
   "supported": [
     "ETH",
     "FLR",
     "SGB",
+    "BASE",
+    "HYPE",
     "testETH",
     "testFLR",
-    "testSGB"
+    "testSGB",
+    "testBASE",
+    "testHYPE"
   ],
   "verification": "If a transaction with the `transactionId` is in a block on the main branch with at least `requiredConfirmations`, the specified data is relayed.\n If an indicated event does not exist, the request is rejected.\n ",
   "lut": "`timestamp`",

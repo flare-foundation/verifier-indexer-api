@@ -44,6 +44,8 @@ export default () => {
     case VerifierType.ETH:
     case VerifierType.SGB:
     case VerifierType.FLR:
+    case VerifierType.BASE:
+    case VerifierType.HYPE:
       config.evmRpcUrl =
         process.env.EVM_RPC || 'https://flare-api.flare.network/ext/C/rpc';
       break;
@@ -87,9 +89,13 @@ export function extractVerifierType(): VerifierType {
       return VerifierType.SGB;
     case 'flr':
       return VerifierType.FLR;
+    case 'base':
+      return VerifierType.BASE;
+    case 'hype':
+      return VerifierType.HYPE;
     default:
       throw new Error(
-        `Wrong verifier type: '${String(process.env.VERIFIER_TYPE)}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eth' | 'sgb' | 'flr'`,
+        `Wrong verifier type: '${String(process.env.VERIFIER_TYPE)}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eth' | 'sgb' | 'flr' | 'base' | 'hype'`,
       );
   }
 }
@@ -188,6 +194,8 @@ export enum VerifierType {
   ETH = 5,
   SGB = 6,
   FLR = 7,
+  BASE = 8,
+  HYPE = 9,
 }
 
 export function typeToSource(type: VerifierType): ChainSourceNames {
@@ -204,6 +212,10 @@ export function typeToSource(type: VerifierType): ChainSourceNames {
       return 'SGB';
     case VerifierType.FLR:
       return 'FLR';
+    case VerifierType.BASE:
+      return 'BASE';
+    case VerifierType.HYPE:
+      return 'HYPE';
     case VerifierType.Web2:
       return 'WEB2';
   }
@@ -216,4 +228,6 @@ export type ChainSourceNames =
   | 'ETH'
   | 'SGB'
   | 'FLR'
+  | 'BASE'
+  | 'HYPE'
   | 'WEB2';

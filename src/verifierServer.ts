@@ -11,6 +11,8 @@ import * as express from 'express';
 import { FLRVerifierServerModule } from './verifier-modules/flr-verifier-sever.module';
 import { ETHVerifierServerModule } from './verifier-modules/eth-verifier-sever.module';
 import { SGBVerifierServerModule } from './verifier-modules/sgb-verifier-sever.module';
+import { BASEVerifierServerModule } from './verifier-modules/base-verifier-sever.module';
+import { HYPEVerifierServerModule } from './verifier-modules/hype-verifier-sever.module';
 
 function moduleForDataSource():
   | typeof DogeVerifierServerModule
@@ -19,7 +21,9 @@ function moduleForDataSource():
   | typeof Web2JsonVerifierServerModule
   | typeof ETHVerifierServerModule
   | typeof SGBVerifierServerModule
-  | typeof FLRVerifierServerModule {
+  | typeof FLRVerifierServerModule
+  | typeof BASEVerifierServerModule
+  | typeof HYPEVerifierServerModule {
   const verifier_type = extractVerifierType();
   switch (verifier_type) {
     case VerifierType.DOGE:
@@ -36,6 +40,10 @@ function moduleForDataSource():
       return SGBVerifierServerModule;
     case VerifierType.FLR:
       return FLRVerifierServerModule;
+    case VerifierType.BASE:
+      return BASEVerifierServerModule;
+    case VerifierType.HYPE:
+      return HYPEVerifierServerModule;
     default:
       throw new Error(`Wrong verifier type: '${process.env.VERIFIER_TYPE}'`);
   }

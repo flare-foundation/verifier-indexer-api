@@ -68,3 +68,17 @@ export class SGBEVMTransactionVerifierService extends BaseEVMTransactionVerifier
     super(configService, VerifierType.SGB);
   }
 }
+
+@Injectable()
+export class BASEEVMTransactionVerifierService extends BaseEVMTransactionVerifierService {
+  constructor(protected configService: ConfigService<IConfig>) {
+    super(configService, VerifierType.BASE);
+  }
+}
+
+@Injectable()
+export class HYPEEVMTransactionVerifierService extends BaseEVMTransactionVerifierService {
+  constructor(protected configService: ConfigService<IConfig>) {
+    super(configService, VerifierType.HYPE);
+  }
+}

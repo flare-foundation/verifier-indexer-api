@@ -59,3 +59,19 @@ export class ETHHealthController extends BaseHealthController {
     super(configService, 'ETH');
   }
 }
+
+@ApiTags('Health')
+@Controller('BASE/')
+export class BASEHealthController extends BaseHealthController {
+  constructor(configService: ConfigService<IConfig>) {
+    super(configService, 'BASE');
+  }
+}
+
+@ApiTags('Health')
+@Controller('HYPE/')
+export class HYPEHealthController extends BaseHealthController {
+  constructor(configService: ConfigService<IConfig>) {
+    super(configService, 'HYPE');
+  }
+}

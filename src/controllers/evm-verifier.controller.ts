@@ -2,8 +2,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { Controller } from '@nestjs/common';
 import { BaseControllerFactory } from './base/verifier-base.controller';
 import {
+  BASEEVMTransactionVerifierService,
   ETHEVMTransactionVerifierService,
   FLREVMTransactionVerifierService,
+  HYPEEVMTransactionVerifierService,
   SGBEVMTransactionVerifierService,
 } from '../services/evm-transaction-verifier.service';
 import {
@@ -45,6 +47,32 @@ export class SGBEVMTransactionVerifierController extends BaseControllerFactory<
 >(EVMTransaction_Request, EVMTransaction_Response) {
   constructor(
     public readonly verifierService: SGBEVMTransactionVerifierService,
+  ) {
+    super();
+  }
+}
+
+@ApiTags('EVMTransaction', 'BASE')
+@Controller('BASE/EVMTransaction')
+export class BASEEVMTransactionVerifierController extends BaseControllerFactory<
+  EVMTransaction_Request,
+  EVMTransaction_Response
+>(EVMTransaction_Request, EVMTransaction_Response) {
+  constructor(
+    public readonly verifierService: BASEEVMTransactionVerifierService,
+  ) {
+    super();
+  }
+}
+
+@ApiTags('EVMTransaction', 'HYPE')
+@Controller('HYPE/EVMTransaction')
+export class HYPEEVMTransactionVerifierController extends BaseControllerFactory<
+  EVMTransaction_Request,
+  EVMTransaction_Response
+>(EVMTransaction_Request, EVMTransaction_Response) {
+  constructor(
+    public readonly verifierService: HYPEEVMTransactionVerifierService,
   ) {
     super();
   }
