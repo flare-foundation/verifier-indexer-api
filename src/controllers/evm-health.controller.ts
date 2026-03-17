@@ -22,7 +22,7 @@ abstract class BaseHealthController {
    * Gets the state entries from the indexer database.
    * @returns
    */
-  @Get('Health')
+  @Get('health')
   public async indexerState(): Promise<boolean> {
     try {
       const blockNum = await this.web3Provider.getBlockNumber();
@@ -37,7 +37,7 @@ abstract class BaseHealthController {
 }
 
 @ApiTags('Health')
-@Controller('SGB/')
+@Controller('api/')
 export class SGBHealthController extends BaseHealthController {
   constructor(configService: ConfigService<IConfig>) {
     super(configService, 'SGB');
@@ -45,7 +45,7 @@ export class SGBHealthController extends BaseHealthController {
 }
 
 @ApiTags('Health')
-@Controller('FLR/')
+@Controller('api/')
 export class FLRHealthController extends BaseHealthController {
   constructor(configService: ConfigService<IConfig>) {
     super(configService, 'FLR');
@@ -53,7 +53,7 @@ export class FLRHealthController extends BaseHealthController {
 }
 
 @ApiTags('Health')
-@Controller('ETH/')
+@Controller('api/')
 export class ETHHealthController extends BaseHealthController {
   constructor(configService: ConfigService<IConfig>) {
     super(configService, 'ETH');
@@ -61,7 +61,7 @@ export class ETHHealthController extends BaseHealthController {
 }
 
 @ApiTags('Health')
-@Controller('BASE/')
+@Controller('api/')
 export class BASEHealthController extends BaseHealthController {
   constructor(configService: ConfigService<IConfig>) {
     super(configService, 'BASE');
@@ -69,7 +69,7 @@ export class BASEHealthController extends BaseHealthController {
 }
 
 @ApiTags('Health')
-@Controller('HYPE/')
+@Controller('api/')
 export class HYPEHealthController extends BaseHealthController {
   constructor(configService: ConfigService<IConfig>) {
     super(configService, 'HYPE');
