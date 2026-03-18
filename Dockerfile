@@ -32,7 +32,6 @@ ENV NODE_ENV=production
 COPY --from=build /app/verifier-indexer-api/dist ./dist
 COPY --from=build /app/verifier-indexer-api/node_modules ./node_modules
 COPY --from=build /app/verifier-indexer-api/package.json ./package.json
-COPY --from=build /app/verifier-indexer-api/src/config/type-definitions ./src/config/type-definitions
 
 COPY --from=build /app/verifier-indexer-api/PROJECT_VERSION ./PROJECT_VERSION
 COPY --from=build /app/verifier-indexer-api/PROJECT_BUILD_DATE ./PROJECT_BUILD_DATE
