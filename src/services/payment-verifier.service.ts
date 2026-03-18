@@ -13,7 +13,7 @@ import {
   Payment_Request,
   Payment_Response,
 } from '../dtos/attestation-types/Payment.dto';
-import { serializeBigInts } from '../external-libs/utils';
+import { serializeBigInts } from '../external-libs/serializeBigInts';
 
 import { verifyPayment } from '../verification/payment/payment';
 import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';

@@ -13,7 +13,7 @@ import {
   ReferencedPaymentNonexistence_Request,
   ReferencedPaymentNonexistence_Response,
 } from '../dtos/attestation-types/ReferencedPaymentNonexistence.dto';
-import { serializeBigInts } from '../external-libs/utils';
+import { serializeBigInts } from '../external-libs/serializeBigInts';
 import { verifyReferencedPaymentNonExistence } from '../verification/referenced-payment-nonexistence/referenced-payment-nonexistence';
 import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
 import { IConfig } from 'src/config/interfaces/common';

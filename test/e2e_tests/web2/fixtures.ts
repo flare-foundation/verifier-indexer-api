@@ -1,4 +1,4 @@
-import { encodeAttestationName } from '../../../src/external-libs/utils';
+import { encodeAttestationName } from '@flarenetwork/js-flare-common';
 
 export const payload = {
   attestationType:

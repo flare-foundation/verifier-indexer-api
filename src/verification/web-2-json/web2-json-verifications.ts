@@ -3,7 +3,7 @@ import {
   Web2Json_Response,
   Web2Json_ResponseBody,
 } from '../../dtos/attestation-types/Web2Json.dto';
-import { serializeBigInts } from '../../external-libs/utils';
+import { serializeBigInts } from '../../external-libs/serializeBigInts';
 import {
   AttestationResponseStatus,
   VerificationResponse,

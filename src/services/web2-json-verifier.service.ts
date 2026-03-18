@@ -14,8 +14,8 @@ import {
 import {
   decodeAttestationName,
   encodeAttestationName,
-  serializeBigInts,
-} from '../external-libs/utils';
+} from '@flarenetwork/js-flare-common';
+import { serializeBigInts } from '../external-libs/serializeBigInts';
 import { verifyWeb2Json } from '../verification/web-2-json/web2-json-verifications';
 import { BaseVerifierService } from './common/verifier-base.service';
 import { Web2JsonConfig } from 'src/config/interfaces/web2-json';

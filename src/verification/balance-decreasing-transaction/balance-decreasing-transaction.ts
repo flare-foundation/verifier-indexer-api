@@ -9,7 +9,7 @@ import {
   BalanceDecreasingTransaction_Response,
   BalanceDecreasingTransaction_ResponseBody,
 } from '../../dtos/attestation-types/BalanceDecreasingTransaction.dto';
-import { serializeBigInts } from '../../external-libs/utils';
+import { serializeBigInts } from '../../external-libs/serializeBigInts';
 import { IIndexedQueryManager } from '../../indexed-query-manager/IIndexedQueryManager';
 import { TransactionResult } from '../../indexed-query-manager/indexed-query-manager-types';
 import {

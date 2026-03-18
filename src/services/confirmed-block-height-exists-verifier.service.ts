@@ -7,7 +7,7 @@ import {
   ConfirmedBlockHeightExists_Request,
   ConfirmedBlockHeightExists_Response,
 } from '../dtos/attestation-types/ConfirmedBlockHeightExists.dto';
-import { serializeBigInts } from '../external-libs/utils';
+import { serializeBigInts } from '../external-libs/serializeBigInts';
 
 import { verifyConfirmedBlockHeightExists } from '../verification/confirmed-block-height-exists/confirmed-block-height-exists';
 import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';

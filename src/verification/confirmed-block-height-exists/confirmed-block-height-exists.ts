@@ -3,7 +3,7 @@ import {
   ConfirmedBlockHeightExists_Response,
   ConfirmedBlockHeightExists_ResponseBody,
 } from '../../dtos/attestation-types/ConfirmedBlockHeightExists.dto';
-import { serializeBigInts } from '../../external-libs/utils';
+import { serializeBigInts } from '../../external-libs/serializeBigInts';
 import { IIndexedQueryManager } from '../../indexed-query-manager/IIndexedQueryManager';
 import { BlockResult } from '../../indexed-query-manager/indexed-query-manager-types';
 import {

@@ -12,7 +12,7 @@ import {
   BalanceDecreasingTransaction_Request,
   BalanceDecreasingTransaction_Response,
 } from '../dtos/attestation-types/BalanceDecreasingTransaction.dto';
-import { serializeBigInts } from '../external-libs/utils';
+import { serializeBigInts } from '../external-libs/serializeBigInts';
 
 import { verifyBalanceDecreasingTransaction } from '../verification/balance-decreasing-transaction/balance-decreasing-transaction';
 import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';

@@ -11,7 +11,7 @@ import {
   ReferencedPaymentNonexistence_Response,
   ReferencedPaymentNonexistence_ResponseBody,
 } from '../../dtos/attestation-types/ReferencedPaymentNonexistence.dto';
-import { serializeBigInts } from '../../external-libs/utils';
+import { serializeBigInts } from '../../external-libs/serializeBigInts';
 import { IIndexedQueryManager } from '../../indexed-query-manager/IIndexedQueryManager';
 import {
   BlockResult,

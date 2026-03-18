@@ -19,8 +19,8 @@ import {
   EncodedRequestResponse,
   MicResponse,
 } from '../../dtos/generic/generic.dto';
-import { AttestationDefinitionStore } from '../../external-libs/AttestationDefinitionStore';
-import { encodeAttestationName, MIC_SALT } from '../../external-libs/utils';
+
+import { encodeAttestationName, MIC_SALT } from '@flarenetwork/js-flare-common';
 import { IIndexedQueryManager } from '../../indexed-query-manager/IIndexedQueryManager';
 import { IndexedQueryManagerOptions } from '../../indexed-query-manager/indexed-query-manager-types';
 import {
@@ -31,14 +31,13 @@ import { XrpIndexerQueryManager } from '../../indexed-query-manager/XrpIndexerQu
 import { AttestationResponseStatus } from '../../verification/response-status';
 import { IConfig } from 'src/config/interfaces/common';
 import { IndexerConfig } from '../../config/interfaces/chain-indexer';
+import { AttestationDefinitionStoreExtended } from '../../external-libs/AttestationDefinitionStoreExtended';
 
 export abstract class BaseVerifierService<
   Req extends AttestationTypeBase_Request,
   Res extends AttestationTypeBase_Response,
 > {
-  private readonly store = new AttestationDefinitionStore(
-    'src/config/type-definitions',
-  );
+  private readonly store = new AttestationDefinitionStoreExtended();
   protected readonly chainSourceName: ChainSourceNames;
   protected readonly isTestnet: boolean;
 

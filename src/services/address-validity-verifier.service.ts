@@ -6,7 +6,7 @@ import {
   AddressValidity_ResponseBody,
   AttestationResponseDTO_AddressValidity_Response,
 } from '../dtos/attestation-types/AddressValidity.dto';
-import { serializeBigInts } from '../external-libs/utils';
+import { serializeBigInts } from '../external-libs/serializeBigInts';
 import { verifyAddressBTC } from '../verification/address-validity/address-validity-btc';
 import { verifyAddressDOGE } from '../verification/address-validity/address-validity-doge';
 import { verifyAddressXRP } from '../verification/address-validity/address-validity-xrp';
