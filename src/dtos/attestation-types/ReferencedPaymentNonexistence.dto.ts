@@ -8,9 +8,9 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
-import { AttestationResponseStatus } from '../../verification/response-status';
-import { transformHash32 } from '../dto-transform-utils';
 import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
+import { transformHash32 } from '../dto-transform-utils';
+import { AttestationResponseStatus } from '../../verification/response-status';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -66,7 +66,6 @@ export class ReferencedPaymentNonexistence_ResponseBody {
   })
   firstOverflowBlockTimestamp: string;
 }
-
 export class ReferencedPaymentNonexistence_RequestBody {
   constructor(params: Required<ReferencedPaymentNonexistence_RequestBody>) {
     Object.assign(this, params);
@@ -142,7 +141,7 @@ export class ReferencedPaymentNonexistence_RequestBody {
   @IsBoolean()
   @ApiProperty({
     description: `If true, the source address root is checked (only full match).`,
-    example: 'true',
+    example: true,
   })
   checkSourceAddresses: boolean;
 
@@ -158,7 +157,6 @@ export class ReferencedPaymentNonexistence_RequestBody {
   })
   sourceAddressesRoot: string;
 }
-
 export class ReferencedPaymentNonexistence_Request {
   constructor(params: Required<ReferencedPaymentNonexistence_Request>) {
     Object.assign(this, params);
@@ -201,7 +199,6 @@ export class ReferencedPaymentNonexistence_Request {
   })
   requestBody: ReferencedPaymentNonexistence_RequestBody;
 }
-
 export class ReferencedPaymentNonexistence_Response {
   constructor(params: Required<ReferencedPaymentNonexistence_Response>) {
     Object.assign(this, params);
@@ -275,7 +272,6 @@ export class ReferencedPaymentNonexistence_Response {
   })
   responseBody: ReferencedPaymentNonexistence_ResponseBody;
 }
-
 export class ReferencedPaymentNonexistence_Proof {
   constructor(params: Required<ReferencedPaymentNonexistence_Proof>) {
     Object.assign(this, params);

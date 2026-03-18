@@ -69,7 +69,6 @@ export class AddressValidity_ResponseBody {
   })
   standardAddressHash: string;
 }
-
 export class AddressValidity_RequestBody {
   constructor(params: Required<AddressValidity_RequestBody>) {
     Object.assign(this, params);
@@ -85,7 +84,6 @@ export class AddressValidity_RequestBody {
   })
   addressStr: string;
 }
-
 export class AddressValidity_Request {
   constructor(params: Required<AddressValidity_Request>) {
     Object.assign(this, params);
@@ -125,9 +123,11 @@ export class AddressValidity_Request {
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
+  @ApiProperty({
+    description: `Data defining the request. Type (struct) and interpretation is determined by the 'attestationType'.`,
+  })
   requestBody: AddressValidity_RequestBody;
 }
-
 export class AddressValidity_Response {
   constructor(params: Required<AddressValidity_Response>) {
     Object.assign(this, params);
@@ -201,7 +201,6 @@ export class AddressValidity_Response {
   })
   responseBody: AddressValidity_ResponseBody;
 }
-
 export class AddressValidity_Proof {
   constructor(params: Required<AddressValidity_Proof>) {
     Object.assign(this, params);

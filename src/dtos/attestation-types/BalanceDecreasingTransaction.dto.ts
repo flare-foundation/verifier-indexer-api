@@ -8,9 +8,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
-
-import { AttestationResponseStatus } from '../../verification/response-status';
 import { transformHash32 } from '../dto-transform-utils';
+import { AttestationResponseStatus } from '../../verification/response-status';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -90,7 +89,6 @@ export class BalanceDecreasingTransaction_ResponseBody {
   })
   standardPaymentReference: string;
 }
-
 export class BalanceDecreasingTransaction_RequestBody {
   constructor(params: Required<BalanceDecreasingTransaction_RequestBody>) {
     Object.assign(this, params);
@@ -120,7 +118,6 @@ export class BalanceDecreasingTransaction_RequestBody {
   })
   sourceAddressIndicator: string;
 }
-
 export class BalanceDecreasingTransaction_Request {
   constructor(params: Required<BalanceDecreasingTransaction_Request>) {
     Object.assign(this, params);
@@ -163,7 +160,6 @@ export class BalanceDecreasingTransaction_Request {
   })
   requestBody: BalanceDecreasingTransaction_RequestBody;
 }
-
 export class BalanceDecreasingTransaction_Response {
   constructor(params: Required<BalanceDecreasingTransaction_Response>) {
     Object.assign(this, params);
@@ -237,7 +233,6 @@ export class BalanceDecreasingTransaction_Response {
   })
   responseBody: BalanceDecreasingTransaction_ResponseBody;
 }
-
 export class BalanceDecreasingTransaction_Proof {
   constructor(params: Required<BalanceDecreasingTransaction_Proof>) {
     Object.assign(this, params);

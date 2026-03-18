@@ -1,15 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDefined,
-  IsEnum,
   IsNotEmptyObject,
   IsObject,
   IsString,
   Validate,
   ValidateNested,
+  IsEnum,
 } from 'class-validator';
 import { Is0xHex, IsHash32, IsUnsignedIntLike } from '../dto-validators';
+import { transformHash32 } from '../dto-transform-utils';
 import { AttestationResponseStatus } from '../../verification/response-status';
 import { HTTP_METHOD } from '../../config/interfaces/web2-json';
 
@@ -42,7 +43,6 @@ export class Web2Json_ResponseBody {
   @ApiProperty({ description: `ABI encoded data`, example: '0x1234abcd' })
   abiEncodedData: string;
 }
-
 export class Web2Json_RequestBody {
   constructor(params: Required<Web2Json_RequestBody>) {
     Object.assign(this, params);
@@ -120,7 +120,6 @@ export class Web2Json_RequestBody {
   })
   abiSignature: string;
 }
-
 export class Web2Json_Request {
   constructor(params: Required<Web2Json_Request>) {
     Object.assign(this, params);
@@ -161,7 +160,6 @@ export class Web2Json_Request {
   })
   requestBody: Web2Json_RequestBody;
 }
-
 export class Web2Json_Response {
   constructor(params: Required<Web2Json_Response>) {
     Object.assign(this, params);
@@ -171,6 +169,7 @@ export class Web2Json_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
+  @Transform(transformHash32)
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -233,7 +232,6 @@ export class Web2Json_Response {
   })
   responseBody: Web2Json_ResponseBody;
 }
-
 export class Web2Json_Proof {
   constructor(params: Required<Web2Json_Proof>) {
     Object.assign(this, params);

@@ -11,6 +11,9 @@ importers:
       '@braintree/sanitize-url':
         specifier: ^7.1.1
         version: 7.1.1
+      '@flarenetwork/js-flare-common':
+        specifier: 0.0.2
+        version: 0.0.2
       '@flarenetwork/mcc':
         specifier: 4.4.0
         version: 4.4.0
@@ -315,6 +318,9 @@ packages:
   '@eslint/plugin-kit@0.4.1':
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@flarenetwork/js-flare-common@0.0.2':
+    resolution: {integrity: sha512-xmNt7sDRtySYZ7/dmTC6oUy0GGTTvCrY2wtKzJ7jlv7iqQFAdYUmGKcdKAaLzHoWvlEL4Xpz4dmKc+wds46ntw==}
 
   '@flarenetwork/mcc@4.4.0':
     resolution: {integrity: sha512-k4RBCQ4w98tl9PuCo+gN2AC2UteRiDBxWqzkQtA7NzV7HeFZ63j9Eer9OKL9mOuAc8aYM9Rs3YKte6zGh7SL7Q==}
@@ -3721,6 +3727,13 @@ snapshots:
     dependencies:
       '@eslint/core': 0.17.0
       levn: 0.4.1
+
+  '@flarenetwork/js-flare-common@0.0.2':
+    dependencies:
+      ethers: 6.16.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   '@flarenetwork/mcc@4.4.0':
     dependencies:

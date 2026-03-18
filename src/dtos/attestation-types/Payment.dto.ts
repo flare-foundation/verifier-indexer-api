@@ -9,9 +9,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
-
-import { AttestationResponseStatus } from '../../verification/response-status';
 import { transformHash32 } from '../dto-transform-utils';
+import { AttestationResponseStatus } from '../../verification/response-status';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -166,16 +165,15 @@ export class Payment_ResponseBody {
   oneToOne: boolean;
 
   /**
-   * [Succes status](/specs/attestations/external-chains/transactions.md#transaction-success-status) of the transaction: 0 - success, 1 - failed by sender's fault,x  2 - failed by receiver's fault.
+   * Succes status of the transaction: 0 - success, 1 - failed by sender's fault,
    */
   @Validate(IsUnsignedIntLike)
   @ApiProperty({
-    description: `[Succes status](/specs/attestations/external-chains/transactions.md#transaction-success-status) of the transaction: 0 - success, 1 - failed by sender's fault,x  2 - failed by receiver's fault.`,
+    description: `Succes status of the transaction: 0 - success, 1 - failed by sender's fault,`,
     example: '123',
   })
   status: string;
 }
-
 export class Payment_RequestBody {
   constructor(params: Required<Payment_RequestBody>) {
     Object.assign(this, params);
@@ -213,7 +211,6 @@ export class Payment_RequestBody {
   })
   utxo: string;
 }
-
 export class Payment_Request {
   constructor(params: Required<Payment_Request>) {
     Object.assign(this, params);
@@ -256,7 +253,6 @@ export class Payment_Request {
   })
   requestBody: Payment_RequestBody;
 }
-
 export class Payment_Response {
   constructor(params: Required<Payment_Response>) {
     Object.assign(this, params);
@@ -330,7 +326,6 @@ export class Payment_Response {
   })
   responseBody: Payment_ResponseBody;
 }
-
 export class Payment_Proof {
   constructor(params: Required<Payment_Proof>) {
     Object.assign(this, params);

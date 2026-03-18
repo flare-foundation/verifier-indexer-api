@@ -12,12 +12,13 @@ import {
   ValidateNested,
 } from 'class-validator';
 import {
-  IsUnsignedIntLike,
+  Is0xHex,
   IsEVMAddress,
   IsHash32,
-  Is0xHex,
-  prefix0x,
+  IsUnsignedIntLike,
 } from '../dto-validators';
+import { transformHash32 } from '../dto-transform-utils';
+
 /**
  * Attestation status
  */
@@ -35,6 +36,10 @@ export enum AttestationResponseStatus {
    */
   INDETERMINATE = 'INDETERMINATE',
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// DTOs /////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 export class EVMTransaction_Event {
   constructor(params: Required<EVMTransaction_Event>) {
@@ -55,7 +60,7 @@ export class EVMTransaction_Event {
    * The address of the contract that emitted the event.
    */
   @Validate(IsEVMAddress)
-  @Transform(({ value }) => prefix0x(value as string).toLowerCase())
+  @Transform(transformHash32)
   @ApiProperty({
     description: `The address of the contract that emitted the event.`,
     example: '0x5d4BEB38B6b71aaF6e30D0F9FeB6e21a7Ac40b3a',
@@ -66,9 +71,7 @@ export class EVMTransaction_Event {
    * An array of up to four 32-byte strings of indexed log arguments. The first string is the signature of the event.
    */
   @Validate(IsHash32, { each: true })
-  @Transform(({ value }) =>
-    (value as string[]).map((val) => prefix0x(val).toLowerCase()),
-  )
+  @Transform(transformHash32)
   @ApiProperty({
     description: `An array of up to four 32-byte strings of indexed log arguments. The first string is the signature of the event.`,
     example: [
@@ -81,7 +84,7 @@ export class EVMTransaction_Event {
    * Concatenated 32-byte strings of non-indexed log arguments. At least 32 bytes long.
    */
   @Validate(Is0xHex)
-  @Transform(({ value }) => prefix0x(value as string).toLowerCase())
+  @Transform(transformHash32)
   @ApiProperty({
     description: `Concatenated 32-byte strings of non-indexed log arguments. At least 32 bytes long.`,
     example: '0x1234abcd',
@@ -278,16 +281,6 @@ export class EVMTransaction_Request {
   })
   sourceId: string;
 
-  // /**
-  //  * `MessageIntegrityCode` that is derived from the expected response.
-  //  */
-  // @Validate(IsHash32)
-  // @ApiProperty({
-  //     description: `'MessageIntegrityCode' that is derived from the expected response.`,
-  //     example: "0x0000000000000000000000000000000000000000000000000000000000000000",
-  // })
-  // messageIntegrityCode: string;
-
   /**
    * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
    */
@@ -400,7 +393,3 @@ export class EVMTransaction_Proof {
   @ApiProperty({ description: `Attestation response.` })
   data: EVMTransaction_Response;
 }
-
-// export class EVMTransaction_RequestNoMic extends OmitType<EVMTransaction_Request, "messageIntegrityCode">(EVMTransaction_Request, [
-//     "messageIntegrityCode",
-// ] as const) {}

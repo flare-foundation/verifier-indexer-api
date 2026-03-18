@@ -127,8 +127,3 @@ export interface StructRecord {
    */
   params: ParamRecord[];
 }
-
-export interface AttestationTypeProtocolSupport {
-  attestationType: string;
-  supportedDataSources: string[];
-}
