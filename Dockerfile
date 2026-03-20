@@ -14,13 +14,14 @@ COPY . .
 ENV CI=true
 RUN pnpm run build && pnpm prune --prod
 
-# Versioning metadata, served by the app at runtime
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends git ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
-RUN (git describe --tags --always > PROJECT_VERSION || echo "unknown" > PROJECT_VERSION) && \
-    date +%s > PROJECT_BUILD_DATE && \
-    (git rev-parse HEAD > PROJECT_COMMIT_HASH || echo "unknown" > PROJECT_COMMIT_HASH)
+# Versioning metadata, served by the app at runtime.
+# Values are injected by CI via build args and default to local-friendly values.
+ARG PROJECT_VERSION=local
+ARG PROJECT_COMMIT_HASH=local
+RUN PROJECT_BUILD_DATE="$(date -u +%s)" && \
+    printf '%s\n' "$PROJECT_VERSION" > PROJECT_VERSION && \
+    printf '%s\n' "$PROJECT_BUILD_DATE" > PROJECT_BUILD_DATE && \
+    printf '%s\n' "$PROJECT_COMMIT_HASH" > PROJECT_COMMIT_HASH
 
 # ---- Runtime stage ----
 FROM node:24-slim@sha256:bf22df20270b654c4e9da59d8d4a3516cce6ba2852e159b27288d645b7a7eedc AS runtime
