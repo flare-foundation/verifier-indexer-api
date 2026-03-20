@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `BASE` and `HYPE` as supported EVM verifier types.
+
+### Changed
+
+- Changed url paths for all EVM types to make them consistent with other non-EVM types - `/EVMTransaction` without a chain prefix.
+
 ## [1.4.0] - 2026-03-03
 
 ### Added
