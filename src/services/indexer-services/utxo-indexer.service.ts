@@ -158,6 +158,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
     from,
     to,
   }: QueryBlock): Promise<PaginatedList<ApiDBBlock>> {
+    // TODO: add pagination
     const theLimit = this.indexerServerPageLimit;
     let query = this.manager
       .createQueryBuilder(this.blockTable, 'block')

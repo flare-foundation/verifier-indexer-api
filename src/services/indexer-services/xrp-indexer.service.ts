@@ -167,6 +167,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     offset,
     returnResponse,
   }: QueryTransaction): Promise<PaginatedList<ApiDBTransaction>> {
+    // TODO: add pagination
     if (paymentReference) {
       if (!/^0x[0-9a-f]{64}$/i.test(paymentReference)) {
         throw new Error('Invalid payment reference');
