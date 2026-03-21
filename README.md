@@ -36,6 +36,16 @@ Supported sources:
 
 For these attestation types the verifier requires access to blockchain indexers writing to PostgreSQL backends (fully synced to the target network).
 
+## EVM data attestations
+
+Supported attestation type: `EVMTransaction`
+
+Supported sources:
+- Mainnet: `ETH`, `FLR`, `SGB`
+- Testnet: `testETH`, `testFLR`, `testSGB`, `testBASE`, `testHYPE`
+
+For these attestation types the verifier requires access to an RPC endpoint for the target EVM network (configured via `EVM_RPC`).
+
 ## Web2 data attestations
 
 Supported attestation type: `Web2Json`
