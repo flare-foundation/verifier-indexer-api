@@ -50,7 +50,7 @@ export let app: INestApplication;
 
 export function baseHooks() {
   beforeEach(async () => {
-    app = await NestFactory.create(FLRVerifierServerTestModule);
+    app = await NestFactory.create(FLRVerifierServerTestModule, { logger: false });
 
     app.use(helmet());
     app.useGlobalPipes(new ValidationPipe({ transform: true }));

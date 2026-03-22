@@ -132,7 +132,7 @@ export let app: INestApplication;
 
 export function baseHooks() {
   before(async () => {
-    app = await NestFactory.create(BtcVerifierServerModule);
+    app = await NestFactory.create(BtcVerifierServerModule, { logger: false });
 
     app.use(helmet());
     app.useGlobalPipes(new ValidationPipe({ transform: true }));

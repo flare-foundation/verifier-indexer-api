@@ -132,7 +132,7 @@ export let app: INestApplication;
 
 export function baseHooks() {
   before(async () => {
-    app = await NestFactory.create(DogeVerifierServerModule);
+    app = await NestFactory.create(DogeVerifierServerModule, { logger: false });
 
     app.use(helmet());
     app.useGlobalPipes(new ValidationPipe({ transform: true }));

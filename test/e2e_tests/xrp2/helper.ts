@@ -131,7 +131,7 @@ export let app: INestApplication;
 
 export function baseHooks() {
   before(async () => {
-    app = await NestFactory.create(XRPVerifierServerModule);
+    app = await NestFactory.create(XRPVerifierServerModule, { logger: false });
 
     app.use(helmet());
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
