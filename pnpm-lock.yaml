@@ -15,8 +15,8 @@ importers:
         specifier: 0.0.2
         version: 0.0.2
       '@flarenetwork/mcc':
-        specifier: 4.4.0
-        version: 4.4.0
+        specifier: 4.5.0-rc.0
+        version: 4.5.0-rc.0
       '@jq-tools/jq':
         specifier: ^0.0.11
         version: 0.0.11(tslib@2.8.1)
@@ -322,8 +322,8 @@ packages:
   '@flarenetwork/js-flare-common@0.0.2':
     resolution: {integrity: sha512-xmNt7sDRtySYZ7/dmTC6oUy0GGTTvCrY2wtKzJ7jlv7iqQFAdYUmGKcdKAaLzHoWvlEL4Xpz4dmKc+wds46ntw==}
 
-  '@flarenetwork/mcc@4.4.0':
-    resolution: {integrity: sha512-k4RBCQ4w98tl9PuCo+gN2AC2UteRiDBxWqzkQtA7NzV7HeFZ63j9Eer9OKL9mOuAc8aYM9Rs3YKte6zGh7SL7Q==}
+  '@flarenetwork/mcc@4.5.0-rc.0':
+    resolution: {integrity: sha512-eQMqSLxFMAjkKGbSGcvuYAYNxQ5moxozDHxXHw56d9ai4RtkCZT2vfcRbmqdTeXqBKi27JVGZKVSMYXjNaQyZA==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -3735,7 +3735,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@flarenetwork/mcc@4.4.0':
+  '@flarenetwork/mcc@4.5.0-rc.0':
     dependencies:
       axios: 1.8.4
       axios-retry: 3.9.1

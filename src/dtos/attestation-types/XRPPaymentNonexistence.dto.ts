@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { AttestationResponseStatus } from '../../verification/response-status';
 import { transformHash32 } from '../dto-transform-utils';
-import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
+import { IsEVMAddress, IsHash32, IsUnsignedIntLike } from '../dto-validators';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -19,20 +19,20 @@ import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 /**
  * Attestation response for specific attestation type (flattened)
  */
-export class AttestationResponseDTO_ReferencedPaymentNonexistence_Response {
+export class AttestationResponseDTO_XRPPaymentNonexistence_Response {
   constructor(
-    params: Required<AttestationResponseDTO_ReferencedPaymentNonexistence_Response>,
+    params: Required<AttestationResponseDTO_XRPPaymentNonexistence_Response>,
   ) {
     Object.assign(this, params);
   }
 
   status: AttestationResponseStatus;
 
-  response?: ReferencedPaymentNonexistence_Response;
+  response?: XRPPaymentNonexistence_Response;
 }
 
-export class ReferencedPaymentNonexistence_ResponseBody {
-  constructor(params: Required<ReferencedPaymentNonexistence_ResponseBody>) {
+export class XRPPaymentNonexistence_ResponseBody {
+  constructor(params: Required<XRPPaymentNonexistence_ResponseBody>) {
     Object.assign(this, params);
   }
 
@@ -66,8 +66,8 @@ export class ReferencedPaymentNonexistence_ResponseBody {
   })
   firstOverflowBlockTimestamp: string;
 }
-export class ReferencedPaymentNonexistence_RequestBody {
-  constructor(params: Required<ReferencedPaymentNonexistence_RequestBody>) {
+export class XRPPaymentNonexistence_RequestBody {
+  constructor(params: Required<XRPPaymentNonexistence_RequestBody>) {
     Object.assign(this, params);
   }
 
@@ -124,41 +124,59 @@ export class ReferencedPaymentNonexistence_RequestBody {
   amount: string;
 
   /**
-   * The requested standard payment reference.
-   */
-  @Validate(IsHash32)
-  @Transform(transformHash32)
-  @ApiProperty({
-    description: `The requested standard payment reference.`,
-    example:
-      '0x0000000000000000000000000000000000000000000000000000000000000000',
-  })
-  standardPaymentReference: string;
-
-  /**
-   * If true, the source address root is checked (only full match).
+   * Whether to consider the firstMemoDataHash field in the search.
    */
   @IsBoolean()
   @ApiProperty({
-    description: `If true, the source address root is checked (only full match).`,
+    description: `Whether to consider the firstMemoDataHash field in the search.`,
     example: true,
   })
-  checkSourceAddresses: boolean;
+  checkFirstMemoData: boolean;
 
   /**
-   * The root of the Merkle tree of the source addresses.
+   * Hash of the MemoData field of the first Memo in the transaction.
    */
   @Validate(IsHash32)
   @Transform(transformHash32)
   @ApiProperty({
-    description: `The root of the Merkle tree of the source addresses.`,
+    description: `Hash of the MemoData field of the first Memo in the transaction.`,
     example:
       '0x0000000000000000000000000000000000000000000000000000000000000000',
   })
-  sourceAddressesRoot: string;
+  firstMemoDataHash: string;
+
+  /**
+   * Whether to consider the destinationTag field in the search.
+   */
+  @IsBoolean()
+  @ApiProperty({
+    description: `Whether to consider the destinationTag field in the search.`,
+    example: true,
+  })
+  checkDestinationTag: boolean;
+
+  /**
+   * Destination tag of the transaction.
+   */
+  @Validate(IsUnsignedIntLike)
+  @ApiProperty({
+    description: `Destination tag of the transaction.`,
+    example: '123',
+  })
+  destinationTag: string;
+
+  /**
+   * Address authorized to use the proof, where applicable.
+   */
+  @Validate(IsEVMAddress)
+  @ApiProperty({
+    description: `Address authorized to use the proof, where applicable.`,
+    example: '0x5d4BEB38B6b71aaF6e30D0F9FeB6e21a7Ac40b3a',
+  })
+  proofOwner: string;
 }
-export class ReferencedPaymentNonexistence_Request {
-  constructor(params: Required<ReferencedPaymentNonexistence_Request>) {
+export class XRPPaymentNonexistence_Request {
+  constructor(params: Required<XRPPaymentNonexistence_Request>) {
     Object.assign(this, params);
   }
 
@@ -170,7 +188,7 @@ export class ReferencedPaymentNonexistence_Request {
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
-      '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
+      '0x5852505061796d656e744e6f6e6578697374656e636500000000000000000000',
   })
   attestationType: string;
 
@@ -187,20 +205,21 @@ export class ReferencedPaymentNonexistence_Request {
   sourceId: string;
 
   /**
-   * Data defining the request. Type and interpretation is determined by the `attestationType`.
+   * Data defining the request. Type (struct) and interpretation is determined by the
+   * `attestationType`.
    */
   @ValidateNested()
-  @Type(() => ReferencedPaymentNonexistence_RequestBody)
+  @Type(() => XRPPaymentNonexistence_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
-    description: `Data defining the request. Type and interpretation is determined by the 'attestationType'.`,
+    description: `Data defining the request. Type (struct) and interpretation is determined by the 'attestationType'.`,
   })
-  requestBody: ReferencedPaymentNonexistence_RequestBody;
+  requestBody: XRPPaymentNonexistence_RequestBody;
 }
-export class ReferencedPaymentNonexistence_Response {
-  constructor(params: Required<ReferencedPaymentNonexistence_Response>) {
+export class XRPPaymentNonexistence_Response {
+  constructor(params: Required<XRPPaymentNonexistence_Response>) {
     Object.assign(this, params);
   }
 
@@ -212,7 +231,7 @@ export class ReferencedPaymentNonexistence_Response {
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
-      '0x5265666572656e6365645061796d656e744e6f6e6578697374656e6365000000',
+      '0x5852505061796d656e744e6f6e6578697374656e636500000000000000000000',
   })
   attestationType: string;
 
@@ -252,29 +271,29 @@ export class ReferencedPaymentNonexistence_Response {
    * Extracted from the request.
    */
   @ValidateNested()
-  @Type(() => ReferencedPaymentNonexistence_RequestBody)
+  @Type(() => XRPPaymentNonexistence_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Extracted from the request.` })
-  requestBody: ReferencedPaymentNonexistence_RequestBody;
+  requestBody: XRPPaymentNonexistence_RequestBody;
 
   /**
    * Data defining the response. The verification rules for the construction of the response
    * body and the type are defined per specific `attestationType`.
    */
   @ValidateNested()
-  @Type(() => ReferencedPaymentNonexistence_ResponseBody)
+  @Type(() => XRPPaymentNonexistence_ResponseBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
     description: `Data defining the response. The verification rules for the construction of the response body and the type are defined per specific 'attestationType'.`,
   })
-  responseBody: ReferencedPaymentNonexistence_ResponseBody;
+  responseBody: XRPPaymentNonexistence_ResponseBody;
 }
-export class ReferencedPaymentNonexistence_Proof {
-  constructor(params: Required<ReferencedPaymentNonexistence_Proof>) {
+export class XRPPaymentNonexistence_Proof {
+  constructor(params: Required<XRPPaymentNonexistence_Proof>) {
     Object.assign(this, params);
   }
 
@@ -294,10 +313,10 @@ export class ReferencedPaymentNonexistence_Proof {
    * Attestation response.
    */
   @ValidateNested()
-  @Type(() => ReferencedPaymentNonexistence_Response)
+  @Type(() => XRPPaymentNonexistence_Response)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Attestation response.` })
-  data: ReferencedPaymentNonexistence_Response;
+  data: XRPPaymentNonexistence_Response;
 }

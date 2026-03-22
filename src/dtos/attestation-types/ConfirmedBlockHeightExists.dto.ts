@@ -7,9 +7,9 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
-import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
-import { transformHash32 } from '../dto-transform-utils';
 import { AttestationResponseStatus } from '../../verification/response-status';
+import { transformHash32 } from '../dto-transform-utils';
+import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -46,7 +46,8 @@ export class ConfirmedBlockHeightExists_ResponseBody {
   blockTimestamp: string;
 
   /**
-   * The depth at which a block is considered confirmed depending on the chain. All attestation providers must agree on this number.
+   * The depth at which a block is considered confirmed depending on the chain.
+   * All attestation providers must agree on this number.
    */
   @Validate(IsUnsignedIntLike)
   @ApiProperty({
@@ -56,7 +57,8 @@ export class ConfirmedBlockHeightExists_ResponseBody {
   numberOfConfirmations: string;
 
   /**
-   * The block number of the latest block that has a timestamp strictly smaller than `blockTimestamp` - `queryWindow`.
+   * The block number of the latest block that has a timestamp strictly smaller
+   * than `blockTimestamp` - `queryWindow`.
    */
   @Validate(IsUnsignedIntLike)
   @ApiProperty({
@@ -130,7 +132,7 @@ export class ConfirmedBlockHeightExists_Request {
   sourceId: string;
 
   /**
-   * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
+   * Data defining the request. Type and interpretation is determined by the `attestationType`.
    */
   @ValidateNested()
   @Type(() => ConfirmedBlockHeightExists_RequestBody)
@@ -138,7 +140,7 @@ export class ConfirmedBlockHeightExists_Request {
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
-    description: `Data defining the request. Type (struct) and interpretation is determined by the 'attestationType'.`,
+    description: `Data defining the request. Type and interpretation is determined by the 'attestationType'.`,
   })
   requestBody: ConfirmedBlockHeightExists_RequestBody;
 }
@@ -203,7 +205,8 @@ export class ConfirmedBlockHeightExists_Response {
   requestBody: ConfirmedBlockHeightExists_RequestBody;
 
   /**
-   * Data defining the response. The verification rules for the construction of the response body and the type are defined per specific `attestationType`.
+   * Data defining the response. The verification rules for the construction of the
+   * response body and the type are defined per specific `attestationType`.
    */
   @ValidateNested()
   @Type(() => ConfirmedBlockHeightExists_ResponseBody)

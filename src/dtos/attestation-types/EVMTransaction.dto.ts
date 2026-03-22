@@ -11,13 +11,13 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
+import { transformHash32 } from '../dto-transform-utils';
 import {
   Is0xHex,
   IsEVMAddress,
   IsHash32,
   IsUnsignedIntLike,
 } from '../dto-validators';
-import { transformHash32 } from '../dto-transform-utils';
 
 /**
  * Attestation status
@@ -31,7 +31,7 @@ export enum AttestationResponseStatus {
    * Attestation request is invalid.
    */
   INVALID = 'INVALID',
-  /**
+  /**ss
    * Attestation request cannot be confirmed neither rejected by the verifier at the moment.
    */
   INDETERMINATE = 'INDETERMINATE',
@@ -60,7 +60,6 @@ export class EVMTransaction_Event {
    * The address of the contract that emitted the event.
    */
   @Validate(IsEVMAddress)
-  @Transform(transformHash32)
   @ApiProperty({
     description: `The address of the contract that emitted the event.`,
     example: '0x5d4BEB38B6b71aaF6e30D0F9FeB6e21a7Ac40b3a',
@@ -68,12 +67,11 @@ export class EVMTransaction_Event {
   emitterAddress: string;
 
   /**
-   * An array of up to four 32-byte strings of indexed log arguments. The first string is the signature of the event.
+   * An array of up to four 32-byte strings of indexed log arguments.
    */
   @Validate(IsHash32, { each: true })
-  @Transform(transformHash32)
   @ApiProperty({
-    description: `An array of up to four 32-byte strings of indexed log arguments. The first string is the signature of the event.`,
+    description: `An array of up to four 32-byte strings of indexed log arguments.`,
     example: [
       '0x0000000000000000000000000000000000000000000000000000000000000000',
     ],
@@ -84,7 +82,6 @@ export class EVMTransaction_Event {
    * Concatenated 32-byte strings of non-indexed log arguments. At least 32 bytes long.
    */
   @Validate(Is0xHex)
-  @Transform(transformHash32)
   @ApiProperty({
     description: `Concatenated 32-byte strings of non-indexed log arguments. At least 32 bytes long.`,
     example: '0x1234abcd',
@@ -92,7 +89,8 @@ export class EVMTransaction_Event {
   data: string;
 
   /**
-   * It is `true` if the log was removed due to a chain reorganization and `false` if it is a valid log.
+   * It is `true` if the log was removed due to a chain reorganization
+   * and `false` if it is a valid log.
    */
   @IsBoolean()
   @ApiProperty({
@@ -147,7 +145,8 @@ export class EVMTransaction_ResponseBody {
   isDeployment: boolean;
 
   /**
-   * The address (to) of the receiver of the initial transaction. Zero address if `isDeployment` is `true`.
+   * The address (to) of the receiver of the initial transaction.
+   * Zero address if `isDeployment` is `true`.
    */
   @Validate(IsEVMAddress)
   @ApiProperty({
@@ -167,7 +166,8 @@ export class EVMTransaction_ResponseBody {
   value: string;
 
   /**
-   * If `provideInput`, this is the data send along with the initial transaction. Otherwise it is the default value `0x00`.
+   * If `provideInput`, this is the data send along with the initial transaction.
+   * Otherwise it is the default value `0x00`.
    */
   @Validate(Is0xHex)
   @ApiProperty({
@@ -187,7 +187,8 @@ export class EVMTransaction_ResponseBody {
   status: string;
 
   /**
-   * If `listEvents` is `true`, an array of the requested events. Sorted by the logIndex in the same order as `logIndices`. Otherwise, an empty array.
+   * If `listEvents` is `true`, an array of the requested events.
+   * Sorted by the logIndex in the same order as `logIndices`. Otherwise, an empty array.
    */
   @ValidateNested({ each: true })
   @Type(() => EVMTransaction_Event)
@@ -207,6 +208,7 @@ export class EVMTransaction_RequestBody {
    * Hash of the transaction(transactionHash).
    */
   @Validate(IsHash32)
+  @Transform(transformHash32)
   @ApiProperty({
     description: `Hash of the transaction(transactionHash).`,
     example:
@@ -235,7 +237,8 @@ export class EVMTransaction_RequestBody {
   provideInput: boolean;
 
   /**
-   * If true, events indicated by `logIndices` are included in the response. Otherwise, no events are included in the response.
+   * If true, events indicated by `logIndices` are included in the response.
+   * Otherwise, no events are included in the response.
    */
   @IsBoolean()
   @ApiProperty({
@@ -245,7 +248,10 @@ export class EVMTransaction_RequestBody {
   listEvents: boolean;
 
   /**
-   * If `listEvents` is `false`, this should be an empty list, otherwise, the request is rejected. If `listEvents` is `true`, this is the list of indices (logIndex) of the events to be relayed (sorted by the requestor). The array should contain at most 50 indices. If empty, it indicates all events in order capped by 50.
+   * If `listEvents` is `false`, this should be an empty list, otherwise,
+   * the request is rejected. If `listEvents` is `true`, this is the list of indices (logIndex)
+   * of the events to be relayed (sorted by the requestor). The array should contain at most 50 indices.
+   * If empty, it indicates all events in order capped by 50.
    */
   @Validate(IsUnsignedIntLike, { each: true })
   @ApiProperty({
@@ -263,6 +269,7 @@ export class EVMTransaction_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
+  @Transform(transformHash32)
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -274,15 +281,17 @@ export class EVMTransaction_Request {
    * ID of the data source.
    */
   @Validate(IsHash32)
+  @Transform(transformHash32)
   @ApiProperty({
     description: `ID of the data source.`,
     example:
-      '0x4254430000000000000000000000000000000000000000000000000000000000',
+      '0x444f474500000000000000000000000000000000000000000000000000000000',
   })
   sourceId: string;
 
   /**
-   * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
+   * Data defining the request. Type (struct) and interpretation is
+   * determined by the `attestationType`.
    */
   @ValidateNested()
   @Type(() => EVMTransaction_RequestBody)
@@ -303,6 +312,7 @@ export class EVMTransaction_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
+  @Transform(transformHash32)
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
@@ -314,10 +324,11 @@ export class EVMTransaction_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
+  @Transform(transformHash32)
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
-      '0x4254430000000000000000000000000000000000000000000000000000000000',
+      '0x444f474500000000000000000000000000000000000000000000000000000000',
   })
   sourceId: string;
 
@@ -353,7 +364,8 @@ export class EVMTransaction_Response {
   requestBody: EVMTransaction_RequestBody;
 
   /**
-   * Data defining the response. The verification rules for the construction of the response body and the type are defined per specific `attestationType`.
+   * Data defining the response. The verification rules for the construction
+   * of the response body and the type are defined per specific `attestationType`.
    */
   @ValidateNested()
   @Type(() => EVMTransaction_ResponseBody)

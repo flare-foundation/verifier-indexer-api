@@ -2,22 +2,21 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsDefined,
+  IsEnum,
   IsNotEmptyObject,
   IsObject,
   IsString,
   Validate,
   ValidateNested,
-  IsEnum,
 } from 'class-validator';
-import { Is0xHex, IsHash32, IsUnsignedIntLike } from '../dto-validators';
-import { transformHash32 } from '../dto-transform-utils';
-import { AttestationResponseStatus } from '../../verification/response-status';
 import { HTTP_METHOD } from '../../config/interfaces/web2-json';
+import { AttestationResponseStatus } from '../../verification/response-status';
+import { transformHash32 } from '../dto-transform-utils';
+import { Is0xHex, IsHash32, IsUnsignedIntLike } from '../dto-validators';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
-
 /**
  * Attestation response for specific attestation type (flattened)
  */
@@ -37,10 +36,13 @@ export class Web2Json_ResponseBody {
   }
 
   /**
-   * ABI encoded data
+   * Raw binary data encoded to match the function parameters in ABI.
    */
   @Validate(Is0xHex)
-  @ApiProperty({ description: `ABI encoded data`, example: '0x1234abcd' })
+  @ApiProperty({
+    description: `Raw binary data encoded to match the function parameters in ABI.`,
+    example: '0x1234abcd',
+  })
   abiEncodedData: string;
 }
 export class Web2Json_RequestBody {
@@ -54,69 +56,70 @@ export class Web2Json_RequestBody {
   @IsString()
   @ApiProperty({
     description: `URL of the data source`,
-    example: 'https://jsonplaceholder.typicode.com/todos',
+    example: 'Example string',
   })
   url: string;
 
   /**
-   * HTTP method to be used to fetch from URL source
+   * HTTP method to be used to fetch from URL source.
+   * Supported methods: GET, POST, PUT, PATCH, DELETE.
    */
   @IsEnum(HTTP_METHOD)
   @ApiProperty({
-    description: `HTTP method to be used to fetch from URL source`,
+    description: `HTTP method to be used to fetch from URL source. Supported methods: GET, POST, PUT, PATCH, DELETE.`,
     example: 'GET',
     enum: HTTP_METHOD,
   })
   httpMethod: HTTP_METHOD;
 
   /**
-   * Headers to be included to fetch from URL source
+   * Headers to be included to fetch from URL source. Use `{}` if no headers are needed.
    */
   @IsString()
   @ApiProperty({
-    description: `Headers to be included to fetch from URL source. Use '' if not headers are needed.`,
-    example: '{"Content-Type":"application/json"}',
+    description: `Headers to be included to fetch from URL source. Use '{}' if no headers are needed.`,
+    example: 'Example string',
   })
   headers: string;
 
   /**
-   * Query parameters to be included to fetch from URL source. Use '' if no query parameters are needed.
+   * Query parameters to be included to fetch from URL source.
+   * Use `{}` if no query parameters are needed.
    */
   @IsString()
   @ApiProperty({
-    description: `Query parameters to be included to fetch from URL source. Use '' if no query parameters are needed.`,
-    example: '{"id": 1}',
+    description: `Query parameters to be included to fetch from URL source. Use '{}' if no query parameters are needed.`,
+    example: 'Example string',
   })
   queryParams: string;
 
   /**
-   * Request body to be included to fetch from URL source. Use '' if no request body is required.
+   * Request body to be included to fetch from URL source. Use '{}' if no request body is required.
    */
   @IsString()
   @ApiProperty({
-    description: `Request body to be included to fetch from URL source. Use '' if no request body is required.`,
-    example: '',
+    description: `Request body to be included to fetch from URL source. Use '{}' if no request body is required.`,
+    example: 'Example string',
   })
   body: string;
 
   /**
-   * jq filter used to post-process the JSON response from the URL
+   * jq filter used to post-process the JSON response from the URL.
    */
   @IsString()
   @ApiProperty({
-    description: `jq filter used to post-process the JSON response from the URL`,
-    example: '.[0]',
+    description: `jq filter used to post-process the JSON response from the URL.`,
+    example: 'Example string',
   })
   postProcessJq: string;
 
   /**
-   * ABI type specification
+   * ABI signature of the struct used to encode the data after jq post-processing.
    */
   @IsString()
   @ApiProperty({
-    description: `ABI type specification for encoding processed JSON data. Provide either a primitive type string (e.g. 'uint256') or a JSON tuple object with components.`,
-    example:
-      '{"type":"tuple","components":[{"internalType":"uint8","name":"userId","type":"uint8"},{"internalType":"uint8","name":"id","type":"uint8"},{"internalType":"string","name":"title","type":"string"},{"internalType":"bool","name":"completed","type":"bool"}],"name":"task"}',
+    description: `ABI signature of the struct used to encode the data after jq post-processing.`,
+    example: 'Example string',
   })
   abiSignature: string;
 }
@@ -129,6 +132,7 @@ export class Web2Json_Request {
    * ID of the attestation type.
    */
   @Validate(IsHash32)
+  @Transform(transformHash32)
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
@@ -140,15 +144,17 @@ export class Web2Json_Request {
    * ID of the data source.
    */
   @Validate(IsHash32)
+  @Transform(transformHash32)
   @ApiProperty({
     description: `ID of the data source.`,
     example:
-      '0x5075626c69635765623200000000000000000000000000000000000000000000',
+      '0x444f474500000000000000000000000000000000000000000000000000000000',
   })
   sourceId: string;
 
   /**
    * Data defining the request. Type (struct) and interpretation is determined
+   * by the `attestationType`.
    */
   @ValidateNested()
   @Type(() => Web2Json_RequestBody)
@@ -156,7 +162,7 @@ export class Web2Json_Request {
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
-    description: `Data defining the request. Type (struct) and interpretation is determined`,
+    description: `Data defining the request. Type (struct) and interpretation is determined by the 'attestationType'.`,
   })
   requestBody: Web2Json_RequestBody;
 }
@@ -173,7 +179,7 @@ export class Web2Json_Response {
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
-      '0x4a736f6e41706900000000000000000000000000000000000000000000000000',
+      '0x576562324a736f6e000000000000000000000000000000000000000000000000',
   })
   attestationType: string;
 
@@ -181,10 +187,11 @@ export class Web2Json_Response {
    * Extracted from the request.
    */
   @Validate(IsHash32)
+  @Transform(transformHash32)
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
-      '0x5075626c69635765623200000000000000000000000000000000000000000000',
+      '0x444f474500000000000000000000000000000000000000000000000000000000',
   })
   sourceId: string;
 
@@ -221,6 +228,7 @@ export class Web2Json_Response {
 
   /**
    * Data defining the response. The verification rules for the construction
+   * of the response body and the type are defined per specific `attestationType`.
    */
   @ValidateNested()
   @Type(() => Web2Json_ResponseBody)
@@ -228,7 +236,7 @@ export class Web2Json_Response {
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
-    description: `Data defining the response. The verification rules for the construction`,
+    description: `Data defining the response. The verification rules for the construction of the response body and the type are defined per specific 'attestationType'.`,
   })
   responseBody: Web2Json_ResponseBody;
 }

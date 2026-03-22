@@ -7,9 +7,9 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
-import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
-import { transformHash32 } from '../dto-transform-utils';
 import { AttestationResponseStatus } from '../../verification/response-status';
+import { transformHash32 } from '../dto-transform-utils';
+import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ export class BalanceDecreasingTransaction_Request {
   sourceId: string;
 
   /**
-   * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
+   * Data defining the request. Type and interpretation is determined by the `attestationType`.
    */
   @ValidateNested()
   @Type(() => BalanceDecreasingTransaction_RequestBody)
@@ -156,7 +156,7 @@ export class BalanceDecreasingTransaction_Request {
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
-    description: `Data defining the request. Type (struct) and interpretation is determined by the 'attestationType'.`,
+    description: `Data defining the request. Type and interpretation is determined by the 'attestationType'.`,
   })
   requestBody: BalanceDecreasingTransaction_RequestBody;
 }
@@ -190,7 +190,8 @@ export class BalanceDecreasingTransaction_Response {
   sourceId: string;
 
   /**
-   * The ID of the State Connector round in which the request was considered. This is a security measure to prevent a collision of attestation hashes.
+   * The ID of the State Connector round in which the request was considered.
+   * This is a security measure to prevent a collision of attestation hashes.
    */
   @Validate(IsUnsignedIntLike)
   @ApiProperty({
@@ -221,7 +222,8 @@ export class BalanceDecreasingTransaction_Response {
   requestBody: BalanceDecreasingTransaction_RequestBody;
 
   /**
-   * Data defining the response. The verification rules for the construction of the response body and the type are defined per specific `attestationType`.
+   * Data defining the response. The verification rules for the construction of the
+   * response body and the type are defined per specific `attestationType`.
    */
   @ValidateNested()
   @Type(() => BalanceDecreasingTransaction_ResponseBody)

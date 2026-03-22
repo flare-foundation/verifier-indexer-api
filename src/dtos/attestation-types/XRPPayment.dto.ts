@@ -5,12 +5,18 @@ import {
   IsDefined,
   IsNotEmptyObject,
   IsObject,
+  IsString,
   Validate,
   ValidateNested,
 } from 'class-validator';
 import { AttestationResponseStatus } from '../../verification/response-status';
 import { transformHash32 } from '../dto-transform-utils';
-import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
+import {
+  Is0xHex,
+  IsEVMAddress,
+  IsHash32,
+  IsUnsignedIntLike,
+} from '../dto-validators';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -19,18 +25,18 @@ import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 /**
  * Attestation response for specific attestation type (flattened)
  */
-export class AttestationResponseDTO_Payment_Response {
-  constructor(params: Required<AttestationResponseDTO_Payment_Response>) {
+export class AttestationResponseDTO_XRPPayment_Response {
+  constructor(params: Required<AttestationResponseDTO_XRPPayment_Response>) {
     Object.assign(this, params);
   }
 
   status: AttestationResponseStatus;
 
-  response?: Payment_Response;
+  response?: XRPPayment_Response;
 }
 
-export class Payment_ResponseBody {
-  constructor(params: Required<Payment_ResponseBody>) {
+export class XRPPayment_ResponseBody {
+  constructor(params: Required<XRPPayment_ResponseBody>) {
     Object.assign(this, params);
   }
 
@@ -55,6 +61,16 @@ export class Payment_ResponseBody {
   blockTimestamp: string;
 
   /**
+   * Address string of the source address (r address).
+   */
+  @IsString()
+  @ApiProperty({
+    description: `Address string of the source address (r address).`,
+    example: 'Example string',
+  })
+  sourceAddress: string;
+
+  /**
    * Standard address hash of the source address.
    */
   @Validate(IsHash32)
@@ -65,18 +81,6 @@ export class Payment_ResponseBody {
       '0x0000000000000000000000000000000000000000000000000000000000000000',
   })
   sourceAddressHash: string;
-
-  /**
-   * The root of the Merkle tree of the source addresses.
-   */
-  @Validate(IsHash32)
-  @Transform(transformHash32)
-  @ApiProperty({
-    description: `The root of the Merkle tree of the source addresses.`,
-    example:
-      '0x0000000000000000000000000000000000000000000000000000000000000000',
-  })
-  sourceAddressesRoot: string;
 
   /**
    * Standard address hash of the receiving address.
@@ -147,40 +151,60 @@ export class Payment_ResponseBody {
   intendedReceivedAmount: string;
 
   /**
-   * Standard payment reference of the transaction.
-   */
-  @Validate(IsHash32)
-  @Transform(transformHash32)
-  @ApiProperty({
-    description: `Standard payment reference of the transaction.`,
-    example:
-      '0x0000000000000000000000000000000000000000000000000000000000000000',
-  })
-  standardPaymentReference: string;
-
-  /**
-   * Indicator whether only one source and one receiver are involved in the transaction.
+   * True if the transaction has a MemoData field, false otherwise.
    */
   @IsBoolean()
   @ApiProperty({
-    description: `Indicator whether only one source and one receiver are involved in the transaction.`,
+    description: `True if the transaction has a MemoData field, false otherwise.`,
     example: true,
   })
-  oneToOne: boolean;
+  hasMemoData: boolean;
 
   /**
-   * Succes status of the transaction: 0 - success, 1 - failed by sender's fault,
+   * Raw bytes of MemoData filed of first Memo in the transaction, empty if no Memo is present.
+   */
+  @Validate(Is0xHex)
+  @ApiProperty({
+    description: `Raw bytes of MemoData filed of first Memo in the transaction, empty if no Memo is present.`,
+    example: '0x1234abcd',
+  })
+  firstMemoData: string;
+
+  /**
+   * True if the transaction has a destination tag, false otherwise.
+   */
+  @IsBoolean()
+  @ApiProperty({
+    description: `True if the transaction has a destination tag, false otherwise.`,
+    example: true,
+  })
+  hasDestinationTag: boolean;
+
+  /**
+   * Destination tag of the transaction, 0 if no destination tag is present,
+   * see hasDestinationTag for indication if transaction has destination tag.
+   * Currently XRPL only supports destination tags that are uint32 values.
+   */
+  @Validate(IsUnsignedIntLike)
+  @ApiProperty({
+    description: `Destination tag of the transaction, 0 if no destination tag is present, see hasDestinationTag for indication if transaction has destination tag. Currently XRPL only supports destination tags that are uint32 values.`,
+    example: '123',
+  })
+  destinationTag: string;
+
+  /**
+   * Success status of the transaction: 0 - success, 1 - failed by sender's fault,
    * 2 - failed by receiver's fault.
    */
   @Validate(IsUnsignedIntLike)
   @ApiProperty({
-    description: `Succes status of the transaction: 0 - success, 1 - failed by sender's fault, 2 - failed by receiver's fault.`,
+    description: `Success status of the transaction: 0 - success, 1 - failed by sender's fault, 2 - failed by receiver's fault.`,
     example: '123',
   })
   status: string;
 }
-export class Payment_RequestBody {
-  constructor(params: Required<Payment_RequestBody>) {
+export class XRPPayment_RequestBody {
+  constructor(params: Required<XRPPayment_RequestBody>) {
     Object.assign(this, params);
   }
 
@@ -197,29 +221,17 @@ export class Payment_RequestBody {
   transactionId: string;
 
   /**
-   * For UTXO chains, this is the index of the transaction input with source address.
-   * Always 0 for the non-utxo chains.
+   * Address authorized to use the proof, where applicable.
    */
-  @Validate(IsUnsignedIntLike)
+  @Validate(IsEVMAddress)
   @ApiProperty({
-    description: `For UTXO chains, this is the index of the transaction input with source address. Always 0 for the non-utxo chains.`,
-    example: '123',
+    description: `Address authorized to use the proof, where applicable.`,
+    example: '0x5d4BEB38B6b71aaF6e30D0F9FeB6e21a7Ac40b3a',
   })
-  inUtxo: string;
-
-  /**
-   * For UTXO chains, this is the index of the transaction output with receiving address.
-   * Always 0 for the non-utxo chains.
-   */
-  @Validate(IsUnsignedIntLike)
-  @ApiProperty({
-    description: `For UTXO chains, this is the index of the transaction output with receiving address. Always 0 for the non-utxo chains.`,
-    example: '123',
-  })
-  utxo: string;
+  proofOwner: string;
 }
-export class Payment_Request {
-  constructor(params: Required<Payment_Request>) {
+export class XRPPayment_Request {
+  constructor(params: Required<XRPPayment_Request>) {
     Object.assign(this, params);
   }
 
@@ -231,7 +243,7 @@ export class Payment_Request {
   @ApiProperty({
     description: `ID of the attestation type.`,
     example:
-      '0x5061796d656e7400000000000000000000000000000000000000000000000000',
+      '0x5852505061796d656e7400000000000000000000000000000000000000000000',
   })
   attestationType: string;
 
@@ -248,21 +260,21 @@ export class Payment_Request {
   sourceId: string;
 
   /**
-   * Data defining the request. Type (struct) and interpretation is determined
-   * by the `attestationType`.
+   * Data defining the request. Type (struct) and interpretation is determined by
+   * the `attestationType`.
    */
   @ValidateNested()
-  @Type(() => Payment_RequestBody)
+  @Type(() => XRPPayment_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
     description: `Data defining the request. Type (struct) and interpretation is determined by the 'attestationType'.`,
   })
-  requestBody: Payment_RequestBody;
+  requestBody: XRPPayment_RequestBody;
 }
-export class Payment_Response {
-  constructor(params: Required<Payment_Response>) {
+export class XRPPayment_Response {
+  constructor(params: Required<XRPPayment_Response>) {
     Object.assign(this, params);
   }
 
@@ -274,7 +286,7 @@ export class Payment_Response {
   @ApiProperty({
     description: `Extracted from the request.`,
     example:
-      '0x5061796d656e7400000000000000000000000000000000000000000000000000',
+      '0x5852505061796d656e7400000000000000000000000000000000000000000000',
   })
   attestationType: string;
 
@@ -314,29 +326,29 @@ export class Payment_Response {
    * Extracted from the request.
    */
   @ValidateNested()
-  @Type(() => Payment_RequestBody)
+  @Type(() => XRPPayment_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Extracted from the request.` })
-  requestBody: Payment_RequestBody;
+  requestBody: XRPPayment_RequestBody;
 
   /**
-   * Data defining the response. The verification rules for the construction
-   * of the response body and the type are defined per specific `attestationType`.
+   * Data defining the response. The verification rules for the construction of the
+   * response body and the type are defined per specific `attestationType`.
    */
   @ValidateNested()
-  @Type(() => Payment_ResponseBody)
+  @Type(() => XRPPayment_ResponseBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
     description: `Data defining the response. The verification rules for the construction of the response body and the type are defined per specific 'attestationType'.`,
   })
-  responseBody: Payment_ResponseBody;
+  responseBody: XRPPayment_ResponseBody;
 }
-export class Payment_Proof {
-  constructor(params: Required<Payment_Proof>) {
+export class XRPPayment_Proof {
+  constructor(params: Required<XRPPayment_Proof>) {
     Object.assign(this, params);
   }
 
@@ -356,10 +368,10 @@ export class Payment_Proof {
    * Attestation response.
    */
   @ValidateNested()
-  @Type(() => Payment_Response)
+  @Type(() => XRPPayment_Response)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({ description: `Attestation response.` })
-  data: Payment_Response;
+  data: XRPPayment_Response;
 }

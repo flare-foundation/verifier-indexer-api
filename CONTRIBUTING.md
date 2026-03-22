@@ -146,6 +146,16 @@ We use ESLint and Prettier:
   ```bash
   pnpm format:fix
   ```
+## Generating DTO files
+
+Attestation type DTO files are generated against the `@flarenetwork/js-flare-common` library. To update DTOs to new attestation type definitions, first update the library dependency and then regenerate:
+
+```bash
+pnpm generate:dto
+```
+
+Note that the generated code may contain unused imports, so a manual review is still needed after generation. Removing the `TypeTemplate` definition from the generated output is also preferred.
+
 ## Proposing Web2Json attestation type source changes
 
 Community members can propose adding or removing supported Web2 API endpoints by updating the `Web2Json` source list at [src/config/web2/web2-json-sources.ts](src/config/web2/web2-json-sources.ts) and opening a pull request.

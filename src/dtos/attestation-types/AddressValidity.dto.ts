@@ -9,9 +9,9 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
-import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
-import { transformHash32 } from '../dto-transform-utils';
 import { AttestationResponseStatus } from '../../verification/response-status';
+import { transformHash32 } from '../dto-transform-utils';
+import { IsHash32, IsUnsignedIntLike } from '../dto-validators';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// DTOs /////////////////////////////////////////////////////
@@ -58,7 +58,8 @@ export class AddressValidity_ResponseBody {
   standardAddress: string;
 
   /**
-   * If `isValid`, standard address hash of the validated address. Otherwise a zero bytes32 string.
+   * If `isValid`, standard address hash of the validated address.
+   * Otherwise a zero bytes32 string.
    */
   @Validate(IsHash32)
   @Transform(transformHash32)
@@ -114,17 +115,15 @@ export class AddressValidity_Request {
   sourceId: string;
 
   /**
-   * Data defining the request. Type (struct) and interpretation is determined by the `attestationType`.
+   * Data defining the request. Type and interpretation is determined by the `attestationType`.
    */
-  @ValidateNested({
-    message: `requestBody validation nested fail object`,
-  })
+  @ValidateNested()
   @Type(() => AddressValidity_RequestBody)
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ApiProperty({
-    description: `Data defining the request. Type (struct) and interpretation is determined by the 'attestationType'.`,
+    description: `Data defining the request. Type and interpretation is determined by the 'attestationType'.`,
   })
   requestBody: AddressValidity_RequestBody;
 }
@@ -189,7 +188,8 @@ export class AddressValidity_Response {
   requestBody: AddressValidity_RequestBody;
 
   /**
-   * Data defining the response. The verification rules for the construction of the response body and the type are defined per specific `attestationType`.
+   * Data defining the response. The verification rules for the construction of the
+   * response body and the type are defined per specific `attestationType`.
    */
   @ValidateNested()
   @Type(() => AddressValidity_ResponseBody)
