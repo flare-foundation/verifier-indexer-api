@@ -28,7 +28,9 @@ export function responseXRPPayment(
 ) {
   let parsedData: IXrpGetTransactionRes;
   try {
-    parsedData = JSON.parse(dbTransaction.getResponse()) as IXrpGetTransactionRes;
+    parsedData = JSON.parse(
+      dbTransaction.getResponse(),
+    ) as IXrpGetTransactionRes;
   } catch (error) {
     console.error(
       error,

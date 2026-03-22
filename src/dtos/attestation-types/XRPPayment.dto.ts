@@ -224,7 +224,10 @@ export class XRPPayment_RequestBody {
    * Address authorized to use the proof, where applicable.
    */
   @Validate(IsEVMAddress)
-  @Transform(({ value }) => typeof value === 'string' ? value.toLowerCase() : value)
+  @Transform(({ value }) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    typeof value === 'string' ? value.toLowerCase() : value,
+  )
   @ApiProperty({
     description: `Address authorized to use the proof, where applicable.`,
     example: '0x5d4beb38b6b71aaf6e30d0f9feb6e21a7ac40b3a',

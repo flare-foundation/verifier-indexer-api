@@ -21,12 +21,7 @@ export class XRPXRPPaymentNonexistenceVerifierService extends BaseVerifierServic
     protected configService: ConfigService<IConfig>,
     protected manager: EntityManager,
   ) {
-    super(
-      configService,
-      manager,
-      'XRPPaymentNonexistence',
-      VerifierType.XRP,
-    );
+    super(configService, manager, 'XRPPaymentNonexistence', VerifierType.XRP);
   }
 
   async verifyRequest(

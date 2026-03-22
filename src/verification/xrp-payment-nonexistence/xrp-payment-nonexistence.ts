@@ -35,7 +35,9 @@ export function responseXRPPaymentNonexistence(
   for (const dbTransaction of dbTransactions) {
     let fullTxData: XrpTransaction;
     try {
-      const parsedData: IXrpGetTransactionRes = JSON.parse(dbTransaction.getResponse()) as IXrpGetTransactionRes;
+      const parsedData: IXrpGetTransactionRes = JSON.parse(
+        dbTransaction.getResponse(),
+      ) as IXrpGetTransactionRes;
       fullTxData = new XrpTransaction(parsedData);
     } catch {
       return { status: AttestationResponseStatus.SYSTEM_FAILURE };

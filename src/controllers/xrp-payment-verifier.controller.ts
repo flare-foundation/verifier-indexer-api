@@ -13,9 +13,7 @@ export class XRPXRPPaymentVerifierController extends BaseControllerFactory<
   XRPPayment_Request,
   XRPPayment_Response
 >(XRPPayment_Request, XRPPayment_Response) {
-  constructor(
-    public readonly verifierService: XRPXRPPaymentVerifierService,
-  ) {
+  constructor(public readonly verifierService: XRPXRPPaymentVerifierService) {
     super();
   }
 }
