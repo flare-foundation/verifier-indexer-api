@@ -9,6 +9,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import helmet from 'helmet';
+import { IndexerConfig } from 'src/config/interfaces/chain-indexer';
+import { IConfig } from 'src/config/interfaces/common';
 import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
@@ -31,8 +33,6 @@ import { BTCConfirmedBlockHeightExistsVerifierService } from '../../../src/servi
 import { BtcExternalIndexerEngineService } from '../../../src/services/indexer-services/utxo-indexer.service';
 import { BTCPaymentVerifierService } from '../../../src/services/payment-verifier.service';
 import { BTCReferencedPaymentNonexistenceVerifierService } from '../../../src/services/referenced-payment-nonexistence-verifier.service';
-import { IndexerConfig } from 'src/config/interfaces/chain-indexer';
-import { IConfig } from 'src/config/interfaces/common';
 
 function getConfig() {
   const apiKeys = getApiKeys();
@@ -146,4 +146,13 @@ export function baseHooks() {
   });
 
   return app;
+}
+
+/**
+ * Returns truncated file path.
+ * @param file module filename
+ * @returns file path from `test/` on, separated by `'/'`
+ */
+export function getTestFile(myFile: string) {
+  return myFile.slice(myFile.replace(/\\/g, '/').indexOf('test/'));
 }

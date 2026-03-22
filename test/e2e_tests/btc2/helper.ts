@@ -17,6 +17,7 @@ import {
   getDatabaseEntities,
   VerifierType,
 } from '../../../src/config/configuration';
+import { IndexerConfig } from '../../../src/config/interfaces/chain-indexer';
 import { IConfig } from '../../../src/config/interfaces/common';
 import { BTCAddressValidityVerifierController } from '../../../src/controllers/address-validity-verifier.controller';
 import { BTCBalanceDecreasingTransactionVerifierController } from '../../../src/controllers/balance-decreasing-transaction-verifier.controller';
@@ -32,7 +33,6 @@ import { BTCConfirmedBlockHeightExistsVerifierService } from '../../../src/servi
 import { BtcExternalIndexerEngineService } from '../../../src/services/indexer-services/utxo-indexer.service';
 import { BTCPaymentVerifierService } from '../../../src/services/payment-verifier.service';
 import { BTCReferencedPaymentNonexistenceVerifierService } from '../../../src/services/referenced-payment-nonexistence-verifier.service';
-import { IndexerConfig } from '../../../src/config/interfaces/chain-indexer';
 
 function getConfig() {
   const apiKeys = getApiKeys();
@@ -144,4 +144,13 @@ export function baseHooks() {
   after(async () => {
     await app.close();
   });
+}
+
+/**
+ * Returns truncated file path.
+ * @param file module filename
+ * @returns file path from `test/` on, separated by `'/'`
+ */
+export function getTestFile(myFile: string) {
+  return myFile.slice(myFile.replace(/\\/g, '/').indexOf('test/'));
 }

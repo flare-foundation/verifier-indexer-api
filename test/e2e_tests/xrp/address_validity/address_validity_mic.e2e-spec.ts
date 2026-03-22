@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks } from '../helper';
+import { app, baseHooks, getTestFile} from '../helper';
 
-describe('/AddressValidity/mic', () => {
+describe(`/AddressValidity/mic (${getTestFile(__filename)})`, () => {
   baseHooks();
   it('should get abiEncodedRequest', async () => {
     const payload = {

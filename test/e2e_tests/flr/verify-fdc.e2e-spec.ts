@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks, api_key } from './helper';
+import { app, baseHooks, api_key, getTestFile} from './helper';
 import { validPayload } from './fixtures';
 
-describe('EVMTransaction/verifyFDC', () => {
+describe(`EVMTransaction/verifyFDC (${getTestFile(__filename)})`, () => {
   baseHooks();
 
   it('should verify FDC request', async () => {

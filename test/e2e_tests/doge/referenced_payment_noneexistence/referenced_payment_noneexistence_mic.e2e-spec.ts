@@ -1,9 +1,9 @@
 import { standardAddressHash } from '@flarenetwork/mcc';
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks } from '../helper';
+import { app, baseHooks, getTestFile} from '../helper';
 
-describe('/ReferencedPaymentNonexistence/mic', () => {
+describe(`/ReferencedPaymentNonexistence/mic (${getTestFile(__filename)})`, () => {
   baseHooks();
   it('should get abiEncodedRequest', async () => {
     // https://blockexplorer.one/dogecoin/testnet/tx/b93aefcbdf102891e81620632e3e3312130d36298569619386f5f40693940b74

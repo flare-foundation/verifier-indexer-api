@@ -1,9 +1,9 @@
 import { standardAddressHash } from '@flarenetwork/mcc';
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks } from '../helper';
+import { app, baseHooks, getTestFile} from '../helper';
 
-describe('/BalanceDecreasingTransaction/mic', () => {
+describe(`/BalanceDecreasingTransaction/mic (${getTestFile(__filename)})`, () => {
   baseHooks();
   it('should get valid status', async () => {
     const payload = {

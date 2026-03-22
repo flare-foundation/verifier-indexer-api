@@ -12,15 +12,15 @@ import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthModule } from '../../../src/auth/auth.module';
 import { AuthService } from '../../../src/auth/auth.service';
 import { VerifierType, getApiKeys } from '../../../src/config/configuration';
-import { Web2JsonVerifierController } from '../../../src/controllers/web-2-json-verifier.controller';
-import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
-import { Web2JsonVerifierService } from '../../../src/services/web2-json-verifier.service';
+import { web2JsonDefaultParams } from '../../../src/config/defaults/web2-json-config';
+import { IConfig } from '../../../src/config/interfaces/common';
 import {
   HTTP_METHOD,
   Web2JsonConfig,
 } from '../../../src/config/interfaces/web2-json';
-import { IConfig } from '../../../src/config/interfaces/common';
-import { web2JsonDefaultParams } from '../../../src/config/defaults/web2-json-config';
+import { Web2JsonVerifierController } from '../../../src/controllers/web-2-json-verifier.controller';
+import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
+import { Web2JsonVerifierService } from '../../../src/services/web2-json-verifier.service';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
 import { payload, payload2, payload3, payload4, payload5 } from './fixtures';
 
@@ -193,3 +193,12 @@ export const abiEncodedData =
   '0000000000000000000000000000000000000000000000000000000000000020' +
   '0000000000000000000000000000000000000000000000000000000000000012' +
   '64656c65637475732061757420617574656d0000000000000000000000000000';
+
+/**
+ * Returns truncated file path.
+ * @param file module filename
+ * @returns file path from `test/` on, separated by `'/'`
+ */
+export function getTestFile(myFile: string) {
+  return myFile.slice(myFile.replace(/\\/g, '/').indexOf('test/'));
+}

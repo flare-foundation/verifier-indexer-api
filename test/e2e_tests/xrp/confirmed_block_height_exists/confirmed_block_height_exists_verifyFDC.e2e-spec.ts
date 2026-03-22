@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks } from '../helper';
+import { app, baseHooks, getTestFile} from '../helper';
 
-describe('/ConfirmedBlockHeightExists/verifyFDC', () => {
+describe(`/ConfirmedBlockHeightExists/verifyFDC (${getTestFile(__filename)})`, () => {
   baseHooks();
   it('should get status', async () => {
     const payload = {

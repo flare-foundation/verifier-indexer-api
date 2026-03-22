@@ -1,9 +1,9 @@
 import { standardAddressHash } from '@flarenetwork/mcc';
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks } from '../helper';
+import { app, baseHooks, getTestFile } from '../helper';
 
-describe('BalanceDecreasingTransaction: payment reference is zero', () => {
+describe(`BalanceDecreasingTransaction: payment reference is zero (${getTestFile(__filename)})`, () => {
   baseHooks();
   it('Failed escrow create tx', async () => {
     const payload = {

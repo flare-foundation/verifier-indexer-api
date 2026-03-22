@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks } from '../helper';
+import { app, baseHooks, getTestFile} from '../helper';
 
-describe('/Payment/verifyFDC', () => {
+describe(`/Payment/verifyFDC (${getTestFile(__filename)})`, () => {
   baseHooks();
   it('should get abiEncodedResponse', async () => {
     const payload = {

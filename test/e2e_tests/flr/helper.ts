@@ -67,3 +67,12 @@ export function baseHooks() {
 // constants used in test
 const api_keys = getApiKeys();
 export const api_key = api_keys[0];
+
+/**
+ * Returns truncated file path.
+ * @param file module filename
+ * @returns file path from `test/` on, separated by `'/'`
+ */
+export function getTestFile(myFile: string) {
+    return myFile.slice(myFile.replace(/\\/g, "/").indexOf("test/"));
+}

@@ -8,11 +8,12 @@ import {
   app,
   attResponse,
   baseHooks,
+  getTestFile,
 } from './helper';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 import { payload, payload2, payload3, payload4, payload5 } from './fixtures';
 
-describe('/Web2Json/prepareResponse', () => {
+describe(`/Web2Json/prepareResponse (${getTestFile(__filename)})`, () => {
   baseHooks();
   it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
@@ -324,7 +325,7 @@ describe('/Web2Json/prepareResponse', () => {
   });
 });
 
-describe('/Web2Json/mic', () => {
+describe(`/Web2Json/mic (${getTestFile(__filename)})`, () => {
   baseHooks();
   it('Should get right responseBody', async () => {
     const response = await request(app.getHttpServer())
