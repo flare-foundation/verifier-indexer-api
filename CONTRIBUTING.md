@@ -78,6 +78,15 @@ pnpm test download
 >
 > Currently, all snapshots are from testnets.
 
+| Database | Network | Starting Block | End Block |
+|----------|---------|----------------|-----------|
+| db_btc_testnet | BTC Testnet | 3490151 | 3490156 |
+| db_btc2_testnet | BTC Testnet | 75487 | 75495 |
+| db_doge_testnet | DOGE Testnet | 6724525 | 6724602 |
+| db_xrp_testnet | XRP Testnet | 2882019 | 2883195 |
+| db_xrp2_testnet | XRP Testnet | 10172243 | 10172442 |
+
+
 To run all tests across all sources or check code coverage, use the following commands:
 
 ```bash
