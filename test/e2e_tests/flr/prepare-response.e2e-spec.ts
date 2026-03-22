@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks, api_key, getTestFile} from './helper';
+import { app, baseHooks, api_key, getTestFile } from './helper';
 import { flrEncodedRequest, flrRequestNoMic, validPayload } from './fixtures';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 

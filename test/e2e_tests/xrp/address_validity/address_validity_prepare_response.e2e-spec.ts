@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks, getTestFile} from '../helper';
+import { app, baseHooks, getTestFile } from '../helper';
 
 describe(`/AddressValidity/prepareResponse (${getTestFile(__filename)})`, () => {
   baseHooks();

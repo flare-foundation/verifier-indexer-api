@@ -1,7 +1,7 @@
 import { standardAddressHash } from '@flarenetwork/mcc';
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { app, baseHooks, getTestFile} from '../helper';
+import { app, baseHooks, getTestFile } from '../helper';
 
 describe(`/ReferencedPaymentNonexistence/mic (${getTestFile(__filename)})`, () => {
   baseHooks();

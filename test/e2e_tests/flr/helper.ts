@@ -50,7 +50,9 @@ export let app: INestApplication;
 
 export function baseHooks() {
   beforeEach(async () => {
-    app = await NestFactory.create(FLRVerifierServerTestModule, { logger: false });
+    app = await NestFactory.create(FLRVerifierServerTestModule, {
+      logger: false,
+    });
 
     app.use(helmet());
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -74,5 +76,5 @@ export const api_key = api_keys[0];
  * @returns file path from `test/` on, separated by `'/'`
  */
 export function getTestFile(myFile: string) {
-    return myFile.slice(myFile.replace(/\\/g, "/").indexOf("test/"));
+  return myFile.slice(myFile.replace(/\\/g, '/').indexOf('test/'));
 }

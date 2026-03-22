@@ -89,7 +89,9 @@ export let app: INestApplication;
 
 export function baseHooks() {
   before(async () => {
-    app = await NestFactory.create(Web2JsonVerifierServerModule, { logger: false });
+    app = await NestFactory.create(Web2JsonVerifierServerModule, {
+      logger: false,
+    });
 
     app.use(helmet());
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
