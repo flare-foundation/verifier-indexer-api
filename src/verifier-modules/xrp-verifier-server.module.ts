@@ -18,6 +18,10 @@ import { XRPConfirmedBlockHeightExistsVerifierService } from '../services/confir
 import { XrpExternalIndexerEngineService } from '../services/indexer-services/xrp-indexer.service';
 import { XRPPaymentVerifierService } from '../services/payment-verifier.service';
 import { XRPReferencedPaymentNonexistenceVerifierService } from '../services/referenced-payment-nonexistence-verifier.service';
+import { XRPXRPPaymentVerifierController } from '../controllers/xrp-payment-verifier.controller';
+import { XRPXRPPaymentNonexistenceVerifierController } from '../controllers/xrp-payment-nonexistence-verifier.controller';
+import { XRPXRPPaymentVerifierService } from '../services/xrp-payment-verifier.service';
+import { XRPXRPPaymentNonexistenceVerifierService } from '../services/xrp-payment-nonexistence-verifier.service';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 import { IndexerConfig } from 'src/config/interfaces/chain-indexer';
 import { IConfig } from 'src/config/interfaces/common';
@@ -51,6 +55,8 @@ import { IConfig } from 'src/config/interfaces/common';
     XRPConfirmedBlockHeightExistsVerifierController,
     XRPPaymentVerifierController,
     XRPReferencedPaymentNonexistenceVerifierController,
+    XRPXRPPaymentVerifierController,
+    XRPXRPPaymentNonexistenceVerifierController,
   ],
   providers: [
     ApiKeyStrategy,
@@ -61,6 +67,8 @@ import { IConfig } from 'src/config/interfaces/common';
     XRPConfirmedBlockHeightExistsVerifierService,
     XRPPaymentVerifierService,
     XRPReferencedPaymentNonexistenceVerifierService,
+    XRPXRPPaymentVerifierService,
+    XRPXRPPaymentNonexistenceVerifierService,
   ],
 })
 export class XRPVerifierServerModule implements NestModule {

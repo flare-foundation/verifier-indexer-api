@@ -184,7 +184,9 @@ export type AttestationTypeOptions =
   | 'Payment'
   | 'ReferencedPaymentNonexistence'
   | 'Web2Json'
-  | 'EVMTransaction';
+  | 'EVMTransaction'
+  | 'XRPPayment'
+  | 'XRPPaymentNonexistence';
 
 export enum VerifierType {
   BTC = 0,

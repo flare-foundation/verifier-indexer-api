@@ -71,6 +71,12 @@ export class DBXrpTransaction {
   @Column()
   is_native_payment: boolean;
 
+  @Column({ type: 'varchar', length: 64, nullable: true, default: null })
+  first_memo_data_hash: string;
+
+  @Column({ nullable: true, default: null })
+  destination_tag: number;
+
   @Column()
   response: string;
 
@@ -128,6 +134,8 @@ export class DBXrpTransaction {
       isNativePayment: this.is_native_payment,
       transactionType: this.transactionType,
       response: '',
+      firstMemoDataHash: this.first_memo_data_hash ?? undefined,
+      destinationTag: this.destination_tag ?? undefined,
     };
     if (returnResponse) {
       return {
