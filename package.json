@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.1",
-    "@flarenetwork/js-flare-common": "0.0.2",
-    "@flarenetwork/mcc": "4.5.0-rc.0",
+    "@flarenetwork/js-flare-common": "0.0.3",
+    "@flarenetwork/mcc": "4.5.0-rc.1",
     "@jq-tools/jq": "^0.0.11",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",

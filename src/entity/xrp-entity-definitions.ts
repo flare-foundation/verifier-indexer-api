@@ -60,25 +60,32 @@ export class DBXrpTransaction {
   @Column()
   timestamp: number;
 
-  @Column({
-    nullable: true,
-  })
+  @Column({ nullable: true })
   payment_reference: string;
 
   @Column()
-  source_addresses_root: string;
+  response: string;
 
   @Column()
   is_native_payment: boolean;
+
+  @Column({ nullable: true })
+  source_addresses_root: string;
+
+  @Column({ default: 0 })
+  sequence: number;
+
+  @Column({ default: 0 })
+  ticket_sequence: number;
+
+  @Column({ default: '' })
+  source_address: string;
 
   @Column({ type: 'varchar', length: 64, nullable: true, default: null })
   first_memo_data_hash: string;
 
   @Column({ nullable: true, default: null })
   destination_tag: number;
-
-  @Column()
-  response: string;
 
   get transactionType(): string {
     return 'full_payment'; // TODO: This classification must be added to DB (same as MCC)

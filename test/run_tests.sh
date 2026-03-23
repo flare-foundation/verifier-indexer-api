@@ -48,8 +48,12 @@ _patch_xrp_transactions_schema() {
 
   $DOCKER_CMD psql -h $DB_HOST -U user -d "$DB_NAME" -v ON_ERROR_STOP=1 -c "
     ALTER TABLE transactions
+      ADD COLUMN IF NOT EXISTS sequence bigint DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS ticket_sequence bigint DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS source_address varchar(64) DEFAULT '',
       ADD COLUMN IF NOT EXISTS first_memo_data_hash varchar(64) DEFAULT NULL,
       ADD COLUMN IF NOT EXISTS destination_tag integer DEFAULT NULL;
+    CREATE INDEX IF NOT EXISTS idx_source_sequence ON transactions (source_address, sequence);
     CREATE INDEX IF NOT EXISTS transactions_first_memo_data_hash_idx ON transactions (first_memo_data_hash);
     CREATE INDEX IF NOT EXISTS transactions_destination_tag_idx ON transactions (destination_tag);
   "

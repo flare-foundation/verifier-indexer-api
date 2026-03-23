@@ -12,11 +12,11 @@ importers:
         specifier: ^7.1.1
         version: 7.1.1
       '@flarenetwork/js-flare-common':
-        specifier: 0.0.2
-        version: 0.0.2
+        specifier: 0.0.3
+        version: 0.0.3
       '@flarenetwork/mcc':
-        specifier: 4.5.0-rc.0
-        version: 4.5.0-rc.0
+        specifier: 4.5.0-rc.1
+        version: 4.5.0-rc.1
       '@jq-tools/jq':
         specifier: ^0.0.11
         version: 0.0.11(tslib@2.8.1)
@@ -319,11 +319,11 @@ packages:
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@flarenetwork/js-flare-common@0.0.2':
-    resolution: {integrity: sha512-xmNt7sDRtySYZ7/dmTC6oUy0GGTTvCrY2wtKzJ7jlv7iqQFAdYUmGKcdKAaLzHoWvlEL4Xpz4dmKc+wds46ntw==}
+  '@flarenetwork/js-flare-common@0.0.3':
+    resolution: {integrity: sha512-2wheHGlStK1fbeq+NBwb4m+VeYX08WPjPRUaQ6OFjb6FrMr/zEteTa3KVniw7EYcMNa4+Q7b7faBoknSoz/pAw==}
 
-  '@flarenetwork/mcc@4.5.0-rc.0':
-    resolution: {integrity: sha512-eQMqSLxFMAjkKGbSGcvuYAYNxQ5moxozDHxXHw56d9ai4RtkCZT2vfcRbmqdTeXqBKi27JVGZKVSMYXjNaQyZA==}
+  '@flarenetwork/mcc@4.5.0-rc.1':
+    resolution: {integrity: sha512-BQ4oQqTQyIHdoR9t3g88ThUllZN+NWK1rG2WrzwNT+C8hDbYJUl3OZjgaqbWPM/6h641iUJcv0csuJyXPIc8NQ==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -3728,15 +3728,16 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@flarenetwork/js-flare-common@0.0.2':
+  '@flarenetwork/js-flare-common@0.0.3':
     dependencies:
       ethers: 6.16.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@flarenetwork/mcc@4.5.0-rc.0':
+  '@flarenetwork/mcc@4.5.0-rc.1':
     dependencies:
+      '@flarenetwork/js-flare-common': 0.0.3
       axios: 1.8.4
       axios-retry: 3.9.1
       ethers: 6.16.0
