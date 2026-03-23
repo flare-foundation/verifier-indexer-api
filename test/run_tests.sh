@@ -43,17 +43,36 @@ _wait_for_pg_ready() {
   done
 }
 
+_patch_xrp_transactions_schema() {
+  DB_NAME=$1
+
+  $DOCKER_CMD psql -h $DB_HOST -U user -d "$DB_NAME" -v ON_ERROR_STOP=1 -c "
+    ALTER TABLE transactions
+      ADD COLUMN IF NOT EXISTS first_memo_data_hash varchar(64) DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS destination_tag integer DEFAULT NULL;
+    CREATE INDEX IF NOT EXISTS transactions_first_memo_data_hash_idx ON transactions (first_memo_data_hash);
+    CREATE INDEX IF NOT EXISTS transactions_destination_tag_idx ON transactions (destination_tag);
+  "
+  _wait_for_pg_ready
+}
+
 _make_db(){
   VERIFIER_TYPE=$1
 
   if $DOCKER_CMD psql -h $DB_HOST -U user -lqt | cut -d "|" -f 1 | tr -d ' ' | grep -qw "^db${VERIFIER_TYPE}$"; then
-    $DOCKER_CMD dropdb -h $DB_HOST -U user db${VERIFIER_TYPE}
+    $DOCKER_CMD dropdb -h $DB_HOST -U user "db${VERIFIER_TYPE}"
     _wait_for_pg_ready
   fi
 
-  $DOCKER_CMD createdb -h $DB_HOST -U user -E utf8 -T template0 db${VERIFIER_TYPE}
+  $DOCKER_CMD createdb -h $DB_HOST -U user -E utf8 -T template0 "db${VERIFIER_TYPE}"
   _wait_for_pg_ready
-  $DOCKER_CMD pg_restore -h $DB_HOST --no-owner --role=user -U user --dbname=db${VERIFIER_TYPE} /tmp/dbdump${VERIFIER_TYPE}
+  $DOCKER_CMD pg_restore -h $DB_HOST --no-owner --role=user -U user --dbname="db${VERIFIER_TYPE}" "/tmp/dbdump${VERIFIER_TYPE}"
+  _wait_for_pg_ready
+
+  if [ "$VERIFIER_TYPE" == "xrp" ] || [ "$VERIFIER_TYPE" == "xrp2" ]; then
+    _patch_xrp_transactions_schema "db${VERIFIER_TYPE}"
+  fi
+
   _wait_for_pg_ready
 }
 
@@ -85,6 +104,10 @@ make_db(){
     _wait_for_pg_ready
 
     _make_db ""
+
+    if [ "$VERIFIER_TYPE" == "xrp" ] || [ "$VERIFIER_TYPE" == "xrp2" ]; then
+      _patch_xrp_transactions_schema "db"
+    fi
   fi
 }
 
