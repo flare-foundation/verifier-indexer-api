@@ -9,7 +9,9 @@ import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 
-export abstract class IIndexerEngineService {
+export abstract class IIndexerEngineService<
+  TQuery extends QueryTransaction = QueryTransaction,
+> {
   public abstract getStateSetting(): Promise<ApiDBState | null>;
 
   public abstract getIndexerServiceVersion(): Promise<ApiDBVersion>;
@@ -88,7 +90,7 @@ export abstract class IIndexerEngineService {
   public abstract getBlock(blockHash: string): Promise<ApiDBBlock>;
 
   public abstract listTransaction(
-    props: QueryTransaction,
+    props: TQuery,
   ): Promise<PaginatedList<ApiDBTransaction>>;
 
   public abstract getTransaction(

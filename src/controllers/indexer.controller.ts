@@ -17,6 +17,7 @@ import { QueryBlock, QueryBlockDetail } from '../dtos/indexer/QueryBlock.dto';
 import {
   QueryTransaction,
   QueryTransactionDetail,
+  QueryXrpTransaction,
 } from '../dtos/indexer/QueryTransaction.dto';
 import { IIndexerEngineService } from '../services/common/base-indexer-engine-service';
 import {
@@ -36,8 +37,10 @@ import {
 
 @UseGuards(ApiKeyAuthGuard)
 @ApiSecurity('X-API-KEY')
-abstract class BaseIndexerController {
-  protected abstract indexerEngine: IIndexerEngineService;
+abstract class BaseIndexerController<
+  TQuery extends QueryTransaction = QueryTransaction,
+> {
+  protected abstract indexerEngine: IIndexerEngineService<TQuery>;
 
   /**
    * Gets the state entries from the indexer database.
@@ -134,7 +137,7 @@ abstract class BaseIndexerController {
   @Get('transaction')
   @ApiResponseWrapperPaginated(ApiDBTransaction)
   public async transactionsList(
-    @Query() query: QueryTransaction,
+    @Query() query: TQuery,
   ): Promise<ApiResponseWrapper<PaginatedList<ApiDBTransaction>>> {
     return handleApiResponse(this.indexerEngine.listTransaction(query));
   }
@@ -188,7 +191,7 @@ export class DOGEIndexerController extends BaseIndexerController {
 
 @ApiTags('Indexer')
 @Controller('api/indexer')
-export class XrpIndexerController extends BaseIndexerController {
+export class XrpIndexerController extends BaseIndexerController<QueryXrpTransaction> {
   constructor(protected indexerEngine: XrpExternalIndexerEngineService) {
     super();
   }

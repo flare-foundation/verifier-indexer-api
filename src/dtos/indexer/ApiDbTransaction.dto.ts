@@ -45,14 +45,4 @@ export class ApiDBTransaction {
    * Transaction type (depends on chain)
    */
   transactionType: string;
-
-  /**
-   * Hash of the first memo data field (XRP only).
-   */
-  firstMemoDataHash?: string;
-
-  /**
-   * Destination tag (XRP only).
-   */
-  destinationTag?: number;
 }

@@ -49,6 +49,31 @@ export class QueryTransaction {
 }
 
 /**
+ * Query parameters for listing XRP transactions with additional filters.
+ */
+export class QueryXrpTransaction extends QueryTransaction {
+  /**
+   * Filter by source address
+   */
+  @IsOptional()
+  sourceAddress?: string;
+
+  /**
+   * Filter by destination tag
+   */
+  @IsInt()
+  @Type(() => Number)
+  @IsOptional()
+  destinationTag?: number;
+
+  /**
+   * Filter by first memo data hash (0x-prefixed lowercase hex string representing 32-bytes)
+   */
+  @IsOptional()
+  firstMemoDataHash?: string;
+}
+
+/**
  * Query parameters for detail transactions from indexer database.
  */
 export class QueryTransactionDetail {

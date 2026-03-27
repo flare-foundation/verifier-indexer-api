@@ -7,7 +7,7 @@ import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
 import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
 import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
-import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
+import { QueryXrpTransaction } from '../../dtos/indexer/QueryTransaction.dto';
 import {
   DBXrpIndexerBlock,
   DBXrpIndexerVersion,
@@ -24,7 +24,7 @@ import { IConfig } from 'src/config/interfaces/common';
 import { IndexerConfig } from '../../config/interfaces/chain-indexer';
 
 @Injectable()
-export class XrpExternalIndexerEngineService extends IIndexerEngineService {
+export class XrpExternalIndexerEngineService extends IIndexerEngineService<QueryXrpTransaction> {
   // External utxo indexers specific tables
   private transactionTable: IDBXrpTransaction;
   private blockTable: IDBXrpIndexerBlock;
@@ -159,14 +159,21 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     throw new Error('Block not found');
   }
 
-  public async listTransaction({
-    from,
-    to,
-    paymentReference,
-    limit,
-    offset,
-    returnResponse,
-  }: QueryTransaction): Promise<PaginatedList<ApiDBTransaction>> {
+  public async listTransaction(
+    query: QueryXrpTransaction,
+  ): Promise<PaginatedList<ApiDBTransaction>> {
+    const {
+      from,
+      to,
+      paymentReference,
+      limit,
+      offset,
+      returnResponse,
+      sourceAddress,
+      destinationTag,
+      firstMemoDataHash,
+    } = query;
+
     // TODO: add pagination
     if (paymentReference) {
       if (!/^0x[0-9a-f]{64}$/i.test(paymentReference)) {
@@ -178,28 +185,44 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService {
     theLimit = Math.min(theLimit, this.indexerServerPageLimit);
     const theOffset = offset ?? 0;
 
-    let query = this.manager.createQueryBuilder(
+    let qb = this.manager.createQueryBuilder(
       this.transactionTable,
       'transaction',
     );
     if (from !== undefined) {
-      query = query.andWhere('transaction.block_number >= :from', { from });
+      qb = qb.andWhere('transaction.block_number >= :from', { from });
     }
     if (to !== undefined) {
-      query = query.andWhere('transaction.block_number <= :to', { to });
+      qb = qb.andWhere('transaction.block_number <= :to', { to });
     }
     if (paymentReference) {
-      query = query.andWhere('transaction.payment_reference = :reference', {
+      qb = qb.andWhere('transaction.payment_reference = :reference', {
         reference: unPrefix0x(paymentReference),
       });
     }
-    query = query
+    if (sourceAddress !== undefined) {
+      qb = qb.andWhere('transaction.source_address = :sourceAddress', {
+        sourceAddress,
+      });
+    }
+    if (destinationTag !== undefined) {
+      qb = qb.andWhere('transaction.destination_tag = :destinationTag', {
+        destinationTag,
+      });
+    }
+    if (firstMemoDataHash !== undefined) {
+      qb = qb.andWhere(
+        'transaction.first_memo_data_hash = :firstMemoDataHash',
+        { firstMemoDataHash: unPrefix0x(firstMemoDataHash) },
+      );
+    }
+    qb = qb
       .orderBy('transaction.block_number', 'ASC')
       .addOrderBy('transaction.hash', 'ASC')
       .limit(theLimit)
       .offset(theOffset);
 
-    const results = await query.getMany();
+    const results = await qb.getMany();
     const items = results.map((res) => {
       return res.toApiDBTransaction(returnResponse);
     });

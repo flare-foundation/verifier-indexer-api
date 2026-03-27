@@ -141,8 +141,6 @@ export class DBXrpTransaction {
       isNativePayment: this.is_native_payment,
       transactionType: this.transactionType,
       response: '',
-      firstMemoDataHash: this.first_memo_data_hash ?? undefined,
-      destinationTag: this.destination_tag ?? undefined,
     };
     if (returnResponse) {
       return {
