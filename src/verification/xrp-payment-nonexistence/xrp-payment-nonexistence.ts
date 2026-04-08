@@ -88,10 +88,9 @@ export function responseXRPPaymentNonexistence(
 
     // Check firstMemoDataHash if requested
     if (request.requestBody.checkFirstMemoData) {
-      const memoData = paymentSummary.response.hasMemoData
-        ? paymentSummary.response.memoData
+      const memoDataHash = paymentSummary.response.hasMemoData
+        ? standardAddressHash(prefix0x(paymentSummary.response.memoData))
         : '';
-      const memoDataHash = standardAddressHash(prefix0x(memoData));
       if (
         unPrefix0x(memoDataHash).toLowerCase() !==
         unPrefix0x(request.requestBody.firstMemoDataHash).toLowerCase()
