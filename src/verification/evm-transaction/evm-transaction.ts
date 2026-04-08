@@ -50,7 +50,7 @@ export async function verifyEVMTransactionRequest(
   if (request.requestBody.listEvents) {
     if (
       request.requestBody.logIndices.length > 0 &&
-      50 > request.requestBody.logIndices.length
+      request.requestBody.logIndices.length <= 50
     ) {
       if (txReceipt.logs.length <= 0) {
         return {
