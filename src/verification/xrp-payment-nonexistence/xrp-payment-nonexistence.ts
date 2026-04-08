@@ -1,6 +1,7 @@
 import {
   IXrpGetTransactionRes,
   PaymentSummaryStatus,
+  prefix0x,
   standardAddressHash,
   TransactionSuccessStatus,
   unPrefix0x,
@@ -90,7 +91,7 @@ export function responseXRPPaymentNonexistence(
       const memoData = paymentSummary.response.hasMemoData
         ? paymentSummary.response.memoData
         : '';
-      const memoDataHash = standardAddressHash(memoData);
+      const memoDataHash = standardAddressHash(prefix0x(memoData));
       if (
         unPrefix0x(memoDataHash).toLowerCase() !==
         unPrefix0x(request.requestBody.firstMemoDataHash).toLowerCase()
