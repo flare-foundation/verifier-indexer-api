@@ -105,9 +105,9 @@ export function responseXRPPayment(
       intendedReceivedAmount:
         paymentSummary.response.intendedReceivingAmount.toString(),
       hasMemoData: paymentSummary.response.hasMemoData,
-      firstMemoData: paymentSummary.response.hasMemoData
-        ? '0x' + paymentSummary.response.memoData
-        : '',
+      firstMemoData: '0x' + (paymentSummary.response.hasMemoData
+        ? paymentSummary.response.memoData
+        : '').toLowerCase(),
       hasDestinationTag: paymentSummary.response.hasDestinationTag,
       destinationTag: paymentSummary.response.hasDestinationTag
         ? paymentSummary.response.destinationTag.toString()
