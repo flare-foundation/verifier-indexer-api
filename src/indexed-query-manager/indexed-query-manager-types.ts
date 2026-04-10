@@ -46,6 +46,8 @@ export interface TransactionQueryParams {
   transactionId?: string;
   paymentReference?: string;
   sourceAddressRoot?: string;
+  firstMemoDataHash?: string;
+  destinationTag?: number;
 }
 
 export interface BlockQueryParams {
@@ -93,6 +95,8 @@ export interface ReferencedTransactionsQueryRequest {
   deadlineBlockTimestamp: number;
   paymentReference: string; // payment reference
   sourceAddressRoot?: string; // source address root
+  firstMemoDataHash?: string; // hash of the first memo data field of the transaction
+  destinationTag?: number; // destination tag of the transaction (only for XRP)
 }
 
 export type ReferencedTransactionsQueryStatusType =

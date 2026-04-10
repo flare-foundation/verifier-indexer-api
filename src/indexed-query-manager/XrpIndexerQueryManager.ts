@@ -93,6 +93,19 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
       });
     }
 
+    if (params.destinationTag !== undefined) {
+      query = query.andWhere('transaction.destination_tag = :destinationTag', {
+        destinationTag: params.destinationTag,
+      });
+    }
+
+    if (params.firstMemoDataHash !== undefined) {
+      query = query.andWhere(
+        'transaction.first_memo_data_hash = :firstMemoDataHash',
+        { firstMemoDataHash: params.firstMemoDataHash.toLowerCase() },
+      );
+    }
+
     const res = await query.getMany();
 
     let lowerQueryWindowBlock: BlockResult;

@@ -182,6 +182,8 @@ export abstract class IIndexedQueryManager {
       paymentReference: params.paymentReference,
       chainType: this.settings.chainType,
       sourceAddressRoot: params.sourceAddressRoot,
+      firstMemoDataHash: params.firstMemoDataHash,
+      destinationTag: params.destinationTag,
     });
 
     // Too small query window

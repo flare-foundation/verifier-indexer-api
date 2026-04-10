@@ -23,6 +23,7 @@ import {
   VerificationResponse,
   verifyWorkflowForReferencedTransactions,
 } from '../response-status';
+import { Logger } from '@nestjs/common';
 
 /**
  * Auxiliary function for assembling attestation response for 'XRPPaymentNonexistence' attestation type.
@@ -33,6 +34,7 @@ export function responseXRPPaymentNonexistence(
   lowerBoundaryBlock: BlockResult,
   request: XRPPaymentNonexistence_Request,
 ) {
+  Logger.debug("Processing transactions to prove non existence " + dbTransactions.length);
   for (const dbTransaction of dbTransactions) {
     let fullTxData: XrpTransaction;
     try {
@@ -172,6 +174,12 @@ export async function verifyXRPPaymentNonexistence(
       BigInt(request.requestBody.deadlineTimestamp).toString(),
     ),
     paymentReference: undefined,
+    firstMemoDataHash: request.requestBody.checkFirstMemoData
+      ? unPrefix0x(request.requestBody.firstMemoDataHash)
+      : undefined,
+    destinationTag: request.requestBody.checkDestinationTag
+      ? parseInt(BigInt(request.requestBody.destinationTag).toString())
+      : undefined,
   });
 
   const status = verifyWorkflowForReferencedTransactions(
