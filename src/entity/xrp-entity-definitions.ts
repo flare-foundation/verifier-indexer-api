@@ -1,6 +1,6 @@
 // External Postgres Database Entities (XRP) (read only)
 
-import { IXrpGetTransactionRes } from '@flarenetwork/mcc';
+import { IXrpGetTransactionRes, XRP_UTD } from '@flarenetwork/mcc';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ApiDBBlock } from '../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBTransaction } from '../dtos/indexer/ApiDbTransaction.dto';
@@ -106,7 +106,7 @@ export class DBXrpTransaction {
         ledger_index: this.block_number,
         meta: txData.metaData,
         validated: true,
-        date: this.timestamp,
+        date: this.timestamp - XRP_UTD,
       } as IXrpGetTransactionRes['result'],
       id: '',
       type: '',
