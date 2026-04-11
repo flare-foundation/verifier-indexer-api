@@ -95,7 +95,7 @@ export function extractVerifierType(): VerifierType {
       return VerifierType.HYPE;
     default:
       throw new Error(
-        `Wrong verifier type: '${String(process.env.VERIFIER_TYPE)}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eth' | 'sgb' | 'flr' | 'base' | 'hype'`,
+        `Wrong verifier type: '${verifierType}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eth' | 'sgb' | 'flr' | 'base' | 'hype'`,
       );
   }
 }
