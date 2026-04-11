@@ -34,7 +34,9 @@ export function responseXRPPaymentNonexistence(
   lowerBoundaryBlock: BlockResult,
   request: XRPPaymentNonexistence_Request,
 ) {
-  Logger.debug("Processing transactions to prove non existence " + dbTransactions.length);
+  Logger.debug(
+    'Processing transactions to prove non existence ' + dbTransactions.length,
+  );
   for (const dbTransaction of dbTransactions) {
     let fullTxData: XrpTransaction;
     try {
