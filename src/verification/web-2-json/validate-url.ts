@@ -1,4 +1,5 @@
 import * as dns from 'dns';
+import * as net from 'net';
 import {
   AllowedMethods,
   Endpoint,
@@ -19,19 +20,9 @@ export interface CheckedUrl {
 
 const DNS_LOOKUP_TIMEOUT_MS = 2_000;
 
-// list of private IP address patterns to check against
-const ipPrivate = [
-  /^127\./, // 127.0.0.0 – 127.255.255.255 loopback
-  /^0\.0\.0\.0$/,
-  /^169\.254\./, // 169.254.0.0 – 169.254.255.255 link-local
-  /^192\.168\./, // 192.168.0.0 – 192.168.255.255
-  /^10\./, // 10.0.0.0 – 10.255.255.255
-  /^172\.(1[6-9]|2[0-9]|3[0-1])\./, // 172.16.0.0 – 172.31.255.255
-  /^::1$/, // loopback
-  /^fc00:/,
-  /^fd00:/,
-  /^fe80:/, // link-local
-];
+const NON_PUBLIC_IPV4_BLOCKLIST = createNonPublicIPv4Blocklist();
+const NON_PUBLIC_IPV6_BLOCKLIST = createNonPublicIPv6Blocklist();
+const PUBLIC_IPV6_ALLOWLIST = createPublicIPv6Allowlist();
 
 /**
  * Parses and sanitizes the input URL. Rejects URLs that exceed the allowed length
@@ -98,11 +89,11 @@ export async function validateUrl(parsedUrl: URL): Promise<CheckedUrl> {
     // Perform DNS resolution and check for private IP addresses
     try {
       const addresses = await dnsLookupWithTimeout(parsedUrl.hostname);
-      for (const { address } of addresses) {
-        // Check if IP is private
-        if (ipPrivate.some((regex) => regex.test(address))) {
+      for (const { address, family } of addresses) {
+        if (!isPublicAddress(address, family)) {
+          const normalizedAddress = normalizeIpAddress(address);
           throw new PrivateIPError(
-            `Blocked IP: ${address} from ${parsedUrl.hostname}`,
+            `Blocked IP: ${normalizedAddress} from ${parsedUrl.hostname}`,
           );
         }
       }
@@ -155,9 +146,10 @@ export function validateHttpMethod(
 async function dnsLookupWithTimeout(
   hostname: string,
 ): Promise<dns.LookupAddress[]> {
+  const hostnameToLookup = normalizeHostnameForDnsLookup(hostname);
   try {
     return await withTimeout(
-      dns.promises.lookup(hostname, { all: true }),
+      dns.promises.lookup(hostnameToLookup, { all: true }),
       DNS_LOOKUP_TIMEOUT_MS,
     );
   } catch (error) {
@@ -169,11 +161,94 @@ async function dnsLookupWithTimeout(
           (error as { code: string }).code === 'EAI_AGAIN')) ||
         error.message.includes('timed out after'))
     ) {
-      throw new DNSTimeoutError(`DNS query timed out for ${hostname}`);
+      throw new DNSTimeoutError(`DNS query timed out for ${hostnameToLookup}`);
     }
 
     throw error;
   }
+}
+
+function createNonPublicIPv4Blocklist(): net.BlockList {
+  const blocklist = new net.BlockList();
+  blocklist.addSubnet('0.0.0.0', 8, 'ipv4'); // "This network"
+  blocklist.addSubnet('10.0.0.0', 8, 'ipv4'); // RFC1918 private
+  blocklist.addSubnet('100.64.0.0', 10, 'ipv4'); // RFC6598 CGNAT
+  blocklist.addSubnet('127.0.0.0', 8, 'ipv4'); // loopback
+  blocklist.addSubnet('169.254.0.0', 16, 'ipv4'); // link-local
+  blocklist.addSubnet('172.16.0.0', 12, 'ipv4'); // RFC1918 private
+  blocklist.addSubnet('192.0.0.0', 24, 'ipv4'); // IETF protocol assignments
+  blocklist.addSubnet('192.0.2.0', 24, 'ipv4'); // TEST-NET-1
+  blocklist.addSubnet('192.88.99.0', 24, 'ipv4'); // 6to4 relay anycast
+  blocklist.addSubnet('192.168.0.0', 16, 'ipv4'); // RFC1918 private
+  blocklist.addSubnet('198.18.0.0', 15, 'ipv4'); // benchmark testing
+  blocklist.addSubnet('198.51.100.0', 24, 'ipv4'); // TEST-NET-2
+  blocklist.addSubnet('203.0.113.0', 24, 'ipv4'); // TEST-NET-3
+  blocklist.addSubnet('224.0.0.0', 4, 'ipv4'); // multicast
+  blocklist.addSubnet('240.0.0.0', 4, 'ipv4'); // reserved / broadcast
+  return blocklist;
+}
+
+function createNonPublicIPv6Blocklist(): net.BlockList {
+  const blocklist = new net.BlockList();
+  blocklist.addAddress('::', 'ipv6'); // unspecified
+  blocklist.addAddress('::1', 'ipv6'); // loopback
+  blocklist.addSubnet('::ffff:0:0', 96, 'ipv6'); // IPv4-mapped IPv6
+  blocklist.addSubnet('2001::', 23, 'ipv6'); // IANA special purpose
+  blocklist.addSubnet('2001:db8::', 32, 'ipv6'); // documentation
+  blocklist.addSubnet('2002::', 16, 'ipv6'); // 6to4
+  blocklist.addSubnet('3fff::', 20, 'ipv6'); // documentation
+  blocklist.addSubnet('fc00::', 7, 'ipv6'); // unique local
+  blocklist.addSubnet('fe80::', 10, 'ipv6'); // link-local
+  blocklist.addSubnet('ff00::', 8, 'ipv6'); // multicast
+  return blocklist;
+}
+
+function createPublicIPv6Allowlist(): net.BlockList {
+  const blocklist = new net.BlockList();
+  blocklist.addSubnet('2000::', 3, 'ipv6'); // global unicast space
+  return blocklist;
+}
+
+function normalizeIpAddress(address: string): string {
+  const bracketStripped =
+    address.startsWith('[') && address.endsWith(']')
+      ? address.slice(1, -1)
+      : address;
+  const zoneIndex = bracketStripped.indexOf('%');
+  return zoneIndex === -1
+    ? bracketStripped
+    : bracketStripped.slice(0, zoneIndex);
+}
+
+function isPublicIPv4(address: string): boolean {
+  return !NON_PUBLIC_IPV4_BLOCKLIST.check(address, 'ipv4');
+}
+
+function isPublicIPv6(address: string): boolean {
+  return (
+    PUBLIC_IPV6_ALLOWLIST.check(address, 'ipv6') &&
+    !NON_PUBLIC_IPV6_BLOCKLIST.check(address, 'ipv6')
+  );
+}
+
+function isPublicAddress(address: string, family?: number): boolean {
+  const normalizedAddress = normalizeIpAddress(address);
+  const detectedFamily =
+    family === 4 || family === 6 ? family : net.isIP(normalizedAddress);
+
+  if (detectedFamily === 4) {
+    return isPublicIPv4(normalizedAddress);
+  }
+  if (detectedFamily === 6) {
+    return isPublicIPv6(normalizedAddress);
+  }
+  return false;
+}
+
+function normalizeHostnameForDnsLookup(hostname: string): string {
+  return hostname.startsWith('[') && hostname.endsWith(']')
+    ? hostname.slice(1, -1)
+    : hostname;
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {

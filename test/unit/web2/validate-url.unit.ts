@@ -109,6 +109,62 @@ describe('web-2-json URL validation', () => {
       );
     });
 
+    it('Should reject - IPv4-mapped IPv6 localhost', async () => {
+      const input = new URL('https://[::ffff:127.0.0.1]');
+      await expect(validateUrl(input)).to.be.rejectedWith(
+        /Blocked IP: ::ffff:/,
+      );
+    });
+
+    it('Should reject - 0.0.0.0/8 range', async () => {
+      const input = new URL('https://0.0.0.1');
+      await expect(validateUrl(input)).to.be.rejectedWith(
+        'Blocked IP: 0.0.0.1 from 0.0.0.1',
+      );
+    });
+
+    it('Should reject - CGNAT range 100.64.0.0/10', async () => {
+      const input = new URL('https://100.64.0.1');
+      await expect(validateUrl(input)).to.be.rejectedWith(
+        'Blocked IP: 100.64.0.1 from 100.64.0.1',
+      );
+    });
+
+    it('Should reject - TEST-NET-2 range', async () => {
+      const input = new URL('https://198.51.100.10');
+      await expect(validateUrl(input)).to.be.rejectedWith(
+        'Blocked IP: 198.51.100.10 from 198.51.100.10',
+      );
+    });
+
+    it('Should reject - IPv4 multicast range', async () => {
+      const input = new URL('https://224.0.0.1');
+      await expect(validateUrl(input)).to.be.rejectedWith(
+        'Blocked IP: 224.0.0.1 from 224.0.0.1',
+      );
+    });
+
+    it('Should reject - IPv6 ULA range', async () => {
+      const input = new URL('https://[fc00::1]');
+      await expect(validateUrl(input)).to.be.rejectedWith(
+        'Blocked IP: fc00::1 from [fc00::1]',
+      );
+    });
+
+    it('Should reject - IPv6 documentation range', async () => {
+      const input = new URL('https://[2001:db8::1]');
+      await expect(validateUrl(input)).to.be.rejectedWith(
+        'Blocked IP: 2001:db8::1 from [2001:db8::1]',
+      );
+    });
+
+    it('Should reject - IPv6 multicast range', async () => {
+      const input = new URL('https://[ff02::1]');
+      await expect(validateUrl(input)).to.be.rejectedWith(
+        'Blocked IP: ff02::1 from [ff02::1]',
+      );
+    });
+
     it('Should reject - integer IPv4', async () => {
       const input = new URL('https://0x7f000001');
       await expect(validateUrl(input)).to.be.rejectedWith(
@@ -120,6 +176,22 @@ describe('web-2-json URL validation', () => {
       const input = new URL('https://nonexistent1234abcdef.tld');
       await expect(validateUrl(input)).to.be.rejectedWith(
         'DNS resolution failed for nonexistent1234abcdef.tld',
+      );
+    });
+
+    it('Should allow - public IPv4 address', async () => {
+      const input = new URL('https://1.1.1.1');
+      await expect(validateUrl(input)).to.eventually.have.property(
+        'hostname',
+        '1.1.1.1',
+      );
+    });
+
+    it('Should allow - public IPv6 address', async () => {
+      const input = new URL('https://[2606:4700:4700::1111]');
+      await expect(validateUrl(input)).to.eventually.have.property(
+        'hostname',
+        '[2606:4700:4700::1111]',
       );
     });
   });
