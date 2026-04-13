@@ -87,8 +87,8 @@ export class DBXrpTransaction {
   @Column({ nullable: true, default: null })
   destination_tag: number;
 
-  @Column({ default: 0 })
-  transaction_status: number;
+  @Column({ default: false })
+  transaction_status: boolean;
 
   @Column({ default: 0 })
   intended_receiving_amount: string;

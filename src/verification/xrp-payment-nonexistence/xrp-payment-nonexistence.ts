@@ -182,6 +182,11 @@ export async function verifyXRPPaymentNonexistence(
     destinationTag: request.requestBody.checkDestinationTag
       ? parseInt(BigInt(request.requestBody.destinationTag).toString())
       : undefined,
+    destinationAddressHash: unPrefix0x(
+      request.requestBody.destinationAddressHash,
+    ),
+    minAmount: BigInt(request.requestBody.amount.toString()),
+    onlyRelevantStatus: true,
   });
 
   const status = verifyWorkflowForReferencedTransactions(

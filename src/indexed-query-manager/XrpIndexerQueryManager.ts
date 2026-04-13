@@ -120,10 +120,11 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
       );
     }
 
-    if (params.excludeSenderFailure) {
-      query = query.andWhere('transaction.transaction_status != :senderFailure', {
-        senderFailure: 1,
-      });
+    if (params.onlyRelevantStatus) {
+      query = query.andWhere(
+        'transaction.transaction_status = :relevantStatus',
+        { relevantStatus: true },
+      );
     }
 
     const res = await query.getMany();

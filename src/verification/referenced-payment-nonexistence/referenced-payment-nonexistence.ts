@@ -205,6 +205,11 @@ export async function verifyReferencedPaymentNonExistence<
     sourceAddressRoot: request.requestBody.checkSourceAddresses
       ? unPrefix0x(request.requestBody.sourceAddressesRoot)
       : undefined,
+    destinationAddressHash: unPrefix0x(
+      request.requestBody.destinationAddressHash,
+    ),
+    minAmount: BigInt(request.requestBody.amount.toString()),
+    onlyRelevantStatus: true,
   });
 
   const status = verifyWorkflowForReferencedTransactions(

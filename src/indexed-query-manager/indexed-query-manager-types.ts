@@ -50,7 +50,7 @@ export interface TransactionQueryParams {
   destinationTag?: number;
   destinationAddressHash?: string;
   minAmount?: bigint;
-  excludeSenderFailure?: boolean;
+  onlyRelevantStatus?: boolean;
 }
 
 export interface BlockQueryParams {
@@ -102,7 +102,7 @@ export interface ReferencedTransactionsQueryRequest {
   destinationTag?: number; // destination tag of the transaction (only for XRP)
   destinationAddressHash?: string; // standard address hash of the destination
   minAmount?: bigint; // minimum intended receiving amount in drops
-  excludeSenderFailure?: boolean; // exclude transactions with sender failure status
+  onlyRelevantStatus?: boolean; // only include transactions with relevant status (true)
 }
 
 export type ReferencedTransactionsQueryStatusType =
