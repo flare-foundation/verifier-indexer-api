@@ -87,6 +87,15 @@ export class DBXrpTransaction {
   @Column({ nullable: true, default: null })
   destination_tag: number;
 
+  @Column({ default: 0 })
+  transaction_status: number;
+
+  @Column({ default: 0 })
+  intended_receiving_amount: string;
+
+  @Column({ type: 'varchar', length: 64, nullable: true, default: null })
+  destination_address_hash: string;
+
   get transactionType(): string {
     return 'full_payment'; // TODO: This classification must be added to DB (same as MCC)
   }

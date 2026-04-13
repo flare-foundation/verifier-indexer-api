@@ -106,6 +106,26 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
       );
     }
 
+    if (params.destinationAddressHash !== undefined) {
+      query = query.andWhere(
+        'transaction.destination_address_hash = :destHash',
+        { destHash: params.destinationAddressHash.toLowerCase() },
+      );
+    }
+
+    if (params.minAmount !== undefined) {
+      query = query.andWhere(
+        'transaction.intended_receiving_amount >= :minAmount',
+        { minAmount: params.minAmount.toString() },
+      );
+    }
+
+    if (params.excludeSenderFailure) {
+      query = query.andWhere('transaction.transaction_status != :senderFailure', {
+        senderFailure: 1,
+      });
+    }
+
     const res = await query.getMany();
 
     let lowerQueryWindowBlock: BlockResult;

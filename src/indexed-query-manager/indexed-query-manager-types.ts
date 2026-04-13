@@ -48,6 +48,9 @@ export interface TransactionQueryParams {
   sourceAddressRoot?: string;
   firstMemoDataHash?: string;
   destinationTag?: number;
+  destinationAddressHash?: string;
+  minAmount?: bigint;
+  excludeSenderFailure?: boolean;
 }
 
 export interface BlockQueryParams {
@@ -97,6 +100,9 @@ export interface ReferencedTransactionsQueryRequest {
   sourceAddressRoot?: string; // source address root
   firstMemoDataHash?: string; // hash of the first memo data field of the transaction
   destinationTag?: number; // destination tag of the transaction (only for XRP)
+  destinationAddressHash?: string; // standard address hash of the destination
+  minAmount?: bigint; // minimum intended receiving amount in drops
+  excludeSenderFailure?: boolean; // exclude transactions with sender failure status
 }
 
 export type ReferencedTransactionsQueryStatusType =

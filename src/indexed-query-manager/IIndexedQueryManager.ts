@@ -184,6 +184,9 @@ export abstract class IIndexedQueryManager {
       sourceAddressRoot: params.sourceAddressRoot,
       firstMemoDataHash: params.firstMemoDataHash,
       destinationTag: params.destinationTag,
+      destinationAddressHash: params.destinationAddressHash,
+      minAmount: params.minAmount,
+      excludeSenderFailure: params.excludeSenderFailure,
     });
 
     // Too small query window
