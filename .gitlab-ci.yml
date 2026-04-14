@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - report
+  - release-image
 
 workflow:
   rules:
@@ -11,8 +12,8 @@ workflow:
     - if: $CI_COMMIT_BRANCH
 
 variables:
-  NODE_VERSION: "24.12.0"
-  PNPM_STORE_DIR: ".pnpm-store"
+  NODE_VERSION: '24.12.0'
+  PNPM_STORE_DIR: '.pnpm-store'
 
 .pnpm-setup:
   before_script:
@@ -37,6 +38,10 @@ include:
   - component: gitlab.com/flarenetwork/ci-components-private/test-docker-build@2
     inputs:
       push_to_artifact_registry: true
+  - component: gitlab.com/flarenetwork/ci-components-private/release-image@2
+    inputs:
+      image_name: 'verifier-indexer-api'
+      helm_chart_dir: 'commit_tag'
 
 
 build-app:
