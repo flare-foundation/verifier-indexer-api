@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `BASE` and `HYPE` as supported EVM verifier types.
 
+### Fixed
+
+- `XRPPaymentNonexistence`: use intended receiving address hash instead of actual in post-SQL verification, so RECEIVER_FAILURE transactions correctly disprove nonexistence.
+- Added explicit `bigint` type to `intended_receiving_amount` TypeORM column to match the actual database schema.
+
 ### Changed
 
 - Changed url paths for all EVM types to make them consistent with other non-EVM types - `/EVMTransaction` without a chain prefix.
