@@ -272,7 +272,7 @@ export function verifyAddressBTC(
       case BTCTestAddressTypes.TEST_P2PKH:
       case BTCTestAddressTypes.TEST_P2SH: {
         //invalid length
-        if (25 > address.length || address.length > 34) {
+        if (25 > address.length || address.length > 35) {
           return {
             status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
@@ -351,7 +351,7 @@ export function verifyAddressBTC(
       case BTCAddressTypes.P2PKH:
       case BTCAddressTypes.P2SH: {
         //invalid length
-        if (25 > address.length || address.length > 34) {
+        if (25 > address.length || address.length > 35) {
           return {
             status: AttestationResponseStatus.VALID,
             response: INVALID_ADDRESS_RESPONSE,
