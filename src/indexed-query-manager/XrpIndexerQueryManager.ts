@@ -63,31 +63,31 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
       'transaction',
     );
 
-    if (params.startBlockNumber) {
+    if (params.startBlockNumber !== undefined) {
       query = query.andWhere('transaction.block_number >= :startBlock', {
         startBlock: params.startBlockNumber,
       });
     }
 
-    if (params.endBlockNumber) {
+    if (params.endBlockNumber !== undefined) {
       query = query.andWhere('transaction.block_number <= :endBlock', {
         endBlock: params.endBlockNumber,
       });
     }
 
-    if (params.paymentReference) {
+    if (params.paymentReference !== undefined) {
       query = query.andWhere('transaction.payment_reference=:ref', {
         ref: params.paymentReference.toLowerCase(),
       });
     }
 
-    if (params.sourceAddressRoot) {
+    if (params.sourceAddressRoot !== undefined) {
       query = query.andWhere('transaction.source_addresses_root=:root', {
         root: params.sourceAddressRoot.toLowerCase(),
       });
     }
 
-    if (params.transactionId) {
+    if (params.transactionId !== undefined) {
       query = query.andWhere('transaction.hash = :txId', {
         txId: params.transactionId.toLowerCase(),
       });
@@ -120,10 +120,10 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
       );
     }
 
-    if (params.onlyRelevantStatus) {
+    if (params.onlyRelevantStatus !== undefined) {
       query = query.andWhere(
         'transaction.transaction_status = :relevantStatus',
-        { relevantStatus: true },
+        { relevantStatus: params.onlyRelevantStatus },
       );
     }
 
@@ -156,18 +156,15 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
   }
 
   public async queryBlock(params: BlockQueryParams): Promise<BlockQueryResult> {
-    if (!params.blockNumber && !params.hash) {
+    if (params.blockNumber === undefined && params.hash === undefined) {
       throw new Error(
         "One of 'blockNumber' or 'hash' is a mandatory parameter",
       );
     }
     let query = this.entityManager.createQueryBuilder(this.blockTable, 'block');
-    // if (params.confirmed) {
-    //   continue;
-    // }
-    if (params.hash) {
+    if (params.hash !== undefined) {
       query = query.andWhere('block.hash = :hash', { hash: params.hash });
-    } else if (params.blockNumber) {
+    } else if (params.blockNumber !== undefined) {
       query = query.andWhere('block.block_number = :blockNumber', {
         blockNumber: params.blockNumber,
       });
