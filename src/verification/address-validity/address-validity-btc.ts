@@ -208,6 +208,13 @@ export function convertBits(
 }
 
 export function bech32Decode(addr: string) {
+  // Segwit address must be between 14 and 74 characters (BIP 141/350).
+  // 14 = min (2-byte program with "bc"/"tb" prefix)
+  // 74 = max (40-byte program with "bc"/"tb" prefix)
+  if (addr.length < 14 || addr.length > 74) {
+    return null;
+  }
+
   let bech32m = false;
   let dec = bech32_decode(addr, 'bech32');
   if (dec === null) {
@@ -218,11 +225,24 @@ export function bech32Decode(addr: string) {
   if (dec === null || dec.data.length < 1 || dec.data[0] > 16) {
     return null;
   }
+
+  // The 5-bit data groups (excluding version) must convert to a whole number
+  // of 8-bit bytes. This requires fewer than 5 padding bits:
+  // (5 * dataGroups) mod 8 must be < 5.
+  const dataGroups = dec.data.length - 1;
+  if ((5 * dataGroups) % 8 >= 5) {
+    return null;
+  }
+
   const res = convertBits(dec.data.slice(1), 5, 8, false);
   if (res === null || res.length < 2 || res.length > 40) {
     return null;
   }
   if (dec.data[0] === 0 && res.length !== 20 && res.length !== 32) {
+    return null;
+  }
+  // Version 1 (Taproot/BIP 341) witness programs must be exactly 32 bytes
+  if (dec.data[0] === 1 && res.length !== 32) {
     return null;
   }
 
