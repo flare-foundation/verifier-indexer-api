@@ -30,7 +30,7 @@ export function responseConfirmedBlockHeightExists(
     attestationType: request.attestationType,
     sourceId: request.sourceId,
     votingRound: '0',
-    lowestUsedTimestamp: dbBlock.timestamp.toString(),
+    lowestUsedTimestamp: lowerQueryWindowBlock.timestamp.toString(),
     requestBody: serializeBigInts(request.requestBody),
     responseBody: new ConfirmedBlockHeightExists_ResponseBody({
       blockTimestamp: dbBlock.timestamp.toString(),
