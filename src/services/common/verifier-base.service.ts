@@ -91,18 +91,6 @@ export abstract class BaseVerifierService<
     }
   }
 
-  public async verifyEncodedRequest(
-    abiEncodedRequest: string,
-  ): Promise<AttestationResponse<Res>> {
-    const requestJSON = this.store.parseRequest<
-      {
-        messageIntegrityCode: string;
-      } & Req
-    >(abiEncodedRequest);
-    const response = await this.verifyRequestInternal(requestJSON);
-    return response;
-  }
-
   public async verifyEncodedRequestFDC(
     abiEncodedRequest: string,
   ): Promise<AttestationResponseEncoded> {

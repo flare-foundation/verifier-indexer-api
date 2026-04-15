@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changed url paths for all EVM types to make them consistent with other non-EVM types - `/EVMTransaction` without a chain prefix.
 
+### Removed
+
+- Removed the deprecated `POST /<AttestationType>` root verify endpoint from all verifiers. Use `POST /<AttestationType>/verifyFDC` instead.
+
 ## [1.4.0] - 2026-03-03
 
 ### Added

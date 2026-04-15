@@ -6,7 +6,7 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiSecurity } from '@nestjs/swagger';
+import { ApiBody, ApiSecurity } from '@nestjs/swagger';
 
 import { ApiKeyAuthGuard } from '../../auth/apikey.guard';
 import {
@@ -42,20 +42,6 @@ export function BaseControllerFactory<
   @ApiSecurity('X-API-KEY')
   class VerifierController implements IBaseVerifierController<Req, Res> {
     public readonly verifierService: BaseVerifierService<Req, Res>;
-
-    /**
-     * Tries to verify encoded attestation request without checking message integrity code, and if successful it returns response.
-     * @param verifierBody
-     * @returns
-     */
-    @HttpCode(200)
-    @Post()
-    @ApiOperation({ deprecated: true })
-    async verify(
-      @Body() body: EncodedRequest,
-    ): Promise<AttestationResponse<Res>> {
-      return this.verifierService.verifyEncodedRequest(body.abiEncodedRequest);
-    }
 
     /**
      * Tries to verify encoded attestation request without checking message integrity code, and if successful it returns response in abi encoded form.
@@ -121,13 +107,6 @@ export interface IBaseVerifierController<
   Res extends AttestationTypeBase_Response,
 > {
   readonly verifierService: BaseVerifierService<Req, Res>;
-
-  /**
-   * Tries to verify encoded attestation request without checking message integrity code, and if successful it returns response.
-   * @param verifierBody
-   * @returns
-   */
-  verify(body: EncodedRequest): Promise<AttestationResponse<Res>>;
 
   /**
    * Tries to verify encoded attestation request without checking message integrity code, and if successful it returns response in abi encoded form.
