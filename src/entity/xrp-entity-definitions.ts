@@ -90,7 +90,7 @@ export class DBXrpTransaction {
   @Column({ default: false })
   transaction_status: boolean;
 
-  @Column({ default: 0 })
+  @Column({ type: 'bigint', default: 0 })
   intended_receiving_amount: string;
 
   @Column({ type: 'varchar', length: 64, nullable: true, default: null })
