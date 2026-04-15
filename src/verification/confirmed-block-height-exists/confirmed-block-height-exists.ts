@@ -29,7 +29,8 @@ export function responseConfirmedBlockHeightExists(
   // Delete me after 1777366800 Thursday, 28 April 2026 at 11:00:00 CEST
   let lut = lowerQueryWindowBlock.timestamp.toString();
   const now = Math.round(Date.now() / 1000);
-  if (now < 1777366800) { // Thursday, 28 April 2026 at 11:00:00 CEST
+  if (now < 1777366800) {
+    // Thursday, 28 April 2026 at 11:00:00 CEST
     lut = dbBlock.timestamp.toString();
   }
 
