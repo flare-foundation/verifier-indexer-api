@@ -66,7 +66,8 @@ export function responseXRPPaymentNonexistence(
     }
 
     // Check destination address
-    const receivingAddressHash = paymentSummary.response.receivingAddressHash;
+    const receivingAddressHash =
+      paymentSummary.response.intendedReceivingAddressHash;
     if (
       unPrefix0x(receivingAddressHash).toLowerCase() !==
       unPrefix0x(request.requestBody.destinationAddressHash).toLowerCase()
