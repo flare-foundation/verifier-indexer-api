@@ -128,7 +128,7 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService<Query
       const tempTo = Math.min(to, from + theLimit - 1);
       query = query
         .andWhere('block.block_number >= :from', { from })
-        .andWhere('block.block_number <= :tempTo', { tempTo });
+        .andWhere('block.block_number <= :to', { to: tempTo });
     } else if (from !== undefined && to === undefined) {
       query = query
         .andWhere('block.block_number >= :from', { from })
@@ -136,8 +136,8 @@ export class XrpExternalIndexerEngineService extends IIndexerEngineService<Query
     } else if (from === undefined && to !== undefined) {
       const tempFrom = Math.max(0, to - theLimit + 1);
       query = query
-        .andWhere('block.block_number >= :from', { tempFrom })
-        .andWhere('block.block_number <= :tempTo', { to });
+        .andWhere('block.block_number >= :from', { from: tempFrom })
+        .andWhere('block.block_number <= :to', { to });
     }
 
     const results = await query.getMany();
