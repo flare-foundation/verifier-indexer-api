@@ -26,11 +26,18 @@ export function responseConfirmedBlockHeightExists(
   numberOfConfirmations: number,
   request: ConfirmedBlockHeightExists_Request,
 ) {
+  // Delete me after 1777366800 Thursday, 28 April 2026 at 11:00:00 CEST
+  let lut = lowerQueryWindowBlock.timestamp.toString();
+  const now = Math.round(Date.now() / 1000);
+  if (now < 1777366800) { // Thursday, 28 April 2026 at 11:00:00 CEST
+    lut = dbBlock.timestamp.toString();
+  }
+
   const response = new ConfirmedBlockHeightExists_Response({
     attestationType: request.attestationType,
     sourceId: request.sourceId,
     votingRound: '0',
-    lowestUsedTimestamp: lowerQueryWindowBlock.timestamp.toString(),
+    lowestUsedTimestamp: lut,
     requestBody: serializeBigInts(request.requestBody),
     responseBody: new ConfirmedBlockHeightExists_ResponseBody({
       blockTimestamp: dbBlock.timestamp.toString(),
