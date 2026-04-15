@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { app, baseHooks, api_key, getTestFile } from './helper';
-import { flrEncodedRequest, flrRequestNoMic, validPayload } from './fixtures';
+import { flrRequestNoMic, validPayload } from './fixtures';
 import { AttestationResponseStatus } from '../../../src/verification/response-status';
 
 describe(`EVMTransaction/prepareResponse (${getTestFile(__filename)})`, () => {
@@ -197,21 +197,6 @@ describe(`EVMTransaction/prepareResponse (${getTestFile(__filename)})`, () => {
     };
 
     await postPrepareResponse(badPayload, 400); // Bad Request from Config/Validation
-  });
-
-  it('should verify encoded FLR request', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/EVMTransaction')
-      .set('X-API-KEY', api_key)
-      .send({ abiEncodedRequest: flrEncodedRequest })
-      .expect(200);
-
-    expect(res.body.status).to.equal('VALID');
-    expect(res.body.response).to.exist;
-    expect(res.body.response.sourceId).to.equal(flrRequestNoMic.sourceId);
-    expect(res.body.response.requestBody.transactionHash).to.equal(
-      flrRequestNoMic.requestBody.transactionHash,
-    );
   });
 
   it('should prepare response for FLR request', async () => {

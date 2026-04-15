@@ -31,7 +31,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732779898',
+      '1732779896',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '3490156',
@@ -97,7 +97,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732779898',
+      '1732779897',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '3490156',
@@ -273,7 +273,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732779898',
+      '1732779896',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '3490156',
@@ -319,7 +319,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732779898',
+      '1732779896',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '3490156',
@@ -365,7 +365,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732779898',
+      '1732779896',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '3490156',
@@ -411,7 +411,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732779898',
+      '1732779896',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '3490156',

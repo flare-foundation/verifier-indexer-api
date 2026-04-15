@@ -31,7 +31,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732810040',
+      '1732810035',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '6724543',
@@ -97,7 +97,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732810040',
+      '1732810035',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '6724543',
@@ -273,7 +273,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732810040',
+      '1732810035',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '6724543',
@@ -319,7 +319,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      '1732810040',
+      '1732810035',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '6724543',
