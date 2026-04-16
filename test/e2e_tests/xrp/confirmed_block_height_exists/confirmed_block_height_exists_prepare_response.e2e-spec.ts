@@ -2,13 +2,6 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { app, baseHooks, getTestFile } from '../helper';
 
-// Hard fork for ConfirmedBlockHeightExists lowestUsedTimestamp.
-// Before: LUT = dbBlock.timestamp. After: LUT = lowerQueryWindowBlock.timestamp.
-// Keep in sync with src/verification/confirmed-block-height-exists/confirmed-block-height-exists.ts.
-const CBHE_LUT_HARDFORK_TIMESTAMP = 1777366800;
-const isBeforeLutHardfork = () =>
-  Math.round(Date.now() / 1000) < CBHE_LUT_HARDFORK_TIMESTAMP;
-
 describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)})`, () => {
   baseHooks();
   it('should get status', async () => {
@@ -38,7 +31,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      isBeforeLutHardfork() ? '1733476521' : '1733476512',
+      '1733476521',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '2882191',
@@ -104,7 +97,7 @@ describe(`/ConfirmedBlockHeightExists/prepareResponse (${getTestFile(__filename)
     );
     expect(response.body.response.votingRound).to.be.equal('0');
     expect(response.body.response.lowestUsedTimestamp).to.be.equal(
-      isBeforeLutHardfork() ? '1733476521' : '1733476520',
+      '1733476521',
     );
     expect(response.body.response.requestBody.blockNumber).to.be.equal(
       '2882191',

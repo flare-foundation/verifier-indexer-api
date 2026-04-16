@@ -26,13 +26,14 @@ export function responseConfirmedBlockHeightExists(
   numberOfConfirmations: number,
   request: ConfirmedBlockHeightExists_Request,
 ) {
+  // Hard fork: blocks before this timestamp use dbBlock.timestamp as LUT,
+  // blocks at or after use lowerQueryWindowBlock.timestamp.
   // Delete me after 1777366800 Thursday, 28 April 2026 at 11:00:00 CEST
-  let lut = lowerQueryWindowBlock.timestamp.toString();
-  const now = Math.round(Date.now() / 1000);
-  if (now < 1777366800) {
-    // Thursday, 28 April 2026 at 11:00:00 CEST
-    lut = dbBlock.timestamp.toString();
-  }
+  const CBHE_LUT_FORK_TIMESTAMP = 1777366800;
+  const lut =
+    dbBlock.timestamp < CBHE_LUT_FORK_TIMESTAMP
+      ? dbBlock.timestamp.toString()
+      : lowerQueryWindowBlock.timestamp.toString();
 
   const response = new ConfirmedBlockHeightExists_Response({
     attestationType: request.attestationType,
