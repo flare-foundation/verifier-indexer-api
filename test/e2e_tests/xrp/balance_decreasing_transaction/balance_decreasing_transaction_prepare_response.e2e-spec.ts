@@ -35,7 +35,7 @@ describe(`/BalanceDecreasingTransaction/prepareResponse (${getTestFile(__filenam
       '0x7465737458525000000000000000000000000000000000000000000000000000',
     );
     expect(res.votingRound).to.be.equal('0');
-    expect(res.lowestUsedTimestamp).to.be.equal('1733477300');
+    expect(res.lowestUsedTimestamp).to.be.equal('2680162100');
     expect(res.requestBody.transactionId).to.be.equal(
       '0xa7182f8cac67e7b0e16cca46e2b40abb01565d207d525a6f0a27c057f35f800c',
     );
