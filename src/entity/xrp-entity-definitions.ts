@@ -109,10 +109,12 @@ export class DBXrpTransaction {
     }
     const { metaData: _, ...txDataRest } = txData;
 
-    // Hard fork: blocks before this timestamp use transaction.timestamp that adds the XRP_UTD twice for all further calculations
-    // calculations after fork time correctly pass the modified timestamp (the same one as xrpl node returns)
-    // Delete me after 1777366800 Thursday, 28 April 2026 at 11:00:00 CEST keep
-    // const modifiedTimestamp = this.timestamp - XRP_UTD;
+    // Hard fork at 2026-04-28 11:00:00 CEST (timestamp 1777366800).
+    // Pre-fork blocks: subtract XRP_UTD to preserve historical (pre-snippet) `date` values
+    // and keep already-issued attestations reproducible.
+    // Post-fork blocks: pass `this.timestamp` unchanged — it is already xrpl-aligned.
+    // After the fork date has fully passed, drop the gate and keep:
+    //   const modifiedTimestamp = this.timestamp;
     const LUT_FORK_TIMESTAMP = 1777366800;
     const modifiedTimestamp =
       this.timestamp < LUT_FORK_TIMESTAMP
