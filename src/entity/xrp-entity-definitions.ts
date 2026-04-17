@@ -116,8 +116,8 @@ export class DBXrpTransaction {
     const LUT_FORK_TIMESTAMP = 1777366800;
     const modifiedTimestamp =
       this.timestamp < LUT_FORK_TIMESTAMP
-        ? this.timestamp
-        : this.timestamp - XRP_UTD;
+        ? this.timestamp - XRP_UTD
+        : this.timestamp;
 
     const modifiedTxData: IXrpGetTransactionRes = {
       result: {
