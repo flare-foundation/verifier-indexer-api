@@ -114,7 +114,8 @@ export class DBXrpTransaction {
     // Delete me after 1777366800 Thursday, 28 April 2026 at 11:00:00 CEST keep
     // const modifiedTimestamp = this.timestamp - XRP_UTD;
     const LUT_FORK_TIMESTAMP = 1777366800;
-    const modifiedTimestamp = this.timestamp < LUT_FORK_TIMESTAMP
+    const modifiedTimestamp =
+      this.timestamp < LUT_FORK_TIMESTAMP
         ? this.timestamp
         : this.timestamp - XRP_UTD;
 

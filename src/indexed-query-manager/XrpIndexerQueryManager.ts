@@ -39,7 +39,11 @@ export class XrpIndexerQueryManager extends IIndexedQueryManager {
 
   private async _getStateObject(): Promise<DBXrpState> {
     const query = this.entityManager.createQueryBuilder(this.tipState, 'state');
-    return query.getOne();
+    const res = await query.getOne();
+    if (res === undefined || res === null) {
+      throw new Error('Cannot find XRP state in DB');
+    }
+    return res;
   }
 
   public async getLastConfirmedBlockNumber(): Promise<number> {

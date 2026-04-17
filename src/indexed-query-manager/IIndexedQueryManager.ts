@@ -176,6 +176,13 @@ export abstract class IIndexedQueryManager {
       };
     }
 
+    const lastConfirmedBlock = await this.getLastConfirmedBlockNumber();
+    if (firstOverflowBlock.blockNumber - 1 > lastConfirmedBlock) {
+      return {
+        status: 'DATA_AVAILABILITY_FAILURE',
+      };
+    }
+
     const transactionsQueryResult = await this.queryTransactions({
       startBlockNumber: params.minimalBlockNumber,
       endBlockNumber: firstOverflowBlock.blockNumber - 1,
