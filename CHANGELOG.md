@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-04-17
+
 ### Added
 
 - Added `BASE` and `HYPE` as supported EVM verifier types.
@@ -15,10 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `XRPPaymentNonexistence`: use intended receiving address hash instead of actual in post-SQL verification, so RECEIVER_FAILURE transactions correctly disprove nonexistence.
 - Added explicit `bigint` type to `intended_receiving_amount` TypeORM column to match the actual database schema.
+- `ReferencedPaymentNonexistence`: reject the request with `DATA_AVAILABILITY_FAILURE` when the scan range extends past the indexer's `state.last_indexed_block_number`, enforcing the spec requirement that the verifier has full visibility of the scan range before attesting nonexistence.
 
 ### Changed
 
 - Changed url paths for all EVM types to make them consistent with other non-EVM types - `/EVMTransaction` without a chain prefix.
+- `XRPPayment` transaction `date`: gated behind a 2026-04-28 11:00:00 CEST hard fork. Pre-fork blocks subtract `XRP_UTD` to preserve historical attestations; post-fork blocks pass `transaction.timestamp` unchanged.
+- `ConfirmedBlockHeightExists` LUT: gated behind the same 2026-04-28 11:00:00 CEST hard fork. Pre-fork uses `dbBlock.timestamp` deterministically; post-fork uses `lowerQueryWindowBlock.timestamp`.
 
 ### Removed
 
