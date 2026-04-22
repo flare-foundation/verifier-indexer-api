@@ -180,9 +180,7 @@ export function validateJqFilter(jqFilter: string, maxLength: number): void {
         break;
       }
       case 'varDeclaration':
-        stack.push(expr.next);
-        stack.push(expr.expr);
-        break;
+        throw throwError('variable declarations (`as`) are not allowed');
       case 'var':
       case 'identity':
       case 'num':

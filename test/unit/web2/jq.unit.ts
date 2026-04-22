@@ -48,6 +48,8 @@ describe('jq unit tests', () => {
       'repeat(.)',
       'recurse_down',
       'recurse_up',
+      // Destructuring-key bypass regression
+      '. as { (range(0;10000000)|tostring): $x } | 0',
       // Labels and breaks
       'label $out | 0 | while(. < 10; (.+1 | if .==3 then break $out else . end))',
       // Directives that may not be supported by the parser but should never be allowed
@@ -111,6 +113,22 @@ describe('jq unit tests', () => {
     ];
 
     for (const f of mutationFilters) {
+      expect(
+        () => validateJqFilter(f, maxJqFilterLength),
+        `filter "${f}"`,
+      ).to.throw(Web2JsonValidationError);
+    }
+  });
+
+  it('Should reject jq variable declarations (as) including destructuring', () => {
+    const filters = [
+      '. as $x | $x',
+      '. as {a: $a} | $a',
+      '. as [ $x ] | $x',
+      '. as { (range(0;10000000)|tostring): $x } | 0',
+    ];
+
+    for (const f of filters) {
       expect(
         () => validateJqFilter(f, maxJqFilterLength),
         `filter "${f}"`,
