@@ -44,7 +44,6 @@ export async function verifyWeb2Json(
   request: Web2Json_Request,
   securityParams: Web2JsonSecurityParams,
   source: Web2JsonSource,
-  userAgent: string | undefined,
   workerPool: ProcessPoolService,
 ): Promise<VerificationResponse<Web2Json_Response>> {
   try {
@@ -52,7 +51,6 @@ export async function verifyWeb2Json(
       request,
       securityParams,
       source,
-      userAgent,
     );
 
     const sourceResponse = await executeRequest(

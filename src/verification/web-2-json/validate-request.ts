@@ -36,7 +36,6 @@ export async function parseAndValidateRequest(
   request: Web2Json_Request,
   securityParams: Web2JsonSecurityParams,
   source: Web2JsonSource,
-  userAgent: string,
 ) {
   const requestBody = request.requestBody;
   let parsedUrl: URL;
@@ -56,10 +55,6 @@ export async function parseAndValidateRequest(
       securityParams.maxHeaders,
       AttestationResponseStatus.INVALID_HEADERS,
     ) ?? {};
-  // forward user-agent
-  if (userAgent) {
-    sourceHeaders['User-Agent'] = userAgent;
-  }
   // validate query params
   const sourceQueryParams =
     parseJsonWithDepthAndKeysValidation(

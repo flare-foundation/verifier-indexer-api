@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AttestationResponseDTO_Web2Json_Response,
@@ -20,8 +14,6 @@ import { verifyWeb2Json } from '../verification/web-2-json/web2-json-verificatio
 import { BaseVerifierService } from './common/verifier-base.service';
 import { Web2JsonConfig } from 'src/config/interfaces/web2-json';
 import { IConfig } from 'src/config/interfaces/common';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 import { ProcessPoolService } from '../verification/web-2-json/process-pool.service';
 import {
   BackpressureException,
@@ -41,7 +33,6 @@ export class Web2JsonVerifierService extends BaseVerifierService<
   constructor(
     protected configService: ConfigService<IConfig>,
     private readonly processPool: ProcessPoolService,
-    @Inject(REQUEST) private readonly req: Request,
   ) {
     super(configService, 'Web2Json', VerifierType.Web2);
     this.web2JsonConfig = this.configService.get('web2JsonConfig');
@@ -85,8 +76,6 @@ export class Web2JsonVerifierService extends BaseVerifierService<
       throw new BackpressureException();
     }
 
-    // store user-agent if available
-    const userAgent: string = this.req.headers['user-agent'] || undefined;
     const sourceConfig = this.web2JsonConfig.sources.find(
       (s) => encodeAttestationName(s.sourceId) === fixedRequest.sourceId,
     );
@@ -94,7 +83,6 @@ export class Web2JsonVerifierService extends BaseVerifierService<
       fixedRequest,
       this.web2JsonConfig.securityParams,
       sourceConfig,
-      userAgent,
       this.processPool,
     );
     this.logger.debug(
