@@ -23,6 +23,8 @@ import { parseAndValidateRequest } from './validate-request';
 import { HttpException, Logger } from '@nestjs/common';
 
 const DEFAULT_RESPONSE_TYPE = 'arraybuffer'; // prevent auto-parsing
+const NO_TIMESTAMP_SENTINEL = '0xffffffffffffffff';
+
 const logger = new Logger('verifyWeb2Json');
 
 /**
@@ -73,7 +75,7 @@ export async function verifyWeb2Json(
       attestationType: request.attestationType,
       sourceId: request.sourceId,
       votingRound: '0',
-      lowestUsedTimestamp: '0',
+      lowestUsedTimestamp: NO_TIMESTAMP_SENTINEL,
       requestBody: serializeBigInts(request.requestBody),
       responseBody: new Web2Json_ResponseBody({
         abiEncodedData: encodedData,

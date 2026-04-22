@@ -25,6 +25,9 @@ describe(`/Web2Json/prepareResponse (${getTestFile(__filename)})`, () => {
 
     const responseBody = response.body;
     expect(responseBody.status).to.be.equal(AttestationResponseStatus.VALID);
+    expect(responseBody.response.lowestUsedTimestamp).to.be.equal(
+      '0xffffffffffffffff',
+    );
     expect(responseBody.response.responseBody.abiEncodedData).to.be.equal(
       abiEncodedData,
     );
