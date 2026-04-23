@@ -34,6 +34,9 @@ _download_db_dumps() {
   echo "Downloading XRP2 Testnet Database..."
   curl -L -o "$DB_DIR/db_xrp2_testnet" $BASE_DOWNLOAD_URL/db_xrp2_testnet
 
+  echo "Downloading XRP Mainnet Database..."
+  curl -L -o "$DB_DIR/db_xrp_mainnet" $BASE_DOWNLOAD_URL/db_xrp_mainnet
+
   echo "All testnet database dumps downloaded"
 }
 
@@ -102,6 +105,7 @@ make_db(){
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_doge_testnet postgres_testing_db:/tmp/dbdumpdoge
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_xrp_testnet postgres_testing_db:/tmp/dbdumpxrp
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_xrp2_testnet postgres_testing_db:/tmp/dbdumpxrp2
+    docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_xrp_mainnet postgres_testing_db:/tmp/dbdumpxrp_mainnet
     _wait_for_pg_ready
 
     _make_db btc
@@ -109,6 +113,7 @@ make_db(){
     _make_db doge
     _make_db xrp
     _make_db xrp2
+    _make_db xrp_mainnet
   else
     docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_${VERIFIER_TYPE}_testnet postgres_testing_db:/tmp/dbdump
     _wait_for_pg_ready
@@ -134,12 +139,14 @@ _make_db_ci(){
   cp test/e2e_tests/db/db_doge_testnet /tmp/dbdumpdoge
   cp test/e2e_tests/db/db_xrp_testnet /tmp/dbdumpxrp
   cp test/e2e_tests/db/db_xrp2_testnet /tmp/dbdumpxrp2
+  cp test/e2e_tests/db/db_xrp_mainnet /tmp/dbdumpxrp_mainnet
 
   _make_db btc
   _make_db btc2
   _make_db doge
   _make_db xrp
   _make_db xrp2
+  _make_db xrp_mainnet
 }
 
 _run_all_tests(){
@@ -149,10 +156,10 @@ _run_all_tests(){
 
   if [ "$1" == "coverage" ]; then
     echo "Running all tests with coverage"
-    nyc --reporter=html --reporter=text --reporter=text-summary --report-dir=coverage mocha --reporter spec --full-trace --colors --timeout 5000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
+    pnpm exec nyc --reporter=html --reporter=text --reporter=text-summary --report-dir=coverage mocha --reporter spec --full-trace --colors --timeout 5000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
   else
     echo "Running all tests"
-    mocha --reporter spec --full-trace --colors --timeout 5000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
+    pnpm exec mocha --reporter spec --full-trace --colors --timeout 5000 --require source-map-support/register --require ts-node/register --recursive 'test/**/*/*.{e2e-spec.ts,unit.ts}'
   fi
 }
 
