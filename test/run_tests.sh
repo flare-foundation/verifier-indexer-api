@@ -115,7 +115,12 @@ make_db(){
     _make_db xrp2
     _make_db xrp_mainnet
   else
-    docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/db_${VERIFIER_TYPE}_testnet postgres_testing_db:/tmp/dbdump
+    DUMP_NAME="db_${VERIFIER_TYPE}_testnet"
+    if [ "$VERIFIER_TYPE" == "xrp_mainnet" ]; then
+      DUMP_NAME="db_${VERIFIER_TYPE}"
+    fi
+
+    docker compose -f test/e2e_tests/db/docker-compose.yaml cp test/e2e_tests/db/${DUMP_NAME} postgres_testing_db:/tmp/dbdump
     _wait_for_pg_ready
 
     _make_db ""
