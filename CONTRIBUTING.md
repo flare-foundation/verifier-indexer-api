@@ -75,8 +75,7 @@ pnpm test download
 > - [DOGE Testnet Database](https://githubstatic.flare.center/db_doge_testnet) as `db_doge_testnet`
 > - [XRP Testnet Database](https://githubstatic.flare.center/db_xrp_testnet) as `db_xrp_testnet`
 > - [XRP2 Testnet Database](https://githubstatic.flare.center/db_xrp2_testnet) as `db_xrp2_testnet`
->
-> Currently, all snapshots are from testnets.
+> - [XRP Mainnet Database](https://githubstatic.flare.center/db_xrp_mainnet) as `db_xrp_mainnet`
 
 | Database | Network | Starting Block | End Block |
 |----------|---------|----------------|-----------|
@@ -85,6 +84,7 @@ pnpm test download
 | db_doge_testnet | DOGE Testnet | 6724525 | 6724602 |
 | db_xrp_testnet | XRP Testnet | 2882019 | 2883195 |
 | db_xrp2_testnet | XRP Testnet | 10172243 | 10172442 |
+| db_xrp_mainnet | XRP Mainnet | 103751330 | 103751443 |
 
 
 To run all tests across all sources or check code coverage, use the following commands:
