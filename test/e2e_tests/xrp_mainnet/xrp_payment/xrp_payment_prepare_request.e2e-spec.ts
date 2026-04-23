@@ -62,7 +62,10 @@ describe(`/XRPPayment/prepareRequest (${getTestFile(__filename)})`, () => {
       .send({
         attestationType: ATTEST_TYPE,
         sourceId: SOURCE_ID,
-        requestBody: { transactionId: TX_ID.slice(0, -1), proofOwner: PROOF_OWNER },
+        requestBody: {
+          transactionId: TX_ID.slice(0, -1),
+          proofOwner: PROOF_OWNER,
+        },
       })
       .set('X-API-KEY', '12345')
       .expect(400);
