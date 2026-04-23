@@ -103,6 +103,7 @@ e2e_test:
       fetch_and_verify https://githubstatic.flare.center/db_doge_testnet test/e2e_tests/db/db_doge_testnet "af6cad36228747927a013db2d596fe57948a24586c737445c7bde420331cc86e"
       fetch_and_verify https://githubstatic.flare.center/db_xrp_testnet test/e2e_tests/db/db_xrp_testnet "db1ef0794bff297323db63f783d030a9af66c5ac8318441c03c9fea2fa792e35"
       fetch_and_verify https://githubstatic.flare.center/db_xrp2_testnet test/e2e_tests/db/db_xrp2_testnet "72277e725b9ff5a5f679c56d163724a0206ebdbe4f89f333a42b1d26efab9652"
+      fetch_and_verify https://githubstatic.flare.center/db_xrp_mainnet test/e2e_tests/db/db_xrp_mainnet "9961210485a419246773b29c88de4b38fcbb6381e054b18c8718ec776ea47d10"
   script:
     - pnpm test ci
 
