@@ -103,28 +103,25 @@ e2e_test:
       fetch_and_verify https://githubstatic.flare.center/db_btc_testnet test/e2e_tests/db/db_btc_testnet "29f0845af2ffc894721849fdbb4eb648c62545632221cf3b5bc2642b8ab29a9a"
       fetch_and_verify https://githubstatic.flare.center/db_btc2_testnet test/e2e_tests/db/db_btc2_testnet "9bf89c182b6e9b286a5dd9e491f12c33be5052cd5110f9fc6c7bc3bf81f46158"
       fetch_and_verify https://githubstatic.flare.center/db_doge_testnet test/e2e_tests/db/db_doge_testnet "af6cad36228747927a013db2d596fe57948a24586c737445c7bde420331cc86e"
-      fetch_and_verify https://githubstatic.flare.center/db_xrp_testnet test/e2e_tests/db/db_xrp_testnet "db1ef0794bff297323db63f783d030a9af66c5ac8318441c03c9fea2fa792e35"
-      fetch_and_verify https://githubstatic.flare.center/db_xrp2_testnet test/e2e_tests/db/db_xrp2_testnet "72277e725b9ff5a5f679c56d163724a0206ebdbe4f89f333a42b1d26efab9652"
+      fetch_and_verify https://githubstatic.flare.center/db_xrp_testnet test/e2e_tests/db/db_xrp_testnet "cc86e2b2ab1ccc962e07b6b660e0fb749f8410a38a8b6b8bf008e06aa6001538"
+      fetch_and_verify https://githubstatic.flare.center/db_xrp2_testnet test/e2e_tests/db/db_xrp2_testnet "26a7d418e5c92029de61e2d2ef08765d59d8de93ff2dcfca72d0d5b72f0e58c4"
       fetch_and_verify https://githubstatic.flare.center/db_xrp_mainnet test/e2e_tests/db/db_xrp_mainnet "9961210485a419246773b29c88de4b38fcbb6381e054b18c8718ec776ea47d10"
     - |
       set -euo pipefail
 
       # CI uses a sibling postgres service; we restore with host-side pg_restore.
       restore() {
-        local dump="$1" db="$2" patch="$3"
+        local dump="$1" db="$2"
         psql -h "$DB_HOST" -U "$POSTGRES_USER" -d postgres -c "CREATE DATABASE \"$db\" WITH ENCODING 'UTF8' TEMPLATE template0"
         pg_restore -h "$DB_HOST" -U "$POSTGRES_USER" --no-owner --role="$POSTGRES_USER" -d "$db" "test/e2e_tests/db/$dump"
-        if [ "$patch" = "yes" ]; then
-          psql -h "$DB_HOST" -U "$POSTGRES_USER" -d "$db" -v ON_ERROR_STOP=1 -f test/xrp-schema-patch.sql
-        fi
       }
 
-      restore db_btc_testnet     dbbtc          no
-      restore db_btc2_testnet    dbbtc2         no
-      restore db_doge_testnet    dbdoge         no
-      restore db_xrp_testnet     dbxrp          yes
-      restore db_xrp2_testnet    dbxrp2         yes
-      restore db_xrp_mainnet     dbxrp_mainnet  no
+      restore db_btc_testnet     dbbtc
+      restore db_btc2_testnet    dbbtc2
+      restore db_doge_testnet    dbdoge
+      restore db_xrp_testnet     dbxrp
+      restore db_xrp2_testnet    dbxrp2
+      restore db_xrp_mainnet     dbxrp_mainnet
   script:
     - pnpm test:e2e
 

@@ -12,21 +12,21 @@ DC="docker compose -f $DB_DIR/docker-compose.yaml"
 SVC=postgres_testing_db
 
 chain_info() {
-  # dump_file db_name xrp_patch
+  # dump_file db_name
   case $1 in
-    btc)         echo db_btc_testnet  dbbtc          no  ;;
-    btc2)        echo db_btc2_testnet dbbtc2         no  ;;
-    doge)        echo db_doge_testnet dbdoge         no  ;;
-    xrp)         echo db_xrp_testnet  dbxrp          yes ;;
-    xrp2)        echo db_xrp2_testnet dbxrp2         yes ;;
-    xrp_mainnet) echo db_xrp_mainnet  dbxrp_mainnet  no  ;;
+    btc)         echo db_btc_testnet  dbbtc          ;;
+    btc2)        echo db_btc2_testnet dbbtc2         ;;
+    doge)        echo db_doge_testnet dbdoge         ;;
+    xrp)         echo db_xrp_testnet  dbxrp          ;;
+    xrp2)        echo db_xrp2_testnet dbxrp2         ;;
+    xrp_mainnet) echo db_xrp_mainnet  dbxrp_mainnet  ;;
     *) echo "unknown chain: $1" >&2; exit 1 ;;
   esac
 }
 ALL="btc btc2 doge xrp xrp2 xrp_mainnet"
 
 restore() {
-  read -r dump db patch <<<"$(chain_info "$1")"
+  read -r dump db <<<"$(chain_info "$1")"
   [ -f "$DB_DIR/$dump" ] || { echo "missing $dump — run ./test/download-snapshots.sh" >&2; exit 1; }
   if $DC exec -T $SVC psql -U user -d "$db" -Atc \
        "SELECT 1 FROM pg_tables WHERE schemaname='public' LIMIT 1" 2>/dev/null | grep -q 1; then
@@ -37,10 +37,6 @@ restore() {
   $DC exec -T $SVC createdb -U user "$db" 2>/dev/null || true
   $DC cp "$DB_DIR/$dump" "$SVC:/tmp/dump" >/dev/null
   $DC exec -T $SVC pg_restore --no-owner --role=user -U user -d "$db" /tmp/dump >/dev/null
-  if [ "$patch" = yes ]; then
-    $DC cp "$HERE/xrp-schema-patch.sql" "$SVC:/tmp/patch.sql" >/dev/null
-    $DC exec -T $SVC psql -U user -d "$db" -f /tmp/patch.sql >/dev/null
-  fi
 }
 
 $DC up -d >/dev/null
