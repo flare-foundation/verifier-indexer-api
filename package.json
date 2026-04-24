@@ -23,7 +23,16 @@
     "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "-----Testing-----": "echo \"Testing scripts\"",
-    "test": "./test/run_tests.sh "
+    "test": "pnpm test:e2e && pnpm test:unit",
+    "test:e2e": "./test/run-e2e.sh",
+    "test:e2e:file": "mocha",
+    "test:unit": "mocha 'test/unit/**/*.unit.ts'",
+    "test:coverage": "nyc --reporter=lcovonly --reporter=text-summary --report-dir=coverage ./test/run-e2e.sh",
+    "test:download": "./test/download-snapshots.sh",
+    "test:db:up": "./test/setup-db.sh",
+    "test:db:down": "./test/teardown-db.sh",
+    "smoke:web2": "bash test/container/web2/web2-container-smoke.sh",
+    "smoke:evm": "bash test/container/evm/evm-container-smoke.sh"
   },
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.1",

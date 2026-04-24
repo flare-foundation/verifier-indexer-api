@@ -58,17 +58,18 @@ $ pnpm run start:dev
 
 ### Testing
 
-End-to-end tests for blockchain verifier types require indexer database access.
-
-To download database snapshots, run:
+End-to-end tests for blockchain verifier types require indexer database
+snapshots. Download them once with:
 
 ```bash
-pnpm test download
+pnpm test:download
 ```
+
+Snapshots are fetched from the URLs below and verified against a known SHA-256. They land in `test/e2e_tests/db/`.
 
 > **Manual download (alternative)**
 >
-> You can also download the database snapshots manually and move them to `/e2e_tests/db/`:
+> You can also fetch the snapshots by hand and drop them in `test/e2e_tests/db/`:
 >
 > - [BTC Testnet Database](https://githubstatic.flare.center/db_btc_testnet) as `db_btc_testnet`
 > - [BTC2 Testnet Database](https://githubstatic.flare.center/db_btc2_testnet) as `db_btc2_testnet`
@@ -86,48 +87,60 @@ pnpm test download
 | db_xrp2_testnet | XRP Testnet | 10172243 | 10172442 |
 | db_xrp_mainnet | XRP Mainnet | 103751330 | 103751443 |
 
-
-To run all tests across all sources or check code coverage, use the following commands:
+Bring up the local postgres container and restore the snapshots into per-chain databases (`dbbtc`, `dbdoge`, `dbxrp`, …):
 
 ```bash
-pnpm test run
-pnpm test coverage
+pnpm test:db:up           # all chains
+pnpm test:db:up xrp xrp2  # only the given chains
 ```
 
-#### Manual testing
-
-To test a specific verifier type you can also instantiate only the relevant indexer db. For example, for `btc` verifier type:
+Then run tests:
 
 ```bash
-pnpm test make_db btc
+pnpm test             # e2e + unit
+pnpm test:e2e         # e2e only (all chains)
+pnpm test:e2e xrp     # a single chain
+pnpm test:unit        # unit only
+pnpm test:coverage    # nyc-wrapped full run
 ```
 
-This will create and start a local Postgres database server with the Bitcoin testnet snapshot.
-
-Once the database is up and running, you can start a local server and manually send requests. For this setup, set the
-following environment variables to your `.env` file:
+When you're done:
 
 ```bash
-# .env file
-DB_DATABASE=db
+pnpm test:db:down
+```
+
+#### Running a single spec file (IDE or CLI)
+
+Once `pnpm test:db:up <chain>` has been run, invoke mocha directly against any
+spec file. `.mocharc.cjs` sets env defaults and registers ts-node, so no extra
+flags are needed:
+
+```bash
+pnpm test:e2e:file test/e2e_tests/xrp/payment/payment_mic.e2e-spec.ts
+```
+
+#### Manual server against a test snapshot
+
+Point a manually-started verifier server at a chain's test DB:
+
+```bash
+pnpm test:db:up btc
+```
+
+Then set your `.env`:
+
+```bash
+DB_DATABASE=dbbtc
 DB_USERNAME=user
 DB_PASSWORD=pass
 DB_HOST=127.0.0.1
 DB_PORT=8080
-```
-
-Additionally, set the appropriate values for `VERIFIER_TYPE` and `TESTNET`:
-
-```bash
 VERIFIER_TYPE=btc
 TESTNET=true
 ```
 
-When you're finished, remember to stop the database server with:
-
-```bash
-pnpm test delete_db
-```
+Tear down with `pnpm test:db:down`.
      
 ### Linting and formatting
 
