@@ -23,6 +23,7 @@ import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { Web2JsonVerifierService } from '../../../src/services/web2-json-verifier.service';
 import { ProcessPoolService } from '../../../src/verification/web-2-json/process-pool.service';
 import { payload, payload2, payload3, payload4, payload5 } from './fixtures';
+import { setupMocks, teardownMocks } from './mock-server';
 
 export const web2JsonTestConfig: Web2JsonConfig = {
   securityParams: web2JsonDefaultParams,
@@ -89,6 +90,8 @@ export let app: INestApplication;
 
 export function baseHooks() {
   before(async () => {
+    setupMocks();
+
     app = await NestFactory.create(Web2JsonVerifierServerModule, {
       logger: false,
     });
@@ -102,6 +105,7 @@ export function baseHooks() {
 
   after(async () => {
     await app.close();
+    teardownMocks();
   });
 }
 
