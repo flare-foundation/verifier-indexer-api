@@ -1,3 +1,4 @@
+import { encodeAttestationName } from '@flarenetwork/js-flare-common';
 import {
   ConfirmedBlockHeightExists_Request,
   ConfirmedBlockHeightExists_Response,
@@ -28,12 +29,29 @@ export function responseConfirmedBlockHeightExists(
 ) {
   // Hard fork: blocks before this timestamp use dbBlock.timestamp as LUT,
   // blocks at or after use lowerQueryWindowBlock.timestamp.
-  // Delete me after 1777366800 Thursday, 28 April 2026 at 11:00:00 CEST
-  const CBHE_LUT_FORK_TIMESTAMP = 1777366800;
-  const lut =
-    dbBlock.timestamp < CBHE_LUT_FORK_TIMESTAMP
-      ? dbBlock.timestamp.toString()
-      : lowerQueryWindowBlock.timestamp.toString();
+  // Delete me after 1778576400 Tuesday, 12 May 2026 at 11:00:00 CEST
+  const CBHE_LUT_DOGE_BTC_FORK_TIMESTAMP = 1778576400; // Tuesday, 12 May 2026 at 11:00:00 CEST
+  let lut: string;
+  const XRP_POST_FORK_SOURCES = ['XRP', 'testXRP'].map(encodeAttestationName);
+  const DOGE_BTC_FORK_SOURCES = ['DOGE', 'testDOGE', 'BTC', 'testBTC'].map(
+    encodeAttestationName,
+  );
+  if (XRP_POST_FORK_SOURCES.includes(request.sourceId)) {
+    // WE are post XRP lut fork time 1777366800 Tuesday, 28 April 2026 at 11:00:00 CEST
+    lut = lowerQueryWindowBlock.timestamp.toString();
+  } else if (DOGE_BTC_FORK_SOURCES.includes(request.sourceId)) {
+    // We are pre DOGE/BTC lut fork time 1778576400 Tuesday, 12 May 2026 at 11:00:00 CEST
+    // Delete me after 1778576400 Tuesday, 12 May 2026 at 11:00:00 CEST
+    lut =
+      dbBlock.timestamp < CBHE_LUT_DOGE_BTC_FORK_TIMESTAMP
+        ? dbBlock.timestamp.toString()
+        : lowerQueryWindowBlock.timestamp.toString();
+  } else {
+    lut = lowerQueryWindowBlock.timestamp.toString();
+  }
+
+  // Post for time:
+  // const lut = lowerQueryWindowBlock.timestamp.toString();
 
   const response = new ConfirmedBlockHeightExists_Response({
     attestationType: request.attestationType,
