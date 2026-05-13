@@ -24,7 +24,7 @@ RUN PROJECT_BUILD_DATE="$(date -u +%s)" && \
     printf '%s\n' "$PROJECT_COMMIT_HASH" > PROJECT_COMMIT_HASH
 
 # ---- Runtime stage ----
-FROM node:24-slim@sha256:bf22df20270b654c4e9da59d8d4a3516cce6ba2852e159b27288d645b7a7eedc AS runtime
+FROM gcr.io/distroless/nodejs24-debian13:nonroot@sha256:f16acace4aa70086d4a2caad6c716f01e3e2fe0dd8274c4530c7c17d987bdb1a AS runtime
 
 WORKDIR /app/verifier-indexer-api
 ENV NODE_ENV=production
@@ -36,7 +36,5 @@ COPY --from=build /app/verifier-indexer-api/package.json ./package.json
 COPY --from=build /app/verifier-indexer-api/PROJECT_VERSION ./PROJECT_VERSION
 COPY --from=build /app/verifier-indexer-api/PROJECT_BUILD_DATE ./PROJECT_BUILD_DATE
 COPY --from=build /app/verifier-indexer-api/PROJECT_COMMIT_HASH ./PROJECT_COMMIT_HASH
-
-USER node
 
 CMD [ "node", "dist/main" ]
