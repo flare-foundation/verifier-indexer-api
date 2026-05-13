@@ -37,4 +37,4 @@ COPY --from=build /app/verifier-indexer-api/PROJECT_VERSION ./PROJECT_VERSION
 COPY --from=build /app/verifier-indexer-api/PROJECT_BUILD_DATE ./PROJECT_BUILD_DATE
 COPY --from=build /app/verifier-indexer-api/PROJECT_COMMIT_HASH ./PROJECT_COMMIT_HASH
 
-CMD [ "node", "dist/main" ]
+CMD [ "dist/main" ]
