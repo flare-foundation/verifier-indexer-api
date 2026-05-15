@@ -38,6 +38,7 @@ include:
     inputs:
       push_to_artifact_registry: true
 
+
 build-app:
   stage: build
   image: node:${NODE_VERSION}
