@@ -4,7 +4,7 @@ import { BlockResult } from '../../src/indexed-query-manager/indexed-query-manag
 import { ConfirmedBlockHeightExists_Request } from '../../src/dtos/attestation-types/ConfirmedBlockHeightExists.dto';
 import { AttestationResponseStatus } from '../../src/verification/response-status';
 
-const CBHE_LUT_FORK_TIMESTAMP = 1777366800;
+const CBHE_LUT_FORK_TIMESTAMP = 1780304400; // Tuesday, 01 June 2026 at 11:00:00 CEST (9:00 GMT)
 
 function makeRequest(): ConfirmedBlockHeightExists_Request {
   return new ConfirmedBlockHeightExists_Request({
