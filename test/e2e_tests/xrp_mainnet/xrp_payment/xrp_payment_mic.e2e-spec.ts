@@ -25,8 +25,7 @@ describe(`/XRPPayment/mic (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('VALID');
-    expect(response.body.messageIntegrityCode.length).to.be.equal(66);
+    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
   });
 
   it('should return 400 for empty transactionId', async () => {

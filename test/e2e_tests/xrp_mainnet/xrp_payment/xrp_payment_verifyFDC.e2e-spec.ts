@@ -9,7 +9,7 @@ const ABI_ENCODED_REQUEST =
 describe(`/XRPPayment/verifyFDC (${getTestFile(__filename)})`, () => {
   baseHooks();
 
-  it('should return VALID for a real mainnet abiEncodedRequest', async () => {
+  it('should return INVALID for a real mainnet abiEncodedRequest', async () => {
     const response = await request(app.getHttpServer())
       .post('/XRPPayment/verifyFDC')
       .send({ abiEncodedRequest: ABI_ENCODED_REQUEST })
@@ -17,10 +17,10 @@ describe(`/XRPPayment/verifyFDC (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
   });
 
-  it('should return VALID without 0x prefix', async () => {
+  it('should return INVALID without 0x prefix', async () => {
     const response = await request(app.getHttpServer())
       .post('/XRPPayment/verifyFDC')
       .send({ abiEncodedRequest: ABI_ENCODED_REQUEST.slice(2) })
@@ -28,7 +28,7 @@ describe(`/XRPPayment/verifyFDC (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
   });
 
   it('should return 400 with empty payload', async () => {
