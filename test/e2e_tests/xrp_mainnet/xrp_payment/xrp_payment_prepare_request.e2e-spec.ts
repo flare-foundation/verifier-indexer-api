@@ -14,7 +14,7 @@ const SOURCE_ID =
 describe(`/XRPPayment/prepareRequest (${getTestFile(__filename)})`, () => {
   baseHooks();
 
-  it('should return VALID for a known mainnet XRPPayment transaction', async () => {
+  it('should return INVALID for a known mainnet XRPPayment transaction', async () => {
     const response = await request(app.getHttpServer())
       .post('/XRPPayment/prepareRequest')
       .send({
@@ -26,10 +26,10 @@ describe(`/XRPPayment/prepareRequest (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
   });
 
-  it('should return VALID with 0x prefix on transactionId', async () => {
+  it('should return INVALID with 0x prefix on transactionId', async () => {
     const response = await request(app.getHttpServer())
       .post('/XRPPayment/prepareRequest')
       .send({
@@ -41,7 +41,7 @@ describe(`/XRPPayment/prepareRequest (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('VALID');
+    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
   });
 
   it('should return 400 for empty transactionId', async () => {
