@@ -26,7 +26,9 @@ describe(`/XRPPayment/prepareResponse (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
+    expect(response.body.status).to.be.equal(
+      'INVALID: NOT NATIVE PAYMENT TRANSACTION',
+    );
     // expect(response.body.response.attestationType).to.be.equal(ATTEST_TYPE);
     // expect(response.body.response.sourceId).to.be.equal(SOURCE_ID);
     // expect(response.body.response.requestBody.transactionId).to.be.equal(

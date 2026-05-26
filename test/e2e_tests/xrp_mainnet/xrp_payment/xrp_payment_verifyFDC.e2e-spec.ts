@@ -17,7 +17,9 @@ describe(`/XRPPayment/verifyFDC (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
+    expect(response.body.status).to.be.equal(
+      'INVALID: NOT NATIVE PAYMENT TRANSACTION',
+    );
   });
 
   it('should return INVALID without 0x prefix', async () => {
@@ -28,7 +30,9 @@ describe(`/XRPPayment/verifyFDC (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
+    expect(response.body.status).to.be.equal(
+      'INVALID: NOT NATIVE PAYMENT TRANSACTION',
+    );
   });
 
   it('should return 400 with empty payload', async () => {
