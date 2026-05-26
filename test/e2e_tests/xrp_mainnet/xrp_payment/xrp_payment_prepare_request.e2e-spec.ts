@@ -26,7 +26,9 @@ describe(`/XRPPayment/prepareRequest (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
+    expect(response.body.status).to.be.equal(
+      'INVALID: NOT NATIVE PAYMENT TRANSACTION',
+    );
   });
 
   it('should return INVALID with 0x prefix on transactionId', async () => {
@@ -41,7 +43,9 @@ describe(`/XRPPayment/prepareRequest (${getTestFile(__filename)})`, () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(response.body.status).to.be.equal('INVALID: NOT NATIVE PAYMENT TRANSACTION');
+    expect(response.body.status).to.be.equal(
+      'INVALID: NOT NATIVE PAYMENT TRANSACTION',
+    );
   });
 
   it('should return 400 for empty transactionId', async () => {
