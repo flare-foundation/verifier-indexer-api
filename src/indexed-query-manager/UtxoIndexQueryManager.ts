@@ -52,7 +52,9 @@ abstract class UtxoIndexedQueryManager extends IIndexedQueryManager {
   ////////////////////////////////////////////////////////////
 
   private async _getTipStateObject(): Promise<DBTipSyncState> {
-    const res = await this.entityManager.findOne(this.tipState, {});
+    const res = await this.entityManager
+      .createQueryBuilder(this.tipState, 'state')
+      .getOne();
     if (res === undefined || res === null) {
       throw new Error('Cant find tip sync state in DB');
     }
