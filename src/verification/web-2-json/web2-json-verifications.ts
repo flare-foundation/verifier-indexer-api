@@ -69,11 +69,17 @@ export async function verifyWeb2Json(
       parsedRequest.abiType,
     );
 
+    let lut = NO_TIMESTAMP_SENTINEL;
+    const WEB2_LUT_FORK_TIMESTAMP = 1781600400; // Tuesday, 16 June 2026 at 11:00:00 CEST (9:00 GMT)
+    if (Date.now() / 1000 < WEB2_LUT_FORK_TIMESTAMP) {
+      lut = '0';
+    }
+
     const response = new Web2Json_Response({
       attestationType: request.attestationType,
       sourceId: request.sourceId,
       votingRound: '0',
-      lowestUsedTimestamp: NO_TIMESTAMP_SENTINEL,
+      lowestUsedTimestamp: lut,
       requestBody: serializeBigInts(request.requestBody),
       responseBody: new Web2Json_ResponseBody({
         abiEncodedData: encodedData,
