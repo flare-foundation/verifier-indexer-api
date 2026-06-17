@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as http from 'http';
 import helmet from 'helmet';
 import { VerifierType, extractVerifierType } from './config/configuration';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
@@ -82,6 +83,14 @@ export async function runVerifierServer() {
   const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3120;
   const VERIFIER_TYPE = extractVerifierType();
   logger.log(`Verifier type: ${VerifierType[VERIFIER_TYPE]}`);
+
+  const KEEP_ALIVE_TIMEOUT_S = process.env.KEEP_ALIVE_TIMEOUT
+    ? parseInt(process.env.KEEP_ALIVE_TIMEOUT)
+    : 5;
+  const httpServer = app.getHttpServer() as http.Server;
+  httpServer.keepAliveTimeout = KEEP_ALIVE_TIMEOUT_S * 1000;
+  httpServer.headersTimeout = (KEEP_ALIVE_TIMEOUT_S + 5) * 1000;
+  logger.log(`Keep-alive timeout: ${KEEP_ALIVE_TIMEOUT_S}s`);
 
   await app.listen(PORT, '0.0.0.0', () =>
     logger.log(`Server started listening at http://0.0.0.0:${PORT}`),
