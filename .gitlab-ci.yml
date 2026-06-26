@@ -31,8 +31,18 @@ variables:
 include:
   - component: gitlab.com/flarenetwork/ci-components-private/ai-code-review@2
     inputs:
+      job_name_suffix: "-mr"
+      model_backend: "gemini"
       rules_condition: $CI_MERGE_REQUEST_IID != null && $GITLAB_USER_NAME != "SealBot" && $CI_MERGE_REQUEST_EVENT_TYPE != "merge_train"
       rules_when: always
+  - component: gitlab.com/flarenetwork/ci-components-private/ai-code-review@2
+    inputs:
+      job_name_suffix: "-repo"
+      model_backend: "gemini"
+      tags: ["flarenetwork-lg-cpu"]
+      rules_condition: '$CI_PIPELINE_SOURCE == "web" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      rules_when: manual
+      repo_review_mode: true
   - component: gitlab.com/flarenetwork/ci-components-private/test-docker-build@2
     inputs:
       push_to_artifact_registry: true
