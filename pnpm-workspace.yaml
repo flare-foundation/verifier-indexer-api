@@ -1,3 +1,4 @@
 minimumReleaseAge: 10080
 minimumReleaseAgeExclude:
   - "@flarenetwork/mcc"
+trustPolicy: no-downgrade

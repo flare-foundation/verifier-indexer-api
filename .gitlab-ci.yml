@@ -2,33 +2,32 @@ stages:
   - build
   - test
   - report
+  - sbom
 
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
-      when: never
-    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TAG
+
+default:
+  tags:
+    - flarenetwork
+  artifacts:
+    expire_in: 3 days
 
 variables:
-  NODE_VERSION: "24.12.0"
+  NODE_VERSION: "24.14.0"
   PNPM_STORE_DIR: ".pnpm-store"
 
-.pnpm-setup:
-  before_script:
-    - corepack enable
-    - corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
-    - pnpm --version
-
-.pnpm-cache:
-  cache:
-    key:
-      files:
-        - pnpm-lock.yaml
-    paths:
-      - .pnpm-store/
-
 include:
+  - component: gitlab.com/flarenetwork/ci-components-private/lgtm@2
+  - component: gitlab.com/flarenetwork/ci-components-private/dependency-track@2
+  - component: gitlab.com/flarenetwork/ci-components-private/lint-dockerfile@2
+  - component: gitlab.com/flarenetwork/ci-components-private/lint-shell@2
+  - template: Jobs/Secret-Detection.latest.gitlab-ci.yml
+  - component: gitlab.com/flarenetwork/ci-components-private/test-docker-build@2
+    inputs:
+      push_to_artifact_registry: true
+      build_tags: ["flarenetwork-md"]
   - component: gitlab.com/flarenetwork/ci-components-private/ai-code-review@2
     inputs:
       job_name_suffix: "-mr"
@@ -43,10 +42,20 @@ include:
       rules_condition: '$CI_PIPELINE_SOURCE == "web" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       rules_when: manual
       repo_review_mode: true
-  - component: gitlab.com/flarenetwork/ci-components-private/test-docker-build@2
-    inputs:
-      push_to_artifact_registry: true
 
+.pnpm-setup:
+  before_script:
+    - corepack enable
+    - corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
+    - pnpm --version
+
+.pnpm-cache:
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store/
 
 build-app:
   stage: build
@@ -67,6 +76,8 @@ build-app:
 e2e_test:
   stage: test
   image: node:${NODE_VERSION}
+  tags:
+    - "flarenetwork-lg-cpu"
   extends:
     - .pnpm-setup
     - .pnpm-cache

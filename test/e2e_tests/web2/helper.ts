@@ -26,7 +26,10 @@ import { payload, payload2, payload3, payload4, payload5 } from './fixtures';
 import { setupMocks, teardownMocks } from './mock-server';
 
 export const web2JsonTestConfig: Web2JsonConfig = {
-  securityParams: web2JsonDefaultParams,
+  securityParams: {
+    ...web2JsonDefaultParams,
+    processingTimeoutMs: 1_000,
+  },
   sources: [payload, payload2, payload3, payload4, payload5].map((p, i) => {
     const url = new URL(p.requestBody.url).hostname;
     return {

@@ -23,7 +23,7 @@ chain_info() {
     *) echo "unknown chain: $1" >&2; exit 1 ;;
   esac
 }
-ALL="btc btc2 doge xrp xrp2 xrp_mainnet"
+ALL=(btc btc2 doge xrp xrp2 xrp_mainnet)
 
 restore() {
   read -r dump db <<<"$(chain_info "$1")"
@@ -42,4 +42,9 @@ restore() {
 $DC up -d >/dev/null
 until $DC exec -T $SVC pg_isready -U user >/dev/null 2>&1; do sleep 1; done
 
-for key in ${*:-$ALL}; do restore "$key"; done
+if [ $# -eq 0 ]; then
+  set -- "${ALL[@]}"
+fi
+
+for key in "$@"; do restore "$key"; done
+
