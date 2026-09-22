@@ -1,9 +1,7 @@
-import { readFile } from 'fs/promises';
-import { join } from 'path';
 import { ApiDBBlock } from '../../dtos/indexer/ApiDbBlock.dto';
 import { ApiDBState } from '../../dtos/indexer/ApiDbState.dto';
 import { ApiDBTransaction } from '../../dtos/indexer/ApiDbTransaction.dto';
-import { ApiDBVersion, Version } from '../../dtos/indexer/ApiDbVersion.dto';
+import { ApiDBVersion } from '../../dtos/indexer/ApiDbVersion.dto';
 import { BlockRange } from '../../dtos/indexer/BlockRange.dto';
 import { QueryBlock } from '../../dtos/indexer/QueryBlock.dto';
 import { QueryTransaction } from '../../dtos/indexer/QueryTransaction.dto';
@@ -15,40 +13,6 @@ export abstract class IIndexerEngineService<
   public abstract getStateSetting(): Promise<ApiDBState | null>;
 
   public abstract getIndexerServiceVersion(): Promise<ApiDBVersion>;
-
-  /**
-   * Reads the version file from the file system.
-   */
-  public static async readVersionFile(
-    filePath: string,
-  ): Promise<string | null> {
-    return readFile(join(__dirname, filePath), 'utf-8')
-      .then((data) => data.trim())
-      .catch((error: unknown) => {
-        if (
-          typeof error === 'object' &&
-          'code' in error &&
-          error.code === 'ENOENT'
-        ) {
-          return null as string;
-        }
-        throw error;
-      });
-  }
-
-  public async getServiceVersion(): Promise<Version> {
-    const [gitTag, gitHash, buildDate] = await Promise.all([
-      IIndexerEngineService.readVersionFile('../../../PROJECT_VERSION'),
-      IIndexerEngineService.readVersionFile('../../../PROJECT_COMMIT_HASH'),
-      IIndexerEngineService.readVersionFile('../../../PROJECT_BUILD_DATE'),
-    ]);
-    const apiServerVersion: Version = {
-      gitTag: gitTag || 'local',
-      gitHash: gitHash || 'local',
-      buildDate: Number(buildDate) || Math.floor(Date.now() / 1000),
-    };
-    return apiServerVersion;
-  }
 
   /**
    * Gets the range of available confirmed blocks in the indexer database.

@@ -26,6 +26,7 @@ import {
 } from '../../entity/utxo-entity-definitions';
 import { PaginatedList } from '../../utils/api-models/PaginatedList';
 import { IIndexerEngineService } from '../common/base-indexer-engine-service';
+import { getApiServerVersion } from '../../utils/service-version';
 import { IConfig } from 'src/config/interfaces/common';
 import { IndexerConfig } from '../../config/interfaces/chain-indexer';
 
@@ -126,7 +127,7 @@ abstract class UtxoExternalIndexerEngineService extends IIndexerEngineService {
 
     const nodeVersion = resVersion.toNodeVersion();
     const indexerVersion = resVersion.toIndexerVersion();
-    const apiServerVersion = await this.getServiceVersion();
+    const apiServerVersion = await getApiServerVersion();
 
     return {
       nodeVersion,
