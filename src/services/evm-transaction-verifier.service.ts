@@ -82,3 +82,10 @@ export class HYPEEVMTransactionVerifierService extends BaseEVMTransactionVerifie
     super(configService, VerifierType.HYPE);
   }
 }
+
+@Injectable()
+export class ARBEVMTransactionVerifierService extends BaseEVMTransactionVerifierService {
+  constructor(protected configService: ConfigService<IConfig>) {
+    super(configService, VerifierType.ARB);
+  }
+}
