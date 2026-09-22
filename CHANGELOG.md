@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `BASE` and `HYPE` as supported EVM verifier types.
+- Added `GET /api/version` to EVM verifiers, returning api server version, node client version and chain id.
 
 ### Fixed
 
@@ -19,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Changed url paths for all EVM types to make them consistent with other non-EVM types - `/EVMTransaction` without a chain prefix.
+- **Breaking**: EVM `GET /api/health` now returns an `ApiResponseWrapper` with the chain tip block, matching the indexer verifiers, instead of a bare `true`.
+- EVM `EVMTransaction` endpoints carry a single swagger tag; the chain name is no longer a second tag.
 
 ### Removed
 
