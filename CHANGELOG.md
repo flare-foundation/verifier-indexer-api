@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `BASE` and `HYPE` as supported EVM verifier types.
+- Added `ARB` as a supported EVM verifier type.
 
 ### Fixed
 

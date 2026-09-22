@@ -75,3 +75,11 @@ export class HYPEHealthController extends BaseHealthController {
     super(configService, 'HYPE');
   }
 }
+
+@ApiTags('Health')
+@Controller('api/')
+export class ARBHealthController extends BaseHealthController {
+  constructor(configService: ConfigService<IConfig>) {
+    super(configService, 'ARB');
+  }
+}
