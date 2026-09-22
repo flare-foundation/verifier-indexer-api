@@ -7,7 +7,8 @@ import configuration from '../config/configuration';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 import { BASEEVMTransactionVerifierService } from '../services/evm-transaction-verifier.service';
 import { BASEEVMTransactionVerifierController } from '../controllers/evm-verifier.controller';
-import { BASEHealthController } from '../controllers/evm-health.controller';
+import { EVMHealthController } from '../controllers/evm-health.controller';
+import { EvmNodeEngineService } from '../services/evm-services/evm-node-engine.service';
 
 @Module({
   imports: [
@@ -17,8 +18,13 @@ import { BASEHealthController } from '../controllers/evm-health.controller';
     }),
     AuthModule,
   ],
-  controllers: [BASEEVMTransactionVerifierController, BASEHealthController],
-  providers: [ApiKeyStrategy, AuthService, BASEEVMTransactionVerifierService],
+  controllers: [EVMHealthController, BASEEVMTransactionVerifierController],
+  providers: [
+    ApiKeyStrategy,
+    AuthService,
+    EvmNodeEngineService,
+    BASEEVMTransactionVerifierService,
+  ],
 })
 export class BASEVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -7,7 +7,8 @@ import configuration from '../config/configuration';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 import { ETHEVMTransactionVerifierService } from '../services/evm-transaction-verifier.service';
 import { ETHEVMTransactionVerifierController } from '../controllers/evm-verifier.controller';
-import { ETHHealthController } from '../controllers/evm-health.controller';
+import { EVMHealthController } from '../controllers/evm-health.controller';
+import { EvmNodeEngineService } from '../services/evm-services/evm-node-engine.service';
 
 @Module({
   imports: [
@@ -17,8 +18,13 @@ import { ETHHealthController } from '../controllers/evm-health.controller';
     }),
     AuthModule,
   ],
-  controllers: [ETHEVMTransactionVerifierController, ETHHealthController],
-  providers: [ApiKeyStrategy, AuthService, ETHEVMTransactionVerifierService],
+  controllers: [EVMHealthController, ETHEVMTransactionVerifierController],
+  providers: [
+    ApiKeyStrategy,
+    AuthService,
+    EvmNodeEngineService,
+    ETHEVMTransactionVerifierService,
+  ],
 })
 export class ETHVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

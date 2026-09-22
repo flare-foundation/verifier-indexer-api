@@ -1,77 +1,36 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
-import { ethers, JsonRpcProvider } from 'ethers';
-import { ChainSourceNames } from '../config/configuration';
-import { IConfig } from '../config/interfaces/common';
+import { ApiEvmState } from '../dtos/evm/ApiEvmState.dto';
+import { ApiEvmVersion } from '../dtos/evm/ApiEvmVersion.dto';
+import { EvmNodeEngineService } from '../services/evm-services/evm-node-engine.service';
+import {
+  ApiResponseWrapper,
+  handleApiResponse,
+} from '../utils/api-models/ApiResponse';
+import { ApiResponseWrapperDec } from '../utils/open-api-utils';
 
-abstract class BaseHealthController {
-  private readonly web3Provider: JsonRpcProvider;
-  private readonly evmChain: ChainSourceNames;
-
-  protected constructor(
-    configService: ConfigService<IConfig>,
-    evmChain: ChainSourceNames,
-  ) {
-    this.evmChain = evmChain;
-    const rpcUrl: string = configService.get('evmRpcUrl');
-    this.web3Provider = new ethers.JsonRpcProvider(rpcUrl);
-  }
+@ApiTags('Health')
+@Controller('api/')
+export class EVMHealthController {
+  constructor(private readonly nodeEngine: EvmNodeEngineService) {}
 
   /**
-   * Gets the state entries from the indexer database.
+   * Gets the chain tip as seen by the connected EVM node.
    * @returns
    */
   @Get('health')
-  public async indexerState(): Promise<boolean> {
-    try {
-      const blockNum = await this.web3Provider.getBlockNumber();
-      return blockNum > 0;
-    } catch (error) {
-      console.error(
-        `Error checking health for ${this.evmChain} node: ${error}`,
-      );
-      return false;
-    }
+  @ApiResponseWrapperDec(ApiEvmState, false)
+  public async nodeState(): Promise<ApiResponseWrapper<ApiEvmState>> {
+    return handleApiResponse(this.nodeEngine.getStateSetting());
   }
-}
 
-@ApiTags('Health')
-@Controller('api/')
-export class SGBHealthController extends BaseHealthController {
-  constructor(configService: ConfigService<IConfig>) {
-    super(configService, 'SGB');
-  }
-}
-
-@ApiTags('Health')
-@Controller('api/')
-export class FLRHealthController extends BaseHealthController {
-  constructor(configService: ConfigService<IConfig>) {
-    super(configService, 'FLR');
-  }
-}
-
-@ApiTags('Health')
-@Controller('api/')
-export class ETHHealthController extends BaseHealthController {
-  constructor(configService: ConfigService<IConfig>) {
-    super(configService, 'ETH');
-  }
-}
-
-@ApiTags('Health')
-@Controller('api/')
-export class BASEHealthController extends BaseHealthController {
-  constructor(configService: ConfigService<IConfig>) {
-    super(configService, 'BASE');
-  }
-}
-
-@ApiTags('Health')
-@Controller('api/')
-export class HYPEHealthController extends BaseHealthController {
-  constructor(configService: ConfigService<IConfig>) {
-    super(configService, 'HYPE');
+  /**
+   * Gets the version of the api server and the connected EVM node.
+   * @returns
+   */
+  @Get('version')
+  @ApiResponseWrapperDec(ApiEvmVersion, false)
+  public async nodeVersion(): Promise<ApiResponseWrapper<ApiEvmVersion>> {
+    return handleApiResponse(this.nodeEngine.getServiceVersion());
   }
 }

@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { VerifierType } from '../config/configuration';
 
 import { BaseVerifierService } from './common/verifier-base.service';
-import { ethers, JsonRpcProvider } from 'ethers';
 import {
   EVMTransaction_Request,
   EVMTransaction_Response,
@@ -11,24 +10,21 @@ import {
 import { AttestationResponse } from '../dtos/generic/generic.dto';
 import { IConfig } from '../config/interfaces/common';
 import { verifyEVMTransactionRequest } from '../verification/evm-transaction/evm-transaction';
+import { EvmNodeEngineService } from './evm-services/evm-node-engine.service';
 
 export abstract class BaseEVMTransactionVerifierService extends BaseVerifierService<
   EVMTransaction_Request,
   EVMTransaction_Response
 > {
   protected readonly logger: Logger;
-  private readonly web3Provider: JsonRpcProvider;
 
   protected constructor(
     protected configService: ConfigService<IConfig>,
+    protected readonly nodeEngine: EvmNodeEngineService,
     verifierType: VerifierType,
   ) {
     super(configService, 'EVMTransaction', verifierType);
-
     this.logger = new Logger(new.target.name);
-    const rpcUrl: string = configService.get('evmRpcUrl');
-    this.logger.debug(`RPC host: ${new URL(rpcUrl).host}`);
-    this.web3Provider = new ethers.JsonRpcProvider(rpcUrl);
   }
 
   async verifyRequest(
@@ -39,7 +35,7 @@ export abstract class BaseEVMTransactionVerifierService extends BaseVerifierServ
     );
     const result = await verifyEVMTransactionRequest(
       request,
-      this.web3Provider,
+      this.nodeEngine.provider,
     );
     this.logger.debug(
       `EVMTransaction response: status: ${result.status}, result: ${JSON.stringify(result.response?.responseBody ?? 'none')}`,
@@ -50,35 +46,50 @@ export abstract class BaseEVMTransactionVerifierService extends BaseVerifierServ
 
 @Injectable()
 export class ETHEVMTransactionVerifierService extends BaseEVMTransactionVerifierService {
-  constructor(protected configService: ConfigService<IConfig>) {
-    super(configService, VerifierType.ETH);
+  constructor(
+    protected configService: ConfigService<IConfig>,
+    nodeEngine: EvmNodeEngineService,
+  ) {
+    super(configService, nodeEngine, VerifierType.ETH);
   }
 }
 
 @Injectable()
 export class FLREVMTransactionVerifierService extends BaseEVMTransactionVerifierService {
-  constructor(protected configService: ConfigService<IConfig>) {
-    super(configService, VerifierType.FLR);
+  constructor(
+    protected configService: ConfigService<IConfig>,
+    nodeEngine: EvmNodeEngineService,
+  ) {
+    super(configService, nodeEngine, VerifierType.FLR);
   }
 }
 
 @Injectable()
 export class SGBEVMTransactionVerifierService extends BaseEVMTransactionVerifierService {
-  constructor(protected configService: ConfigService<IConfig>) {
-    super(configService, VerifierType.SGB);
+  constructor(
+    protected configService: ConfigService<IConfig>,
+    nodeEngine: EvmNodeEngineService,
+  ) {
+    super(configService, nodeEngine, VerifierType.SGB);
   }
 }
 
 @Injectable()
 export class BASEEVMTransactionVerifierService extends BaseEVMTransactionVerifierService {
-  constructor(protected configService: ConfigService<IConfig>) {
-    super(configService, VerifierType.BASE);
+  constructor(
+    protected configService: ConfigService<IConfig>,
+    nodeEngine: EvmNodeEngineService,
+  ) {
+    super(configService, nodeEngine, VerifierType.BASE);
   }
 }
 
 @Injectable()
 export class HYPEEVMTransactionVerifierService extends BaseEVMTransactionVerifierService {
-  constructor(protected configService: ConfigService<IConfig>) {
-    super(configService, VerifierType.HYPE);
+  constructor(
+    protected configService: ConfigService<IConfig>,
+    nodeEngine: EvmNodeEngineService,
+  ) {
+    super(configService, nodeEngine, VerifierType.HYPE);
   }
 }
