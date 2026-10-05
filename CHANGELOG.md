@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added `BASE` and `HYPE` as supported EVM verifier types.
+- Added `ARB`, `BASE` and `HYPE` as supported EVM verifier types.
 - `KEEP_ALIVE_TIMEOUT` sets the HTTP keep-alive timeout in seconds, default 5, for deployments behind a load balancer with a longer idle timeout.
 
 ### Fixed

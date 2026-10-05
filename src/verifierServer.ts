@@ -15,6 +15,7 @@ import { ETHVerifierServerModule } from './verifier-modules/eth-verifier-sever.m
 import { SGBVerifierServerModule } from './verifier-modules/sgb-verifier-sever.module';
 import { BASEVerifierServerModule } from './verifier-modules/base-verifier-sever.module';
 import { HYPEVerifierServerModule } from './verifier-modules/hype-verifier-sever.module';
+import { ARBVerifierServerModule } from './verifier-modules/arb-verifier-sever.module';
 
 function moduleForDataSource():
   | typeof DogeVerifierServerModule
@@ -25,7 +26,8 @@ function moduleForDataSource():
   | typeof SGBVerifierServerModule
   | typeof FLRVerifierServerModule
   | typeof BASEVerifierServerModule
-  | typeof HYPEVerifierServerModule {
+  | typeof HYPEVerifierServerModule
+  | typeof ARBVerifierServerModule {
   const verifier_type = extractVerifierType();
   switch (verifier_type) {
     case VerifierType.DOGE:
@@ -46,6 +48,8 @@ function moduleForDataSource():
       return BASEVerifierServerModule;
     case VerifierType.HYPE:
       return HYPEVerifierServerModule;
+    case VerifierType.ARB:
+      return ARBVerifierServerModule;
     default:
       throw new Error(`Wrong verifier type: '${process.env.VERIFIER_TYPE}'`);
   }

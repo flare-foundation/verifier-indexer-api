@@ -42,7 +42,7 @@ Supported attestation type: `EVMTransaction`
 
 Supported sources:
 - Mainnet: `ETH`, `FLR`, `SGB`
-- Testnet: `testETH`, `testFLR`, `testSGB`, `testBASE`, `testHYPE`
+- Testnet: `testETH`, `testFLR`, `testSGB`, `testBASE`, `testHYPE`, `testARB`
 
 For these attestation types the verifier requires access to an RPC endpoint for the target EVM network (configured via `EVM_RPC`).
 

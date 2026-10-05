@@ -1,3 +1,4 @@
+# checkov:skip=CKV_DOCKER_2: Health check is managed by the orchestrator
 # ---- Build stage ----
 FROM node:24-slim@sha256:bf22df20270b654c4e9da59d8d4a3516cce6ba2852e159b27288d645b7a7eedc AS build
 
@@ -5,7 +6,7 @@ WORKDIR /app/verifier-indexer-api
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN corepack enable
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN corepack prepare "$(node -p "require('./package.json').packageManager")" --activate && \
     pnpm install --frozen-lockfile
 
@@ -29,12 +30,14 @@ FROM gcr.io/distroless/nodejs24-debian13:nonroot@sha256:f16acace4aa70086d4a2caad
 WORKDIR /app/verifier-indexer-api
 ENV NODE_ENV=production
 
-COPY --from=build /app/verifier-indexer-api/dist ./dist
-COPY --from=build /app/verifier-indexer-api/node_modules ./node_modules
-COPY --from=build /app/verifier-indexer-api/package.json ./package.json
+COPY --chown=10001:10001 --from=build /app/verifier-indexer-api/dist ./dist
+COPY --chown=10001:10001 --from=build /app/verifier-indexer-api/node_modules ./node_modules
+COPY --chown=10001:10001 --from=build /app/verifier-indexer-api/package.json ./package.json
 
-COPY --from=build /app/verifier-indexer-api/PROJECT_VERSION ./PROJECT_VERSION
-COPY --from=build /app/verifier-indexer-api/PROJECT_BUILD_DATE ./PROJECT_BUILD_DATE
-COPY --from=build /app/verifier-indexer-api/PROJECT_COMMIT_HASH ./PROJECT_COMMIT_HASH
+COPY --chown=10001:10001 --from=build /app/verifier-indexer-api/PROJECT_VERSION ./PROJECT_VERSION
+COPY --chown=10001:10001 --from=build /app/verifier-indexer-api/PROJECT_BUILD_DATE ./PROJECT_BUILD_DATE
+COPY --chown=10001:10001 --from=build /app/verifier-indexer-api/PROJECT_COMMIT_HASH ./PROJECT_COMMIT_HASH
+
+USER 10001:10001
 
 CMD [ "dist/main" ]
