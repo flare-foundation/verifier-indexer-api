@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as http from 'http';
 import helmet from 'helmet';
 import { VerifierType, extractVerifierType } from './config/configuration';
+import { RedactingLogger } from './utils/logger';
 import { getPositiveIntEnv } from './config/env';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
 import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
@@ -57,7 +58,9 @@ function moduleForDataSource():
 
 export async function runVerifierServer() {
   const moduleClass = moduleForDataSource();
-  const app = await NestFactory.create(moduleClass);
+  const app = await NestFactory.create(moduleClass, {
+    logger: new RedactingLogger(),
+  });
 
   const logger = new Logger();
 
