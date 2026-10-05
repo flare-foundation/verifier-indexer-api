@@ -18,6 +18,7 @@ import { IndexerConfig } from './interfaces/chain-indexer';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { web2JsonDefaultParams } from './defaults/web2-json-config';
 import { getDatabaseConfig } from './defaults/indexer-config';
+import { getPositiveIntEnv } from './env';
 import { IConfig } from './interfaces/common';
 import { Web2JsonConfig, Web2JsonSource } from './interfaces/web2-json';
 import { WEB2_JSON_TEST_SOURCES } from './web2/web2-json-test-sources';
@@ -29,7 +30,7 @@ export default () => {
   const isTestnet = process.env.TESTNET == 'true';
 
   const config: IConfig = {
-    port: parseInt(process.env.PORT || '3120'),
+    port: getPositiveIntEnv('PORT', 3120),
     apiKeys: apiKeys,
     isTestnet,
     verifierType,
@@ -46,6 +47,7 @@ export default () => {
     case VerifierType.FLR:
     case VerifierType.BASE:
     case VerifierType.HYPE:
+    case VerifierType.ARB:
       config.evmRpcUrl =
         process.env.EVM_RPC || 'https://flare-api.flare.network/ext/C/rpc';
       break;
@@ -93,9 +95,11 @@ export function extractVerifierType(): VerifierType {
       return VerifierType.BASE;
     case 'hype':
       return VerifierType.HYPE;
+    case 'arb':
+      return VerifierType.ARB;
     default:
       throw new Error(
-        `Wrong verifier type: '${verifierType}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eth' | 'sgb' | 'flr' | 'base' | 'hype'`,
+        `Wrong verifier type: '${verifierType}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eth' | 'sgb' | 'flr' | 'base' | 'hype' | 'arb'`,
       );
   }
 }
@@ -170,10 +174,8 @@ function getIndexerConfig(verifierType: VerifierType): IndexerConfig {
   return {
     db: databaseConfig,
     typeOrmModuleOptions,
-    numberOfConfirmations: parseInt(process.env.NUMBER_OF_CONFIRMATIONS || '6'), // TODO: This should be read from db state
-    indexerServerPageLimit: parseInt(
-      process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
-    ),
+    numberOfConfirmations: getPositiveIntEnv('NUMBER_OF_CONFIRMATIONS', 6), // TODO: This should be read from db state
+    indexerServerPageLimit: getPositiveIntEnv('INDEXER_SERVER_PAGE_LIMIT', 100),
   };
 }
 
@@ -198,6 +200,7 @@ export enum VerifierType {
   FLR = 7,
   BASE = 8,
   HYPE = 9,
+  ARB = 10,
 }
 
 export function typeToSource(type: VerifierType): ChainSourceNames {
@@ -218,6 +221,8 @@ export function typeToSource(type: VerifierType): ChainSourceNames {
       return 'BASE';
     case VerifierType.HYPE:
       return 'HYPE';
+    case VerifierType.ARB:
+      return 'ARB';
     case VerifierType.Web2:
       return 'WEB2';
   }
@@ -232,4 +237,5 @@ export type ChainSourceNames =
   | 'FLR'
   | 'BASE'
   | 'HYPE'
+  | 'ARB'
   | 'WEB2';

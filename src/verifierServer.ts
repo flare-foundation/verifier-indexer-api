@@ -1,8 +1,10 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as http from 'http';
 import helmet from 'helmet';
 import { VerifierType, extractVerifierType } from './config/configuration';
+import { getPositiveIntEnv } from './config/env';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
 import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
 import { Web2JsonVerifierServerModule } from './verifier-modules/web-2-json-verifier-sever.module';
@@ -13,6 +15,7 @@ import { ETHVerifierServerModule } from './verifier-modules/eth-verifier-sever.m
 import { SGBVerifierServerModule } from './verifier-modules/sgb-verifier-sever.module';
 import { BASEVerifierServerModule } from './verifier-modules/base-verifier-sever.module';
 import { HYPEVerifierServerModule } from './verifier-modules/hype-verifier-sever.module';
+import { ARBVerifierServerModule } from './verifier-modules/arb-verifier-sever.module';
 
 function moduleForDataSource():
   | typeof DogeVerifierServerModule
@@ -23,7 +26,8 @@ function moduleForDataSource():
   | typeof SGBVerifierServerModule
   | typeof FLRVerifierServerModule
   | typeof BASEVerifierServerModule
-  | typeof HYPEVerifierServerModule {
+  | typeof HYPEVerifierServerModule
+  | typeof ARBVerifierServerModule {
   const verifier_type = extractVerifierType();
   switch (verifier_type) {
     case VerifierType.DOGE:
@@ -44,6 +48,8 @@ function moduleForDataSource():
       return BASEVerifierServerModule;
     case VerifierType.HYPE:
       return HYPEVerifierServerModule;
+    case VerifierType.ARB:
+      return ARBVerifierServerModule;
     default:
       throw new Error(`Wrong verifier type: '${process.env.VERIFIER_TYPE}'`);
   }
@@ -79,9 +85,24 @@ export async function runVerifierServer() {
   SwaggerModule.setup(`${basePath}/api-doc`, app, document);
 
   // TODO: type safe config module
-  const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3120;
+  const PORT = getPositiveIntEnv('PORT', 3120);
   const VERIFIER_TYPE = extractVerifierType();
   logger.log(`Verifier type: ${VerifierType[VERIFIER_TYPE]}`);
+
+  // Seconds an idle keep-alive connection stays open. Must exceed the idle timeout of any load
+  // balancer in front of the service, or the balancer reuses connections the server has closed.
+  const KEEP_ALIVE_TIMEOUT_S = getPositiveIntEnv('KEEP_ALIVE_TIMEOUT', 5);
+  const httpServer = app.getHttpServer() as http.Server;
+  httpServer.keepAliveTimeout = KEEP_ALIVE_TIMEOUT_S * 1000;
+  // Node requires headersTimeout above keepAliveTimeout. Never lower it below Node's default
+  // (60s), or slow clients that succeed today get 408 when KEEP_ALIVE_TIMEOUT is unset.
+  httpServer.headersTimeout = Math.max(
+    httpServer.headersTimeout,
+    (KEEP_ALIVE_TIMEOUT_S + 5) * 1000,
+  );
+  logger.log(
+    `Keep-alive timeout: ${httpServer.keepAliveTimeout / 1000}s, headers timeout: ${httpServer.headersTimeout / 1000}s`,
+  );
 
   await app.listen(PORT, '0.0.0.0', () =>
     logger.log(`Server started listening at http://0.0.0.0:${PORT}`),
