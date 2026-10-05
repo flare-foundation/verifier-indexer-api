@@ -90,8 +90,15 @@ export async function runVerifierServer() {
   const KEEP_ALIVE_TIMEOUT_S = getPositiveIntEnv('KEEP_ALIVE_TIMEOUT', 5);
   const httpServer = app.getHttpServer() as http.Server;
   httpServer.keepAliveTimeout = KEEP_ALIVE_TIMEOUT_S * 1000;
-  httpServer.headersTimeout = (KEEP_ALIVE_TIMEOUT_S + 5) * 1000;
-  logger.log(`Keep-alive timeout: ${KEEP_ALIVE_TIMEOUT_S}s`);
+  // Node requires headersTimeout above keepAliveTimeout. Never lower it below Node's default
+  // (60s), or slow clients that succeed today get 408 when KEEP_ALIVE_TIMEOUT is unset.
+  httpServer.headersTimeout = Math.max(
+    httpServer.headersTimeout,
+    (KEEP_ALIVE_TIMEOUT_S + 5) * 1000,
+  );
+  logger.log(
+    `Keep-alive timeout: ${httpServer.keepAliveTimeout / 1000}s, headers timeout: ${httpServer.headersTimeout / 1000}s`,
+  );
 
   await app.listen(PORT, '0.0.0.0', () =>
     logger.log(`Server started listening at http://0.0.0.0:${PORT}`),
