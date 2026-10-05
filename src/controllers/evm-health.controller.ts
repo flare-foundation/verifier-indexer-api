@@ -34,11 +34,3 @@ export class EVMHealthController {
     return handleApiResponse(this.nodeEngine.getServiceVersion());
   }
 }
-
-@ApiTags('Health')
-@Controller('api/')
-export class ARBHealthController extends BaseHealthController {
-  constructor(configService: ConfigService<IConfig>) {
-    super(configService, 'ARB');
-  }
-}

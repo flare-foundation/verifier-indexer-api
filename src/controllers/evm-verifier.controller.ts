@@ -79,7 +79,7 @@ export class HYPEEVMTransactionVerifierController extends BaseControllerFactory<
   }
 }
 
-@ApiTags('EVMTransaction', 'ARB')
+@ApiTags('EVMTransaction')
 @Controller('EVMTransaction')
 export class ARBEVMTransactionVerifierController extends BaseControllerFactory<
   EVMTransaction_Request,
