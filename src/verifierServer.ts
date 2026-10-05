@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as http from 'http';
 import helmet from 'helmet';
 import { VerifierType, extractVerifierType } from './config/configuration';
+import { getPositiveIntEnv } from './config/env';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
 import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
 import { Web2JsonVerifierServerModule } from './verifier-modules/web-2-json-verifier-sever.module';
@@ -80,13 +81,13 @@ export async function runVerifierServer() {
   SwaggerModule.setup(`${basePath}/api-doc`, app, document);
 
   // TODO: type safe config module
-  const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3120;
+  const PORT = getPositiveIntEnv('PORT', 3120);
   const VERIFIER_TYPE = extractVerifierType();
   logger.log(`Verifier type: ${VerifierType[VERIFIER_TYPE]}`);
 
-  const KEEP_ALIVE_TIMEOUT_S = process.env.KEEP_ALIVE_TIMEOUT
-    ? parseInt(process.env.KEEP_ALIVE_TIMEOUT)
-    : 5;
+  // Seconds an idle keep-alive connection stays open. Must exceed the idle timeout of any load
+  // balancer in front of the service, or the balancer reuses connections the server has closed.
+  const KEEP_ALIVE_TIMEOUT_S = getPositiveIntEnv('KEEP_ALIVE_TIMEOUT', 5);
   const httpServer = app.getHttpServer() as http.Server;
   httpServer.keepAliveTimeout = KEEP_ALIVE_TIMEOUT_S * 1000;
   httpServer.headersTimeout = (KEEP_ALIVE_TIMEOUT_S + 5) * 1000;

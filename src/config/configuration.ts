@@ -18,6 +18,7 @@ import { IndexerConfig } from './interfaces/chain-indexer';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { web2JsonDefaultParams } from './defaults/web2-json-config';
 import { getDatabaseConfig } from './defaults/indexer-config';
+import { getPositiveIntEnv } from './env';
 import { IConfig } from './interfaces/common';
 import { Web2JsonConfig, Web2JsonSource } from './interfaces/web2-json';
 import { WEB2_JSON_TEST_SOURCES } from './web2/web2-json-test-sources';
@@ -29,7 +30,7 @@ export default () => {
   const isTestnet = process.env.TESTNET == 'true';
 
   const config: IConfig = {
-    port: parseInt(process.env.PORT || '3120'),
+    port: getPositiveIntEnv('PORT', 3120),
     apiKeys: apiKeys,
     isTestnet,
     verifierType,
@@ -170,10 +171,8 @@ function getIndexerConfig(verifierType: VerifierType): IndexerConfig {
   return {
     db: databaseConfig,
     typeOrmModuleOptions,
-    numberOfConfirmations: parseInt(process.env.NUMBER_OF_CONFIRMATIONS || '6'), // TODO: This should be read from db state
-    indexerServerPageLimit: parseInt(
-      process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
-    ),
+    numberOfConfirmations: getPositiveIntEnv('NUMBER_OF_CONFIRMATIONS', 6), // TODO: This should be read from db state
+    indexerServerPageLimit: getPositiveIntEnv('INDEXER_SERVER_PAGE_LIMIT', 100),
   };
 }
 
