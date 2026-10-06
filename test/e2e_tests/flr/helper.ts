@@ -14,7 +14,8 @@ import { ApiKeyStrategy } from '../../../src/auth/apikey.strategy';
 import { AuthService } from '../../../src/auth/auth.service';
 import { LoggerMiddleware } from '../../../src/middleware/LoggerMiddleware';
 import { FLREVMTransactionVerifierController } from '../../../src/controllers/evm-verifier.controller';
-import { FLRHealthController } from '../../../src/controllers/evm-health.controller';
+import { EVMHealthController } from '../../../src/controllers/evm-health.controller';
+import { EvmNodeEngineService } from '../../../src/services/evm-services/evm-node-engine.service';
 import { FLREVMTransactionVerifierService } from '../../../src/services/evm-transaction-verifier.service';
 import { NestFactory } from '@nestjs/core';
 
@@ -37,8 +38,13 @@ function getConfig() {
     }),
     AuthModule,
   ],
-  controllers: [FLREVMTransactionVerifierController, FLRHealthController],
-  providers: [ApiKeyStrategy, AuthService, FLREVMTransactionVerifierService],
+  controllers: [FLREVMTransactionVerifierController, EVMHealthController],
+  providers: [
+    ApiKeyStrategy,
+    AuthService,
+    EvmNodeEngineService,
+    FLREVMTransactionVerifierService,
+  ],
 })
 export class FLRVerifierServerTestModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

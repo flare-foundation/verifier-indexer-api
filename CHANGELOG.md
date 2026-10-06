@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `ARB`, `BASE` and `HYPE` as supported EVM verifier types.
+- Added `GET /api/version` to EVM verifiers, returning api server version, node client version and chain id.
 - `KEEP_ALIVE_TIMEOUT` sets the HTTP keep-alive timeout in seconds, default 5, for deployments behind a load balancer with a longer idle timeout.
 
 ### Fixed
@@ -21,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Integer environment variables (`PORT`, `DB_PORT`, `NUMBER_OF_CONFIRMATIONS`, `INDEXER_SERVER_PAGE_LIMIT`, `KEEP_ALIVE_TIMEOUT`) must be positive integers. An invalid value fails at startup instead of being silently replaced by the default.
 - Changed url paths for all EVM types to make them consistent with other non-EVM types - `/EVMTransaction` without a chain prefix.
+- **Breaking**: EVM `GET /api/health` now returns an `ApiResponseWrapper` with the chain tip block, matching the indexer verifiers, instead of a bare `true`.
+- EVM `EVMTransaction` endpoints carry a single swagger tag; the chain name is no longer a second tag.
 
 ### Removed
 

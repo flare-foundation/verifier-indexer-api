@@ -4,7 +4,8 @@ import { ApiKeyStrategy } from '../auth/apikey.strategy';
 import { AuthModule } from '../auth/auth.module';
 import { AuthService } from '../auth/auth.service';
 import configuration from '../config/configuration';
-import { ARBHealthController } from '../controllers/evm-health.controller';
+import { EVMHealthController } from '../controllers/evm-health.controller';
+import { EvmNodeEngineService } from '../services/evm-services/evm-node-engine.service';
 import { ARBEVMTransactionVerifierController } from '../controllers/evm-verifier.controller';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 import { ARBEVMTransactionVerifierService } from '../services/evm-transaction-verifier.service';
@@ -17,8 +18,13 @@ import { ARBEVMTransactionVerifierService } from '../services/evm-transaction-ve
     }),
     AuthModule,
   ],
-  controllers: [ARBEVMTransactionVerifierController, ARBHealthController],
-  providers: [ApiKeyStrategy, AuthService, ARBEVMTransactionVerifierService],
+  controllers: [EVMHealthController, ARBEVMTransactionVerifierController],
+  providers: [
+    ApiKeyStrategy,
+    AuthService,
+    EvmNodeEngineService,
+    ARBEVMTransactionVerifierService,
+  ],
 })
 export class ARBVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

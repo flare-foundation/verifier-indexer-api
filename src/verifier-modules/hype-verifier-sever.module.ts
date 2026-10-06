@@ -4,7 +4,8 @@ import { ApiKeyStrategy } from '../auth/apikey.strategy';
 import { AuthModule } from '../auth/auth.module';
 import { AuthService } from '../auth/auth.service';
 import configuration from '../config/configuration';
-import { HYPEHealthController } from '../controllers/evm-health.controller';
+import { EVMHealthController } from '../controllers/evm-health.controller';
+import { EvmNodeEngineService } from '../services/evm-services/evm-node-engine.service';
 import { HYPEEVMTransactionVerifierController } from '../controllers/evm-verifier.controller';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 import { HYPEEVMTransactionVerifierService } from '../services/evm-transaction-verifier.service';
@@ -17,8 +18,13 @@ import { HYPEEVMTransactionVerifierService } from '../services/evm-transaction-v
     }),
     AuthModule,
   ],
-  controllers: [HYPEEVMTransactionVerifierController, HYPEHealthController],
-  providers: [ApiKeyStrategy, AuthService, HYPEEVMTransactionVerifierService],
+  controllers: [EVMHealthController, HYPEEVMTransactionVerifierController],
+  providers: [
+    ApiKeyStrategy,
+    AuthService,
+    EvmNodeEngineService,
+    HYPEEVMTransactionVerifierService,
+  ],
 })
 export class HYPEVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

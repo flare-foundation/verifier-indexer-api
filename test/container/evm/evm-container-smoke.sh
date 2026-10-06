@@ -78,30 +78,31 @@ run_chain_test() {
   echo "$chain smoke test passed: $(cat "$response_file")"
 }
 
-run_chain_health_test() {
+run_chain_api_test() {
   local chain="$1"
+  local endpoint="$2"
 
   local http_code
   http_code="$(
     curl -s -o "$response_file" -w "%{http_code}" \
       --connect-timeout 5 \
       --max-time 15 \
-      "$BASE_URL/api/health" || true
+      "$BASE_URL/api/$endpoint" || true
   )"
 
   if [[ "$http_code" != "200" ]]; then
-    echo "$chain health smoke test failed: expected HTTP 200, got $http_code"
+    echo "$chain $endpoint smoke test failed: expected HTTP 200, got $http_code"
     cat "$response_file" || true
     return 1
   fi
 
-  if ! grep -q '^true$' "$response_file"; then
-    echo "$chain health smoke test failed: expected body true"
+  if ! grep -q '"status":"OK"' "$response_file"; then
+    echo "$chain $endpoint smoke test failed: expected status OK"
     cat "$response_file" || true
     return 1
   fi
 
-  echo "$chain health smoke test passed: $(cat "$response_file")"
+  echo "$chain $endpoint smoke test passed: $(cat "$response_file")"
 }
 
 docker compose -f "$COMPOSE_FILE" up -d --build "$SERVICE_NAME"
@@ -121,6 +122,7 @@ if [[ "$ready" -ne 1 ]]; then
   exit 1
 fi
 
-run_chain_health_test "eth"
+run_chain_api_test "eth" "health"
+run_chain_api_test "eth" "version"
 
-echo "EVM container smoke test passed for ETH including health checks."
+echo "EVM container smoke test passed for ETH including health and version checks."

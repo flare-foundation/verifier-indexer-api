@@ -7,7 +7,8 @@ import configuration from '../config/configuration';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
 import { FLREVMTransactionVerifierService } from '../services/evm-transaction-verifier.service';
 import { FLREVMTransactionVerifierController } from '../controllers/evm-verifier.controller';
-import { FLRHealthController } from '../controllers/evm-health.controller';
+import { EVMHealthController } from '../controllers/evm-health.controller';
+import { EvmNodeEngineService } from '../services/evm-services/evm-node-engine.service';
 
 @Module({
   imports: [
@@ -17,8 +18,13 @@ import { FLRHealthController } from '../controllers/evm-health.controller';
     }),
     AuthModule,
   ],
-  controllers: [FLREVMTransactionVerifierController, FLRHealthController],
-  providers: [ApiKeyStrategy, AuthService, FLREVMTransactionVerifierService],
+  controllers: [EVMHealthController, FLREVMTransactionVerifierController],
+  providers: [
+    ApiKeyStrategy,
+    AuthService,
+    EvmNodeEngineService,
+    FLREVMTransactionVerifierService,
+  ],
 })
 export class FLRVerifierServerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

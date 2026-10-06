@@ -14,7 +14,7 @@ import {
   EVMTransaction_Response,
 } from '../dtos/attestation-types/EVMTransaction.dto';
 
-@ApiTags('EVMTransaction', 'ETH')
+@ApiTags('EVMTransaction')
 @Controller('EVMTransaction')
 export class ETHEVMTransactionVerifierController extends BaseControllerFactory<
   EVMTransaction_Request,
@@ -27,7 +27,7 @@ export class ETHEVMTransactionVerifierController extends BaseControllerFactory<
   }
 }
 
-@ApiTags('EVMTransaction', 'FLR')
+@ApiTags('EVMTransaction')
 @Controller('EVMTransaction')
 export class FLREVMTransactionVerifierController extends BaseControllerFactory<
   EVMTransaction_Request,
@@ -40,7 +40,7 @@ export class FLREVMTransactionVerifierController extends BaseControllerFactory<
   }
 }
 
-@ApiTags('EVMTransaction', 'SGB')
+@ApiTags('EVMTransaction')
 @Controller('EVMTransaction')
 export class SGBEVMTransactionVerifierController extends BaseControllerFactory<
   EVMTransaction_Request,
@@ -53,7 +53,7 @@ export class SGBEVMTransactionVerifierController extends BaseControllerFactory<
   }
 }
 
-@ApiTags('EVMTransaction', 'BASE')
+@ApiTags('EVMTransaction')
 @Controller('EVMTransaction')
 export class BASEEVMTransactionVerifierController extends BaseControllerFactory<
   EVMTransaction_Request,
@@ -66,7 +66,7 @@ export class BASEEVMTransactionVerifierController extends BaseControllerFactory<
   }
 }
 
-@ApiTags('EVMTransaction', 'HYPE')
+@ApiTags('EVMTransaction')
 @Controller('EVMTransaction')
 export class HYPEEVMTransactionVerifierController extends BaseControllerFactory<
   EVMTransaction_Request,
@@ -79,7 +79,7 @@ export class HYPEEVMTransactionVerifierController extends BaseControllerFactory<
   }
 }
 
-@ApiTags('EVMTransaction', 'ARB')
+@ApiTags('EVMTransaction')
 @Controller('EVMTransaction')
 export class ARBEVMTransactionVerifierController extends BaseControllerFactory<
   EVMTransaction_Request,
