@@ -38,7 +38,7 @@ export abstract class BaseVerifierService<
   Res extends AttestationTypeBase_Response,
 > {
   private readonly store = new AttestationDefinitionStoreExtended();
-  protected readonly chainSourceName: ChainSourceNames;
+  private readonly chainSourceName: ChainSourceNames;
   protected readonly isTestnet: boolean;
 
   constructor(
@@ -57,23 +57,11 @@ export abstract class BaseVerifierService<
   private async verifyRequestInternal(
     request: Req,
   ): Promise<AttestationResponse<Res>> {
-    this.checkSupportedType(request);
-
-    const fixedRequest = {
-      messageIntegrityCode: ZERO_BYTES_32,
-      ...request, // if messageIntegrityCode is provided, it will shadow zero messageIntegrityCode
-    };
-    return this.verifyRequest(fixedRequest);
-  }
-
-  protected checkSupportedType(request: Req) {
-    const source = this.chainSourceName;
     const attestationName = this.attestationName;
-
+    const sourceName = (this.isTestnet ? 'test' : '') + this.chainSourceName;
     if (
       request.attestationType !== encodeAttestationName(attestationName) ||
-      request.sourceId !==
-        encodeAttestationName((this.isTestnet ? 'test' : '') + source)
+      request.sourceId !== encodeAttestationName(sourceName)
     ) {
       throw new HttpException(
         {
@@ -83,12 +71,18 @@ export abstract class BaseVerifierService<
           }, ${request.sourceId}). This source supports attestation type '${
             attestationName
           }' (${encodeAttestationName(attestationName)}) and source id '${
-            (this.isTestnet ? 'test' : '') + source
-          }' (${encodeAttestationName((this.isTestnet ? 'test' : '') + source)}).`,
+            sourceName
+          }' (${encodeAttestationName(sourceName)}).`,
         },
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    const fixedRequest = {
+      messageIntegrityCode: ZERO_BYTES_32,
+      ...request, // if messageIntegrityCode is provided, it will shadow zero messageIntegrityCode
+    };
+    return this.verifyRequest(fixedRequest);
   }
 
   public async verifyEncodedRequestFDC(

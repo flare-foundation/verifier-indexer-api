@@ -16,13 +16,9 @@ import {
 } from '../entity/xrp-entity-definitions';
 import { IndexerConfig } from './interfaces/chain-indexer';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { web2JsonDefaultParams } from './defaults/web2-json-config';
 import { getDatabaseConfig } from './defaults/indexer-config';
 import { getPositiveIntEnv } from './env';
 import { IConfig } from './interfaces/common';
-import { Web2JsonConfig, Web2JsonSource } from './interfaces/web2-json';
-import { WEB2_JSON_TEST_SOURCES } from './web2/web2-json-test-sources';
-import { WEB2_JSON_SOURCES } from './web2/web2-json-sources';
 
 export default () => {
   const apiKeys = getApiKeys();
@@ -50,9 +46,6 @@ export default () => {
     case VerifierType.ARB:
       config.evmRpcUrl =
         process.env.EVM_RPC || 'https://flare-api.flare.network/ext/C/rpc';
-      break;
-    case VerifierType.Web2:
-      config.web2JsonConfig = getWeb2Config(isTestnet);
       break;
   }
 
@@ -83,8 +76,6 @@ export function extractVerifierType(): VerifierType {
       return VerifierType.BTC;
     case 'xrp':
       return VerifierType.XRP;
-    case 'web2':
-      return VerifierType.Web2;
     case 'eth':
       return VerifierType.ETH;
     case 'sgb':
@@ -99,7 +90,7 @@ export function extractVerifierType(): VerifierType {
       return VerifierType.ARB;
     default:
       throw new Error(
-        `Wrong verifier type: '${verifierType}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'web2' | 'eth' | 'sgb' | 'flr' | 'base' | 'hype' | 'arb'`,
+        `Wrong verifier type: '${verifierType}' provide a valid verifier type: 'doge' | 'btc' | 'xrp' | 'eth' | 'sgb' | 'flr' | 'base' | 'hype' | 'arb'`,
       );
   }
 }
@@ -130,33 +121,6 @@ export function getDatabaseEntities(verifierType: VerifierType) {
   }
 }
 
-function getWeb2Config(isTestnet: boolean): Web2JsonConfig {
-  const selectedSourceIds = (process.env.WEB2_SOURCE_IDS ?? '')
-    .split(',')
-    .map((s) => s.trim());
-  if (selectedSourceIds.length === 0) {
-    throw new Error('WEB2_SOURCE_IDS must be set for Web2 verifier');
-  }
-  const allSources = isTestnet ? WEB2_JSON_TEST_SOURCES : WEB2_JSON_SOURCES;
-
-  const sources: Web2JsonSource[] = [];
-  const availableSourceIds = allSources.map((s) => s.sourceId).join(',');
-  for (const sourceId of selectedSourceIds) {
-    const source = allSources.find((s) => s.sourceId === sourceId);
-    if (!source) {
-      throw new Error(
-        `Configured Web2Json source '${sourceId}' not found in available sources: ${availableSourceIds}`,
-      );
-    }
-    // collect the source when found
-    sources.push(source);
-  }
-  return {
-    securityParams: web2JsonDefaultParams,
-    sources,
-  };
-}
-
 function getIndexerConfig(verifierType: VerifierType): IndexerConfig {
   const entities = getDatabaseEntities(verifierType);
   const databaseConfig = getDatabaseConfig();
@@ -185,7 +149,6 @@ export type AttestationTypeOptions =
   | 'ConfirmedBlockHeightExists'
   | 'Payment'
   | 'ReferencedPaymentNonexistence'
-  | 'Web2Json'
   | 'EVMTransaction'
   | 'XRPPayment'
   | 'XRPPaymentNonexistence';
@@ -194,7 +157,6 @@ export enum VerifierType {
   BTC = 0,
   DOGE = 2,
   XRP = 3,
-  Web2 = 4,
   ETH = 5,
   SGB = 6,
   FLR = 7,
@@ -223,8 +185,6 @@ export function typeToSource(type: VerifierType): ChainSourceNames {
       return 'HYPE';
     case VerifierType.ARB:
       return 'ARB';
-    case VerifierType.Web2:
-      return 'WEB2';
   }
 }
 
@@ -237,5 +197,4 @@ export type ChainSourceNames =
   | 'FLR'
   | 'BASE'
   | 'HYPE'
-  | 'ARB'
-  | 'WEB2';
+  | 'ARB';

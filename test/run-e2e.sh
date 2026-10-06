@@ -9,7 +9,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MOCHA="$REPO_ROOT/node_modules/.bin/mocha"
 
 if [ $# -eq 0 ]; then
-  CHAINS=(btc btc2 doge xrp xrp2 xrp_mainnet flr web2)
+  CHAINS=(btc btc2 doge xrp xrp2 xrp_mainnet flr)
 else
   CHAINS=("$@")
 fi

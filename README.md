@@ -45,13 +45,3 @@ Supported sources:
 - Testnet: `testETH`, `testFLR`, `testSGB`, `testBASE`, `testHYPE`, `testARB`
 
 For these attestation types the verifier requires access to an RPC endpoint for the target EVM network (configured via `EVM_RPC`).
-
-## Web2 data attestations
-
-Supported attestation type: `Web2Json`
-
-Supported sources:
-- Mainnet: [web2-json-sources.ts](src/config/web2/web2-json-sources.ts)
-- Testnet: [web2-json-test-sources.ts](src/config/web2/web2-json-test-sources.ts)
-
-Web2 data attestations fetch and transform JSON data from HTTP(S) endpoints using jq queries. Allowed endpoints are defined by the source configuration files above.

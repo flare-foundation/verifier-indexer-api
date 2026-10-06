@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Removed the deprecated `POST /<AttestationType>` root verify endpoint from all verifiers. Use `POST /<AttestationType>/verifyFDC` instead.
+- **Breaking**: removed the `web2` verifier type and `Web2Json` attestation type support from this repository. `VERIFIER_TYPE=web2` now fails at startup.
 
 ## [1.4.0] - 2026-03-03
 
