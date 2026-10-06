@@ -53,6 +53,16 @@ describe('redactUrls', () => {
     );
   });
 
+  it('handles bracketed IPv6 hosts', () => {
+    expect(
+      redactUrls(
+        `failed (request={"url":"http://[::1]:8545/v2/${SECRET}"}) via http://[2001:db8::1]/${SECRET}?k=${SECRET}`,
+      ),
+    ).to.equal(
+      'failed (request={"url":"http://[::1]:8545/…"}) via http://[2001:db8::1]/…',
+    );
+  });
+
   it('leaves text without URLs alone', () => {
     expect(redactUrls('connect ECONNREFUSED 10.0.0.5:8545')).to.equal(
       'connect ECONNREFUSED 10.0.0.5:8545',
