@@ -36,7 +36,7 @@ export default () => {
     case VerifierType.BTC:
     case VerifierType.DOGE:
     case VerifierType.XRP:
-      config.indexerConfig = getIndexerConfig(verifierType);
+      config.indexerConfig = getIndexerConfig(verifierType, isTestnet);
       break;
     case VerifierType.ETH:
     case VerifierType.SGB:
@@ -121,7 +121,16 @@ export function getDatabaseEntities(verifierType: VerifierType) {
   }
 }
 
-function getIndexerConfig(verifierType: VerifierType): IndexerConfig {
+// Temporary, see `xrpPaymentReference`.
+const XRP_BALANCE_DECREASING_TRANSACTION_ACTIVATION = {
+  mainnet: 1794225600, // Flare voting round 1508840, 2026-11-09 12:00 UTC
+  testnet: 1792769400, // Coston2 voting round 1492660, 2026-10-23 15:30 UTC
+};
+
+function getIndexerConfig(
+  verifierType: VerifierType,
+  isTestnet: boolean,
+): IndexerConfig {
   const entities = getDatabaseEntities(verifierType);
   const databaseConfig = getDatabaseConfig();
   const typeOrmModulePartialOptions: TypeOrmModuleOptions = {
@@ -135,12 +144,18 @@ function getIndexerConfig(verifierType: VerifierType): IndexerConfig {
     ...typeOrmModulePartialOptions,
     entities,
   };
-  return {
+  const config: IndexerConfig = {
     db: databaseConfig,
     typeOrmModuleOptions,
     numberOfConfirmations: getPositiveIntEnv('NUMBER_OF_CONFIRMATIONS', 6), // TODO: This should be read from db state
     indexerServerPageLimit: getPositiveIntEnv('INDEXER_SERVER_PAGE_LIMIT', 100),
   };
+  if (verifierType === VerifierType.XRP) {
+    config.xrpBalanceDecreasingTransactionActivation = isTestnet
+      ? XRP_BALANCE_DECREASING_TRANSACTION_ACTIVATION.testnet
+      : XRP_BALANCE_DECREASING_TRANSACTION_ACTIVATION.mainnet;
+  }
+  return config;
 }
 
 export type AttestationTypeOptions =

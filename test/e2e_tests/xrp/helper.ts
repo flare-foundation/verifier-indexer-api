@@ -76,6 +76,8 @@ function getConfig() {
       indexerServerPageLimit: parseInt(
         process.env.INDEXER_SERVER_PAGE_LIMIT || '100',
       ),
+      // Already past activation.
+      xrpBalanceDecreasingTransactionActivation: 1,
     },
   };
   return config;

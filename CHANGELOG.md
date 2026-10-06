@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- XRP `BalanceDecreasingTransaction` derives `standardPaymentReference` the same way as `Payment` and `XRPPaymentNonexistence`. The change applies once the XRP chain tip reaches the start of Flare voting round 1508840 (2026-11-09 12:00 UTC) on mainnet and the start of Coston2 voting round 1492660 (2026-10-23 15:30 UTC) on testnet. All providers must run this version before then.
 - Integer environment variables (`PORT`, `DB_PORT`, `NUMBER_OF_CONFIRMATIONS`, `INDEXER_SERVER_PAGE_LIMIT`, `KEEP_ALIVE_TIMEOUT`) must be positive integers. An invalid value fails at startup instead of being silently replaced by the default.
 - Changed url paths for all EVM types to make them consistent with other non-EVM types - `/EVMTransaction` without a chain prefix.
 - **Breaking**: EVM `GET /api/health` now returns an `ApiResponseWrapper` with the chain tip block, matching the indexer verifiers, instead of a bare `true`.
