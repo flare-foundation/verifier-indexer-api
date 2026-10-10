@@ -8,7 +8,6 @@ import { RedactingLogger } from './utils/logger';
 import { getPositiveIntEnv } from './config/env';
 import { BtcVerifierServerModule } from './verifier-modules/btc-verifier-server.module';
 import { DogeVerifierServerModule } from './verifier-modules/doge-verifier-server.module';
-import { Web2JsonVerifierServerModule } from './verifier-modules/web-2-json-verifier-sever.module';
 import { XRPVerifierServerModule } from './verifier-modules/xrp-verifier-server.module';
 import * as express from 'express';
 import { FLRVerifierServerModule } from './verifier-modules/flr-verifier-sever.module';
@@ -22,7 +21,6 @@ function moduleForDataSource():
   | typeof DogeVerifierServerModule
   | typeof BtcVerifierServerModule
   | typeof XRPVerifierServerModule
-  | typeof Web2JsonVerifierServerModule
   | typeof ETHVerifierServerModule
   | typeof SGBVerifierServerModule
   | typeof FLRVerifierServerModule
@@ -37,8 +35,6 @@ function moduleForDataSource():
       return BtcVerifierServerModule;
     case VerifierType.XRP:
       return XRPVerifierServerModule;
-    case VerifierType.Web2:
-      return Web2JsonVerifierServerModule;
     case VerifierType.ETH:
       return ETHVerifierServerModule;
     case VerifierType.SGB:

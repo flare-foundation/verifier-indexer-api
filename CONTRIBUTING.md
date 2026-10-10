@@ -177,12 +177,3 @@ pnpm generate:dto
 ```
 
 Note that the generated code may contain unused imports, so a manual review is still needed after generation. Removing the `TypeTemplate` definition from the generated output is also preferred.
-
-## Proposing Web2Json attestation type source changes
-
-Community members can propose adding or removing supported Web2 API endpoints by updating the `Web2Json` source list at [src/config/web2/web2-json-sources.ts](src/config/web2/web2-json-sources.ts) and opening a pull request.
-
-Use the following PR [template](src/config/web2/pull_request_template.md) and follow the checklist.
-
-This will undergo an initial review by the Flare Foundation and then be submitted to the Management Group for voting.
-If accepted, the changes will be applied and rolled out in phases: first on Songbird and then on Flare.

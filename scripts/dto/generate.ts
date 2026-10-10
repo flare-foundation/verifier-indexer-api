@@ -15,6 +15,8 @@ import {
 const ROOT = process.cwd();
 const TYPE_DEFS_DIR = DEFAULT_ATTESTATION_TYPE_CONFIGS_PATH;
 const DTO_DIR = path.join(ROOT, 'src/dtos/attestation-types');
+// Attestation types this verifier no longer serves.
+const SKIPPED_TYPES = new Set(['Web2Json']);
 
 function readJson(filePath: string): unknown {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -162,16 +164,6 @@ function commentsAndAnnotations(
     return comment ? `${comment}\n  ${annotations}` : `  ${annotations}`;
   }
 
-  if (
-    attestationTypeName === 'Web2Json' &&
-    structName === 'RequestBody' &&
-    paramRec.name === 'httpMethod'
-  ) {
-    const annotations = `@IsEnum(HTTP_METHOD)
-  @ApiProperty({ description: \`${description}\`, example: 'GET', enum: HTTP_METHOD })`;
-    return comment ? `${comment}\n  ${annotations}` : `  ${annotations}`;
-  }
-
   if (typeName.match(/^bytes32$/)) {
     let example;
     if (paramRec.name === 'attestationType') {
@@ -204,12 +196,10 @@ function paramFormat(
   structName: string,
 ) {
   if (param.name === 'messageIntegrityCode') return '';
-  const resolvedType =
-    attestationTypeName === 'Web2Json' &&
-    structName === 'RequestBody' &&
-    param.name === 'httpMethod'
-      ? 'HTTP_METHOD'
-      : solidityToDTOTypeInitialized(param.type, attestationTypeName);
+  const resolvedType = solidityToDTOTypeInitialized(
+    param.type,
+    attestationTypeName,
+  );
 
   return `${commentsAndAnnotations(param, attestationTypeName, structName)}
   ${param.name}: ${resolvedType};`;
@@ -255,9 +245,6 @@ export class AttestationResponseDTO_${name}_Response {
 export function getDTOsForName(name: string, typeRec: TypeRecord): string {
   const reversedRequestStructs = [...(typeRec.requestStructs || [])].reverse();
   const reversedResponseStructs = [...(typeRec.responseStructs || [])].reverse();
-  const hasHttpMethod =
-    name === 'Web2Json' &&
-    (typeRec.requestBody.params || []).some((p) => p.name === 'httpMethod');
   const hasStatusEnum = name !== 'EVMTransaction';
   const hasScalarHash32 = [
     ...(typeRec.requestStructs || []),
@@ -275,11 +262,10 @@ export function getDTOsForName(name: string, typeRec: TypeRecord): string {
     (name === 'EVMTransaction' ? autoGenerateCodeNotice : '') +
     `import { ApiProperty } from '@nestjs/swagger';
 import { ${hasScalarHash32 ? 'Transform, ' : ''}Type } from 'class-transformer';
-import { IsBoolean, IsDefined, IsNotEmptyObject, IsObject, IsString, Validate, ValidateNested${hasHttpMethod ? ', IsEnum' : ''} } from 'class-validator';
+import { IsBoolean, IsDefined, IsNotEmptyObject, IsObject, IsString, Validate, ValidateNested } from 'class-validator';
 import { Is0xHex, IsEVMAddress, IsHash32, IsUnsignedIntLike } from '../dto-validators';
 ${hasScalarHash32 ? "import { transformHash32 } from '../dto-transform-utils';" : ''}
 ${hasStatusEnum ? "import { AttestationResponseStatus } from '../../verification/response-status';" : ''}
-${hasHttpMethod ? "import { HTTP_METHOD } from '../../config/interfaces/web2-json';" : ''}
 ${name === 'EVMTransaction' ? attestationResponseStatusEnum : ''}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,6 +300,7 @@ async function main() {
   }
 
   for (const def of defs) {
+    if (SKIPPED_TYPES.has(def.name)) continue;
     let content = getDTOsForName(def.name, def);
     content = await format(content, PRETTIER_SETTINGS_NEST_JS_DTO);
     const dtoPath = path.join(outDir, `${def.name}.dto.ts`);
