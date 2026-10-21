@@ -25,16 +25,16 @@ import { AttestationResponseStatus } from './../response-status';
 /////////////////////////////////////////////////
 
 /**
- * Temporary: from the activation chain tip only native XRP payments keep the memo.
- * Remove once all networks are past activation.
+ * Temporary: XRP transactions from the activation time keep the memo only for native payments.
+ * Remove once the indexer history holds no transaction from before activation.
  */
 export function xrpPaymentReference(
   transaction: XrpTransaction,
-  chainTipTimestamp: number,
+  transactionTimestamp: number,
   activationTimestamp: number,
 ): string {
   const keepsMemo =
-    chainTipTimestamp >= activationTimestamp
+    transactionTimestamp >= activationTimestamp
       ? transaction.isNativePayment
       : transaction.type === 'Payment';
   return keepsMemo ? transaction.stdPaymentReference : ZERO_BYTES_32;
@@ -45,17 +45,15 @@ export function xrpPaymentReference(
  * @param dbTransaction
  * @param TransactionClass
  * @param request
- * @param iqm IndexedQuery object for the relevant blockchain indexer
  * @param xrpBalanceDecreasingTransactionActivation XRP only, see `xrpPaymentReference`
  * @returns
  */
-export async function responseBalanceDecreasingTransaction<
+export function responseBalanceDecreasingTransaction<
   T extends TransactionBase<unknown>,
 >(
   dbTransaction: TransactionResult,
   TransactionClass: new (...args: unknown[]) => T,
   request: BalanceDecreasingTransaction_Request,
-  iqm: IIndexedQueryManager,
   xrpBalanceDecreasingTransactionActivation?: number,
 ) {
   let parsedData: unknown;
@@ -97,13 +95,9 @@ export async function responseBalanceDecreasingTransaction<
     fullTxData instanceof XrpTransaction &&
     xrpBalanceDecreasingTransactionActivation !== undefined
   ) {
-    const chainTip = await iqm.getLatestBlockTimestamp();
-    if (!chainTip) {
-      throw new Error('XRP chain tip is not available in the indexer database');
-    }
     paymentReference = xrpPaymentReference(
       fullTxData,
-      chainTip.timestamp,
+      dbTransaction.timestamp,
       xrpBalanceDecreasingTransactionActivation,
     );
   }
@@ -166,7 +160,6 @@ export async function verifyBalanceDecreasingTransaction<
     dbTransaction,
     TransactionClass,
     request,
-    iqm,
     xrpBalanceDecreasingTransactionActivation,
   );
 }

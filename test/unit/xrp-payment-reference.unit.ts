@@ -39,36 +39,36 @@ const escrow = makeTx({ TransactionType: 'EscrowCreate', Amount: '1000000' });
 
 describe('xrpPaymentReference', () => {
   describe('before activation', () => {
-    const tip = ACTIVATION - 1;
+    const txTime = ACTIVATION - 1;
     it('keeps the memo of a native payment', () => {
-      expect(xrpPaymentReference(nativePayment, tip, ACTIVATION)).to.equal(
+      expect(xrpPaymentReference(nativePayment, txTime, ACTIVATION)).to.equal(
         '0x' + MEMO,
       );
     });
     it('keeps the memo of a cross-currency payment, as mcc 4.5.0 does', () => {
       expect(
-        xrpPaymentReference(crossCurrencyPayment, tip, ACTIVATION),
+        xrpPaymentReference(crossCurrencyPayment, txTime, ACTIVATION),
       ).to.equal('0x' + MEMO);
     });
     it('drops the memo of a non-payment', () => {
-      expect(xrpPaymentReference(escrow, tip, ACTIVATION)).to.equal(ZERO);
+      expect(xrpPaymentReference(escrow, txTime, ACTIVATION)).to.equal(ZERO);
     });
   });
 
   describe('from activation', () => {
-    for (const tip of [ACTIVATION, ACTIVATION + 1]) {
-      it(`keeps the memo of a native payment at tip ${tip}`, () => {
-        expect(xrpPaymentReference(nativePayment, tip, ACTIVATION)).to.equal(
+    for (const txTime of [ACTIVATION, ACTIVATION + 1]) {
+      it(`keeps the memo of a native payment at transaction time ${txTime}`, () => {
+        expect(xrpPaymentReference(nativePayment, txTime, ACTIVATION)).to.equal(
           '0x' + MEMO,
         );
       });
-      it(`drops the memo of a cross-currency payment at tip ${tip}`, () => {
+      it(`drops the memo of a cross-currency payment at transaction time ${txTime}`, () => {
         expect(
-          xrpPaymentReference(crossCurrencyPayment, tip, ACTIVATION),
+          xrpPaymentReference(crossCurrencyPayment, txTime, ACTIVATION),
         ).to.equal(ZERO);
       });
-      it(`drops the memo of a non-payment at tip ${tip}`, () => {
-        expect(xrpPaymentReference(escrow, tip, ACTIVATION)).to.equal(ZERO);
+      it(`drops the memo of a non-payment at transaction time ${txTime}`, () => {
+        expect(xrpPaymentReference(escrow, txTime, ACTIVATION)).to.equal(ZERO);
       });
     }
   });

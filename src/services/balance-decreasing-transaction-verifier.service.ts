@@ -15,9 +15,9 @@ import {
 import { serializeBigInts } from '../external-libs/serializeBigInts';
 
 import { verifyBalanceDecreasingTransaction } from '../verification/balance-decreasing-transaction/balance-decreasing-transaction';
-import { IndexerConfig } from '../config/interfaces/chain-indexer';
 import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
 import { IConfig } from 'src/config/interfaces/common';
+import { IndexerConfig } from '../config/interfaces/chain-indexer';
 import { VerifierType } from '../config/configuration';
 
 abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerifierServiceWithIndexer<
