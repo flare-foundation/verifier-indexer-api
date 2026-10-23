@@ -2,6 +2,8 @@ import {
   BalanceDecreasingSummaryResponse,
   BalanceDecreasingSummaryStatus,
   TransactionBase,
+  XrpTransaction,
+  ZERO_BYTES_32,
   unPrefix0x,
 } from '@flarenetwork/mcc';
 import {
@@ -23,10 +25,27 @@ import { AttestationResponseStatus } from './../response-status';
 /////////////////////////////////////////////////
 
 /**
+ * Temporary: XRP transactions from the activation time keep the memo only for native payments.
+ * Remove once the indexer history holds no transaction from before activation.
+ */
+export function xrpPaymentReference(
+  transaction: XrpTransaction,
+  transactionTimestamp: number,
+  activationTimestamp: number,
+): string {
+  const keepsMemo =
+    transactionTimestamp >= activationTimestamp
+      ? transaction.isNativePayment
+      : transaction.type === 'Payment';
+  return keepsMemo ? transaction.stdPaymentReference : ZERO_BYTES_32;
+}
+
+/**
  * Auxiliary function for assembling attestation response for 'BalanceDecreasingTransaction' attestation type.
  * @param dbTransaction
  * @param TransactionClass
  * @param request
+ * @param xrpBalanceDecreasingTransactionActivation XRP only, see `xrpPaymentReference`
  * @returns
  */
 export function responseBalanceDecreasingTransaction<
@@ -35,6 +54,7 @@ export function responseBalanceDecreasingTransaction<
   dbTransaction: TransactionResult,
   TransactionClass: new (...args: unknown[]) => T,
   request: BalanceDecreasingTransaction_Request,
+  xrpBalanceDecreasingTransactionActivation?: number,
 ) {
   let parsedData: unknown;
   try {
@@ -70,6 +90,18 @@ export function responseBalanceDecreasingTransaction<
     throw new Error('critical error: should always have response');
   }
 
+  let paymentReference = balanceDecreasingSummary.response.paymentReference;
+  if (
+    fullTxData instanceof XrpTransaction &&
+    xrpBalanceDecreasingTransactionActivation !== undefined
+  ) {
+    paymentReference = xrpPaymentReference(
+      fullTxData,
+      dbTransaction.timestamp,
+      xrpBalanceDecreasingTransactionActivation,
+    );
+  }
+
   const response = new BalanceDecreasingTransaction_Response({
     attestationType: request.attestationType,
     sourceId: request.sourceId,
@@ -82,8 +114,7 @@ export function responseBalanceDecreasingTransaction<
       sourceAddressHash:
         balanceDecreasingSummary.response.sourceAddressHash.toLowerCase(),
       spentAmount: balanceDecreasingSummary.response.spentAmount.toString(),
-      standardPaymentReference:
-        balanceDecreasingSummary.response.paymentReference.toLowerCase(),
+      standardPaymentReference: paymentReference.toLowerCase(),
     }),
   });
 
@@ -99,7 +130,7 @@ export function responseBalanceDecreasingTransaction<
  * @param request attestation request
  * @param requestOptions request options
  * @param iqm IndexedQuery object for the relevant blockchain indexer
- * @param client MCC client for the relevant blockchain
+ * @param xrpBalanceDecreasingTransactionActivation XRP only, see `xrpPaymentReference`
  * @returns Verification response, status and attestation response
  * @category Verifiers
  */
@@ -109,6 +140,7 @@ export async function verifyBalanceDecreasingTransaction<
   TransactionClass: new (...args: unknown[]) => T,
   request: BalanceDecreasingTransaction_Request,
   iqm: IIndexedQueryManager,
+  xrpBalanceDecreasingTransactionActivation?: number,
 ): Promise<VerificationResponse<BalanceDecreasingTransaction_Response>> {
   // Check for transaction
   const confirmedTransactionResult = await iqm.getConfirmedTransaction({
@@ -128,5 +160,6 @@ export async function verifyBalanceDecreasingTransaction<
     dbTransaction,
     TransactionClass,
     request,
+    xrpBalanceDecreasingTransactionActivation,
   );
 }

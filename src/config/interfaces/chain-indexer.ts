@@ -40,4 +40,7 @@ export interface IndexerConfig {
    * The number of confirmations required for a transaction to be considered confirmed
    */
   numberOfConfirmations: number;
+
+  /** XRP only, see `xrpPaymentReference`. */
+  xrpBalanceDecreasingTransactionActivation?: number;
 }

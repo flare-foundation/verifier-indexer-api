@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@flarenetwork/js-flare-common": "0.0.3",
-    "@flarenetwork/mcc": "4.5.0",
+    "@flarenetwork/mcc": "4.5.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",

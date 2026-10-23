@@ -17,6 +17,7 @@ import { serializeBigInts } from '../external-libs/serializeBigInts';
 import { verifyBalanceDecreasingTransaction } from '../verification/balance-decreasing-transaction/balance-decreasing-transaction';
 import { BaseVerifierServiceWithIndexer } from './common/verifier-base.service';
 import { IConfig } from 'src/config/interfaces/common';
+import { IndexerConfig } from '../config/interfaces/chain-indexer';
 import { VerifierType } from '../config/configuration';
 
 abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerifierServiceWithIndexer<
@@ -34,11 +35,13 @@ abstract class BaseBalanceDecreasingTransactionVerifierService extends BaseVerif
   async _verifyRequest<T extends TransactionBase<unknown>>(
     TransactionClass: new (...args: unknown[]) => T,
     fixedRequest: BalanceDecreasingTransaction_Request,
+    xrpBalanceDecreasingTransactionActivation?: number,
   ): Promise<AttestationResponseDTO_BalanceDecreasingTransaction_Response> {
     const result = await verifyBalanceDecreasingTransaction(
       TransactionClass,
       fixedRequest,
       this.indexedQueryManager,
+      xrpBalanceDecreasingTransactionActivation,
     );
     return serializeBigInts({
       status: result.status,
@@ -91,6 +94,12 @@ export class XRPBalanceDecreasingTransactionVerifierService extends BaseBalanceD
   async verifyRequest(
     fixedRequest: BalanceDecreasingTransaction_Request,
   ): Promise<AttestationResponseDTO_BalanceDecreasingTransaction_Response> {
-    return this._verifyRequest(XrpTransaction, fixedRequest);
+    const { xrpBalanceDecreasingTransactionActivation } =
+      this.configService.get<IndexerConfig>('indexerConfig');
+    return this._verifyRequest(
+      XrpTransaction,
+      fixedRequest,
+      xrpBalanceDecreasingTransactionActivation,
+    );
   }
 }
