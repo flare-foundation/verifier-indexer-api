@@ -63,9 +63,35 @@ describe('redactUrls', () => {
     );
   });
 
+  it('adds no ellipsis when nothing was dropped', () => {
+    expect(
+      redactUrls(
+        'at http://0.0.0.0:3100 and http://[::1]:8545/ via https://u:p@h.example',
+      ),
+    ).to.equal(
+      'at http://0.0.0.0:3100 and http://[::1]:8545 via https://h.example/…',
+    );
+  });
+
   it('leaves text without URLs alone', () => {
     expect(redactUrls('connect ECONNREFUSED 10.0.0.5:8545')).to.equal(
       'connect ECONNREFUSED 10.0.0.5:8545',
+    );
+  });
+
+  it('redacts a URL at the end of a coloured line and keeps the colour reset', () => {
+    expect(
+      redactUrls(
+        '\x1b[32mServer started listening at http://0.0.0.0:3100\x1b[39m',
+      ),
+    ).to.equal(
+      '\x1b[32mServer started listening at http://0.0.0.0:3100\x1b[39m',
+    );
+  });
+
+  it('falls back to <url> for a URL that does not parse', () => {
+    expect(redactUrls(`dial http://ex%zz/rpc?key=${SECRET}`)).to.equal(
+      'dial <url>',
     );
   });
 });
