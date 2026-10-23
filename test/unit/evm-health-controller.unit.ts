@@ -63,6 +63,16 @@ describe('redactUrls', () => {
     );
   });
 
+  it('adds no ellipsis when nothing was dropped', () => {
+    expect(
+      redactUrls(
+        'at http://0.0.0.0:3100 and http://[::1]:8545/ via https://u:p@h.example',
+      ),
+    ).to.equal(
+      'at http://0.0.0.0:3100 and http://[::1]:8545 via https://h.example/…',
+    );
+  });
+
   it('leaves text without URLs alone', () => {
     expect(redactUrls('connect ECONNREFUSED 10.0.0.5:8545')).to.equal(
       'connect ECONNREFUSED 10.0.0.5:8545',
@@ -75,7 +85,7 @@ describe('redactUrls', () => {
         '\x1b[32mServer started listening at http://0.0.0.0:3100\x1b[39m',
       ),
     ).to.equal(
-      '\x1b[32mServer started listening at http://0.0.0.0:3100/…\x1b[39m',
+      '\x1b[32mServer started listening at http://0.0.0.0:3100\x1b[39m',
     );
   });
 

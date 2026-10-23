@@ -1,5 +1,6 @@
 /**
  * Replaces every URL in text with its scheme and host, dropping path, query and credentials.
+ * Appends "/…" only when something was dropped.
  * For log lines and error messages that may quote a URL carrying an API key.
  */
 export function redactUrls(text: string): string {
@@ -10,7 +11,13 @@ export function redactUrls(text: string): string {
     (match) => {
       try {
         const url = new URL(match);
-        return `${url.protocol}//${url.host}/…`;
+        const dropped =
+          url.username !== '' ||
+          url.password !== '' ||
+          (url.pathname !== '' && url.pathname !== '/') ||
+          url.search !== '' ||
+          url.hash !== '';
+        return `${url.protocol}//${url.host}${dropped ? '/…' : ''}`;
       } catch {
         return '<url>';
       }
