@@ -15,7 +15,7 @@ default:
     expire_in: 3 days
 
 variables:
-  NODE_VERSION: "24.14.0"
+  NODE_VERSION: "24.22.1"
   PNPM_STORE_DIR: ".pnpm-store"
 
 include:
